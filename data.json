@@ -1,0 +1,5129 @@
+{
+    "pokemon": [
+      {
+        "en": "Bulbasaur",
+        "fr": "Bulbizarre",
+        "rarity": "U"
+      },
+      {
+        "en": "Ivysaur",
+        "fr": "Herbizarre",
+        "rarity": "U"
+      },
+      {
+        "en": "Venusaur",
+        "fr": "Florizarre",
+        "rarity": "E"
+      },
+      {
+        "en": "Charmander",
+        "fr": "Salamèche",
+        "rarity": "U"
+      },
+      {
+        "en": "Charmeleon",
+        "fr": "Reptincel",
+        "rarity": "U"
+      },
+      {
+        "en": "Charizard",
+        "fr": "Dracaufeu",
+        "rarity": "E"
+      },
+      {
+        "en": "Squirtle",
+        "fr": "Carapuce",
+        "rarity": "U"
+      },
+      {
+        "en": "Wartortle",
+        "fr": "Carabaffe",
+        "rarity": "U"
+      },
+      {
+        "en": "Blastoise",
+        "fr": "Tortank",
+        "rarity": "E"
+      },
+      {
+        "en": "Caterpie",
+        "fr": "Chenipan",
+        "rarity": "C"
+      },
+      {
+        "en": "Metapod",
+        "fr": "Chrysacier",
+        "rarity": "C"
+      },
+      {
+        "en": "Butterfree",
+        "fr": "Papilusion",
+        "rarity": "U"
+      },
+      {
+        "en": "Weedle",
+        "fr": "Aspicot",
+        "rarity": "C"
+      },
+      {
+        "en": "Kakuna",
+        "fr": "Coconfort",
+        "rarity": "C"
+      },
+      {
+        "en": "Beedrill",
+        "fr": "Dardargnan",
+        "rarity": "U"
+      },
+      {
+        "en": "Pidgey",
+        "fr": "Roucool",
+        "rarity": "C"
+      },
+      {
+        "en": "Pidgeotto",
+        "fr": "Roucoups",
+        "rarity": "U"
+      },
+      {
+        "en": "Pidgeot",
+        "fr": "Roucarnage",
+        "rarity": "R"
+      },
+      {
+        "en": "Rattata",
+        "fr": "Rattata",
+        "rarity": "C"
+      },
+      {
+        "en": "Raticate",
+        "fr": "Rattatac",
+        "rarity": "U"
+      },
+      {
+        "en": "Spearow",
+        "fr": "Piafabec",
+        "rarity": "C"
+      },
+      {
+        "en": "Fearow",
+        "fr": "Rapasdepic",
+        "rarity": "R"
+      },
+      {
+        "en": "Ekans",
+        "fr": "Abo",
+        "rarity": "C"
+      },
+      {
+        "en": "Arbok",
+        "fr": "Arbok",
+        "rarity": "R"
+      },
+      {
+        "en": "Pikachu",
+        "fr": "Pikachu",
+        "rarity": "U"
+      },
+      {
+        "en": "Raichu",
+        "fr": "Raichu",
+        "rarity": "R"
+      },
+      {
+        "en": "Sandshrew",
+        "fr": "Sabelette",
+        "rarity": "C"
+      },
+      {
+        "en": "Sandslash",
+        "fr": "Sablaireau",
+        "rarity": "R"
+      },
+      {
+        "en": "Nidoran♀",
+        "fr": "Nidoran♀",
+        "rarity": "C"
+      },
+      {
+        "en": "Nidorina",
+        "fr": "Nidorina",
+        "rarity": "U"
+      },
+      {
+        "en": "Nidoqueen",
+        "fr": "Nidoqueen",
+        "rarity": "E"
+      },
+      {
+        "en": "Nidoran♂",
+        "fr": "Nidoran♂",
+        "rarity": "C"
+      },
+      {
+        "en": "Nidorino",
+        "fr": "Nidorino",
+        "rarity": "U"
+      },
+      {
+        "en": "Nidoking",
+        "fr": "Nidoking",
+        "rarity": "E"
+      },
+      {
+        "en": "Clefairy",
+        "fr": "Mélofée",
+        "rarity": "U"
+      },
+      {
+        "en": "Clefable",
+        "fr": "Mélodelfe",
+        "rarity": "R"
+      },
+      {
+        "en": "Vulpix",
+        "fr": "Goupix",
+        "rarity": "C"
+      },
+      {
+        "en": "Ninetales",
+        "fr": "Feunard",
+        "rarity": "E"
+      },
+      {
+        "en": "Jigglypuff",
+        "fr": "Rondoudou",
+        "rarity": "C"
+      },
+      {
+        "en": "Wigglytuff",
+        "fr": "Grodoudou",
+        "rarity": "R"
+      },
+      {
+        "en": "Zubat",
+        "fr": "Nosferapti",
+        "rarity": "C"
+      },
+      {
+        "en": "Golbat",
+        "fr": "Nosferalto",
+        "rarity": "R"
+      },
+      {
+        "en": "Oddish",
+        "fr": "Mystherbe",
+        "rarity": "U"
+      },
+      {
+        "en": "Gloom",
+        "fr": "Ortide",
+        "rarity": "U"
+      },
+      {
+        "en": "Vileplume",
+        "fr": "Rafflesia",
+        "rarity": "R"
+      },
+      {
+        "en": "Paras",
+        "fr": "Paras",
+        "rarity": "C"
+      },
+      {
+        "en": "Parasect",
+        "fr": "Parasect",
+        "rarity": "U"
+      },
+      {
+        "en": "Venonat",
+        "fr": "Mimitoss",
+        "rarity": "C"
+      },
+      {
+        "en": "Venomoth",
+        "fr": "Aéromite",
+        "rarity": "R"
+      },
+      {
+        "en": "Diglett",
+        "fr": "Taupiqueur",
+        "rarity": "C"
+      },
+      {
+        "en": "Dugtrio",
+        "fr": "Triopikeur",
+        "rarity": "R"
+      },
+      {
+        "en": "Meowth",
+        "fr": "Miaouss",
+        "rarity": "C"
+      },
+      {
+        "en": "Persian",
+        "fr": "Persian",
+        "rarity": "R"
+      },
+      {
+        "en": "Psyduck",
+        "fr": "Psykokwak",
+        "rarity": "U"
+      },
+      {
+        "en": "Golduck",
+        "fr": "Akwakwak",
+        "rarity": "E"
+      },
+      {
+        "en": "Mankey",
+        "fr": "Férosinge",
+        "rarity": "C"
+      },
+      {
+        "en": "Primeape",
+        "fr": "Colossinge",
+        "rarity": "R"
+      },
+      {
+        "en": "Growlithe",
+        "fr": "Caninos",
+        "rarity": "U"
+      },
+      {
+        "en": "Arcanine",
+        "fr": "Arcanin",
+        "rarity": "E"
+      },
+      {
+        "en": "Poliwag",
+        "fr": "Ptitard",
+        "rarity": "C"
+      },
+      {
+        "en": "Poliwhirl",
+        "fr": "Têtarte",
+        "rarity": "U"
+      },
+      {
+        "en": "Poliwrath",
+        "fr": "Tartard",
+        "rarity": "E"
+      },
+      {
+        "en": "Abra",
+        "fr": "Abra",
+        "rarity": "C"
+      },
+      {
+        "en": "Kadabra",
+        "fr": "Kadabra",
+        "rarity": "U"
+      },
+      {
+        "en": "Alakazam",
+        "fr": "Alakazam",
+        "rarity": "E"
+      },
+      {
+        "en": "Machop",
+        "fr": "Machoc",
+        "rarity": "C"
+      },
+      {
+        "en": "Machoke",
+        "fr": "Machopeur",
+        "rarity": "U"
+      },
+      {
+        "en": "Machamp",
+        "fr": "Mackogneur",
+        "rarity": "E"
+      },
+      {
+        "en": "Bellsprout",
+        "fr": "Chétiflor",
+        "rarity": "C"
+      },
+      {
+        "en": "Weepinbell",
+        "fr": "Boustiflor",
+        "rarity": "U"
+      },
+      {
+        "en": "Victreebel",
+        "fr": "Empiflor",
+        "rarity": "R"
+      },
+      {
+        "en": "Tentacool",
+        "fr": "Tentacool",
+        "rarity": "U"
+      },
+      {
+        "en": "Tentacruel",
+        "fr": "Tentacruel",
+        "rarity": "E"
+      },
+      {
+        "en": "Geodude",
+        "fr": "Racaillou",
+        "rarity": "C"
+      },
+      {
+        "en": "Graveler",
+        "fr": "Gravalanch",
+        "rarity": "U"
+      },
+      {
+        "en": "Golem",
+        "fr": "Grolem",
+        "rarity": "R"
+      },
+      {
+        "en": "Ponyta",
+        "fr": "Ponyta",
+        "rarity": "U"
+      },
+      {
+        "en": "Rapidash",
+        "fr": "Galopa",
+        "rarity": "E"
+      },
+      {
+        "en": "Slowpoke",
+        "fr": "Ramoloss",
+        "rarity": "C"
+      },
+      {
+        "en": "Slowbro",
+        "fr": "Flagadoss",
+        "rarity": "R"
+      },
+      {
+        "en": "Magnemite",
+        "fr": "Magnéti",
+        "rarity": "U"
+      },
+      {
+        "en": "Magneton",
+        "fr": "Magnéton",
+        "rarity": "R"
+      },
+      {
+        "en": "Farfetch’d",
+        "fr": "Canarticho",
+        "rarity": "U"
+      },
+      {
+        "en": "Doduo",
+        "fr": "Doduo",
+        "rarity": "C"
+      },
+      {
+        "en": "Dodrio",
+        "fr": "Dodrio",
+        "rarity": "R"
+      },
+      {
+        "en": "Seel",
+        "fr": "Otaria",
+        "rarity": "U"
+      },
+      {
+        "en": "Dewgong",
+        "fr": "Lamantine",
+        "rarity": "R"
+      },
+      {
+        "en": "Grimer",
+        "fr": "Tadmorv",
+        "rarity": "U"
+      },
+      {
+        "en": "Muk",
+        "fr": "Grotadmorv",
+        "rarity": "E"
+      },
+      {
+        "en": "Shellder",
+        "fr": "Kokiyas",
+        "rarity": "C"
+      },
+      {
+        "en": "Cloyster",
+        "fr": "Crustabri",
+        "rarity": "E"
+      },
+      {
+        "en": "Gastly",
+        "fr": "Fantominus",
+        "rarity": "C"
+      },
+      {
+        "en": "Haunter",
+        "fr": "Spectrum",
+        "rarity": "U"
+      },
+      {
+        "en": "Gengar",
+        "fr": "Ectoplasma",
+        "rarity": "E"
+      },
+      {
+        "en": "Onix",
+        "fr": "Onix",
+        "rarity": "U"
+      },
+      {
+        "en": "Drowzee",
+        "fr": "Soporifik",
+        "rarity": "U"
+      },
+      {
+        "en": "Hypno",
+        "fr": "Hypnomade",
+        "rarity": "R"
+      },
+      {
+        "en": "Krabby",
+        "fr": "Krabby",
+        "rarity": "U"
+      },
+      {
+        "en": "Kingler",
+        "fr": "Krabboss",
+        "rarity": "R"
+      },
+      {
+        "en": "Voltorb",
+        "fr": "Voltorbe",
+        "rarity": "U"
+      },
+      {
+        "en": "Electrode",
+        "fr": "Électrode",
+        "rarity": "R"
+      },
+      {
+        "en": "Exeggcute",
+        "fr": "Noeunoeuf",
+        "rarity": "U"
+      },
+      {
+        "en": "Exeggutor",
+        "fr": "Noadkoko",
+        "rarity": "E"
+      },
+      {
+        "en": "Cubone",
+        "fr": "Osselait",
+        "rarity": "U"
+      },
+      {
+        "en": "Marowak",
+        "fr": "Ossatueur",
+        "rarity": "R"
+      },
+      {
+        "en": "Hitmonlee",
+        "fr": "Kicklee",
+        "rarity": "R"
+      },
+      {
+        "en": "Hitmonchan",
+        "fr": "Tygnon",
+        "rarity": "R"
+      },
+      {
+        "en": "Lickitung",
+        "fr": "Excelangue",
+        "rarity": "U"
+      },
+      {
+        "en": "Koffing",
+        "fr": "Smogo",
+        "rarity": "U"
+      },
+      {
+        "en": "Weezing",
+        "fr": "Smogogo",
+        "rarity": "R"
+      },
+      {
+        "en": "Rhyhorn",
+        "fr": "Rhinocorne",
+        "rarity": "U"
+      },
+      {
+        "en": "Rhydon",
+        "fr": "Rhinoféros",
+        "rarity": "R"
+      },
+      {
+        "en": "Chansey",
+        "fr": "Leveinard",
+        "rarity": "R"
+      },
+      {
+        "en": "Tangela",
+        "fr": "Saquedeneu",
+        "rarity": "R"
+      },
+      {
+        "en": "Kangaskhan",
+        "fr": "Kangourex",
+        "rarity": "R"
+      },
+      {
+        "en": "Horsea",
+        "fr": "Hypotrempe",
+        "rarity": "C"
+      },
+      {
+        "en": "Seadra",
+        "fr": "Hypocéan",
+        "rarity": "R"
+      },
+      {
+        "en": "Goldeen",
+        "fr": "Poissirène",
+        "rarity": "U"
+      },
+      {
+        "en": "Seaking",
+        "fr": "Poissoroy",
+        "rarity": "R"
+      },
+      {
+        "en": "Staryu",
+        "fr": "Stari",
+        "rarity": "U"
+      },
+      {
+        "en": "Starmie",
+        "fr": "Staross",
+        "rarity": "E"
+      },
+      {
+        "en": "Mr. Mime",
+        "fr": "M. Mime",
+        "rarity": "R"
+      },
+      {
+        "en": "Scyther",
+        "fr": "Insécateur",
+        "rarity": "E"
+      },
+      {
+        "en": "Jynx",
+        "fr": "Lippoutou",
+        "rarity": "R"
+      },
+      {
+        "en": "Electabuzz",
+        "fr": "Élektek",
+        "rarity": "R"
+      },
+      {
+        "en": "Magmar",
+        "fr": "Magmar",
+        "rarity": "R"
+      },
+      {
+        "en": "Pinsir",
+        "fr": "Scarabrute",
+        "rarity": "E"
+      },
+      {
+        "en": "Tauros",
+        "fr": "Tauros",
+        "rarity": "R"
+      },
+      {
+        "en": "Magikarp",
+        "fr": "Magicarpe",
+        "rarity": "C"
+      },
+      {
+        "en": "Gyarados",
+        "fr": "Léviator",
+        "rarity": "E"
+      },
+      {
+        "en": "Lapras",
+        "fr": "Lokhlass",
+        "rarity": "E"
+      },
+      {
+        "en": "Ditto",
+        "fr": "Métamorph",
+        "rarity": "C"
+      },
+      {
+        "en": "Eevee",
+        "fr": "Évoli",
+        "rarity": "U"
+      },
+      {
+        "en": "Vaporeon",
+        "fr": "Aquali",
+        "rarity": "E"
+      },
+      {
+        "en": "Jolteon",
+        "fr": "Voltali",
+        "rarity": "E"
+      },
+      {
+        "en": "Flareon",
+        "fr": "Pyroli",
+        "rarity": "E"
+      },
+      {
+        "en": "Porygon",
+        "fr": "Porygon",
+        "rarity": "U"
+      },
+      {
+        "en": "Omanyte",
+        "fr": "Amonita",
+        "rarity": "U"
+      },
+      {
+        "en": "Omastar",
+        "fr": "Amonistar",
+        "rarity": "R"
+      },
+      {
+        "en": "Kabuto",
+        "fr": "Kabuto",
+        "rarity": "U"
+      },
+      {
+        "en": "Kabutops",
+        "fr": "Kabutops",
+        "rarity": "R"
+      },
+      {
+        "en": "Aerodactyl",
+        "fr": "Ptéra",
+        "rarity": "E"
+      },
+      {
+        "en": "Snorlax",
+        "fr": "Ronflex",
+        "rarity": "E"
+      },
+      {
+        "en": "Articuno",
+        "fr": "Artikodin",
+        "rarity": "L"
+      },
+      {
+        "en": "Zapdos",
+        "fr": "Électhor",
+        "rarity": "L"
+      },
+      {
+        "en": "Moltres",
+        "fr": "Sulfura",
+        "rarity": "L"
+      },
+      {
+        "en": "Dratini",
+        "fr": "Minidraco",
+        "rarity": "C"
+      },
+      {
+        "en": "Dragonair",
+        "fr": "Draco",
+        "rarity": "R"
+      },
+      {
+        "en": "Dragonite",
+        "fr": "Dracolosse",
+        "rarity": "E"
+      },
+      {
+        "en": "Mewtwo",
+        "fr": "Mewtwo",
+        "rarity": "L"
+      },
+      {
+        "en": "Mew",
+        "fr": "Mew",
+        "rarity": "M"
+      },
+      {
+        "en": "Chikorita",
+        "fr": "Germignon",
+        "rarity": "C"
+      },
+      {
+        "en": "Bayleef",
+        "fr": "Macronium",
+        "rarity": "U"
+      },
+      {
+        "en": "Meganium",
+        "fr": "Méganium",
+        "rarity": "E"
+      },
+      {
+        "en": "Cyndaquil",
+        "fr": "Héricendre",
+        "rarity": "C"
+      },
+      {
+        "en": "Quilava",
+        "fr": "Feurisson",
+        "rarity": "U"
+      },
+      {
+        "en": "Typhlosion",
+        "fr": "Typhlosion",
+        "rarity": "E"
+      },
+      {
+        "en": "Totodile",
+        "fr": "Kaiminus",
+        "rarity": "C"
+      },
+      {
+        "en": "Croconaw",
+        "fr": "Crocrodil",
+        "rarity": "U"
+      },
+      {
+        "en": "Feraligatr",
+        "fr": "Aligatueur",
+        "rarity": "E"
+      },
+      {
+        "en": "Sentret",
+        "fr": "Fouinette",
+        "rarity": "C"
+      },
+      {
+        "en": "Furret",
+        "fr": "Fouinar",
+        "rarity": "U"
+      },
+      {
+        "en": "Hoothoot",
+        "fr": "Hoothoot",
+        "rarity": "C"
+      },
+      {
+        "en": "Noctowl",
+        "fr": "Noarfang",
+        "rarity": "R"
+      },
+      {
+        "en": "Ledyba",
+        "fr": "Coxy",
+        "rarity": "C"
+      },
+      {
+        "en": "Ledian",
+        "fr": "Coxyclaque",
+        "rarity": "U"
+      },
+      {
+        "en": "Spinarak",
+        "fr": "Mimigal",
+        "rarity": "C"
+      },
+      {
+        "en": "Ariados",
+        "fr": "Migalos",
+        "rarity": "U"
+      },
+      {
+        "en": "Crobat",
+        "fr": "Nostenfer",
+        "rarity": "E"
+      },
+      {
+        "en": "Chinchou",
+        "fr": "Loupio",
+        "rarity": "U"
+      },
+      {
+        "en": "Lanturn",
+        "fr": "Lanturn",
+        "rarity": "R"
+      },
+      {
+        "en": "Pichu",
+        "fr": "Pichu",
+        "rarity": "C"
+      },
+      {
+        "en": "Cleffa",
+        "fr": "Mélo",
+        "rarity": "C"
+      },
+      {
+        "en": "Igglybuff",
+        "fr": "Toudoudou",
+        "rarity": "C"
+      },
+      {
+        "en": "Togepi",
+        "fr": "Togepi",
+        "rarity": "C"
+      },
+      {
+        "en": "Togetic",
+        "fr": "Togetic",
+        "rarity": "U"
+      },
+      {
+        "en": "Natu",
+        "fr": "Natu",
+        "rarity": "U"
+      },
+      {
+        "en": "Xatu",
+        "fr": "Xatu",
+        "rarity": "R"
+      },
+      {
+        "en": "Mareep",
+        "fr": "Wattouat",
+        "rarity": "C"
+      },
+      {
+        "en": "Flaaffy",
+        "fr": "Lainergie",
+        "rarity": "U"
+      },
+      {
+        "en": "Ampharos",
+        "fr": "Pharamp",
+        "rarity": "E"
+      },
+      {
+        "en": "Bellossom",
+        "fr": "Joliflor",
+        "rarity": "R"
+      },
+      {
+        "en": "Marill",
+        "fr": "Marill",
+        "rarity": "C"
+      },
+      {
+        "en": "Azumarill",
+        "fr": "Azumarill",
+        "rarity": "R"
+      },
+      {
+        "en": "Sudowoodo",
+        "fr": "Simularbre",
+        "rarity": "U"
+      },
+      {
+        "en": "Politoed",
+        "fr": "Tarpaud",
+        "rarity": "E"
+      },
+      {
+        "en": "Hoppip",
+        "fr": "Granivol",
+        "rarity": "C"
+      },
+      {
+        "en": "Skiploom",
+        "fr": "Floravol",
+        "rarity": "U"
+      },
+      {
+        "en": "Jumpluff",
+        "fr": "Cotovol",
+        "rarity": "R"
+      },
+      {
+        "en": "Aipom",
+        "fr": "Capumain",
+        "rarity": "U"
+      },
+      {
+        "en": "Sunkern",
+        "fr": "Tournegrin",
+        "rarity": "C"
+      },
+      {
+        "en": "Sunflora",
+        "fr": "Héliatronc",
+        "rarity": "R"
+      },
+      {
+        "en": "Yanma",
+        "fr": "Yanma",
+        "rarity": "U"
+      },
+      {
+        "en": "Wooper",
+        "fr": "Axoloto",
+        "rarity": "C"
+      },
+      {
+        "en": "Quagsire",
+        "fr": "Maraiste",
+        "rarity": "R"
+      },
+      {
+        "en": "Espeon",
+        "fr": "Mentali",
+        "rarity": "E"
+      },
+      {
+        "en": "Umbreon",
+        "fr": "Noctali",
+        "rarity": "E"
+      },
+      {
+        "en": "Murkrow",
+        "fr": "Cornèbre",
+        "rarity": "U"
+      },
+      {
+        "en": "Slowking",
+        "fr": "Roigada",
+        "rarity": "R"
+      },
+      {
+        "en": "Misdreavus",
+        "fr": "Feuforêve",
+        "rarity": "R"
+      },
+      {
+        "en": "Unown",
+        "fr": "Zarbi",
+        "rarity": "U"
+      },
+      {
+        "en": "Wobbuffet",
+        "fr": "Qulbutoké",
+        "rarity": "U"
+      },
+      {
+        "en": "Girafarig",
+        "fr": "Girafarig",
+        "rarity": "R"
+      },
+      {
+        "en": "Pineco",
+        "fr": "Pomdepik",
+        "rarity": "C"
+      },
+      {
+        "en": "Forretress",
+        "fr": "Foretress",
+        "rarity": "R"
+      },
+      {
+        "en": "Dunsparce",
+        "fr": "Insolourdo",
+        "rarity": "U"
+      },
+      {
+        "en": "Gligar",
+        "fr": "Scorplane",
+        "rarity": "R"
+      },
+      {
+        "en": "Steelix",
+        "fr": "Steelix",
+        "rarity": "E"
+      },
+      {
+        "en": "Snubbull",
+        "fr": "Snubbull",
+        "rarity": "C"
+      },
+      {
+        "en": "Granbull",
+        "fr": "Granbull",
+        "rarity": "R"
+      },
+      {
+        "en": "Qwilfish",
+        "fr": "Qwilfish",
+        "rarity": "R"
+      },
+      {
+        "en": "Scizor",
+        "fr": "Cizayox",
+        "rarity": "E"
+      },
+      {
+        "en": "Shuckle",
+        "fr": "Caratroc",
+        "rarity": "E"
+      },
+      {
+        "en": "Heracross",
+        "fr": "Scarhino",
+        "rarity": "E"
+      },
+      {
+        "en": "Sneasel",
+        "fr": "Farfuret",
+        "rarity": "R"
+      },
+      {
+        "en": "Teddiursa",
+        "fr": "Teddiursa",
+        "rarity": "U"
+      },
+      {
+        "en": "Ursaring",
+        "fr": "Ursaring",
+        "rarity": "E"
+      },
+      {
+        "en": "Slugma",
+        "fr": "Limagma",
+        "rarity": "C"
+      },
+      {
+        "en": "Magcargo",
+        "fr": "Volcaropod",
+        "rarity": "R"
+      },
+      {
+        "en": "Swinub",
+        "fr": "Marcacrin",
+        "rarity": "C"
+      },
+      {
+        "en": "Piloswine",
+        "fr": "Cochignon",
+        "rarity": "R"
+      },
+      {
+        "en": "Corsola",
+        "fr": "Corayon",
+        "rarity": "U"
+      },
+      {
+        "en": "Remoraid",
+        "fr": "Rémoraid",
+        "rarity": "C"
+      },
+      {
+        "en": "Octillery",
+        "fr": "Octillery",
+        "rarity": "R"
+      },
+      {
+        "en": "Delibird",
+        "fr": "Cadoizo",
+        "rarity": "U"
+      },
+      {
+        "en": "Mantine",
+        "fr": "Démanta",
+        "rarity": "R"
+      },
+      {
+        "en": "Skarmory",
+        "fr": "Airmure",
+        "rarity": "R"
+      },
+      {
+        "en": "Houndour",
+        "fr": "Malosse",
+        "rarity": "U"
+      },
+      {
+        "en": "Houndoom",
+        "fr": "Démolosse",
+        "rarity": "E"
+      },
+      {
+        "en": "Kingdra",
+        "fr": "Hyporoi",
+        "rarity": "E"
+      },
+      {
+        "en": "Phanpy",
+        "fr": "Phanpy",
+        "rarity": "U"
+      },
+      {
+        "en": "Donphan",
+        "fr": "Donphan",
+        "rarity": "E"
+      },
+      {
+        "en": "Porygon2",
+        "fr": "Porygon2",
+        "rarity": "E"
+      },
+      {
+        "en": "Stantler",
+        "fr": "Cerfrousse",
+        "rarity": "R"
+      },
+      {
+        "en": "Smeargle",
+        "fr": "Queulorior",
+        "rarity": "C"
+      },
+      {
+        "en": "Tyrogue",
+        "fr": "Debugant",
+        "rarity": "C"
+      },
+      {
+        "en": "Hitmontop",
+        "fr": "Kapoera",
+        "rarity": "R"
+      },
+      {
+        "en": "Smoochum",
+        "fr": "Lippouti",
+        "rarity": "C"
+      },
+      {
+        "en": "Elekid",
+        "fr": "Élekid",
+        "rarity": "U"
+      },
+      {
+        "en": "Magby",
+        "fr": "Magby",
+        "rarity": "U"
+      },
+      {
+        "en": "Miltank",
+        "fr": "Écrémeuh",
+        "rarity": "R"
+      },
+      {
+        "en": "Blissey",
+        "fr": "Leuphorie",
+        "rarity": "E"
+      },
+      {
+        "en": "Raikou",
+        "fr": "Raikou",
+        "rarity": "L"
+      },
+      {
+        "en": "Entei",
+        "fr": "Entei",
+        "rarity": "L"
+      },
+      {
+        "en": "Suicune",
+        "fr": "Suicune",
+        "rarity": "L"
+      },
+      {
+        "en": "Larvitar",
+        "fr": "Embrylex",
+        "rarity": "C"
+      },
+      {
+        "en": "Pupitar",
+        "fr": "Ymphect",
+        "rarity": "U"
+      },
+      {
+        "en": "Tyranitar",
+        "fr": "Tyranocif",
+        "rarity": "E"
+      },
+      {
+        "en": "Lugia",
+        "fr": "Lugia",
+        "rarity": "L"
+      },
+      {
+        "en": "Ho-Oh",
+        "fr": "Ho-Oh",
+        "rarity": "L"
+      },
+      {
+        "en": "Celebi",
+        "fr": "Celebi",
+        "rarity": "M"
+      },
+      {
+        "en": "Treecko",
+        "fr": "Arcko",
+        "rarity": "C"
+      },
+      {
+        "en": "Grovyle",
+        "fr": "Massko",
+        "rarity": "U"
+      },
+      {
+        "en": "Sceptile",
+        "fr": "Jungko",
+        "rarity": "E"
+      },
+      {
+        "en": "Torchic",
+        "fr": "Poussifeu",
+        "rarity": "C"
+      },
+      {
+        "en": "Combusken",
+        "fr": "Galifeu",
+        "rarity": "U"
+      },
+      {
+        "en": "Blaziken",
+        "fr": "Braségali",
+        "rarity": "E"
+      },
+      {
+        "en": "Mudkip",
+        "fr": "Gobou",
+        "rarity": "C"
+      },
+      {
+        "en": "Marshtomp",
+        "fr": "Flobio",
+        "rarity": "U"
+      },
+      {
+        "en": "Swampert",
+        "fr": "Laggron",
+        "rarity": "E"
+      },
+      {
+        "en": "Poochyena",
+        "fr": "Medhyèna",
+        "rarity": "C"
+      },
+      {
+        "en": "Mightyena",
+        "fr": "Grahyèna",
+        "rarity": "R"
+      },
+      {
+        "en": "Zigzagoon",
+        "fr": "Zigzaton",
+        "rarity": "C"
+      },
+      {
+        "en": "Linoone",
+        "fr": "Linéon",
+        "rarity": "R"
+      },
+      {
+        "en": "Wurmple",
+        "fr": "Chenipotte",
+        "rarity": "C"
+      },
+      {
+        "en": "Silcoon",
+        "fr": "Armulys",
+        "rarity": "C"
+      },
+      {
+        "en": "Beautifly",
+        "fr": "Charmillon",
+        "rarity": "U"
+      },
+      {
+        "en": "Cascoon",
+        "fr": "Blindalys",
+        "rarity": "C"
+      },
+      {
+        "en": "Dustox",
+        "fr": "Papinox",
+        "rarity": "U"
+      },
+      {
+        "en": "Lotad",
+        "fr": "Nénupiot",
+        "rarity": "C"
+      },
+      {
+        "en": "Lombre",
+        "fr": "Lombre",
+        "rarity": "U"
+      },
+      {
+        "en": "Ludicolo",
+        "fr": "Ludicolo",
+        "rarity": "R"
+      },
+      {
+        "en": "Seedot",
+        "fr": "Grainipiot",
+        "rarity": "C"
+      },
+      {
+        "en": "Nuzleaf",
+        "fr": "Pifeuil",
+        "rarity": "U"
+      },
+      {
+        "en": "Shiftry",
+        "fr": "Tengalice",
+        "rarity": "R"
+      },
+      {
+        "en": "Taillow",
+        "fr": "Nirondelle",
+        "rarity": "C"
+      },
+      {
+        "en": "Swellow",
+        "fr": "Hélédelle",
+        "rarity": "R"
+      },
+      {
+        "en": "Wingull",
+        "fr": "Goélise",
+        "rarity": "C"
+      },
+      {
+        "en": "Pelipper",
+        "fr": "Bekipan",
+        "rarity": "R"
+      },
+      {
+        "en": "Ralts",
+        "fr": "Tarsal",
+        "rarity": "C"
+      },
+      {
+        "en": "Kirlia",
+        "fr": "Kirlia",
+        "rarity": "C"
+      },
+      {
+        "en": "Gardevoir",
+        "fr": "Gardevoir",
+        "rarity": "E"
+      },
+      {
+        "en": "Surskit",
+        "fr": "Arakdo",
+        "rarity": "C"
+      },
+      {
+        "en": "Masquerain",
+        "fr": "Maskadra",
+        "rarity": "R"
+      },
+      {
+        "en": "Shroomish",
+        "fr": "Balignon",
+        "rarity": "C"
+      },
+      {
+        "en": "Breloom",
+        "fr": "Chapignon",
+        "rarity": "R"
+      },
+      {
+        "en": "Slakoth",
+        "fr": "Parecool",
+        "rarity": "C"
+      },
+      {
+        "en": "Vigoroth",
+        "fr": "Vigoroth",
+        "rarity": "R"
+      },
+      {
+        "en": "Slaking",
+        "fr": "Monaflèmit",
+        "rarity": "E"
+      },
+      {
+        "en": "Nincada",
+        "fr": "Ningale",
+        "rarity": "C"
+      },
+      {
+        "en": "Ninjask",
+        "fr": "Ninjask",
+        "rarity": "R"
+      },
+      {
+        "en": "Shedinja",
+        "fr": "Munja",
+        "rarity": "C"
+      },
+      {
+        "en": "Whismur",
+        "fr": "Chuchmur",
+        "rarity": "C"
+      },
+      {
+        "en": "Loudred",
+        "fr": "Ramboum",
+        "rarity": "U"
+      },
+      {
+        "en": "Exploud",
+        "fr": "Brouhabam",
+        "rarity": "R"
+      },
+      {
+        "en": "Makuhita",
+        "fr": "Makuhita",
+        "rarity": "C"
+      },
+      {
+        "en": "Hariyama",
+        "fr": "Hariyama",
+        "rarity": "R"
+      },
+      {
+        "en": "Azurill",
+        "fr": "Azurill",
+        "rarity": "C"
+      },
+      {
+        "en": "Nosepass",
+        "fr": "Tarinor",
+        "rarity": "U"
+      },
+      {
+        "en": "Skitty",
+        "fr": "Skitty",
+        "rarity": "C"
+      },
+      {
+        "en": "Delcatty",
+        "fr": "Delcatty",
+        "rarity": "U"
+      },
+      {
+        "en": "Sableye",
+        "fr": "Ténéfix",
+        "rarity": "U"
+      },
+      {
+        "en": "Mawile",
+        "fr": "Mysdibule",
+        "rarity": "U"
+      },
+      {
+        "en": "Aron",
+        "fr": "Galekid",
+        "rarity": "U"
+      },
+      {
+        "en": "Lairon",
+        "fr": "Galegon",
+        "rarity": "R"
+      },
+      {
+        "en": "Aggron",
+        "fr": "Galeking",
+        "rarity": "E"
+      },
+      {
+        "en": "Meditite",
+        "fr": "Méditikka",
+        "rarity": "C"
+      },
+      {
+        "en": "Medicham",
+        "fr": "Charmina",
+        "rarity": "U"
+      },
+      {
+        "en": "Electrike",
+        "fr": "Dynavolt",
+        "rarity": "C"
+      },
+      {
+        "en": "Manectric",
+        "fr": "Élecsprint",
+        "rarity": "R"
+      },
+      {
+        "en": "Plusle",
+        "fr": "Posipi",
+        "rarity": "U"
+      },
+      {
+        "en": "Minun",
+        "fr": "Négapi",
+        "rarity": "U"
+      },
+      {
+        "en": "Volbeat",
+        "fr": "Muciole",
+        "rarity": "R"
+      },
+      {
+        "en": "Illumise",
+        "fr": "Lumivole",
+        "rarity": "R"
+      },
+      {
+        "en": "Roselia",
+        "fr": "Rosélia",
+        "rarity": "U"
+      },
+      {
+        "en": "Gulpin",
+        "fr": "Gloupti",
+        "rarity": "C"
+      },
+      {
+        "en": "Swalot",
+        "fr": "Avaltout",
+        "rarity": "R"
+      },
+      {
+        "en": "Carvanha",
+        "fr": "Carvanha",
+        "rarity": "C"
+      },
+      {
+        "en": "Sharpedo",
+        "fr": "Sharpedo",
+        "rarity": "R"
+      },
+      {
+        "en": "Wailmer",
+        "fr": "Wailmer",
+        "rarity": "U"
+      },
+      {
+        "en": "Wailord",
+        "fr": "Wailord",
+        "rarity": "E"
+      },
+      {
+        "en": "Numel",
+        "fr": "Chamallot",
+        "rarity": "C"
+      },
+      {
+        "en": "Camerupt",
+        "fr": "Camérupt",
+        "rarity": "R"
+      },
+      {
+        "en": "Torkoal",
+        "fr": "Chartor",
+        "rarity": "R"
+      },
+      {
+        "en": "Spoink",
+        "fr": "Spoink",
+        "rarity": "U"
+      },
+      {
+        "en": "Grumpig",
+        "fr": "Groret",
+        "rarity": "R"
+      },
+      {
+        "en": "Spinda",
+        "fr": "Spinda",
+        "rarity": "U"
+      },
+      {
+        "en": "Trapinch",
+        "fr": "Kraknoix",
+        "rarity": "C"
+      },
+      {
+        "en": "Vibrava",
+        "fr": "Vibraninf",
+        "rarity": "U"
+      },
+      {
+        "en": "Flygon",
+        "fr": "Libégon",
+        "rarity": "E"
+      },
+      {
+        "en": "Cacnea",
+        "fr": "Cacnea",
+        "rarity": "U"
+      },
+      {
+        "en": "Cacturne",
+        "fr": "Cacturne",
+        "rarity": "R"
+      },
+      {
+        "en": "Swablu",
+        "fr": "Tylton",
+        "rarity": "C"
+      },
+      {
+        "en": "Altaria",
+        "fr": "Altaria",
+        "rarity": "R"
+      },
+      {
+        "en": "Zangoose",
+        "fr": "Mangriff",
+        "rarity": "R"
+      },
+      {
+        "en": "Seviper",
+        "fr": "Séviper",
+        "rarity": "R"
+      },
+      {
+        "en": "Lunatone",
+        "fr": "Séléroc",
+        "rarity": "R"
+      },
+      {
+        "en": "Solrock",
+        "fr": "Solaroc",
+        "rarity": "R"
+      },
+      {
+        "en": "Barboach",
+        "fr": "Barloche",
+        "rarity": "C"
+      },
+      {
+        "en": "Whiscash",
+        "fr": "Barbicha",
+        "rarity": "R"
+      },
+      {
+        "en": "Corphish",
+        "fr": "Écrapince",
+        "rarity": "C"
+      },
+      {
+        "en": "Crawdaunt",
+        "fr": "Colhomard",
+        "rarity": "R"
+      },
+      {
+        "en": "Baltoy",
+        "fr": "Balbuto",
+        "rarity": "C"
+      },
+      {
+        "en": "Claydol",
+        "fr": "Kaorine",
+        "rarity": "E"
+      },
+      {
+        "en": "Lileep",
+        "fr": "Lilia",
+        "rarity": "U"
+      },
+      {
+        "en": "Cradily",
+        "fr": "Vacilys",
+        "rarity": "R"
+      },
+      {
+        "en": "Anorith",
+        "fr": "Anorith",
+        "rarity": "U"
+      },
+      {
+        "en": "Armaldo",
+        "fr": "Armaldo",
+        "rarity": "R"
+      },
+      {
+        "en": "Feebas",
+        "fr": "Barpau",
+        "rarity": "C"
+      },
+      {
+        "en": "Milotic",
+        "fr": "Milobellus",
+        "rarity": "E"
+      },
+      {
+        "en": "Castform",
+        "fr": "Morphéo",
+        "rarity": "R"
+      },
+      {
+        "en": "Kecleon",
+        "fr": "Kecleon",
+        "rarity": "R"
+      },
+      {
+        "en": "Shuppet",
+        "fr": "Polichombr",
+        "rarity": "C"
+      },
+      {
+        "en": "Banette",
+        "fr": "Branette",
+        "rarity": "R"
+      },
+      {
+        "en": "Duskull",
+        "fr": "Skelénox",
+        "rarity": "C"
+      },
+      {
+        "en": "Dusclops",
+        "fr": "Téraclope",
+        "rarity": "R"
+      },
+      {
+        "en": "Tropius",
+        "fr": "Tropius",
+        "rarity": "R"
+      },
+      {
+        "en": "Chimecho",
+        "fr": "Éoko",
+        "rarity": "R"
+      },
+      {
+        "en": "Absol",
+        "fr": "Absol",
+        "rarity": "R"
+      },
+      {
+        "en": "Wynaut",
+        "fr": "Okéoké",
+        "rarity": "C"
+      },
+      {
+        "en": "Snorunt",
+        "fr": "Stalgamin",
+        "rarity": "C"
+      },
+      {
+        "en": "Glalie",
+        "fr": "Oniglali",
+        "rarity": "R"
+      },
+      {
+        "en": "Spheal",
+        "fr": "Obalie",
+        "rarity": "C"
+      },
+      {
+        "en": "Sealeo",
+        "fr": "Phogleur",
+        "rarity": "U"
+      },
+      {
+        "en": "Walrein",
+        "fr": "Kaimorse",
+        "rarity": "E"
+      },
+      {
+        "en": "Clamperl",
+        "fr": "Coquiperl",
+        "rarity": "U"
+      },
+      {
+        "en": "Huntail",
+        "fr": "Serpang",
+        "rarity": "R"
+      },
+      {
+        "en": "Gorebyss",
+        "fr": "Rosabyss",
+        "rarity": "R"
+      },
+      {
+        "en": "Relicanth",
+        "fr": "Relicanth",
+        "rarity": "R"
+      },
+      {
+        "en": "Luvdisc",
+        "fr": "Lovdisc",
+        "rarity": "U"
+      },
+      {
+        "en": "Bagon",
+        "fr": "Draby",
+        "rarity": "C"
+      },
+      {
+        "en": "Shelgon",
+        "fr": "Drackhaus",
+        "rarity": "R"
+      },
+      {
+        "en": "Salamence",
+        "fr": "Drattak",
+        "rarity": "E"
+      },
+      {
+        "en": "Beldum",
+        "fr": "Terhal",
+        "rarity": "C"
+      },
+      {
+        "en": "Metang",
+        "fr": "Métang",
+        "rarity": "R"
+      },
+      {
+        "en": "Metagross",
+        "fr": "Métalosse",
+        "rarity": "E"
+      },
+      {
+        "en": "Regirock",
+        "fr": "Regirock",
+        "rarity": "L"
+      },
+      {
+        "en": "Regice",
+        "fr": "Regice",
+        "rarity": "L"
+      },
+      {
+        "en": "Registeel",
+        "fr": "Registeel",
+        "rarity": "L"
+      },
+      {
+        "en": "Latias",
+        "fr": "Latias",
+        "rarity": "L"
+      },
+      {
+        "en": "Latios",
+        "fr": "Latios",
+        "rarity": "L"
+      },
+      {
+        "en": "Kyogre",
+        "fr": "Kyogre",
+        "rarity": "L"
+      },
+      {
+        "en": "Groudon",
+        "fr": "Groudon",
+        "rarity": "L"
+      },
+      {
+        "en": "Rayquaza",
+        "fr": "Rayquaza",
+        "rarity": "L"
+      },
+      {
+        "en": "Jirachi",
+        "fr": "Jirachi",
+        "rarity": "M"
+      },
+      {
+        "en": "Deoxys",
+        "fr": "Deoxys",
+        "rarity": "M"
+      },
+      {
+        "en": "Turtwig",
+        "fr": "Tortipouss",
+        "rarity": "C"
+      },
+      {
+        "en": "Grotle",
+        "fr": "Boskara",
+        "rarity": "U"
+      },
+      {
+        "en": "Torterra",
+        "fr": "Torterra",
+        "rarity": "E"
+      },
+      {
+        "en": "Chimchar",
+        "fr": "Ouisticram",
+        "rarity": "C"
+      },
+      {
+        "en": "Monferno",
+        "fr": "Chimpenfeu",
+        "rarity": "U"
+      },
+      {
+        "en": "Infernape",
+        "fr": "Simiabraz",
+        "rarity": "E"
+      },
+      {
+        "en": "Piplup",
+        "fr": "Tiplouf",
+        "rarity": "C"
+      },
+      {
+        "en": "Prinplup",
+        "fr": "Prinplouf",
+        "rarity": "U"
+      },
+      {
+        "en": "Empoleon",
+        "fr": "Pingoléon",
+        "rarity": "E"
+      },
+      {
+        "en": "Starly",
+        "fr": "Étourmi",
+        "rarity": "C"
+      },
+      {
+        "en": "Staravia",
+        "fr": "Étourvol",
+        "rarity": "U"
+      },
+      {
+        "en": "Staraptor",
+        "fr": "Étouraptor",
+        "rarity": "R"
+      },
+      {
+        "en": "Bidoof",
+        "fr": "Keunotor",
+        "rarity": "C"
+      },
+      {
+        "en": "Bibarel",
+        "fr": "Castorno",
+        "rarity": "U"
+      },
+      {
+        "en": "Kricketot",
+        "fr": "Crikzik",
+        "rarity": "C"
+      },
+      {
+        "en": "Kricketune",
+        "fr": "Mélokrik",
+        "rarity": "U"
+      },
+      {
+        "en": "Shinx",
+        "fr": "Lixy",
+        "rarity": "C"
+      },
+      {
+        "en": "Luxio",
+        "fr": "Luxio",
+        "rarity": "U"
+      },
+      {
+        "en": "Luxray",
+        "fr": "Luxray",
+        "rarity": "E"
+      },
+      {
+        "en": "Budew",
+        "fr": "Rozbouton",
+        "rarity": "C"
+      },
+      {
+        "en": "Roserade",
+        "fr": "Roserade",
+        "rarity": "E"
+      },
+      {
+        "en": "Cranidos",
+        "fr": "Kranidos",
+        "rarity": "U"
+      },
+      {
+        "en": "Rampardos",
+        "fr": "Charkos",
+        "rarity": "R"
+      },
+      {
+        "en": "Shieldon",
+        "fr": "Dinoclier",
+        "rarity": "U"
+      },
+      {
+        "en": "Bastiodon",
+        "fr": "Bastiodon",
+        "rarity": "R"
+      },
+      {
+        "en": "Burmy",
+        "fr": "Cheniti",
+        "rarity": "C"
+      },
+      {
+        "en": "Wormadam",
+        "fr": "Cheniselle",
+        "rarity": "R"
+      },
+      {
+        "en": "Mothim",
+        "fr": "Papilord",
+        "rarity": "R"
+      },
+      {
+        "en": "Combee",
+        "fr": "Apitrini",
+        "rarity": "C"
+      },
+      {
+        "en": "Vespiquen",
+        "fr": "Apireine",
+        "rarity": "R"
+      },
+      {
+        "en": "Pachirisu",
+        "fr": "Pachirisu",
+        "rarity": "U"
+      },
+      {
+        "en": "Buizel",
+        "fr": "Mustébouée",
+        "rarity": "U"
+      },
+      {
+        "en": "Floatzel",
+        "fr": "Mustéflott",
+        "rarity": "R"
+      },
+      {
+        "en": "Cherubi",
+        "fr": "Ceribou",
+        "rarity": "C"
+      },
+      {
+        "en": "Cherrim",
+        "fr": "Ceriflor",
+        "rarity": "R"
+      },
+      {
+        "en": "Shellos",
+        "fr": "Sancoki",
+        "rarity": "U"
+      },
+      {
+        "en": "Gastrodon",
+        "fr": "Tritosor",
+        "rarity": "R"
+      },
+      {
+        "en": "Ambipom",
+        "fr": "Capidextre",
+        "rarity": "R"
+      },
+      {
+        "en": "Drifloon",
+        "fr": "Baudrive",
+        "rarity": "U"
+      },
+      {
+        "en": "Drifblim",
+        "fr": "Grodrive",
+        "rarity": "R"
+      },
+      {
+        "en": "Buneary",
+        "fr": "Laporeille",
+        "rarity": "U"
+      },
+      {
+        "en": "Lopunny",
+        "fr": "Lockpin",
+        "rarity": "R"
+      },
+      {
+        "en": "Mismagius",
+        "fr": "Magirêve",
+        "rarity": "R"
+      },
+      {
+        "en": "Honchkrow",
+        "fr": "Corboss",
+        "rarity": "E"
+      },
+      {
+        "en": "Glameow",
+        "fr": "Chaglam",
+        "rarity": "C"
+      },
+      {
+        "en": "Purugly",
+        "fr": "Chaffreux",
+        "rarity": "R"
+      },
+      {
+        "en": "Chingling",
+        "fr": "Korillon",
+        "rarity": "C"
+      },
+      {
+        "en": "Stunky",
+        "fr": "Moufouette",
+        "rarity": "U"
+      },
+      {
+        "en": "Skuntank",
+        "fr": "Moufflair",
+        "rarity": "R"
+      },
+      {
+        "en": "Bronzor",
+        "fr": "Archéomire",
+        "rarity": "C"
+      },
+      {
+        "en": "Bronzong",
+        "fr": "Archéodong",
+        "rarity": "E"
+      },
+      {
+        "en": "Bonsly",
+        "fr": "Manzaï",
+        "rarity": "C"
+      },
+      {
+        "en": "Mime Jr.",
+        "fr": "Mime Jr.",
+        "rarity": "C"
+      },
+      {
+        "en": "Happiny",
+        "fr": "Ptiravi",
+        "rarity": "C"
+      },
+      {
+        "en": "Chatot",
+        "fr": "Pijako",
+        "rarity": "U"
+      },
+      {
+        "en": "Spiritomb",
+        "fr": "Spiritomb",
+        "rarity": "R"
+      },
+      {
+        "en": "Gible",
+        "fr": "Griknot",
+        "rarity": "C"
+      },
+      {
+        "en": "Gabite",
+        "fr": "Carmache",
+        "rarity": "U"
+      },
+      {
+        "en": "Garchomp",
+        "fr": "Carchacrok",
+        "rarity": "E"
+      },
+      {
+        "en": "Munchlax",
+        "fr": "Goinfrex",
+        "rarity": "U"
+      },
+      {
+        "en": "Riolu",
+        "fr": "Riolu",
+        "rarity": "C"
+      },
+      {
+        "en": "Lucario",
+        "fr": "Lucario",
+        "rarity": "E"
+      },
+      {
+        "en": "Hippopotas",
+        "fr": "Hippopotas",
+        "rarity": "U"
+      },
+      {
+        "en": "Hippowdon",
+        "fr": "Hippodocus",
+        "rarity": "E"
+      },
+      {
+        "en": "Skorupi",
+        "fr": "Rapion",
+        "rarity": "U"
+      },
+      {
+        "en": "Drapion",
+        "fr": "Drascore",
+        "rarity": "E"
+      },
+      {
+        "en": "Croagunk",
+        "fr": "Cradopaud",
+        "rarity": "C"
+      },
+      {
+        "en": "Toxicroak",
+        "fr": "Coatox",
+        "rarity": "R"
+      },
+      {
+        "en": "Carnivine",
+        "fr": "Vortente",
+        "rarity": "R"
+      },
+      {
+        "en": "Finneon",
+        "fr": "Écayon",
+        "rarity": "U"
+      },
+      {
+        "en": "Lumineon",
+        "fr": "Luminéon",
+        "rarity": "R"
+      },
+      {
+        "en": "Mantyke",
+        "fr": "Babimanta",
+        "rarity": "U"
+      },
+      {
+        "en": "Snover",
+        "fr": "Blizzi",
+        "rarity": "U"
+      },
+      {
+        "en": "Abomasnow",
+        "fr": "Blizzaroi",
+        "rarity": "R"
+      },
+      {
+        "en": "Weavile",
+        "fr": "Dimoret",
+        "rarity": "E"
+      },
+      {
+        "en": "Magnezone",
+        "fr": "Magnézone",
+        "rarity": "E"
+      },
+      {
+        "en": "Lickilicky",
+        "fr": "Coudlangue",
+        "rarity": "E"
+      },
+      {
+        "en": "Rhyperior",
+        "fr": "Rhinastoc",
+        "rarity": "E"
+      },
+      {
+        "en": "Tangrowth",
+        "fr": "Bouldeneu",
+        "rarity": "E"
+      },
+      {
+        "en": "Electivire",
+        "fr": "Élekable",
+        "rarity": "E"
+      },
+      {
+        "en": "Magmortar",
+        "fr": "Maganon",
+        "rarity": "E"
+      },
+      {
+        "en": "Togekiss",
+        "fr": "Togekiss",
+        "rarity": "E"
+      },
+      {
+        "en": "Yanmega",
+        "fr": "Yanmega",
+        "rarity": "E"
+      },
+      {
+        "en": "Leafeon",
+        "fr": "Phyllali",
+        "rarity": "E"
+      },
+      {
+        "en": "Glaceon",
+        "fr": "Givrali",
+        "rarity": "E"
+      },
+      {
+        "en": "Gliscor",
+        "fr": "Scorvol",
+        "rarity": "E"
+      },
+      {
+        "en": "Mamoswine",
+        "fr": "Mammochon",
+        "rarity": "E"
+      },
+      {
+        "en": "Porygon-Z",
+        "fr": "Porygon-Z",
+        "rarity": "E"
+      },
+      {
+        "en": "Gallade",
+        "fr": "Gallame",
+        "rarity": "E"
+      },
+      {
+        "en": "Probopass",
+        "fr": "Tarinorme",
+        "rarity": "E"
+      },
+      {
+        "en": "Dusknoir",
+        "fr": "Noctunoir",
+        "rarity": "E"
+      },
+      {
+        "en": "Froslass",
+        "fr": "Momartik",
+        "rarity": "R"
+      },
+      {
+        "en": "Rotom",
+        "fr": "Motisma",
+        "rarity": "R"
+      },
+      {
+        "en": "Uxie",
+        "fr": "Créhelf",
+        "rarity": "L"
+      },
+      {
+        "en": "Mesprit",
+        "fr": "Créfollet",
+        "rarity": "L"
+      },
+      {
+        "en": "Azelf",
+        "fr": "Créfadet",
+        "rarity": "L"
+      },
+      {
+        "en": "Dialga",
+        "fr": "Dialga",
+        "rarity": "L"
+      },
+      {
+        "en": "Palkia",
+        "fr": "Palkia",
+        "rarity": "L"
+      },
+      {
+        "en": "Heatran",
+        "fr": "Heatran",
+        "rarity": "L"
+      },
+      {
+        "en": "Regigigas",
+        "fr": "Regigigas",
+        "rarity": "L"
+      },
+      {
+        "en": "Giratina",
+        "fr": "Giratina",
+        "rarity": "L"
+      },
+      {
+        "en": "Cresselia",
+        "fr": "Cresselia",
+        "rarity": "L"
+      },
+      {
+        "en": "Phione",
+        "fr": "Phione",
+        "rarity": "M"
+      },
+      {
+        "en": "Manaphy",
+        "fr": "Manaphy",
+        "rarity": "M"
+      },
+      {
+        "en": "Darkrai",
+        "fr": "Darkrai",
+        "rarity": "M"
+      },
+      {
+        "en": "Shaymin",
+        "fr": "Shaymin",
+        "rarity": "M"
+      },
+      {
+        "en": "Arceus",
+        "fr": "Arceus",
+        "rarity": "M"
+      },
+      {
+        "en": "Victini",
+        "fr": "Victini",
+        "rarity": "M"
+      },
+      {
+        "en": "Snivy",
+        "fr": "Vipélierre",
+        "rarity": "C"
+      },
+      {
+        "en": "Servine",
+        "fr": "Lianaja",
+        "rarity": "U"
+      },
+      {
+        "en": "Serperior",
+        "fr": "Majaspic",
+        "rarity": "E"
+      },
+      {
+        "en": "Tepig",
+        "fr": "Gruikui",
+        "rarity": "C"
+      },
+      {
+        "en": "Pignite",
+        "fr": "Grotichon",
+        "rarity": "U"
+      },
+      {
+        "en": "Emboar",
+        "fr": "Roitiflam",
+        "rarity": "E"
+      },
+      {
+        "en": "Oshawott",
+        "fr": "Moustillon",
+        "rarity": "C"
+      },
+      {
+        "en": "Dewott",
+        "fr": "Mateloutre",
+        "rarity": "U"
+      },
+      {
+        "en": "Samurott",
+        "fr": "Clamiral",
+        "rarity": "E"
+      },
+      {
+        "en": "Patrat",
+        "fr": "Ratentif",
+        "rarity": "C"
+      },
+      {
+        "en": "Watchog",
+        "fr": "Miradar",
+        "rarity": "R"
+      },
+      {
+        "en": "Lillipup",
+        "fr": "Ponchiot",
+        "rarity": "C"
+      },
+      {
+        "en": "Herdier",
+        "fr": "Ponchien",
+        "rarity": "U"
+      },
+      {
+        "en": "Stoutland",
+        "fr": "Mastouffe",
+        "rarity": "E"
+      },
+      {
+        "en": "Purrloin",
+        "fr": "Chacripan",
+        "rarity": "C"
+      },
+      {
+        "en": "Liepard",
+        "fr": "Léopardus",
+        "rarity": "R"
+      },
+      {
+        "en": "Pansage",
+        "fr": "Feuillajou",
+        "rarity": "C"
+      },
+      {
+        "en": "Simisage",
+        "fr": "Feuiloutan",
+        "rarity": "R"
+      },
+      {
+        "en": "Pansear",
+        "fr": "Flamajou",
+        "rarity": "C"
+      },
+      {
+        "en": "Simisear",
+        "fr": "Flamoutan",
+        "rarity": "R"
+      },
+      {
+        "en": "Panpour",
+        "fr": "Flotajou",
+        "rarity": "C"
+      },
+      {
+        "en": "Simipour",
+        "fr": "Flotoutan",
+        "rarity": "R"
+      },
+      {
+        "en": "Munna",
+        "fr": "Munna",
+        "rarity": "C"
+      },
+      {
+        "en": "Musharna",
+        "fr": "Mushana",
+        "rarity": "R"
+      },
+      {
+        "en": "Pidove",
+        "fr": "Poichigeon",
+        "rarity": "C"
+      },
+      {
+        "en": "Tranquill",
+        "fr": "Colombeau",
+        "rarity": "U"
+      },
+      {
+        "en": "Unfezant",
+        "fr": "Déflaisan",
+        "rarity": "R"
+      },
+      {
+        "en": "Blitzle",
+        "fr": "Zébibron",
+        "rarity": "C"
+      },
+      {
+        "en": "Zebstrika",
+        "fr": "Zéblitz",
+        "rarity": "R"
+      },
+      {
+        "en": "Roggenrola",
+        "fr": "Nodulithe",
+        "rarity": "C"
+      },
+      {
+        "en": "Boldore",
+        "fr": "Géolithe",
+        "rarity": "U"
+      },
+      {
+        "en": "Gigalith",
+        "fr": "Gigalithe",
+        "rarity": "E"
+      },
+      {
+        "en": "Woobat",
+        "fr": "Chovsourir",
+        "rarity": "U"
+      },
+      {
+        "en": "Swoobat",
+        "fr": "Rhinolove",
+        "rarity": "R"
+      },
+      {
+        "en": "Drilbur",
+        "fr": "Rototaupe",
+        "rarity": "U"
+      },
+      {
+        "en": "Excadrill",
+        "fr": "Minotaupe",
+        "rarity": "E"
+      },
+      {
+        "en": "Audino",
+        "fr": "Nanméouïe",
+        "rarity": "R"
+      },
+      {
+        "en": "Timburr",
+        "fr": "Charpenti",
+        "rarity": "C"
+      },
+      {
+        "en": "Gurdurr",
+        "fr": "Ouvrifier",
+        "rarity": "U"
+      },
+      {
+        "en": "Conkeldurr",
+        "fr": "Bétochef",
+        "rarity": "E"
+      },
+      {
+        "en": "Tympole",
+        "fr": "Tritonde",
+        "rarity": "C"
+      },
+      {
+        "en": "Palpitoad",
+        "fr": "Batracné",
+        "rarity": "U"
+      },
+      {
+        "en": "Seismitoad",
+        "fr": "Crapustule",
+        "rarity": "E"
+      },
+      {
+        "en": "Throh",
+        "fr": "Judokrak",
+        "rarity": "R"
+      },
+      {
+        "en": "Sawk",
+        "fr": "Karaclée",
+        "rarity": "R"
+      },
+      {
+        "en": "Sewaddle",
+        "fr": "Larveyette",
+        "rarity": "C"
+      },
+      {
+        "en": "Swadloon",
+        "fr": "Couverdure",
+        "rarity": "U"
+      },
+      {
+        "en": "Leavanny",
+        "fr": "Manternel",
+        "rarity": "E"
+      },
+      {
+        "en": "Venipede",
+        "fr": "Venipatte",
+        "rarity": "C"
+      },
+      {
+        "en": "Whirlipede",
+        "fr": "Scobolide",
+        "rarity": "U"
+      },
+      {
+        "en": "Scolipede",
+        "fr": "Brutapode",
+        "rarity": "R"
+      },
+      {
+        "en": "Cottonee",
+        "fr": "Doudouvet",
+        "rarity": "C"
+      },
+      {
+        "en": "Whimsicott",
+        "fr": "Farfaduvet",
+        "rarity": "R"
+      },
+      {
+        "en": "Petilil",
+        "fr": "Chlorobule",
+        "rarity": "C"
+      },
+      {
+        "en": "Lilligant",
+        "fr": "Fragilady",
+        "rarity": "R"
+      },
+      {
+        "en": "Basculin",
+        "fr": "Bargantua",
+        "rarity": "R"
+      },
+      {
+        "en": "Sandile",
+        "fr": "Mascaïman",
+        "rarity": "C"
+      },
+      {
+        "en": "Krokorok",
+        "fr": "Escroco",
+        "rarity": "U"
+      },
+      {
+        "en": "Krookodile",
+        "fr": "Crocorible",
+        "rarity": "E"
+      },
+      {
+        "en": "Darumaka",
+        "fr": "Darumarond",
+        "rarity": "C"
+      },
+      {
+        "en": "Darmanitan",
+        "fr": "Darumacho",
+        "rarity": "R"
+      },
+      {
+        "en": "Maractus",
+        "fr": "Maracachi",
+        "rarity": "R"
+      },
+      {
+        "en": "Dwebble",
+        "fr": "Crabicoque",
+        "rarity": "U"
+      },
+      {
+        "en": "Crustle",
+        "fr": "Crabaraque",
+        "rarity": "R"
+      },
+      {
+        "en": "Scraggy",
+        "fr": "Baggiguane",
+        "rarity": "U"
+      },
+      {
+        "en": "Scrafty",
+        "fr": "Baggaïd",
+        "rarity": "R"
+      },
+      {
+        "en": "Sigilyph",
+        "fr": "Cryptéro",
+        "rarity": "R"
+      },
+      {
+        "en": "Yamask",
+        "fr": "Tutafeh",
+        "rarity": "C"
+      },
+      {
+        "en": "Cofagrigus",
+        "fr": "Tutankafer",
+        "rarity": "R"
+      },
+      {
+        "en": "Tirtouga",
+        "fr": "Carapagos",
+        "rarity": "U"
+      },
+      {
+        "en": "Carracosta",
+        "fr": "Mégapagos",
+        "rarity": "R"
+      },
+      {
+        "en": "Archen",
+        "fr": "Arkéapti",
+        "rarity": "U"
+      },
+      {
+        "en": "Archeops",
+        "fr": "Aéroptéryx",
+        "rarity": "E"
+      },
+      {
+        "en": "Trubbish",
+        "fr": "Miamiasme",
+        "rarity": "U"
+      },
+      {
+        "en": "Garbodor",
+        "fr": "Miasmax",
+        "rarity": "R"
+      },
+      {
+        "en": "Zorua",
+        "fr": "Zorua",
+        "rarity": "U"
+      },
+      {
+        "en": "Zoroark",
+        "fr": "Zoroark",
+        "rarity": "E"
+      },
+      {
+        "en": "Minccino",
+        "fr": "Chinchidou",
+        "rarity": "C"
+      },
+      {
+        "en": "Cinccino",
+        "fr": "Pashmilla",
+        "rarity": "R"
+      },
+      {
+        "en": "Gothita",
+        "fr": "Scrutella",
+        "rarity": "C"
+      },
+      {
+        "en": "Gothorita",
+        "fr": "Mesmérella",
+        "rarity": "U"
+      },
+      {
+        "en": "Gothitelle",
+        "fr": "Sidérella",
+        "rarity": "R"
+      },
+      {
+        "en": "Solosis",
+        "fr": "Nucléos",
+        "rarity": "C"
+      },
+      {
+        "en": "Duosion",
+        "fr": "Méios",
+        "rarity": "U"
+      },
+      {
+        "en": "Reuniclus",
+        "fr": "Symbios",
+        "rarity": "R"
+      },
+      {
+        "en": "Ducklett",
+        "fr": "Couaneton",
+        "rarity": "C"
+      },
+      {
+        "en": "Swanna",
+        "fr": "Lakmécygne",
+        "rarity": "R"
+      },
+      {
+        "en": "Vanillite",
+        "fr": "Sorbébé",
+        "rarity": "C"
+      },
+      {
+        "en": "Vanillish",
+        "fr": "Sorboul",
+        "rarity": "U"
+      },
+      {
+        "en": "Vanilluxe",
+        "fr": "Sorbouboul",
+        "rarity": "E"
+      },
+      {
+        "en": "Deerling",
+        "fr": "Vivaldaim",
+        "rarity": "U"
+      },
+      {
+        "en": "Sawsbuck",
+        "fr": "Haydaim",
+        "rarity": "R"
+      },
+      {
+        "en": "Emolga",
+        "fr": "Emolga",
+        "rarity": "R"
+      },
+      {
+        "en": "Karrablast",
+        "fr": "Carabing",
+        "rarity": "C"
+      },
+      {
+        "en": "Escavalier",
+        "fr": "Lançargot",
+        "rarity": "R"
+      },
+      {
+        "en": "Foongus",
+        "fr": "Trompignon",
+        "rarity": "C"
+      },
+      {
+        "en": "Amoonguss",
+        "fr": "Gaulet",
+        "rarity": "R"
+      },
+      {
+        "en": "Frillish",
+        "fr": "Viskuse",
+        "rarity": "U"
+      },
+      {
+        "en": "Jellicent",
+        "fr": "Moyade",
+        "rarity": "R"
+      },
+      {
+        "en": "Alomomola",
+        "fr": "Mamanbo",
+        "rarity": "R"
+      },
+      {
+        "en": "Joltik",
+        "fr": "Statitik",
+        "rarity": "C"
+      },
+      {
+        "en": "Galvantula",
+        "fr": "Mygavolt",
+        "rarity": "R"
+      },
+      {
+        "en": "Ferroseed",
+        "fr": "Grindur",
+        "rarity": "C"
+      },
+      {
+        "en": "Ferrothorn",
+        "fr": "Noacier",
+        "rarity": "R"
+      },
+      {
+        "en": "Klink",
+        "fr": "Tic",
+        "rarity": "C"
+      },
+      {
+        "en": "Klang",
+        "fr": "Clic",
+        "rarity": "R"
+      },
+      {
+        "en": "Klinklang",
+        "fr": "Cliticlic",
+        "rarity": "E"
+      },
+      {
+        "en": "Tynamo",
+        "fr": "Anchwatt",
+        "rarity": "C"
+      },
+      {
+        "en": "Eelektrik",
+        "fr": "Lampéroie",
+        "rarity": "U"
+      },
+      {
+        "en": "Eelektross",
+        "fr": "Ohmassacre",
+        "rarity": "E"
+      },
+      {
+        "en": "Elgyem",
+        "fr": "Lewsor",
+        "rarity": "U"
+      },
+      {
+        "en": "Beheeyem",
+        "fr": "Neitram",
+        "rarity": "R"
+      },
+      {
+        "en": "Litwick",
+        "fr": "Funécire",
+        "rarity": "C"
+      },
+      {
+        "en": "Lampent",
+        "fr": "Mélancolux",
+        "rarity": "U"
+      },
+      {
+        "en": "Chandelure",
+        "fr": "Lugulabre",
+        "rarity": "E"
+      },
+      {
+        "en": "Axew",
+        "fr": "Coupenotte",
+        "rarity": "U"
+      },
+      {
+        "en": "Fraxure",
+        "fr": "Incisache",
+        "rarity": "U"
+      },
+      {
+        "en": "Haxorus",
+        "fr": "Tranchodon",
+        "rarity": "E"
+      },
+      {
+        "en": "Cubchoo",
+        "fr": "Polarhume",
+        "rarity": "C"
+      },
+      {
+        "en": "Beartic",
+        "fr": "Polagriffe",
+        "rarity": "E"
+      },
+      {
+        "en": "Cryogonal",
+        "fr": "Hexagel",
+        "rarity": "E"
+      },
+      {
+        "en": "Shelmet",
+        "fr": "Escargaume",
+        "rarity": "C"
+      },
+      {
+        "en": "Accelgor",
+        "fr": "Limaspeed",
+        "rarity": "R"
+      },
+      {
+        "en": "Stunfisk",
+        "fr": "Limonde",
+        "rarity": "R"
+      },
+      {
+        "en": "Mienfoo",
+        "fr": "Kungfouine",
+        "rarity": "U"
+      },
+      {
+        "en": "Mienshao",
+        "fr": "Shaofouine",
+        "rarity": "E"
+      },
+      {
+        "en": "Druddigon",
+        "fr": "Drakkarmin",
+        "rarity": "R"
+      },
+      {
+        "en": "Golett",
+        "fr": "Gringolem",
+        "rarity": "C"
+      },
+      {
+        "en": "Golurk",
+        "fr": "Golemastoc",
+        "rarity": "R"
+      },
+      {
+        "en": "Pawniard",
+        "fr": "Scalpion",
+        "rarity": "U"
+      },
+      {
+        "en": "Bisharp",
+        "fr": "Scalproie",
+        "rarity": "R"
+      },
+      {
+        "en": "Bouffalant",
+        "fr": "Frison",
+        "rarity": "R"
+      },
+      {
+        "en": "Rufflet",
+        "fr": "Furaiglon",
+        "rarity": "U"
+      },
+      {
+        "en": "Braviary",
+        "fr": "Gueriaigle",
+        "rarity": "E"
+      },
+      {
+        "en": "Vullaby",
+        "fr": "Vostourno",
+        "rarity": "U"
+      },
+      {
+        "en": "Mandibuzz",
+        "fr": "Vaututrice",
+        "rarity": "E"
+      },
+      {
+        "en": "Heatmor",
+        "fr": "Aflamanoir",
+        "rarity": "R"
+      },
+      {
+        "en": "Durant",
+        "fr": "Fermite",
+        "rarity": "R"
+      },
+      {
+        "en": "Deino",
+        "fr": "Solochi",
+        "rarity": "C"
+      },
+      {
+        "en": "Zweilous",
+        "fr": "Diamat",
+        "rarity": "R"
+      },
+      {
+        "en": "Hydreigon",
+        "fr": "Trioxhydre",
+        "rarity": "E"
+      },
+      {
+        "en": "Larvesta",
+        "fr": "Pyronille",
+        "rarity": "U"
+      },
+      {
+        "en": "Volcarona",
+        "fr": "Pyrax",
+        "rarity": "E"
+      },
+      {
+        "en": "Cobalion",
+        "fr": "Cobaltium",
+        "rarity": "L"
+      },
+      {
+        "en": "Terrakion",
+        "fr": "Terrakium",
+        "rarity": "L"
+      },
+      {
+        "en": "Virizion",
+        "fr": "Viridium",
+        "rarity": "L"
+      },
+      {
+        "en": "Tornadus",
+        "fr": "Boréas",
+        "rarity": "L"
+      },
+      {
+        "en": "Thundurus",
+        "fr": "Fulguris",
+        "rarity": "L"
+      },
+      {
+        "en": "Reshiram",
+        "fr": "Reshiram",
+        "rarity": "L"
+      },
+      {
+        "en": "Zekrom",
+        "fr": "Zekrom",
+        "rarity": "L"
+      },
+      {
+        "en": "Landorus",
+        "fr": "Démétéros",
+        "rarity": "L"
+      },
+      {
+        "en": "Kyurem",
+        "fr": "Kyurem",
+        "rarity": "L"
+      },
+      {
+        "en": "Keldeo",
+        "fr": "Keldeo",
+        "rarity": "M"
+      },
+      {
+        "en": "Meloetta",
+        "fr": "Meloetta",
+        "rarity": "M"
+      },
+      {
+        "en": "Genesect",
+        "fr": "Genesect",
+        "rarity": "M"
+      },
+      {
+        "en": "Chespin",
+        "fr": "Marisson",
+        "rarity": "C"
+      },
+      {
+        "en": "Quilladin",
+        "fr": "Boguérisse",
+        "rarity": "U"
+      },
+      {
+        "en": "Chesnaught",
+        "fr": "Blindépique",
+        "rarity": "E"
+      },
+      {
+        "en": "Fennekin",
+        "fr": "Feunnec",
+        "rarity": "C"
+      },
+      {
+        "en": "Braixen",
+        "fr": "Roussil",
+        "rarity": "U"
+      },
+      {
+        "en": "Delphox",
+        "fr": "Goupelin",
+        "rarity": "E"
+      },
+      {
+        "en": "Froakie",
+        "fr": "Grenousse",
+        "rarity": "C"
+      },
+      {
+        "en": "Frogadier",
+        "fr": "Croâporal",
+        "rarity": "U"
+      },
+      {
+        "en": "Greninja",
+        "fr": "Amphinobi",
+        "rarity": "E"
+      },
+      {
+        "en": "Bunnelby",
+        "fr": "Sapereau",
+        "rarity": "C"
+      },
+      {
+        "en": "Diggersby",
+        "fr": "Excavarenne",
+        "rarity": "R"
+      },
+      {
+        "en": "Fletchling",
+        "fr": "Passerouge",
+        "rarity": "C"
+      },
+      {
+        "en": "Fletchinder",
+        "fr": "Braisillon",
+        "rarity": "U"
+      },
+      {
+        "en": "Talonflame",
+        "fr": "Flambusard",
+        "rarity": "R"
+      },
+      {
+        "en": "Scatterbug",
+        "fr": "Lépidonille",
+        "rarity": "C"
+      },
+      {
+        "en": "Spewpa",
+        "fr": "Pérégrain",
+        "rarity": "C"
+      },
+      {
+        "en": "Vivillon",
+        "fr": "Prismillon",
+        "rarity": "U"
+      },
+      {
+        "en": "Litleo",
+        "fr": "Hélionceau",
+        "rarity": "U"
+      },
+      {
+        "en": "Pyroar",
+        "fr": "Némélios",
+        "rarity": "E"
+      },
+      {
+        "en": "Flabébé",
+        "fr": "Flabébé",
+        "rarity": "C"
+      },
+      {
+        "en": "Floette",
+        "fr": "Floette",
+        "rarity": "U"
+      },
+      {
+        "en": "Florges",
+        "fr": "Florges",
+        "rarity": "E"
+      },
+      {
+        "en": "Skiddo",
+        "fr": "Cabriolaine",
+        "rarity": "U"
+      },
+      {
+        "en": "Gogoat",
+        "fr": "Chevroum",
+        "rarity": "E"
+      },
+      {
+        "en": "Pancham",
+        "fr": "Pandespiègle",
+        "rarity": "U"
+      },
+      {
+        "en": "Pangoro",
+        "fr": "Pandarbare",
+        "rarity": "R"
+      },
+      {
+        "en": "Furfrou",
+        "fr": "Couafarel",
+        "rarity": "R"
+      },
+      {
+        "en": "Espurr",
+        "fr": "Psystigri",
+        "rarity": "U"
+      },
+      {
+        "en": "Meowstic",
+        "fr": "Mistigrix",
+        "rarity": "R"
+      },
+      {
+        "en": "Honedge",
+        "fr": "Monorpale",
+        "rarity": "U"
+      },
+      {
+        "en": "Doublade",
+        "fr": "Dimoclès",
+        "rarity": "R"
+      },
+      {
+        "en": "Aegislash",
+        "fr": "Exagide",
+        "rarity": "E"
+      },
+      {
+        "en": "Spritzee",
+        "fr": "Fluvetin",
+        "rarity": "U"
+      },
+      {
+        "en": "Aromatisse",
+        "fr": "Cocotine",
+        "rarity": "R"
+      },
+      {
+        "en": "Swirlix",
+        "fr": "Sucroquin",
+        "rarity": "U"
+      },
+      {
+        "en": "Slurpuff",
+        "fr": "Cupcanaille",
+        "rarity": "R"
+      },
+      {
+        "en": "Inkay",
+        "fr": "Sepiatop",
+        "rarity": "C"
+      },
+      {
+        "en": "Malamar",
+        "fr": "Sepiatroce",
+        "rarity": "R"
+      },
+      {
+        "en": "Binacle",
+        "fr": "Opermine",
+        "rarity": "C"
+      },
+      {
+        "en": "Barbaracle",
+        "fr": "Golgopathe",
+        "rarity": "E"
+      },
+      {
+        "en": "Skrelp",
+        "fr": "Venalgue",
+        "rarity": "U"
+      },
+      {
+        "en": "Dragalge",
+        "fr": "Kravarech",
+        "rarity": "R"
+      },
+      {
+        "en": "Clauncher",
+        "fr": "Flingouste",
+        "rarity": "U"
+      },
+      {
+        "en": "Clawitzer",
+        "fr": "Gamblast",
+        "rarity": "E"
+      },
+      {
+        "en": "Helioptile",
+        "fr": "Galvaran",
+        "rarity": "C"
+      },
+      {
+        "en": "Heliolisk",
+        "fr": "Iguolta",
+        "rarity": "R"
+      },
+      {
+        "en": "Tyrunt",
+        "fr": "Ptyranidur",
+        "rarity": "U"
+      },
+      {
+        "en": "Tyrantrum",
+        "fr": "Rexillius",
+        "rarity": "E"
+      },
+      {
+        "en": "Amaura",
+        "fr": "Amagara",
+        "rarity": "U"
+      },
+      {
+        "en": "Aurorus",
+        "fr": "Dragmara",
+        "rarity": "E"
+      },
+      {
+        "en": "Sylveon",
+        "fr": "Nymphali",
+        "rarity": "E"
+      },
+      {
+        "en": "Hawlucha",
+        "fr": "Brutalibré",
+        "rarity": "E"
+      },
+      {
+        "en": "Dedenne",
+        "fr": "Dedenne",
+        "rarity": "R"
+      },
+      {
+        "en": "Carbink",
+        "fr": "Strassie",
+        "rarity": "E"
+      },
+      {
+        "en": "Goomy",
+        "fr": "Mucuscule",
+        "rarity": "C"
+      },
+      {
+        "en": "Sliggoo",
+        "fr": "Colimucus",
+        "rarity": "R"
+      },
+      {
+        "en": "Goodra",
+        "fr": "Muplodocus",
+        "rarity": "E"
+      },
+      {
+        "en": "Klefki",
+        "fr": "Trousselin",
+        "rarity": "R"
+      },
+      {
+        "en": "Phantump",
+        "fr": "Brocélôme",
+        "rarity": "C"
+      },
+      {
+        "en": "Trevenant",
+        "fr": "Desséliande",
+        "rarity": "R"
+      },
+      {
+        "en": "Pumpkaboo",
+        "fr": "Pitrouille",
+        "rarity": "U"
+      },
+      {
+        "en": "Gourgeist",
+        "fr": "Banshitrouye",
+        "rarity": "R"
+      },
+      {
+        "en": "Bergmite",
+        "fr": "Grelaçon",
+        "rarity": "C"
+      },
+      {
+        "en": "Avalugg",
+        "fr": "Séracrawl",
+        "rarity": "E"
+      },
+      {
+        "en": "Noibat",
+        "fr": "Sonistrelle",
+        "rarity": "C"
+      },
+      {
+        "en": "Noivern",
+        "fr": "Bruyverne",
+        "rarity": "E"
+      },
+      {
+        "en": "Xerneas",
+        "fr": "Xerneas",
+        "rarity": "L"
+      },
+      {
+        "en": "Yveltal",
+        "fr": "Yveltal",
+        "rarity": "L"
+      },
+      {
+        "en": "Zygarde",
+        "fr": "Zygarde",
+        "rarity": "L"
+      },
+      {
+        "en": "Diancie",
+        "fr": "Diancie",
+        "rarity": "M"
+      },
+      {
+        "en": "Hoopa",
+        "fr": "Hoopa",
+        "rarity": "M"
+      },
+      {
+        "en": "Volcanion",
+        "fr": "Volcanion",
+        "rarity": "M"
+      },
+      {
+        "en": "Rowlet",
+        "fr": "Brindibou",
+        "rarity": "U"
+      },
+      {
+        "en": "Dartrix",
+        "fr": "Efflèche",
+        "rarity": "R"
+      },
+      {
+        "en": "Decidueye",
+        "fr": "Archéduc",
+        "rarity": "E"
+      },
+      {
+        "en": "Litten",
+        "fr": "Flamiaou",
+        "rarity": "U"
+      },
+      {
+        "en": "Torracat",
+        "fr": "Matoufeu",
+        "rarity": "R"
+      },
+      {
+        "en": "Incineroar",
+        "fr": "Félinferno",
+        "rarity": "E"
+      },
+      {
+        "en": "Popplio",
+        "fr": "Otaquin",
+        "rarity": "U"
+      },
+      {
+        "en": "Brionne",
+        "fr": "Otarlette",
+        "rarity": "R"
+      },
+      {
+        "en": "Primarina",
+        "fr": "Oratoria",
+        "rarity": "E"
+      },
+      {
+        "en": "Pikipek",
+        "fr": "Picassaut",
+        "rarity": "C"
+      },
+      {
+        "en": "Trumbeak",
+        "fr": "Piclairon",
+        "rarity": "U"
+      },
+      {
+        "en": "Toucannon",
+        "fr": "Bazoucan",
+        "rarity": "R"
+      },
+      {
+        "en": "Yungoos",
+        "fr": "Manglouton",
+        "rarity": "C"
+      },
+      {
+        "en": "Gumshoos",
+        "fr": "Argouste",
+        "rarity": "U"
+      },
+      {
+        "en": "Grubbin",
+        "fr": "Larvibule",
+        "rarity": "C"
+      },
+      {
+        "en": "Charjabug",
+        "fr": "Chrysapile",
+        "rarity": "U"
+      },
+      {
+        "en": "Vikavolt",
+        "fr": "Lucanon",
+        "rarity": "E"
+      },
+      {
+        "en": "Crabrawler",
+        "fr": "Crabagarre",
+        "rarity": "U"
+      },
+      {
+        "en": "Crabominable",
+        "fr": "Crabominable",
+        "rarity": "R"
+      },
+      {
+        "en": "Oricorio",
+        "fr": "Plumeline",
+        "rarity": "R"
+      },
+      {
+        "en": "Cutiefly",
+        "fr": "Bombydou",
+        "rarity": "C"
+      },
+      {
+        "en": "Ribombee",
+        "fr": "Rubombelle",
+        "rarity": "R"
+      },
+      {
+        "en": "Rockruff",
+        "fr": "Rocabot",
+        "rarity": "C"
+      },
+      {
+        "en": "Lycanroc",
+        "fr": "Lougaroc",
+        "rarity": "R"
+      },
+      {
+        "en": "Wishiwashi",
+        "fr": "Froussardine",
+        "rarity": "C"
+      },
+      {
+        "en": "Mareanie",
+        "fr": "Vorastérie",
+        "rarity": "C"
+      },
+      {
+        "en": "Toxapex",
+        "fr": "Prédastérie",
+        "rarity": "R"
+      },
+      {
+        "en": "Mudbray",
+        "fr": "Tiboudet",
+        "rarity": "U"
+      },
+      {
+        "en": "Mudsdale",
+        "fr": "Bourrinos",
+        "rarity": "E"
+      },
+      {
+        "en": "Dewpider",
+        "fr": "Araqua",
+        "rarity": "C"
+      },
+      {
+        "en": "Araquanid",
+        "fr": "Tarenbulle",
+        "rarity": "R"
+      },
+      {
+        "en": "Fomantis",
+        "fr": "Mimantis",
+        "rarity": "C"
+      },
+      {
+        "en": "Lurantis",
+        "fr": "Floramantis",
+        "rarity": "R"
+      },
+      {
+        "en": "Morelull",
+        "fr": "Spododo",
+        "rarity": "C"
+      },
+      {
+        "en": "Shiinotic",
+        "fr": "Lampignon",
+        "rarity": "U"
+      },
+      {
+        "en": "Salandit",
+        "fr": "Tritox",
+        "rarity": "U"
+      },
+      {
+        "en": "Salazzle",
+        "fr": "Malamandre",
+        "rarity": "R"
+      },
+      {
+        "en": "Stufful",
+        "fr": "Nounourson",
+        "rarity": "U"
+      },
+      {
+        "en": "Bewear",
+        "fr": "Chelours",
+        "rarity": "E"
+      },
+      {
+        "en": "Bounsweet",
+        "fr": "Croquine",
+        "rarity": "C"
+      },
+      {
+        "en": "Steenee",
+        "fr": "Candine",
+        "rarity": "C"
+      },
+      {
+        "en": "Tsareena",
+        "fr": "Sucreine",
+        "rarity": "E"
+      },
+      {
+        "en": "Comfey",
+        "fr": "Guérilande",
+        "rarity": "R"
+      },
+      {
+        "en": "Oranguru",
+        "fr": "Gouroutan",
+        "rarity": "R"
+      },
+      {
+        "en": "Passimian",
+        "fr": "Quartermac",
+        "rarity": "R"
+      },
+      {
+        "en": "Wimpod",
+        "fr": "Sovkipou",
+        "rarity": "C"
+      },
+      {
+        "en": "Golisopod",
+        "fr": "Sarmuraï",
+        "rarity": "E"
+      },
+      {
+        "en": "Sandygast",
+        "fr": "Bacabouh",
+        "rarity": "U"
+      },
+      {
+        "en": "Palossand",
+        "fr": "Trépassable",
+        "rarity": "R"
+      },
+      {
+        "en": "Pyukumuku",
+        "fr": "Concombaffe",
+        "rarity": "U"
+      },
+      {
+        "en": "Type: Null",
+        "fr": "Type:0",
+        "rarity": "L"
+      },
+      {
+        "en": "Silvally",
+        "fr": "Silvallié",
+        "rarity": "L"
+      },
+      {
+        "en": "Minior",
+        "fr": "Météno",
+        "rarity": "R"
+      },
+      {
+        "en": "Komala",
+        "fr": "Dodoala",
+        "rarity": "R"
+      },
+      {
+        "en": "Turtonator",
+        "fr": "Boumata",
+        "rarity": "R"
+      },
+      {
+        "en": "Togedemaru",
+        "fr": "Togedemaru",
+        "rarity": "R"
+      },
+      {
+        "en": "Mimikyu",
+        "fr": "Mimiqui",
+        "rarity": "R"
+      },
+      {
+        "en": "Bruxish",
+        "fr": "Denticrisse",
+        "rarity": "R"
+      },
+      {
+        "en": "Drampa",
+        "fr": "Draïeul",
+        "rarity": "R"
+      },
+      {
+        "en": "Dhelmise",
+        "fr": "Sinistrail",
+        "rarity": "E"
+      },
+      {
+        "en": "Jangmo-o",
+        "fr": "Bébécaille",
+        "rarity": "C"
+      },
+      {
+        "en": "Hakamo-o",
+        "fr": "Écaïd",
+        "rarity": "R"
+      },
+      {
+        "en": "Kommo-o",
+        "fr": "Ékaïser",
+        "rarity": "E"
+      },
+      {
+        "en": "Tapu Koko",
+        "fr": "Tokorico",
+        "rarity": "L"
+      },
+      {
+        "en": "Tapu Lele",
+        "fr": "Tokopiyon",
+        "rarity": "L"
+      },
+      {
+        "en": "Tapu Bulu",
+        "fr": "Tokotoro",
+        "rarity": "L"
+      },
+      {
+        "en": "Tapu Fini",
+        "fr": "Tokopisco",
+        "rarity": "L"
+      },
+      {
+        "en": "Cosmog",
+        "fr": "Cosmog",
+        "rarity": "L"
+      },
+      {
+        "en": "Cosmoem",
+        "fr": "Cosmovum",
+        "rarity": "L"
+      },
+      {
+        "en": "Solgaleo",
+        "fr": "Solgaleo",
+        "rarity": "L"
+      },
+      {
+        "en": "Lunala",
+        "fr": "Lunala",
+        "rarity": "L"
+      },
+      {
+        "en": "Nihilego",
+        "fr": "Zéroïd",
+        "rarity": "E"
+      },
+      {
+        "en": "Buzzwole",
+        "fr": "Mouscoto",
+        "rarity": "E"
+      },
+      {
+        "en": "Pheromosa",
+        "fr": "Cancrelove",
+        "rarity": "E"
+      },
+      {
+        "en": "Xurkitree",
+        "fr": "Câblifère",
+        "rarity": "E"
+      },
+      {
+        "en": "Celesteela",
+        "fr": "Bamboiselle",
+        "rarity": "E"
+      },
+      {
+        "en": "Kartana",
+        "fr": "Katagami",
+        "rarity": "E"
+      },
+      {
+        "en": "Guzzlord",
+        "fr": "Engloutyran",
+        "rarity": "E"
+      },
+      {
+        "en": "Necrozma",
+        "fr": "Necrozma",
+        "rarity": "L"
+      },
+      {
+        "en": "Magearna",
+        "fr": "Magearna",
+        "rarity": "M"
+      },
+      {
+        "en": "Marshadow",
+        "fr": "Marshadow",
+        "rarity": "M"
+      },
+      {
+        "en": "Poipole",
+        "fr": "Vémini",
+        "rarity": "R"
+      },
+      {
+        "en": "Naganadel",
+        "fr": "Mandrillon",
+        "rarity": "E"
+      },
+      {
+        "en": "Stakataka",
+        "fr": "Ama-Ama",
+        "rarity": "E"
+      },
+      {
+        "en": "Blacephalon",
+        "fr": "Pierroteknik",
+        "rarity": "E"
+      },
+      {
+        "en": "Zeraora",
+        "fr": "Zeraora",
+        "rarity": "M"
+      },
+      {
+        "en": "Meltan",
+        "fr": "Meltan",
+        "rarity": "M"
+      },
+      {
+        "en": "Melmetal",
+        "fr": "Melmetal",
+        "rarity": "M"
+      },
+      {
+        "en": "Grookey",
+        "fr": "Ouistempo",
+        "rarity": "C"
+      },
+      {
+        "en": "Thwackey",
+        "fr": "Badabouin",
+        "rarity": "R"
+      },
+      {
+        "en": "Rillaboom",
+        "fr": "Gorythmic",
+        "rarity": "E"
+      },
+      {
+        "en": "Scorbunny",
+        "fr": "Flambino",
+        "rarity": "C"
+      },
+      {
+        "en": "Raboot",
+        "fr": "Lapyro",
+        "rarity": "R"
+      },
+      {
+        "en": "Cinderace",
+        "fr": "Pyrobut",
+        "rarity": "E"
+      },
+      {
+        "en": "Sobble",
+        "fr": "Larméléon",
+        "rarity": "C"
+      },
+      {
+        "en": "Drizzile",
+        "fr": "Arrozard",
+        "rarity": "R"
+      },
+      {
+        "en": "Inteleon",
+        "fr": "Lézargus",
+        "rarity": "E"
+      },
+      {
+        "en": "Skwovet",
+        "fr": "Rongourmand",
+        "rarity": "C"
+      },
+      {
+        "en": "Greedent",
+        "fr": "Rongrigou",
+        "rarity": "R"
+      },
+      {
+        "en": "Rookidee",
+        "fr": "Minisange",
+        "rarity": "C"
+      },
+      {
+        "en": "Corvisquire",
+        "fr": "Bleuseille",
+        "rarity": "U"
+      },
+      {
+        "en": "Corviknight",
+        "fr": "Corvaillus",
+        "rarity": "R"
+      },
+      {
+        "en": "Blipbug",
+        "fr": "Larvadar",
+        "rarity": "C"
+      },
+      {
+        "en": "Dottler",
+        "fr": "Coléodôme",
+        "rarity": "U"
+      },
+      {
+        "en": "Orbeetle",
+        "fr": "Astronelle",
+        "rarity": "E"
+      },
+      {
+        "en": "Nickit",
+        "fr": "Goupilou",
+        "rarity": "C"
+      },
+      {
+        "en": "Thievul",
+        "fr": "Roublenard",
+        "rarity": "R"
+      },
+      {
+        "en": "Gossifleur",
+        "fr": "Tournicoton",
+        "rarity": "C"
+      },
+      {
+        "en": "Eldegoss",
+        "fr": "Blancoton",
+        "rarity": "R"
+      },
+      {
+        "en": "Wooloo",
+        "fr": "Moumouton",
+        "rarity": "C"
+      },
+      {
+        "en": "Dubwool",
+        "fr": "Moumouflon",
+        "rarity": "R"
+      },
+      {
+        "en": "Chewtle",
+        "fr": "Khélocrok",
+        "rarity": "C"
+      },
+      {
+        "en": "Drednaw",
+        "fr": "Torgamord",
+        "rarity": "R"
+      },
+      {
+        "en": "Yamper",
+        "fr": "Voltoutou",
+        "rarity": "C"
+      },
+      {
+        "en": "Boltund",
+        "fr": "Fulgudog",
+        "rarity": "R"
+      },
+      {
+        "en": "Rolycoly",
+        "fr": "Charbi",
+        "rarity": "C"
+      },
+      {
+        "en": "Carkol",
+        "fr": "Wagomine",
+        "rarity": "U"
+      },
+      {
+        "en": "Coalossal",
+        "fr": "Monthracite",
+        "rarity": "E"
+      },
+      {
+        "en": "Applin",
+        "fr": "Verpom",
+        "rarity": "C"
+      },
+      {
+        "en": "Flapple",
+        "fr": "Pomdrapi",
+        "rarity": "R"
+      },
+      {
+        "en": "Appletun",
+        "fr": "Dratatin",
+        "rarity": "R"
+      },
+      {
+        "en": "Silicobra",
+        "fr": "Dunaja",
+        "rarity": "C"
+      },
+      {
+        "en": "Sandaconda",
+        "fr": "Dunaconda",
+        "rarity": "E"
+      },
+      {
+        "en": "Cramorant",
+        "fr": "Nigosier",
+        "rarity": "R"
+      },
+      {
+        "en": "Arrokuda",
+        "fr": "Embrochet",
+        "rarity": "C"
+      },
+      {
+        "en": "Barraskewda",
+        "fr": "Hastacuda",
+        "rarity": "R"
+      },
+      {
+        "en": "Toxel",
+        "fr": "Toxizap",
+        "rarity": "C"
+      },
+      {
+        "en": "Toxtricity",
+        "fr": "Salarsen",
+        "rarity": "E"
+      },
+      {
+        "en": "Sizzlipede",
+        "fr": "Grillepattes",
+        "rarity": "C"
+      },
+      {
+        "en": "Centiskorch",
+        "fr": "Scolocendre",
+        "rarity": "E"
+      },
+      {
+        "en": "Clobbopus",
+        "fr": "Poulpaf",
+        "rarity": "C"
+      },
+      {
+        "en": "Grapploct",
+        "fr": "Krakos",
+        "rarity": "R"
+      },
+      {
+        "en": "Sinistea",
+        "fr": "Théffroi",
+        "rarity": "C"
+      },
+      {
+        "en": "Polteageist",
+        "fr": "Polthégeist",
+        "rarity": "E"
+      },
+      {
+        "en": "Hatenna",
+        "fr": "Bibichut",
+        "rarity": "C"
+      },
+      {
+        "en": "Hattrem",
+        "fr": "Chapotus",
+        "rarity": "U"
+      },
+      {
+        "en": "Hatterene",
+        "fr": "Sorcilence",
+        "rarity": "E"
+      },
+      {
+        "en": "Impidimp",
+        "fr": "Grimalin",
+        "rarity": "C"
+      },
+      {
+        "en": "Morgrem",
+        "fr": "Fourbelin",
+        "rarity": "U"
+      },
+      {
+        "en": "Grimmsnarl",
+        "fr": "Angoliath",
+        "rarity": "E"
+      },
+      {
+        "en": "Obstagoon",
+        "fr": "Ixon",
+        "rarity": "E"
+      },
+      {
+        "en": "Perrserker",
+        "fr": "Berserkatt",
+        "rarity": "R"
+      },
+      {
+        "en": "Cursola",
+        "fr": "Corayôme",
+        "rarity": "E"
+      },
+      {
+        "en": "Sirfetch’d",
+        "fr": "Palarticho",
+        "rarity": "E"
+      },
+      {
+        "en": "Mr. Rime",
+        "fr": "M. Glaquette",
+        "rarity": "E"
+      },
+      {
+        "en": "Runerigus",
+        "fr": "Tutétékri",
+        "rarity": "R"
+      },
+      {
+        "en": "Milcery",
+        "fr": "Crèmy",
+        "rarity": "C"
+      },
+      {
+        "en": "Alcremie",
+        "fr": "Charmilly",
+        "rarity": "R"
+      },
+      {
+        "en": "Falinks",
+        "fr": "Hexadron",
+        "rarity": "R"
+      },
+      {
+        "en": "Pincurchin",
+        "fr": "Wattapik",
+        "rarity": "R"
+      },
+      {
+        "en": "Snom",
+        "fr": "Frissonille",
+        "rarity": "C"
+      },
+      {
+        "en": "Frosmoth",
+        "fr": "Beldeneige",
+        "rarity": "R"
+      },
+      {
+        "en": "Stonjourner",
+        "fr": "Dolman",
+        "rarity": "R"
+      },
+      {
+        "en": "Eiscue",
+        "fr": "Bekaglaçon",
+        "rarity": "R"
+      },
+      {
+        "en": "Indeedee",
+        "fr": "Wimessir",
+        "rarity": "R"
+      },
+      {
+        "en": "Morpeko",
+        "fr": "Morpeko",
+        "rarity": "R"
+      },
+      {
+        "en": "Cufant",
+        "fr": "Charibari",
+        "rarity": "U"
+      },
+      {
+        "en": "Copperajah",
+        "fr": "Pachyradjah",
+        "rarity": "E"
+      },
+      {
+        "en": "Dracozolt",
+        "fr": "Galvagon",
+        "rarity": "E"
+      },
+      {
+        "en": "Arctozolt",
+        "fr": "Galvagla",
+        "rarity": "E"
+      },
+      {
+        "en": "Dracovish",
+        "fr": "Hydragon",
+        "rarity": "E"
+      },
+      {
+        "en": "Arctovish",
+        "fr": "Hydragla",
+        "rarity": "E"
+      },
+      {
+        "en": "Duraludon",
+        "fr": "Duralugon",
+        "rarity": "E"
+      },
+      {
+        "en": "Dreepy",
+        "fr": "Fantyrm",
+        "rarity": "C"
+      },
+      {
+        "en": "Drakloak",
+        "fr": "Dispareptil",
+        "rarity": "U"
+      },
+      {
+        "en": "Dragapult",
+        "fr": "Lanssorien",
+        "rarity": "E"
+      },
+      {
+        "en": "Zacian",
+        "fr": "Zacian",
+        "rarity": "L"
+      },
+      {
+        "en": "Zamazenta",
+        "fr": "Zamazenta",
+        "rarity": "L"
+      },
+      {
+        "en": "Eternatus",
+        "fr": "Éthernatos",
+        "rarity": "L"
+      },
+      {
+        "en": "Kubfu",
+        "fr": "Wushours",
+        "rarity": "L"
+      },
+      {
+        "en": "Urshifu",
+        "fr": "Shifours",
+        "rarity": "L"
+      },
+      {
+        "en": "Zarude",
+        "fr": "Zarude",
+        "rarity": "M"
+      },
+      {
+        "en": "Regieleki",
+        "fr": "Regieleki",
+        "rarity": "L"
+      },
+      {
+        "en": "Regidrago",
+        "fr": "Regidrago",
+        "rarity": "L"
+      },
+      {
+        "en": "Glastrier",
+        "fr": "Blizzeval",
+        "rarity": "L"
+      },
+      {
+        "en": "Spectrier",
+        "fr": "Spectreval",
+        "rarity": "L"
+      },
+      {
+        "en": "Calyrex",
+        "fr": "Sylveroy",
+        "rarity": "L"
+      },
+      {
+        "en": "Wyrdeer",
+        "fr": "Cerbyllin",
+        "rarity": "E"
+      },
+      {
+        "en": "Kleavor",
+        "fr": "Hachécateur",
+        "rarity": "E"
+      },
+      {
+        "en": "Ursaluna",
+        "fr": "Ursaking",
+        "rarity": "E"
+      },
+      {
+        "en": "Basculegion",
+        "fr": "Paragruel",
+        "rarity": "E"
+      },
+      {
+        "en": "Sneasler",
+        "fr": "Farfurex",
+        "rarity": "E"
+      },
+      {
+        "en": "Overqwil",
+        "fr": "Qwilpik",
+        "rarity": "E"
+      },
+      {
+        "en": "Enamorus",
+        "fr": "Amovénus",
+        "rarity": "L"
+      },
+      {
+        "en": "Sprigatito",
+        "fr": "Poussacha",
+        "rarity": "C"
+      },
+      {
+        "en": "Floragato",
+        "fr": "Matourgeon",
+        "rarity": "U"
+      },
+      {
+        "en": "Meowscarada",
+        "fr": "Miascarade",
+        "rarity": "E"
+      },
+      {
+        "en": "Fuecoco",
+        "fr": "Chochodile",
+        "rarity": "C"
+      },
+      {
+        "en": "Crocalor",
+        "fr": "Crocogril",
+        "rarity": "U"
+      },
+      {
+        "en": "Skeledirge",
+        "fr": "Flâmigator",
+        "rarity": "E"
+      },
+      {
+        "en": "Quaxly",
+        "fr": "Coiffeton",
+        "rarity": "C"
+      },
+      {
+        "en": "Quaxwell",
+        "fr": "Canarbello",
+        "rarity": "U"
+      },
+      {
+        "en": "Quaquaval",
+        "fr": "Palmaval",
+        "rarity": "E"
+      },
+      {
+        "en": "Lechonk",
+        "fr": "Gourmelet",
+        "rarity": "C"
+      },
+      {
+        "en": "Oinkologne",
+        "fr": "Fragroin",
+        "rarity": "R"
+      },
+      {
+        "en": "Tarountula",
+        "fr": "Tissenboule",
+        "rarity": "C"
+      },
+      {
+        "en": "Spidops",
+        "fr": "Filentrappe",
+        "rarity": "U"
+      },
+      {
+        "en": "Nymble",
+        "fr": "Lilliterelle",
+        "rarity": "C"
+      },
+      {
+        "en": "Lokix",
+        "fr": "Gambex",
+        "rarity": "R"
+      },
+      {
+        "en": "Pawmi",
+        "fr": "Pohm",
+        "rarity": "C"
+      },
+      {
+        "en": "Pawmo",
+        "fr": "Pohmotte",
+        "rarity": "U"
+      },
+      {
+        "en": "Pawmot",
+        "fr": "Pohmarmotte",
+        "rarity": "R"
+      },
+      {
+        "en": "Tandemaus",
+        "fr": "Compagnol",
+        "rarity": "C"
+      },
+      {
+        "en": "Maushold",
+        "fr": "Famignol",
+        "rarity": "R"
+      },
+      {
+        "en": "Fidough",
+        "fr": "Pâtachiot",
+        "rarity": "C"
+      },
+      {
+        "en": "Dachsbun",
+        "fr": "Briochien",
+        "rarity": "R"
+      },
+      {
+        "en": "Smoliv",
+        "fr": "Olivini",
+        "rarity": "C"
+      },
+      {
+        "en": "Dolliv",
+        "fr": "Olivado",
+        "rarity": "U"
+      },
+      {
+        "en": "Arboliva",
+        "fr": "Arboliva",
+        "rarity": "E"
+      },
+      {
+        "en": "Squawkabilly",
+        "fr": "Tapatoès",
+        "rarity": "U"
+      },
+      {
+        "en": "Nacli",
+        "fr": "Selutin",
+        "rarity": "C"
+      },
+      {
+        "en": "Naclstack",
+        "fr": "Amassel",
+        "rarity": "U"
+      },
+      {
+        "en": "Garganacl",
+        "fr": "Gigansel",
+        "rarity": "E"
+      },
+      {
+        "en": "Charcadet",
+        "fr": "Charbambin",
+        "rarity": "C"
+      },
+      {
+        "en": "Armarouge",
+        "fr": "Carmadura",
+        "rarity": "E"
+      },
+      {
+        "en": "Ceruledge",
+        "fr": "Malvalame",
+        "rarity": "E"
+      },
+      {
+        "en": "Tadbulb",
+        "fr": "Têtampoule",
+        "rarity": "C"
+      },
+      {
+        "en": "Bellibolt",
+        "fr": "Ampibidou",
+        "rarity": "R"
+      },
+      {
+        "en": "Wattrel",
+        "fr": "Zapétrel",
+        "rarity": "C"
+      },
+      {
+        "en": "Kilowattrel",
+        "fr": "Fulgulairo",
+        "rarity": "R"
+      },
+      {
+        "en": "Maschiff",
+        "fr": "Grondogue",
+        "rarity": "U"
+      },
+      {
+        "en": "Mabosstiff",
+        "fr": "Dogrino",
+        "rarity": "E"
+      },
+      {
+        "en": "Shroodle",
+        "fr": "Gribouraigne",
+        "rarity": "C"
+      },
+      {
+        "en": "Grafaiai",
+        "fr": "Tag-Tag",
+        "rarity": "R"
+      },
+      {
+        "en": "Bramblin",
+        "fr": "Virovent",
+        "rarity": "C"
+      },
+      {
+        "en": "Brambleghast",
+        "fr": "Virevorreur",
+        "rarity": "R"
+      },
+      {
+        "en": "Toedscool",
+        "fr": "Terracool",
+        "rarity": "U"
+      },
+      {
+        "en": "Toedscruel",
+        "fr": "Terracruel",
+        "rarity": "E"
+      },
+      {
+        "en": "Klawf",
+        "fr": "Craparoi",
+        "rarity": "R"
+      },
+      {
+        "en": "Capsakid",
+        "fr": "Pimito",
+        "rarity": "C"
+      },
+      {
+        "en": "Scovillain",
+        "fr": "Scovilain",
+        "rarity": "R"
+      },
+      {
+        "en": "Rellor",
+        "fr": "Léboulérou",
+        "rarity": "C"
+      },
+      {
+        "en": "Rabsca",
+        "fr": "Bérasca",
+        "rarity": "R"
+      },
+      {
+        "en": "Flittle",
+        "fr": "Flotillon",
+        "rarity": "C"
+      },
+      {
+        "en": "Espathra",
+        "fr": "Cléopsytra",
+        "rarity": "R"
+      },
+      {
+        "en": "Tinkatink",
+        "fr": "Forgerette",
+        "rarity": "C"
+      },
+      {
+        "en": "Tinkatuff",
+        "fr": "Forgella",
+        "rarity": "U"
+      },
+      {
+        "en": "Tinkaton",
+        "fr": "Forgelina",
+        "rarity": "E"
+      },
+      {
+        "en": "Wiglett",
+        "fr": "Taupikeau",
+        "rarity": "C"
+      },
+      {
+        "en": "Wugtrio",
+        "fr": "Triopikeau",
+        "rarity": "R"
+      },
+      {
+        "en": "Bombirdier",
+        "fr": "Lestombaile",
+        "rarity": "R"
+      },
+      {
+        "en": "Finizen",
+        "fr": "Dofin",
+        "rarity": "C"
+      },
+      {
+        "en": "Palafin",
+        "fr": "Superdofin",
+        "rarity": "R"
+      },
+      {
+        "en": "Varoom",
+        "fr": "Vrombi",
+        "rarity": "C"
+      },
+      {
+        "en": "Revavroom",
+        "fr": "Vrombotor",
+        "rarity": "E"
+      },
+      {
+        "en": "Cyclizar",
+        "fr": "Motorizard",
+        "rarity": "E"
+      },
+      {
+        "en": "Orthworm",
+        "fr": "Ferdeter",
+        "rarity": "R"
+      },
+      {
+        "en": "Glimmet",
+        "fr": "Germéclat",
+        "rarity": "U"
+      },
+      {
+        "en": "Glimmora",
+        "fr": "Floréclat",
+        "rarity": "E"
+      },
+      {
+        "en": "Greavard",
+        "fr": "Toutombe",
+        "rarity": "C"
+      },
+      {
+        "en": "Houndstone",
+        "fr": "Tomberro",
+        "rarity": "R"
+      },
+      {
+        "en": "Flamigo",
+        "fr": "Flamenroule",
+        "rarity": "E"
+      },
+      {
+        "en": "Cetoddle",
+        "fr": "Piétacé",
+        "rarity": "U"
+      },
+      {
+        "en": "Cetitan",
+        "fr": "Balbalèze",
+        "rarity": "E"
+      },
+      {
+        "en": "Veluza",
+        "fr": "Délestin",
+        "rarity": "R"
+      },
+      {
+        "en": "Dondozo",
+        "fr": "Oyacata",
+        "rarity": "E"
+      },
+      {
+        "en": "Tatsugiri",
+        "fr": "Nigirigon",
+        "rarity": "R"
+      },
+      {
+        "en": "Annihilape",
+        "fr": "Courrousinge",
+        "rarity": "E"
+      },
+      {
+        "en": "Clodsire",
+        "fr": "Terraiste",
+        "rarity": "R"
+      },
+      {
+        "en": "Farigiraf",
+        "fr": "Farigiraf",
+        "rarity": "E"
+      },
+      {
+        "en": "Dudunsparce",
+        "fr": "Deusolourdo",
+        "rarity": "E"
+      },
+      {
+        "en": "Kingambit",
+        "fr": "Scalpereur",
+        "rarity": "E"
+      },
+      {
+        "en": "Great Tusk",
+        "fr": "Fort-Ivoire",
+        "rarity": "E"
+      },
+      {
+        "en": "Scream Tail",
+        "fr": "Hurle-Queue",
+        "rarity": "E"
+      },
+      {
+        "en": "Brute Bonnet",
+        "fr": "Fongus-Furie",
+        "rarity": "E"
+      },
+      {
+        "en": "Flutter Mane",
+        "fr": "Flotte-Mèche",
+        "rarity": "E"
+      },
+      {
+        "en": "Slither Wing",
+        "fr": "Rampe-Ailes",
+        "rarity": "E"
+      },
+      {
+        "en": "Sandy Shocks",
+        "fr": "Pelage-Sablé",
+        "rarity": "E"
+      },
+      {
+        "en": "Iron Treads",
+        "fr": "Roue-de-Fer",
+        "rarity": "E"
+      },
+      {
+        "en": "Iron Bundle",
+        "fr": "Hotte-de-Fer",
+        "rarity": "E"
+      },
+      {
+        "en": "Iron Hands",
+        "fr": "Paume-de-Fer",
+        "rarity": "E"
+      },
+      {
+        "en": "Iron Jugulis",
+        "fr": "Têtes-de-Fer",
+        "rarity": "E"
+      },
+      {
+        "en": "Iron Moth",
+        "fr": "Mite-de-Fer",
+        "rarity": "E"
+      },
+      {
+        "en": "Iron Thorns",
+        "fr": "Épine-de-Fer",
+        "rarity": "E"
+      },
+      {
+        "en": "Frigibax",
+        "fr": "Frigodo",
+        "rarity": "U"
+      },
+      {
+        "en": "Arctibax",
+        "fr": "Cryodo",
+        "rarity": "R"
+      },
+      {
+        "en": "Baxcalibur",
+        "fr": "Glaivodo",
+        "rarity": "E"
+      },
+      {
+        "en": "Gimmighoul",
+        "fr": "Mordudor",
+        "rarity": "C"
+      },
+      {
+        "en": "Gholdengo",
+        "fr": "Gromago",
+        "rarity": "E"
+      },
+      {
+        "en": "Wo-Chien",
+        "fr": "Chongjian",
+        "rarity": "L"
+      },
+      {
+        "en": "Chien-Pao",
+        "fr": "Baojian",
+        "rarity": "L"
+      },
+      {
+        "en": "Ting-Lu",
+        "fr": "Dinglu",
+        "rarity": "L"
+      },
+      {
+        "en": "Chi-Yu",
+        "fr": "Yuyu",
+        "rarity": "L"
+      },
+      {
+        "en": "Roaring Moon",
+        "fr": "Rugit-Lune",
+        "rarity": "E"
+      },
+      {
+        "en": "Iron Valiant",
+        "fr": "Garde-de-Fer",
+        "rarity": "E"
+      },
+      {
+        "en": "Koraidon",
+        "fr": "Koraidon",
+        "rarity": "L"
+      },
+      {
+        "en": "Miraidon",
+        "fr": "Miraidon",
+        "rarity": "L"
+      },
+      {
+        "en": "Walking Wake",
+        "fr": "Serpente-Eau",
+        "rarity": "E"
+      },
+      {
+        "en": "Iron Leaves",
+        "fr": "Vert-de-Fer",
+        "rarity": "E"
+      },
+      {
+        "en": "Dipplin",
+        "fr": "Pomdramour",
+        "rarity": "R"
+      },
+      {
+        "en": "Poltchageist",
+        "fr": "Poltchageist",
+        "rarity": "C"
+      },
+      {
+        "en": "Sinistcha",
+        "fr": "Théffroyable",
+        "rarity": "E"
+      },
+      {
+        "en": "Okidogi",
+        "fr": "Félicanis",
+        "rarity": "L"
+      },
+      {
+        "en": "Munkidori",
+        "fr": "Fortusimia",
+        "rarity": "L"
+      },
+      {
+        "en": "Fezandipiti",
+        "fr": "Favianos",
+        "rarity": "L"
+      },
+      {
+        "en": "Ogerpon",
+        "fr": "Ogerpon",
+        "rarity": "L"
+      },
+      {
+        "en": "Archaludon",
+        "fr": "Pondralugon",
+        "rarity": "E"
+      },
+      {
+        "en": "Hydrapple",
+        "fr": "Pomdorochi",
+        "rarity": "E"
+      },
+      {
+        "en": "Gouging Fire",
+        "fr": "Feu-Perçant",
+        "rarity": "E"
+      },
+      {
+        "en": "Raging Bolt",
+        "fr": "Ire-Foudre",
+        "rarity": "E"
+      },
+      {
+        "en": "Iron Boulder",
+        "fr": "Roc-de-Fer",
+        "rarity": "E"
+      },
+      {
+        "en": "Iron Crown",
+        "fr": "Chef-de-Fer",
+        "rarity": "E"
+      },
+      {
+        "en": "Terapagos",
+        "fr": "Terapagos",
+        "rarity": "L"
+      },
+      {
+        "en": "Pecharunt",
+        "fr": "Pêchaminus",
+        "rarity": "M"
+      }
+    ]
+  }
