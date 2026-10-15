@@ -60,25 +60,32 @@ export async function initierEchange(friendId) {
             allerASection('section-amis');
             return;
         }
-        targetCollectionCache = doc.data().collection || [];
+        
+        // SÉCURITÉ : On filtre les cartes "nulles" ou corrompues qui font planter le code
+        targetCollectionCache = (doc.data().collection || []).filter(c => c && typeof c === 'object');
+        let mySafeCollection = (state.currentUserData.collection || []).filter(c => c && typeof c === 'object');
         
         let usedDates = new Set();
+        
+        // On sécurise les dates pour l'ami
         targetCollectionCache.forEach(c => { 
-            while (!c.date || usedDates.has(c.date)) c.date = Date.now() + Math.random();
+            if (!c.date || usedDates.has(c.date)) c.date = Date.now() + Math.random();
             usedDates.add(c.date);
         });
         
         usedDates.clear();
-        if (state.currentUserData.collection) {
-            state.currentUserData.collection.forEach(c => { 
-                while (!c.date || usedDates.has(c.date)) c.date = Date.now() + Math.random();
-                usedDates.add(c.date);
-            });
-        }
+        
+        // On sécurise NOS dates
+        mySafeCollection.forEach(c => { 
+            if (!c.date || usedDates.has(c.date)) c.date = Date.now() + Math.random();
+            usedDates.add(c.date);
+        });
+        
+        state.currentUserData.collection = mySafeCollection;
 
     } catch (e) { 
-        console.error(e);
-        alert("Erreur de réseau ou de base de données."); 
+        console.error("Détails de l'erreur :", e);
+        alert("Erreur de récupération : " + e.message); 
         allerASection('section-amis');
         return; 
     }
