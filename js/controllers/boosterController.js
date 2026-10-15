@@ -2,10 +2,7 @@ import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
 import { allerASection } from './navController.js';
 import { tirerRarete, formatMegaName, sauvegarderCarte } from '../utils.js';
-import { db } from '../firebase-config.js';
-import { state, CONSTS } from '../state.js';
-import { allerASection } from './navController.js';
-import { tirerRarete, formatMegaName, sauvegarderCarte, getCardImageUrl } from '../utils.js'; // <- AJOUT DE getCardImageUrl
+
 export function updateBoosterLogic() {
     const boosterStatus = document.getElementById('booster-status');
     const boosterCountDisplay = document.getElementById('booster-count-display');
@@ -120,9 +117,8 @@ export function initBooster() {
 function creerCarte(pokemonData, numeroPokedex, index) {
     let nomEn = pokemonData.en; let nomFr = pokemonData.fr; let pokemonRarity = pokemonData.rarity;
     
-    // --- NOUVELLE LOGIQUE MEGA ET SHINY ---
     let isMega = false; let selectedMegaForm = null;
-    const chanceMega = Math.random() * 100; // Tire un nombre entre 0 et 100
+    const chanceMega = Math.random() * 100;
     
     if (CONSTS.megaIds[numeroPokedex] && chanceMega <= state.probabilities.mega) {
         isMega = true; pokemonRarity = "MG";
@@ -132,28 +128,29 @@ function creerCarte(pokemonData, numeroPokedex, index) {
 
     const chanceShiny = Math.random() * 100;
     const isShiny = chanceShiny <= state.probabilities.shiny;
-    // ---------------------------------------
 
     let nomAffiche = state.currentLang === 'en' ? nomEn : nomFr;
     if (isMega) nomAffiche = formatMegaName(nomAffiche, selectedMegaForm);
 
     let numeroFormate = String(numeroPokedex).padStart(3, '0');
     const bgColor = CONSTS.couleursRarete[pokemonRarity];
-    const carteTemp = {
-        data: pokemonData,
-        pokedexNumber: numeroPokedex,
-        mega: isMega,
-        megaForm: selectedMegaForm,
-        shiny: isShiny
-    };
-
-    let imageUrl = getCardImageUrl(carteTemp);
+    
+    let imageUrl = ""; let classFond = "card-front"; let styleFond = "";
+    let nomPourUrl = nomEn.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace('♀', '-f').replace('♂', '-m').replace(/['’.]/g, '').replace(/\s+/g, "-");
     
     if (isMega) {
-        classFond += isShiny ? " mega-shiny-bg" : " mega-bg";
+        let megaUrlName = `${nomPourUrl}-${selectedMegaForm}`;
+        if (isShiny) {
+            imageUrl = `https://img.pokemondb.net/sprites/home/shiny/${megaUrlName}.png`; classFond += " mega-shiny-bg"; 
+        } else {
+            imageUrl = `https://img.pokemondb.net/sprites/home/normal/${megaUrlName}.png`; classFond += " mega-bg"; 
+        }
     } else {
-        if (isShiny) classFond += " shiny-bg";
-        else styleFond = `style="background-color: ${bgColor}"`;
+        if (isShiny) {
+            imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${numeroPokedex}.png`; classFond += " shiny-bg";
+        } else {
+            imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${numeroPokedex}.png`; styleFond = `style="background-color: ${bgColor}"`;
+        }
     }
 
     const cardHTML = `
