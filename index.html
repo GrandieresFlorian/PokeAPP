@@ -89,12 +89,23 @@
             </section>
 
             <section id="section-settings" class="view-section hidden">
-                <h2>Paramètres (Outils de test)</h2>
-                <p>Utilisez ces boutons pour tester l'affichage du Pokédex.</p>
-                <div style="display: flex; gap: 15px; margin-top: 20px;">
-                    <button id="cheat-unlock-all" class="btn btn-secondary">Tout débloquer</button>
-                    <button id="cheat-refill-boosters" class="btn" style="background-color: #f39c12;">Recharger mes boosters</button> <!-- NOUVEAU -->
-                    <button id="cheat-clear-all" class="btn" style="background-color: #e74c3c;">Vider ma collection</button>
+                <h2>Paramètres</h2>
+                
+                <!-- Message affiché si l'utilisateur n'est pas "test" -->
+                <div id="debug-denied">
+                    <p style="color: #e74c3c; text-align: center; margin-top: 20px;">
+                        L'accès aux outils de développement est restreint.
+                    </p>
+                </div>
+
+                <!-- Outils de test (cachés par défaut) -->
+                <div id="debug-tools" class="hidden">
+                    <p>Utilisez ces boutons pour tester l'affichage du Pokédex.</p>
+                    <div style="display: flex; gap: 15px; margin-top: 20px;">
+                        <button id="cheat-unlock-all" class="btn btn-secondary">Tout débloquer</button>
+                        <button id="cheat-refill-boosters" class="btn" style="background-color: #f39c12;">Recharger mes boosters</button>
+                        <button id="cheat-clear-all" class="btn" style="background-color: #e74c3c;">Vider ma collection</button>
+                    </div>
                 </div>
             </section>
         </main>

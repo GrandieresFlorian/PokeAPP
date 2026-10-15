@@ -69,6 +69,8 @@ const megaIds = {
 // === VARIABLES GLOBALES ===
 let cartesRetournees = 0;
 let currentLang = 'en'; 
+let currentPulls = []; 
+let currentPullIndex = 0;
 let pokemonDataList = []; 
 let collectionMode = 'normal'; 
 let boosterTimerInterval = null;
@@ -246,8 +248,23 @@ function updateAuthUI() {
         authNavBtn.textContent = "Se connecter"; authNavBtn.style.backgroundColor = "#3498db"; 
         collectionContainer.innerHTML = ""; collectionCount.textContent = `0 / ${MAX_POKEMON}`;
     }
-}
 
+    // === GESTION DES AUTORISATIONS DE DEBUG ===
+    const debugTools = document.getElementById('debug-tools');
+    const debugDenied = document.getElementById('debug-denied');
+    
+    if (debugTools && debugDenied) {
+        if (currentUser === 'test') {
+            // Afficher les outils si c'est le compte admin
+            debugTools.classList.remove('hidden');
+            debugDenied.classList.add('hidden');
+        } else {
+            // Cacher pour tous les autres comptes (ou si non connecté)
+            debugTools.classList.add('hidden');
+            debugDenied.classList.remove('hidden');
+        }
+    }
+}
 // === SAUVEGARDE DES CARTES ===
 function sauvegarderCarte(pokemonData, numeroPokedex, isShiny, isMega, megaForm) {
     if (!currentUser) return; 
@@ -517,17 +534,30 @@ function creerCarte(pokemonData, numeroPokedex, index) {
     const powElement = nouvelleCarte.querySelector('.pokemon-pow');
 
     nouvelleCarte.addEventListener('click', () => {
-        if (index !== cartesRetournees) return; 
         if (!nouvelleCarte.classList.contains('flipped')) {
-            nouvelleCarte.classList.add('flipped'); cartesRetournees++; 
+            nouvelleCarte.classList.add('flipped'); 
+            cartesRetournees++; 
             sauvegarderCarte(pokemonData, numeroPokedex, isShiny, isMega, selectedMegaForm);
+            
+            // APPARITION DE LA CARTE SUIVANTE
+            if (currentPullIndex < 4) {
+                currentPullIndex++;
+                setTimeout(() => {
+                    const nextCard = currentPulls[currentPullIndex];
+                    creerCarte(nextCard.data, nextCard.pokedexNumber, currentPullIndex);
+                }, 400); // 400ms d'attente avant que la nouvelle carte apparaisse
+            }
+
+            // SI TOUTES LES CARTES SONT RETOURNÉES
             if (cartesRetournees === 5) {
-                resetButton.disabled = false;
-                autoOpenBtn.classList.add('hidden'); // Cache le bouton d'ouverture auto
+                setTimeout(() => {
+                    resetButton.classList.remove('hidden');
+                    resetButton.disabled = false;
+                    autoOpenBtn.classList.add('hidden'); // On cache le bouton Auto
+                }, 600);
             }
         }
     });
-
     cardsContainer.appendChild(nouvelleCarte);
     fetch(`https://pokeapi.co/api/v2/pokemon/${numeroPokedex}`)
         .then(response => response.json())
@@ -546,7 +576,7 @@ function ouvrirBooster() {
         return;
     }
 
-    if (isOpening) return; // Empêche de cliquer 10 fois pendant l'animation
+    if (isOpening) return; 
     isOpening = true;
 
     currentUserData.boostersLeft--;
@@ -563,10 +593,12 @@ function ouvrirBooster() {
     // 1. DÉMARRE L'ANIMATION DU BOOSTER
     boosterElement.classList.add('booster-animating');
 
-    // 2. ATTEND LA FIN DE L'ANIMATION (1.2 secondes)
+    // 2. ATTEND LA FIN DE L'ANIMATION
     setTimeout(() => {
         boosterElement.classList.remove('booster-animating');
         boosterElement.classList.add('hidden'); 
+        
+        cardsContainer.innerHTML = ''; // Nettoyer l'ancien tirage
         cardsContainer.classList.remove('hidden'); 
         cartesRetournees = 0; 
         
@@ -584,49 +616,60 @@ function ouvrirBooster() {
         
         cartesTirees.sort((a, b) => poidsRarete[a.data.rarity] - poidsRarete[b.data.rarity]);
         
-        // Ajoute un léger délai visuel d'apparition entre chaque carte
-        cartesTirees.forEach((carte, index) => {
-            setTimeout(() => {
-                creerCarte(carte.data, carte.pokedexNumber, index);
-            }, index * 100); // 100ms de décalage entre chaque carte
-        });
+        // On sauvegarde le tirage pour l'apparition 1 par 1
+        currentPulls = cartesTirees;
+        currentPullIndex = 0;
+        
+        // Affiche le bouton Auto et cache le bouton Reset
+        autoOpenBtn.classList.remove('hidden');
+        autoOpenBtn.disabled = false;
+        resetButton.classList.add('hidden');
 
-        setTimeout(() => { 
-            resetButton.classList.remove('hidden'); 
-            resetButton.disabled = true; 
-            autoOpenBtn.classList.remove('hidden'); // Affiche le bouton Auto
-            autoOpenBtn.disabled = false;
-            isOpening = false; 
-        }, (5 * 100) + 200);
+        // FAIT APPARAÎTRE LA PREMIÈRE CARTE AU CENTRE
+        creerCarte(currentPulls[0].data, currentPulls[0].pokedexNumber, 0);
 
-    }, 1200); // Temps de l'animation CSS shakeAndBurst
+        isOpening = false; 
+    }, 1200); 
 }
+// === ÉVÈNEMENTS D'OUVERTURE ===
 boosterElement.addEventListener('click', ouvrirBooster);
-resetButton.addEventListener('click', () => { cardsContainer.innerHTML = ''; ouvrirBooster(); });
+
+// Fait réapparaître le booster plutôt que de l'ouvrir directement
+resetButton.addEventListener('click', () => { 
+    cardsContainer.innerHTML = ''; 
+    cardsContainer.classList.add('hidden');
+    resetButton.classList.add('hidden');
+    boosterElement.classList.remove('hidden'); // Le booster réapparaît !
+});
 
 // === ÉVÈNEMENT DU BOUTON OUVERTURE AUTO ===
 autoOpenBtn.addEventListener('click', () => {
-    autoOpenBtn.disabled = true; // Désactive le bouton pour éviter de cliquer plusieurs fois
+    autoOpenBtn.disabled = true; // Empêche le spam clic
     
-    // Récupère toutes les cartes non retournées
-    const unflippedCards = Array.from(cardsContainer.querySelectorAll('.card:not(.flipped)'));
+    function flipNextAutomatically() {
+        const unflippedCard = cardsContainer.querySelector('.card:not(.flipped)');
+        
+        if (unflippedCard) {
+            unflippedCard.click(); // Retourne la carte actuelle, ce qui invoque la suivante !
+            
+            // On attend 800ms (le temps du retournement + le temps que la suivante spawn)
+            setTimeout(flipNextAutomatically, 800); 
+        } else if (cartesRetournees < 5) {
+            // Si la carte suivante n'a pas encore eu le temps d'apparaître, on revérifie
+            setTimeout(flipNextAutomatically, 100);
+        }
+    }
     
-    unflippedCards.forEach((carteElement, i) => {
-        // Retourne les cartes une par une avec un délai
-        setTimeout(() => {
-            // Simule un clic sur la carte pour déclencher votre logique existante (sauvegarde, etc)
-            carteElement.click(); 
-        }, i * 400); // 400ms entre chaque carte
-    });
+    flipNextAutomatically();
 });
-
+// === OUTILS DE TEST ===
 // === OUTILS DE TEST ===
 const btnUnlockAll = document.getElementById('cheat-unlock-all');
 const btnClearAll = document.getElementById('cheat-clear-all');
 const btnRefillBoosters = document.getElementById('cheat-refill-boosters'); 
 
 btnUnlockAll.addEventListener('click', async () => {
-    if (!currentUser) return alert("Vous devez être connecté !");
+    if (currentUser !== 'test') return alert("Accès refusé : compte administrateur requis.");
     if (pokemonDataList.length === 0) return alert("Les données chargent...");
 
     currentUserData.collection = [];
@@ -647,14 +690,14 @@ btnUnlockAll.addEventListener('click', async () => {
 });
 
 btnClearAll.addEventListener('click', async () => {
-    if (!currentUser) return;
+    if (currentUser !== 'test') return alert("Accès refusé : compte administrateur requis.");
     currentUserData.collection = [];
     await db.collection('users').doc(currentUser).update({ collection: [] });
     alert("Collection vidée en ligne !");
 });
 
 btnRefillBoosters.addEventListener('click', async () => {
-    if (!currentUser) return;
+    if (currentUser !== 'test') return alert("Accès refusé : compte administrateur requis.");
     currentUserData.boostersLeft = MAX_BOOSTERS;
     currentUserData.lastBoosterTime = Date.now();
     await db.collection('users').doc(currentUser).update({
