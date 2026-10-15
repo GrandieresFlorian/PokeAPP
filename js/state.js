@@ -9,7 +9,7 @@ export const state = {
     currentPullIndex: 0,
     isOpening: false,
     boosterTimerInterval: null,
-    probabilities: { "C": 60, "U": 20, "R": 10, "E": 7, "L": 2, "M": 1 }
+    probabilities: { "C": 60, "U": 20, "R": 10, "E": 7, "L": 2, "M": 1, "mega": 2, "shiny": 0.4 }
 };
 export const CONSTS = {
     MAX_POKEMON: 1025,

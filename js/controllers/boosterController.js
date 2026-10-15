@@ -117,14 +117,20 @@ export function initBooster() {
 function creerCarte(pokemonData, numeroPokedex, index) {
     let nomEn = pokemonData.en; let nomFr = pokemonData.fr; let pokemonRarity = pokemonData.rarity;
     
+    // --- NOUVELLE LOGIQUE MEGA ET SHINY ---
     let isMega = false; let selectedMegaForm = null;
-    if (CONSTS.megaIds[numeroPokedex] && Math.floor(Math.random() * 50) === 0) {
+    const chanceMega = Math.random() * 100; // Tire un nombre entre 0 et 100
+    
+    if (CONSTS.megaIds[numeroPokedex] && chanceMega <= state.probabilities.mega) {
         isMega = true; pokemonRarity = "MG";
         const possibles = CONSTS.megaIds[numeroPokedex];
         selectedMegaForm = possibles[Math.floor(Math.random() * possibles.length)];
     }
 
-    const isShiny = Math.floor(Math.random() * 250) === 0;
+    const chanceShiny = Math.random() * 100;
+    const isShiny = chanceShiny <= state.probabilities.shiny;
+    // ---------------------------------------
+
     let nomAffiche = state.currentLang === 'en' ? nomEn : nomFr;
     if (isMega) nomAffiche = formatMegaName(nomAffiche, selectedMegaForm);
 

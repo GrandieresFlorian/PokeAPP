@@ -19,10 +19,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     db.collection('settings').doc('probabilities').get().then(doc => {
         if (doc.exists) {
-            state.probabilities = doc.data();
+            // Fusionne les paramètres par défaut avec ceux de Firebase
+            state.probabilities = { ...state.probabilities, ...doc.data() };
             console.log("Probabilités synchronisées avec Firebase :", state.probabilities);
         } else {
-            console.log("Paramètres de probabilités introuvables sur Firebase, utilisation des valeurs par défaut.");
+            console.log("Paramètres introuvables sur Firebase, utilisation des valeurs par défaut.");
         }
     }).catch(e => console.error("Erreur de chargement des probabilités :", e));
 
