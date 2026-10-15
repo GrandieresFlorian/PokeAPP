@@ -2,8 +2,20 @@ import { state, CONSTS } from './state.js';
 
 export function tirerRarete() {
     const chance = Math.random() * 100; 
-    if (chance < 60) return "C"; if (chance < 80) return "U"; if (chance < 90) return "R"; 
-    if (chance < 97) return "E"; if (chance < 99) return "L"; return "M";                  
+    const p = state.probabilities;
+    
+    let seuilC = p["C"];
+    let seuilU = seuilC + p["U"];
+    let seuilR = seuilU + p["R"];
+    let seuilE = seuilR + p["E"];
+    let seuilL = seuilE + p["L"];
+    
+    if (chance < seuilC) return "C"; 
+    if (chance < seuilU) return "U"; 
+    if (chance < seuilR) return "R"; 
+    if (chance < seuilE) return "E"; 
+    if (chance < seuilL) return "L"; 
+    return "M";                  
 }
 
 export function formatMegaName(nom, form) {

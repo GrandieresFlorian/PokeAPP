@@ -8,9 +8,9 @@ export const state = {
     currentPulls: [],
     currentPullIndex: 0,
     isOpening: false,
-    boosterTimerInterval: null
+    boosterTimerInterval: null,
+    probabilities: { "C": 60, "U": 20, "R": 10, "E": 7, "L": 2, "M": 1 }
 };
-
 export const CONSTS = {
     MAX_POKEMON: 1025,
     MAX_BOOSTERS: 10,

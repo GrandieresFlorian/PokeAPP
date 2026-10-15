@@ -17,6 +17,15 @@ document.addEventListener("DOMContentLoaded", () => {
     initTrade();
     initCheats();
 
+    db.collection('settings').doc('probabilities').get().then(doc => {
+        if (doc.exists) {
+            state.probabilities = doc.data();
+            console.log("Probabilités synchronisées avec Firebase :", state.probabilities);
+        } else {
+            console.log("Paramètres de probabilités introuvables sur Firebase, utilisation des valeurs par défaut.");
+        }
+    }).catch(e => console.error("Erreur de chargement des probabilités :", e));
+
     fetch('data.json')
         .then(r => r.json())
         .then(data => { state.pokemonDataList = data.pokemon; })
