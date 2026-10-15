@@ -1,6 +1,7 @@
 import { db } from '../firebase-config.js';
-import { state } from '../state.js';
+import { state, CONSTS } from '../state.js';
 import { initierEchange, accepterEchange, refuserEchange } from './tradeController.js';
+import { getMiniCardUrl } from '../utils.js'; // Importation de la fonction d'URL
 
 let friendsListener = null;
 
@@ -74,6 +75,7 @@ function renderFriendsUI() {
     const friends = state.currentUserData.friends || [];
     const requests = state.currentUserData.friendRequests || [];
     
+    // --- LISTE DES AMIS ---
     if (friends.length === 0) {
         friendsList.innerHTML = "<li class='friend-item' style='color: #777;'>Aucun ami pour le moment.</li>";
     } else {
@@ -86,6 +88,7 @@ function renderFriendsUI() {
         });
     }
 
+    // --- PROPOSITIONS D'ÉCHANGE ---
     const tradeRequestsList = document.getElementById('trade-requests-list');
     const trades = state.currentUserData.trades || [];
     tradeRequestsList.innerHTML = "";
@@ -98,24 +101,60 @@ function renderFriendsUI() {
             li.className = "friend-item";
             li.style.flexDirection = "column";
             li.style.alignItems = "flex-start";
+
+            // Fonction pour générer le HTML visuel des mini-cartes
+            const renderMiniCards = (cartes) => {
+                if (!cartes || cartes.length === 0) return '<span style="color:#777; font-size:0.8rem; font-style: italic;">Rien</span>';
+                
+                return cartes.map(carte => {
+                    if (!carte || !carte.data) return ''; // Sécurité
+                    const rarete = carte.mega ? "MG" : (carte.data.rarity || "C");
+                    const bgColor = CONSTS.couleursRarete[rarete] || "#333";
+                    const holoHtml = (carte.shiny || (carte.mega && carte.shiny)) ? '<div class="mini-card-holo"></div>' : '';
+                    
+                    // On force des dimensions plus petites pour l'aperçu avec le style inline
+                    return `
+                        <div class="mini-card" style="background-image: url('${getMiniCardUrl(carte)}'); background-color: ${bgColor}; width: 45px; height: 60px; cursor: default;" title="${carte.data.fr || carte.data.en}">
+                            ${holoHtml}
+                        </div>`;
+                }).join('');
+            };
+
+            const offerHtml = renderMiniCards(trade.offer);
+            const requestHtml = renderMiniCards(trade.request);
+
             li.innerHTML = `
-                <div style="width: 100%; display: flex; justify-content: space-between; margin-bottom: 10px;">
-                    <span><b>${trade.from}</b> propose un échange :</span>
+                <div style="width: 100%; display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center;">
+                    <span style="font-size: 1.1rem; color: #f1c40f;"><b>${trade.from}</b> propose :</span>
                     <div>
                         <button class="btn-small-action btn-accept">✔ Accepter</button>
                         <button class="btn-small-action btn-reject">✖ Refuser</button>
                     </div>
                 </div>
-                <div style="font-size: 0.9rem; color: #aaa;">
-                    <b>Il offre :</b> ${trade.offer.length} carte(s)<br>
-                    <b>Il demande :</b> ${trade.request.length} carte(s)
+                
+                <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; background: #1a1a1a; padding: 12px; border-radius: 8px; border: 1px solid #333;">
+                    <div>
+                        <span style="font-size: 0.9rem; color: #aaa; margin-bottom: 8px; display: block;">Il vous offre :</span>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            ${offerHtml}
+                        </div>
+                    </div>
+                    <hr style="border: 0; border-top: 1px dashed #444; width: 100%; margin: 5px 0;">
+                    <div>
+                        <span style="font-size: 0.9rem; color: #aaa; margin-bottom: 8px; display: block;">En échange de :</span>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            ${requestHtml}
+                        </div>
+                    </div>
                 </div>`;
+
             li.querySelector('.btn-accept').addEventListener('click', () => accepterEchange(trade.id, trade.from));
             li.querySelector('.btn-reject').addEventListener('click', () => refuserEchange(trade.id));
             tradeRequestsList.appendChild(li);
         });
     }
     
+    // --- DEMANDES D'AMIS EN ATTENTE ---
     if (requests.length === 0) {
         friendRequestsList.innerHTML = "<li class='friend-item' style='color: #777;'>Aucune demande en attente.</li>";
     } else {
