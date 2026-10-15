@@ -2,7 +2,10 @@ import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
 import { allerASection } from './navController.js';
 import { tirerRarete, formatMegaName, sauvegarderCarte } from '../utils.js';
-
+import { db } from '../firebase-config.js';
+import { state, CONSTS } from '../state.js';
+import { allerASection } from './navController.js';
+import { tirerRarete, formatMegaName, sauvegarderCarte, getCardImageUrl } from '../utils.js'; // <- AJOUT DE getCardImageUrl
 export function updateBoosterLogic() {
     const boosterStatus = document.getElementById('booster-status');
     const boosterCountDisplay = document.getElementById('booster-count-display');
@@ -136,23 +139,21 @@ function creerCarte(pokemonData, numeroPokedex, index) {
 
     let numeroFormate = String(numeroPokedex).padStart(3, '0');
     const bgColor = CONSTS.couleursRarete[pokemonRarity];
-    
-    let imageUrl = ""; let classFond = "card-front"; let styleFond = "";
-    let nomPourUrl = nomEn.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace('♀', '-f').replace('♂', '-m').replace(/['’.]/g, '').replace(/\s+/g, "-");
+    const carteTemp = {
+        data: pokemonData,
+        pokedexNumber: numeroPokedex,
+        mega: isMega,
+        megaForm: selectedMegaForm,
+        shiny: isShiny
+    };
+
+    let imageUrl = getCardImageUrl(carteTemp);
     
     if (isMega) {
-        let megaUrlName = `${nomPourUrl}-${selectedMegaForm}`;
-        if (isShiny) {
-            imageUrl = `https://img.pokemondb.net/sprites/home/shiny/${megaUrlName}.png`; classFond += " mega-shiny-bg"; 
-        } else {
-            imageUrl = `https://img.pokemondb.net/sprites/home/normal/${megaUrlName}.png`; classFond += " mega-bg"; 
-        }
+        classFond += isShiny ? " mega-shiny-bg" : " mega-bg";
     } else {
-        if (isShiny) {
-            imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${numeroPokedex}.png`; classFond += " shiny-bg";
-        } else {
-            imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${numeroPokedex}.png`; styleFond = `style="background-color: ${bgColor}"`;
-        }
+        if (isShiny) classFond += " shiny-bg";
+        else styleFond = `style="background-color: ${bgColor}"`;
     }
 
     const cardHTML = `

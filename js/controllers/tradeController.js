@@ -1,6 +1,6 @@
 import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
-import { getMiniCardUrl } from '../utils.js';
+import { getCardImageUrl } from '../utils.js';
 import { allerASection } from './navController.js';
 
 let currentTradeTarget = null;
@@ -111,7 +111,7 @@ function renderTradeGrids() {
         const isSelected = isMine ? myOfferSelection.some(c => c.date === carte.date) : theirOfferSelection.some(c => c.date === carte.date);
         
         div.className = `mini-card ${isSelected ? 'selected' : ''}`;
-        div.style.backgroundImage = `url('${getMiniCardUrl(carte)}')`;
+        div.style.backgroundImage = `url('${getCardImageUrl(carte)}')`;
         
         const rarete = carte.mega ? "MG" : (carte.data.rarity || "C");
         div.style.backgroundColor = CONSTS.couleursRarete[rarete] || "#333";

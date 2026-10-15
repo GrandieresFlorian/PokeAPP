@@ -24,17 +24,19 @@ export function formatMegaName(nom, form) {
     return `Méga ${nom}`;
 }
 
-export function getMiniCardUrl(carte) {
+export function getCardImageUrl(carte, format = 'normal') {
+    // Sécurité si la carte est mal formée
     if (!carte || !carte.data || !carte.data.en) return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/0.png";
+    
     let nomEn = carte.data.en;
     let nomPourUrl = nomEn.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace('♀', '-f').replace('♂', '-m').replace(/['’.]/g, '').replace(/\s+/g, "-");
     
     if (carte.mega) {
-        // --- NOUVEAUTÉ : URL VERS LES ARTWORKS POUR LES MÉGAS ---
+        // Lien vers les artworks pour les Mégas (format .jpg)
         return `https://img.pokemondb.net/artwork/${nomPourUrl}-${carte.megaForm}.jpg`;
     }
     
-    // Pour les Pokémon normaux/shinys, on garde les sprites officiels de PokéAPI
+    // Pour les Pokémon normaux/shinys (format .png depuis PokéAPI)
     return carte.shiny 
         ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${carte.pokedexNumber}.png` 
         : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${carte.pokedexNumber}.png`;

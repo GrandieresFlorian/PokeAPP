@@ -1,5 +1,7 @@
 import { state, CONSTS } from '../state.js';
 import { formatMegaName } from '../utils.js';
+import { state, CONSTS } from '../state.js';
+import { formatMegaName, getCardImageUrl } from '../utils.js'; // <- AJOUT DE getCardImageUrl
 
 export function initCollection() {
     const tabNormal = document.getElementById('tab-normal'); 
@@ -96,9 +98,15 @@ export function afficherCollection() {
         if (form) nomAffiche = formatMegaName(nomAffiche, form);
 
         let numeroFormate = String(i).padStart(3, '0');
-        let nomPourUrl = nomEn.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace('♀', '-f').replace('♂', '-m').replace(/['’.]/g, '').replace(/\s+/g, "-");
+        const carteTemp = {
+            data: dataOrigine,
+            pokedexNumber: i,
+            mega: form !== null,
+            megaForm: form,
+            shiny: afficheHolo
+        };
         
-        let imageUrlNormale = form ? `https://img.pokemondb.net/sprites/home/normal/${nomPourUrl}-${form}.png` : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${i}.png`;
+        let imageUrlNormale = getCardImageUrl({ ...carteTemp, shiny: false });
 
         if (possedeLaCarte) {
             const bgColor = CONSTS.couleursRarete[pokemonRarity];
@@ -109,9 +117,7 @@ export function afficherCollection() {
             else styleFond = `style="background-color: ${bgColor}"`;
 
             let textCount = quantite > 1 ? ` (x${quantite})` : ""; 
-            let finalImageUrl = imageUrlNormale;
-            if (form && afficheHolo) finalImageUrl = `https://img.pokemondb.net/sprites/home/shiny/${nomPourUrl}-${form}.png`;
-            else if (!form && afficheHolo) finalImageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${i}.png`;
+            let finalImageUrl = getCardImageUrl(carteTemp);
 
             htmlContent += `
                 <div class="card flipped" style="cursor: default;">

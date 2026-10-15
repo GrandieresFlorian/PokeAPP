@@ -1,7 +1,7 @@
 import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
 import { initierEchange, accepterEchange, refuserEchange } from './tradeController.js';
-import { getMiniCardUrl } from '../utils.js'; // Importation de la fonction d'URL
+import { getCardImageUrl } from '../utils.js'; // Importation de la fonction d'URL
 
 let friendsListener = null;
 
@@ -114,7 +114,7 @@ function renderFriendsUI() {
                     
                     // On force des dimensions plus petites pour l'aperçu avec le style inline
                     return `
-                        <div class="mini-card" style="background-image: url('${getMiniCardUrl(carte)}'); background-color: ${bgColor}; width: 45px; height: 60px; cursor: default;" title="${carte.data.fr || carte.data.en}">
+                        <div class="mini-card" style="background-image: url('${getCardImageUrl(carte)}'); background-color: ${bgColor}; width: 45px; height: 60px; cursor: default;" title="${carte.data.fr || carte.data.en}">
                             ${holoHtml}
                         </div>`;
                 }).join('');
