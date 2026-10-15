@@ -28,8 +28,16 @@ export function getMiniCardUrl(carte) {
     if (!carte || !carte.data || !carte.data.en) return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/0.png";
     let nomEn = carte.data.en;
     let nomPourUrl = nomEn.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace('♀', '-f').replace('♂', '-m').replace(/['’.]/g, '').replace(/\s+/g, "-");
-    if (carte.mega) return carte.shiny ? `https://img.pokemondb.net/sprites/home/shiny/${nomPourUrl}-${carte.megaForm}.png` : `https://img.pokemondb.net/sprites/home/normal/${nomPourUrl}-${carte.megaForm}.png`;
-    return carte.shiny ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${carte.pokedexNumber}.png` : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${carte.pokedexNumber}.png`;
+    
+    if (carte.mega) {
+        // --- NOUVEAUTÉ : URL VERS LES ARTWORKS POUR LES MÉGAS ---
+        return `https://img.pokemondb.net/artwork/${nomPourUrl}-${carte.megaForm}.jpg`;
+    }
+    
+    // Pour les Pokémon normaux/shinys, on garde les sprites officiels de PokéAPI
+    return carte.shiny 
+        ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${carte.pokedexNumber}.png` 
+        : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${carte.pokedexNumber}.png`;
 }
 
 export function sauvegarderCarte(pokemonData, numeroPokedex, isShiny, isMega, megaForm) {
