@@ -1,12 +1,13 @@
 // === 1. CONFIGURATION FIREBASE ===
 // ⚠️ REMPLACEZ CE BLOC PAR VOTRE CONFIGURATION FIREBASE ⚠️
 const firebaseConfig = {
-    apiKey: "VOTRE_API_KEY",
-    authDomain: "votre-projet.firebaseapp.com",
-    projectId: "votre-projet",
-    storageBucket: "votre-projet.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "1:123456:web:abcdef"
+  apiKey: "AIzaSyC2aHcIN_0Lgk-fSpCY-pHwMs2bL5nRJgM",
+  authDomain: "pokeapp-40bae.firebaseapp.com",
+  projectId: "pokeapp-40bae",
+  storageBucket: "pokeapp-40bae.firebasestorage.app",
+  messagingSenderId: "445091453076",
+  appId: "1:445091453076:web:d6b18cc032f54116d7fc81",
+  measurementId: "G-ML5HQKM389"
 };
 
 firebase.initializeApp(firebaseConfig);
