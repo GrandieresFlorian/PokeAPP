@@ -1,3 +1,19 @@
+// === 1. CONFIGURATION FIREBASE ===
+// ⚠️ REMPLACEZ CE BLOC PAR CELUI FOURNI PAR FIREBASE LORS DE L'ÉTAPE 5 ⚠️
+const firebaseConfig = {
+  apiKey: "AIzaSyC2aHcIN_0Lgk-fSpCY-pHwMs2bL5nRJgM",
+  authDomain: "pokeapp-40bae.firebaseapp.com",
+  projectId: "pokeapp-40bae",
+  storageBucket: "pokeapp-40bae.firebasestorage.app",
+  messagingSenderId: "445091453076",
+  appId: "1:445091453076:web:d6b18cc032f54116d7fc81",
+  measurementId: "G-ML5HQKM389"
+};
+
+// Initialisation de Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 // === ÉLÉMENTS DU DOM ===
 const boosterElement = document.getElementById('booster-pack');
 const cardsContainer = document.getElementById('cards-container');
@@ -20,11 +36,10 @@ const navCollectionBtn = document.getElementById('nav-collection');
 const tabNormal = document.getElementById('tab-normal'); 
 const tabShiny = document.getElementById('tab-shiny');   
 const tabMega = document.getElementById('tab-mega'); 
-const tabMegaShiny = document.getElementById('tab-mega-shiny'); // NOUVEAU
+const tabMegaShiny = document.getElementById('tab-mega-shiny'); 
 
 const MAX_POKEMON = 1025;
 
-// La VRAIE liste des 48 Méga-Évolutions officielles pour éviter les images cassées !
 const megaIds = {
     3: ["mega"], 6: ["mega-x", "mega-y"], 9: ["mega"], 15: ["mega"], 18: ["mega"],
     65: ["mega"], 80: ["mega"], 94: ["mega"], 115: ["mega"], 127: ["mega"],
@@ -42,10 +57,11 @@ const megaIds = {
 let cartesRetournees = 0;
 let currentLang = 'en'; 
 let pokemonDataList = []; 
-let collectionMode = 'normal'; // normal, shiny, mega, ou mega-shiny
+let collectionMode = 'normal'; 
 
-let usersDB = JSON.parse(localStorage.getItem('pokeAppUsers')) || {}; 
+// On garde juste le nom d'utilisateur en local pour ne pas avoir à se reconnecter à chaque rafraichissement
 let currentUser = localStorage.getItem('pokeAppCurrentUser') || null;
+let currentUserData = { collection: [] }; // Les données synchronisées avec Firebase
 
 const couleursRarete = { "C": "#5a6369", "U": "#5eb84b", "R": "#3498db", "E": "#7d3c98", "L": "#b7950b", "M": "#a93226", "MG": "#111111" };
 const poidsRarete = { "C": 1, "U": 2, "R": 3, "E": 4, "L": 5, "M": 6, "MG": 7 };
@@ -56,33 +72,70 @@ fetch('data.json')
     .then(data => { pokemonDataList = data.pokemon; })
     .catch(error => { console.error("Erreur de chargement", error); });
 
-updateAuthUI();
+// Récupération des données Firebase au chargement
+if (currentUser) {
+    db.collection('users').doc(currentUser).get().then(doc => {
+        if (doc.exists) {
+            currentUserData = doc.data();
+            updateAuthUI();
+        } else {
+            currentUser = null; localStorage.removeItem('pokeAppCurrentUser'); updateAuthUI();
+        }
+    }).catch(err => console.error("Erreur Firebase:", err));
+} else {
+    updateAuthUI();
+}
 
-// === GESTION DE L'AUTHENTIFICATION ===
-loginBtn.addEventListener('click', () => {
+// === GESTION DE L'AUTHENTIFICATION (ASYNCHRONE AVEC FIREBASE) ===
+loginBtn.addEventListener('click', async () => {
     const user = usernameInput.value.trim(); const pass = passwordInput.value;
     if (!user || !pass) return authMessage.textContent = "Veuillez remplir tous les champs.";
-    if (usersDB[user] && usersDB[user].password === pass) {
-        currentUser = user; localStorage.setItem('pokeAppCurrentUser', currentUser);
-        authMessage.textContent = ""; usernameInput.value = ""; passwordInput.value = "";
-        updateAuthUI(); allerASection('section-boosters'); 
-    } else { authMessage.textContent = "Identifiants incorrects."; }
+    
+    authMessage.textContent = "Connexion...";
+    try {
+        const doc = await db.collection('users').doc(user).get();
+        if (doc.exists && doc.data().password === pass) {
+            currentUser = user;
+            currentUserData = doc.data();
+            localStorage.setItem('pokeAppCurrentUser', currentUser);
+            authMessage.textContent = ""; usernameInput.value = ""; passwordInput.value = "";
+            updateAuthUI(); allerASection('section-boosters'); 
+        } else { 
+            authMessage.textContent = "Identifiants incorrects."; 
+        }
+    } catch (error) {
+        authMessage.textContent = "Erreur de connexion au serveur.";
+    }
 });
 
-signupBtn.addEventListener('click', () => {
+signupBtn.addEventListener('click', async () => {
     const user = usernameInput.value.trim(); const pass = passwordInput.value;
     if (!user || !pass) return authMessage.textContent = "Veuillez remplir tous les champs.";
-    if (usersDB[user]) return authMessage.textContent = "Ce nom d'utilisateur existe déjà.";
-    usersDB[user] = { password: pass, collection: [] };
-    localStorage.setItem('pokeAppUsers', JSON.stringify(usersDB));
-    currentUser = user; localStorage.setItem('pokeAppCurrentUser', currentUser);
-    authMessage.textContent = ""; usernameInput.value = ""; passwordInput.value = "";
-    updateAuthUI(); allerASection('section-boosters');
+    
+    authMessage.textContent = "Création du compte...";
+    try {
+        const docRef = db.collection('users').doc(user);
+        const doc = await docRef.get();
+        if (doc.exists) {
+            authMessage.textContent = "Ce nom d'utilisateur existe déjà.";
+        } else {
+            currentUserData = { password: pass, collection: [] };
+            await docRef.set(currentUserData); // Enregistre sur Firebase
+            
+            currentUser = user; 
+            localStorage.setItem('pokeAppCurrentUser', currentUser);
+            authMessage.textContent = ""; usernameInput.value = ""; passwordInput.value = "";
+            updateAuthUI(); allerASection('section-boosters');
+        }
+    } catch (error) {
+        authMessage.textContent = "Erreur lors de la création du compte.";
+    }
 });
 
 authNavBtn.addEventListener('click', () => {
     if (currentUser) {
-        currentUser = null; localStorage.removeItem('pokeAppCurrentUser');
+        currentUser = null; currentUserData = { collection: [] };
+        localStorage.removeItem('pokeAppCurrentUser');
         updateAuthUI(); allerASection('section-boosters');
     } else { allerASection('section-auth'); }
 });
@@ -98,13 +151,19 @@ function updateAuthUI() {
     }
 }
 
-// === SAUVEGARDE DES CARTES ===
+// === SAUVEGARDE DES CARTES (SUR FIREBASE) ===
 function sauvegarderCarte(pokemonData, numeroPokedex, isShiny, isMega, megaForm) {
     if (!currentUser) return; 
-    usersDB[currentUser].collection.push({
+    
+    // Ajout local
+    currentUserData.collection.push({
         data: pokemonData, pokedexNumber: numeroPokedex, shiny: isShiny, mega: isMega, megaForm: megaForm, date: new Date().getTime()
     });
-    localStorage.setItem('pokeAppUsers', JSON.stringify(usersDB));
+    
+    // Envoi de la mise à jour à Firebase
+    db.collection('users').doc(currentUser).update({
+        collection: currentUserData.collection
+    }).catch(err => console.error("Erreur de sauvegarde:", err));
 }
 
 function formatMegaName(nom, form) {
@@ -131,7 +190,7 @@ function afficherCollection() {
     if (!currentUser) return collectionContainer.innerHTML = "<p>Veuillez vous connecter.</p>", collectionCount.textContent = `0 / ${MAX_POKEMON}`;
     if (pokemonDataList.length === 0) return collectionContainer.innerHTML = "<p>Chargement des données...</p>";
 
-    const maCollection = usersDB[currentUser].collection;
+    const maCollection = currentUserData.collection || [];
     const cartesPossedeesMap = {}; 
     
     maCollection.forEach(carte => {
@@ -206,7 +265,6 @@ function afficherCollection() {
         if (possedeLaCarte) {
             const bgColor = couleursRarete[pokemonRarity];
             
-            // Attribution propre de la couleur de fond
             let classFond = "card-front";
             let styleFond = "";
             if (form && afficheHolo) {
@@ -297,7 +355,6 @@ function creerCarte(pokemonData, numeroPokedex, index) {
     let nomEn = pokemonData.en; let nomFr = pokemonData.fr;
     let pokemonRarity = pokemonData.rarity;
     
-    // SYSTÈME MÉGA
     let isMega = false;
     let selectedMegaForm = null;
     if (megaIds[numeroPokedex] && Math.floor(Math.random() * 50) === 0) {
@@ -322,10 +379,10 @@ function creerCarte(pokemonData, numeroPokedex, index) {
         let megaUrlName = `${nomPourUrl}-${selectedMegaForm}`;
         if (isShiny) {
             imageUrl = `https://img.pokemondb.net/sprites/home/shiny/${megaUrlName}.png`;
-            classFond += " mega-shiny-bg"; // FOND MÉGA + SHINY
+            classFond += " mega-shiny-bg"; 
         } else {
             imageUrl = `https://img.pokemondb.net/artwork/${megaUrlName}.jpg`;
-            classFond += " mega-bg"; // FOND NOIR
+            classFond += " mega-bg"; 
         }
         console.log(`INCROYABLE ! Vous avez pioché un ${nomAffiche} !`);
     } else {
@@ -405,32 +462,34 @@ function ouvrirBooster() {
 boosterElement.addEventListener('click', ouvrirBooster);
 resetButton.addEventListener('click', () => { cardsContainer.innerHTML = ''; ouvrirBooster(); });
 
-// === OUTILS DE TEST (TRICHE) ===
+// === OUTILS DE TEST (TRICHE - SYNCHRONISÉS FIREBASE) ===
 const btnUnlockAll = document.getElementById('cheat-unlock-all');
 const btnClearAll = document.getElementById('cheat-clear-all');
 
-btnUnlockAll.addEventListener('click', () => {
+btnUnlockAll.addEventListener('click', async () => {
     if (!currentUser) return alert("Vous devez être connecté !");
     if (pokemonDataList.length === 0) return alert("Les données chargent...");
 
-    usersDB[currentUser].collection = [];
+    currentUserData.collection = [];
     pokemonDataList.forEach((pokemon, index) => {
         const id = index + 1;
-        sauvegarderCarte(pokemon, id, false, false, null); 
-        sauvegarderCarte(pokemon, id, true, false, null);  
+        currentUserData.collection.push({ data: pokemon, pokedexNumber: id, shiny: false, mega: false, megaForm: null, date: Date.now() });
+        currentUserData.collection.push({ data: pokemon, pokedexNumber: id, shiny: true, mega: false, megaForm: null, date: Date.now() });
         if (megaIds[id]) {
             megaIds[id].forEach(form => {
-                sauvegarderCarte(pokemon, id, false, true, form); 
-                sauvegarderCarte(pokemon, id, true, true, form);  
+                currentUserData.collection.push({ data: pokemon, pokedexNumber: id, shiny: false, mega: true, megaForm: form, date: Date.now() });
+                currentUserData.collection.push({ data: pokemon, pokedexNumber: id, shiny: true, mega: true, megaForm: form, date: Date.now() });
             });
         }
     });
-    alert("Triche activée : Collection complète (Normal + Shiny + Méga + Méga Shiny) !");
+    
+    await db.collection('users').doc(currentUser).update({ collection: currentUserData.collection });
+    alert("Triche activée : Collection complète synchronisée en ligne !");
 });
 
-btnClearAll.addEventListener('click', () => {
+btnClearAll.addEventListener('click', async () => {
     if (!currentUser) return;
-    usersDB[currentUser].collection = [];
-    localStorage.setItem('pokeAppUsers', JSON.stringify(usersDB));
-    alert("Collection vidée !");
+    currentUserData.collection = [];
+    await db.collection('users').doc(currentUser).update({ collection: [] });
+    alert("Collection vidée en ligne !");
 });
