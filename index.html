@@ -57,7 +57,7 @@
                 <button id="reset-button" class="btn hidden">Ouvrir un autre booster</button>
             </section>
 
-            <section id="section-collection" class="view-section hidden">
+<section id="section-collection" class="view-section hidden">
                 <h2>Votre Collection (<span id="collection-count">0 / 1025</span>)</h2>
                 <div class="collection-tabs">
                     <button id="tab-normal" class="tab-btn active">Classique</button>
@@ -65,6 +65,25 @@
                     <button id="tab-mega" class="tab-btn">Méga 🧬</button>
                     <button id="tab-mega-shiny" class="tab-btn">Méga Shiny ✨🧬</button>
                 </div>
+
+                <!-- NOUVEAU : Barre de filtres -->
+                <div class="collection-filters">
+                    <label for="filter-rarity">Rareté :</label>
+                    <select id="filter-rarity" class="filter-select">
+                        <option value="all">Toutes</option>
+                        <option value="C">Commune (C)</option>
+                        <option value="U">Peu Commune (U)</option>
+                        <option value="R">Rare (R)</option>
+                        <option value="E">Épique (E)</option>
+                        <option value="L">Légendaire (L)</option>
+                        <option value="M">Mythique (M)</option>
+                    </select>
+
+                    <label class="filter-checkbox">
+                        <input type="checkbox" id="filter-owned"> Uniquement les cartes possédées
+                    </label>
+                </div>
+
                 <div id="collection-container" class="cards-container"></div>
             </section>
 

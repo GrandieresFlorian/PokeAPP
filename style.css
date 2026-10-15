@@ -458,3 +458,50 @@ h2 { font-family: sans-serif; font-weight: normal; }
 .booster-status p { margin: 5px 0; font-size: 1.1rem; font-weight: bold; }
 #booster-count-display { color: #3498db; font-size: 1.5rem; font-family: 'Arial Black', Impact, sans-serif; }
 #booster-timer-display { color: #e74c3c; font-size: 1.3rem; font-family: 'Arial Black', Impact, sans-serif; }
+/* === FILTRES COLLECTION === */
+.collection-filters {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+    background-color: #242424;
+    padding: 15px 30px;
+    border-radius: 8px;
+    border: 2px solid #555;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    width: 100%;
+    max-width: 600px;
+}
+
+.filter-select {
+    background-color: #333;
+    color: white;
+    border: 1px solid #777;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.filter-select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.filter-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    color: #fceea7;
+}
+
+.filter-checkbox input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}

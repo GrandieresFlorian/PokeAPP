@@ -37,15 +37,19 @@ const tabShiny = document.getElementById('tab-shiny');
 const tabMega = document.getElementById('tab-mega'); 
 const tabMegaShiny = document.getElementById('tab-mega-shiny'); 
 
-// Éléments du chrono de boosters
+// Éléments du chrono
 const boosterStatus = document.getElementById('booster-status');
 const boosterCountDisplay = document.getElementById('booster-count-display');
 const boosterTimerDisplay = document.getElementById('booster-timer-display');
 const boosterTimerText = document.getElementById('booster-timer-text');
 
+// Éléments des filtres
+const filterRarity = document.getElementById('filter-rarity');
+const filterOwned = document.getElementById('filter-owned');
+
 const MAX_POKEMON = 1025;
 const MAX_BOOSTERS = 10;
-const REGEN_TIME_MS = 5 * 60 * 1000; // 5 minutes en millisecondes
+const REGEN_TIME_MS = 5 * 60 * 1000;
 
 const megaIds = {
     3: ["mega"], 6: ["mega-x", "mega-y"], 9: ["mega"], 15: ["mega"], 18: ["mega"],
@@ -83,7 +87,6 @@ if (currentUser) {
     db.collection('users').doc(currentUser).get().then(doc => {
         if (doc.exists) {
             currentUserData = doc.data();
-            // Mise à niveau des anciens comptes qui n'avaient pas le système d'énergie
             if (currentUserData.boostersLeft === undefined) {
                 currentUserData.boostersLeft = MAX_BOOSTERS;
                 currentUserData.lastBoosterTime = Date.now();
@@ -113,7 +116,6 @@ function updateBoosterLogic() {
     boosterStatus.classList.remove('hidden');
     const now = Date.now();
 
-    // 1. Calcul des boosters récupérés pendant notre absence
     if (currentUserData.boostersLeft < MAX_BOOSTERS) {
         const timePassed = now - currentUserData.lastBoosterTime;
         const boostersGained = Math.floor(timePassed / REGEN_TIME_MS);
@@ -125,7 +127,6 @@ function updateBoosterLogic() {
             } else {
                 currentUserData.lastBoosterTime += boostersGained * REGEN_TIME_MS;
             }
-            // Sauvegarde Cloud
             db.collection('users').doc(currentUser).update({
                 boostersLeft: currentUserData.boostersLeft,
                 lastBoosterTime: currentUserData.lastBoosterTime
@@ -137,14 +138,12 @@ function updateBoosterLogic() {
 
     renderBoosterStatus();
     
-    // 2. Lancement du chronomètre visuel
     clearInterval(boosterTimerInterval);
     boosterTimerInterval = setInterval(() => {
         if (currentUserData.boostersLeft < MAX_BOOSTERS) {
             const currentNow = Date.now();
             const timePassed = currentNow - currentUserData.lastBoosterTime;
             
-            // Si 5 minutes sont passées pendant qu'on est sur la page
             if (timePassed >= REGEN_TIME_MS) {
                 currentUserData.boostersLeft++;
                 if (currentUserData.boostersLeft === MAX_BOOSTERS) {
@@ -168,7 +167,7 @@ function renderBoosterStatus() {
     boosterCountDisplay.textContent = currentUserData.boostersLeft;
     
     if (currentUserData.boostersLeft >= MAX_BOOSTERS) {
-        boosterTimerText.style.display = 'none'; // On cache le chrono si on est plein
+        boosterTimerText.style.display = 'none';
     } else {
         boosterTimerText.style.display = 'block';
         const now = Date.now();
@@ -263,23 +262,42 @@ function formatMegaName(nom, form) {
     return `Méga ${nom}`;
 }
 
+// === GESTION DES 4 ONGLETS DE COLLECTION ===
 function setTabActive(activeTab) {
     [tabNormal, tabShiny, tabMega, tabMegaShiny].forEach(tab => tab.classList.remove('active'));
     activeTab.classList.add('active');
+    
+    // Si on est sur un onglet Méga, le filtre de rareté n'a plus de sens
+    if (activeTab === tabMega || activeTab === tabMegaShiny) {
+        filterRarity.value = "all";
+        filterRarity.disabled = true;
+    } else {
+        filterRarity.disabled = false;
+    }
 }
 
 tabNormal.addEventListener('click', () => { collectionMode = 'normal'; setTabActive(tabNormal); afficherCollection(); });
 tabShiny.addEventListener('click', () => { collectionMode = 'shiny'; setTabActive(tabShiny); afficherCollection(); });
 tabMega.addEventListener('click', () => { collectionMode = 'mega'; setTabActive(tabMega); afficherCollection(); });
 tabMegaShiny.addEventListener('click', () => { collectionMode = 'mega-shiny'; setTabActive(tabMegaShiny); afficherCollection(); });
+
+// Écouteurs pour les filtres
+filterRarity.addEventListener('change', afficherCollection);
+filterOwned.addEventListener('change', afficherCollection);
 navCollectionBtn.addEventListener('click', afficherCollection);
 
+
+// === AFFICHAGE DE LA COLLECTION ===
 function afficherCollection() {
     if (!currentUser) return collectionContainer.innerHTML = "<p>Veuillez vous connecter.</p>", collectionCount.textContent = `0 / ${MAX_POKEMON}`;
     if (pokemonDataList.length === 0) return collectionContainer.innerHTML = "<p>Chargement des données...</p>";
 
     const maCollection = currentUserData.collection || [];
     const cartesPossedeesMap = {}; 
+    
+    // Valeurs des filtres
+    const rarityVal = filterRarity.value;
+    const ownedOnlyVal = filterOwned.checked;
     
     maCollection.forEach(carte => {
         if (!cartesPossedeesMap[carte.pokedexNumber]) cartesPossedeesMap[carte.pokedexNumber] = { normal: 0, shiny: 0, megas: {} };
@@ -292,43 +310,15 @@ function afficherCollection() {
         }
     });
 
-    let maxAffiche = 0; let uniquesCount = 0;
-    if (collectionMode === 'mega' || collectionMode === 'mega-shiny') {
-        Object.keys(megaIds).forEach(id => {
-            megaIds[id].forEach(form => {
-                maxAffiche++;
-                if (cartesPossedeesMap[id] && cartesPossedeesMap[id].megas[form]) {
-                    if (collectionMode === 'mega' && cartesPossedeesMap[id].megas[form].normal > 0) uniquesCount++;
-                    if (collectionMode === 'mega-shiny' && cartesPossedeesMap[id].megas[form].shiny > 0) uniquesCount++;
-                }
-            });
-        });
-    } else {
-        maxAffiche = MAX_POKEMON;
-        for (let i = 1; i <= MAX_POKEMON; i++) {
-            if (cartesPossedeesMap[i]) {
-                if (collectionMode === 'normal' && cartesPossedeesMap[i].normal > 0) uniquesCount++;
-                if (collectionMode === 'shiny' && cartesPossedeesMap[i].shiny > 0) uniquesCount++;
-            }
-        }
-    }
-    
-    collectionCount.textContent = `${uniquesCount} / ${maxAffiche}`;
+    let maxAffiche = 0; 
+    let uniquesCount = 0;
     collectionContainer.innerHTML = ""; 
 
     const renderCard = (i, form = null) => {
         const dataOrigine = pokemonDataList[i - 1]; 
         if (!dataOrigine) return;
 
-        let nomEn = dataOrigine.en; let nomFr = dataOrigine.fr;
         let pokemonRarity = (collectionMode === 'mega' || collectionMode === 'mega-shiny') ? "MG" : dataOrigine.rarity;
-        let nomAffiche = currentLang === 'en' ? nomEn : nomFr;
-        if (form) nomAffiche = formatMegaName(nomAffiche, form);
-
-        let numeroFormate = String(i).padStart(3, '0');
-        let nomPourUrl = nomEn.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace('♀', '-f').replace('♂', '-m').replace(/['’.]/g, '').replace(/\s+/g, "-");
-        
-        let imageUrlNormale = form ? `https://img.pokemondb.net/sprites/home/normal/${nomPourUrl}-${form}.png` : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${i}.png`;
         
         let possedeLaCarte = false; let quantite = 0; let afficheHolo = false;
         
@@ -341,6 +331,22 @@ function afficherCollection() {
         } else if (collectionMode === 'mega-shiny') {
             possedeLaCarte = cartesPossedeesMap[i]?.megas[form]?.shiny > 0; quantite = cartesPossedeesMap[i]?.megas[form]?.shiny || 0; afficheHolo = true;
         }
+
+        // === APPLICATION DES FILTRES ===
+        if (rarityVal !== 'all' && pokemonRarity !== rarityVal) return; // Ignore la carte si elle n'a pas la bonne rareté
+        if (ownedOnlyVal && !possedeLaCarte) return; // Ignore la carte si l'option "Possédées uniquement" est cochée
+
+        maxAffiche++;
+        if (possedeLaCarte) uniquesCount++;
+
+        let nomEn = dataOrigine.en; let nomFr = dataOrigine.fr;
+        let nomAffiche = currentLang === 'en' ? nomEn : nomFr;
+        if (form) nomAffiche = formatMegaName(nomAffiche, form);
+
+        let numeroFormate = String(i).padStart(3, '0');
+        let nomPourUrl = nomEn.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace('♀', '-f').replace('♂', '-m').replace(/['’.]/g, '').replace(/\s+/g, "-");
+        
+        let imageUrlNormale = form ? `https://img.pokemondb.net/sprites/home/normal/${nomPourUrl}-${form}.png` : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${i}.png`;
 
         let htmlInner = "";
         if (possedeLaCarte) {
@@ -382,6 +388,9 @@ function afficherCollection() {
     } else {
         for (let i = 1; i <= MAX_POKEMON; i++) renderCard(i);
     }
+    
+    // Met à jour le compteur dynamique avec le résultat des filtres
+    collectionCount.textContent = `${uniquesCount} / ${maxAffiche}`;
 }
 
 navLinks.forEach(link => { link.addEventListener('click', () => allerASection(link.getAttribute('data-target'))); });
@@ -481,16 +490,13 @@ function ouvrirBooster() {
     if (!currentUser) return alert("Vous devez être connecté !"), allerASection('section-auth');
     if (pokemonDataList.length === 0) return alert("Les données chargent...");
 
-    // VÉRIFICATION DE L'ÉNERGIE
     if (currentUserData.boostersLeft <= 0) {
-        alert("Vous n'avez plus de boosters ! Revenez plus tard ou utilisez la triche dans les paramètres.");
+        alert("Vous n'avez plus de boosters ! Revenez plus tard.");
         return;
     }
 
-    // Déduction d'un booster
     currentUserData.boostersLeft--;
     if (currentUserData.boostersLeft === MAX_BOOSTERS - 1) {
-        // Le chrono redémarre exactement au moment où on passe sous le maximum
         currentUserData.lastBoosterTime = Date.now();
     }
     
@@ -498,7 +504,7 @@ function ouvrirBooster() {
         boostersLeft: currentUserData.boostersLeft,
         lastBoosterTime: currentUserData.lastBoosterTime
     });
-    renderBoosterStatus(); // Mise à jour de l'UI instantanée
+    renderBoosterStatus();
 
     boosterElement.classList.add('hidden'); cardsContainer.classList.remove('hidden'); cartesRetournees = 0; 
     let cartesTirees = [];
@@ -525,7 +531,7 @@ resetButton.addEventListener('click', () => { cardsContainer.innerHTML = ''; ouv
 // === OUTILS DE TEST ===
 const btnUnlockAll = document.getElementById('cheat-unlock-all');
 const btnClearAll = document.getElementById('cheat-clear-all');
-const btnRefillBoosters = document.getElementById('cheat-refill-boosters'); // NOUVEAU
+const btnRefillBoosters = document.getElementById('cheat-refill-boosters'); 
 
 btnUnlockAll.addEventListener('click', async () => {
     if (!currentUser) return alert("Vous devez être connecté !");
