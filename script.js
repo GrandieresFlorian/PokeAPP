@@ -1,16 +1,14 @@
 // === 1. CONFIGURATION FIREBASE ===
-// ⚠️ REMPLACEZ CE BLOC PAR CELUI FOURNI PAR FIREBASE LORS DE L'ÉTAPE 5 ⚠️
+// ⚠️ REMPLACEZ CE BLOC PAR VOTRE CONFIGURATION FIREBASE ⚠️
 const firebaseConfig = {
-  apiKey: "AIzaSyC2aHcIN_0Lgk-fSpCY-pHwMs2bL5nRJgM",
-  authDomain: "pokeapp-40bae.firebaseapp.com",
-  projectId: "pokeapp-40bae",
-  storageBucket: "pokeapp-40bae.firebasestorage.app",
-  messagingSenderId: "445091453076",
-  appId: "1:445091453076:web:d6b18cc032f54116d7fc81",
-  measurementId: "G-ML5HQKM389"
+    apiKey: "VOTRE_API_KEY",
+    authDomain: "votre-projet.firebaseapp.com",
+    projectId: "votre-projet",
+    storageBucket: "votre-projet.appspot.com",
+    messagingSenderId: "123456789",
+    appId: "1:123456:web:abcdef"
 };
 
-// Initialisation de Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
@@ -38,7 +36,15 @@ const tabShiny = document.getElementById('tab-shiny');
 const tabMega = document.getElementById('tab-mega'); 
 const tabMegaShiny = document.getElementById('tab-mega-shiny'); 
 
+// Éléments du chrono de boosters
+const boosterStatus = document.getElementById('booster-status');
+const boosterCountDisplay = document.getElementById('booster-count-display');
+const boosterTimerDisplay = document.getElementById('booster-timer-display');
+const boosterTimerText = document.getElementById('booster-timer-text');
+
 const MAX_POKEMON = 1025;
+const MAX_BOOSTERS = 10;
+const REGEN_TIME_MS = 5 * 60 * 1000; // 5 minutes en millisecondes
 
 const megaIds = {
     3: ["mega"], 6: ["mega-x", "mega-y"], 9: ["mega"], 15: ["mega"], 18: ["mega"],
@@ -58,10 +64,10 @@ let cartesRetournees = 0;
 let currentLang = 'en'; 
 let pokemonDataList = []; 
 let collectionMode = 'normal'; 
+let boosterTimerInterval = null;
 
-// On garde juste le nom d'utilisateur en local pour ne pas avoir à se reconnecter à chaque rafraichissement
 let currentUser = localStorage.getItem('pokeAppCurrentUser') || null;
-let currentUserData = { collection: [] }; // Les données synchronisées avec Firebase
+let currentUserData = { collection: [], boostersLeft: MAX_BOOSTERS, lastBoosterTime: Date.now() }; 
 
 const couleursRarete = { "C": "#5a6369", "U": "#5eb84b", "R": "#3498db", "E": "#7d3c98", "L": "#b7950b", "M": "#a93226", "MG": "#111111" };
 const poidsRarete = { "C": 1, "U": 2, "R": 3, "E": 4, "L": 5, "M": 6, "MG": 7 };
@@ -72,12 +78,21 @@ fetch('data.json')
     .then(data => { pokemonDataList = data.pokemon; })
     .catch(error => { console.error("Erreur de chargement", error); });
 
-// Récupération des données Firebase au chargement
 if (currentUser) {
     db.collection('users').doc(currentUser).get().then(doc => {
         if (doc.exists) {
             currentUserData = doc.data();
+            // Mise à niveau des anciens comptes qui n'avaient pas le système d'énergie
+            if (currentUserData.boostersLeft === undefined) {
+                currentUserData.boostersLeft = MAX_BOOSTERS;
+                currentUserData.lastBoosterTime = Date.now();
+                db.collection('users').doc(currentUser).update({
+                    boostersLeft: currentUserData.boostersLeft,
+                    lastBoosterTime: currentUserData.lastBoosterTime
+                });
+            }
             updateAuthUI();
+            updateBoosterLogic();
         } else {
             currentUser = null; localStorage.removeItem('pokeAppCurrentUser'); updateAuthUI();
         }
@@ -86,7 +101,85 @@ if (currentUser) {
     updateAuthUI();
 }
 
-// === GESTION DE L'AUTHENTIFICATION (ASYNCHRONE AVEC FIREBASE) ===
+// === GESTION DU TEMPS ET DES BOOSTERS ===
+function updateBoosterLogic() {
+    if (!currentUser) {
+        boosterStatus.classList.add('hidden');
+        clearInterval(boosterTimerInterval);
+        return;
+    }
+    
+    boosterStatus.classList.remove('hidden');
+    const now = Date.now();
+
+    // 1. Calcul des boosters récupérés pendant notre absence
+    if (currentUserData.boostersLeft < MAX_BOOSTERS) {
+        const timePassed = now - currentUserData.lastBoosterTime;
+        const boostersGained = Math.floor(timePassed / REGEN_TIME_MS);
+
+        if (boostersGained > 0) {
+            currentUserData.boostersLeft = Math.min(MAX_BOOSTERS, currentUserData.boostersLeft + boostersGained);
+            if (currentUserData.boostersLeft === MAX_BOOSTERS) {
+                currentUserData.lastBoosterTime = now;
+            } else {
+                currentUserData.lastBoosterTime += boostersGained * REGEN_TIME_MS;
+            }
+            // Sauvegarde Cloud
+            db.collection('users').doc(currentUser).update({
+                boostersLeft: currentUserData.boostersLeft,
+                lastBoosterTime: currentUserData.lastBoosterTime
+            });
+        }
+    } else {
+        currentUserData.lastBoosterTime = now;
+    }
+
+    renderBoosterStatus();
+    
+    // 2. Lancement du chronomètre visuel
+    clearInterval(boosterTimerInterval);
+    boosterTimerInterval = setInterval(() => {
+        if (currentUserData.boostersLeft < MAX_BOOSTERS) {
+            const currentNow = Date.now();
+            const timePassed = currentNow - currentUserData.lastBoosterTime;
+            
+            // Si 5 minutes sont passées pendant qu'on est sur la page
+            if (timePassed >= REGEN_TIME_MS) {
+                currentUserData.boostersLeft++;
+                if (currentUserData.boostersLeft === MAX_BOOSTERS) {
+                    currentUserData.lastBoosterTime = currentNow;
+                } else {
+                    currentUserData.lastBoosterTime += REGEN_TIME_MS;
+                }
+                db.collection('users').doc(currentUser).update({
+                    boostersLeft: currentUserData.boostersLeft,
+                    lastBoosterTime: currentUserData.lastBoosterTime
+                });
+            }
+            renderBoosterStatus();
+        } else {
+            renderBoosterStatus();
+        }
+    }, 1000);
+}
+
+function renderBoosterStatus() {
+    boosterCountDisplay.textContent = currentUserData.boostersLeft;
+    
+    if (currentUserData.boostersLeft >= MAX_BOOSTERS) {
+        boosterTimerText.style.display = 'none'; // On cache le chrono si on est plein
+    } else {
+        boosterTimerText.style.display = 'block';
+        const now = Date.now();
+        const timeLeft = REGEN_TIME_MS - (now - currentUserData.lastBoosterTime);
+        const minutes = Math.floor(timeLeft / 60000);
+        const seconds = Math.floor((timeLeft % 60000) / 1000);
+        
+        boosterTimerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+}
+
+// === GESTION DE L'AUTHENTIFICATION ===
 loginBtn.addEventListener('click', async () => {
     const user = usernameInput.value.trim(); const pass = passwordInput.value;
     if (!user || !pass) return authMessage.textContent = "Veuillez remplir tous les champs.";
@@ -99,13 +192,13 @@ loginBtn.addEventListener('click', async () => {
             currentUserData = doc.data();
             localStorage.setItem('pokeAppCurrentUser', currentUser);
             authMessage.textContent = ""; usernameInput.value = ""; passwordInput.value = "";
-            updateAuthUI(); allerASection('section-boosters'); 
+            updateAuthUI(); 
+            updateBoosterLogic();
+            allerASection('section-boosters'); 
         } else { 
             authMessage.textContent = "Identifiants incorrects."; 
         }
-    } catch (error) {
-        authMessage.textContent = "Erreur de connexion au serveur.";
-    }
+    } catch (error) { authMessage.textContent = "Erreur de connexion au serveur."; }
 });
 
 signupBtn.addEventListener('click', async () => {
@@ -119,24 +212,26 @@ signupBtn.addEventListener('click', async () => {
         if (doc.exists) {
             authMessage.textContent = "Ce nom d'utilisateur existe déjà.";
         } else {
-            currentUserData = { password: pass, collection: [] };
-            await docRef.set(currentUserData); // Enregistre sur Firebase
+            currentUserData = { password: pass, collection: [], boostersLeft: MAX_BOOSTERS, lastBoosterTime: Date.now() };
+            await docRef.set(currentUserData);
             
             currentUser = user; 
             localStorage.setItem('pokeAppCurrentUser', currentUser);
             authMessage.textContent = ""; usernameInput.value = ""; passwordInput.value = "";
-            updateAuthUI(); allerASection('section-boosters');
+            updateAuthUI(); 
+            updateBoosterLogic();
+            allerASection('section-boosters');
         }
-    } catch (error) {
-        authMessage.textContent = "Erreur lors de la création du compte.";
-    }
+    } catch (error) { authMessage.textContent = "Erreur lors de la création du compte."; }
 });
 
 authNavBtn.addEventListener('click', () => {
     if (currentUser) {
         currentUser = null; currentUserData = { collection: [] };
         localStorage.removeItem('pokeAppCurrentUser');
-        updateAuthUI(); allerASection('section-boosters');
+        updateAuthUI(); 
+        updateBoosterLogic();
+        allerASection('section-boosters');
     } else { allerASection('section-auth'); }
 });
 
@@ -151,19 +246,14 @@ function updateAuthUI() {
     }
 }
 
-// === SAUVEGARDE DES CARTES (SUR FIREBASE) ===
+// === SAUVEGARDE DES CARTES ===
 function sauvegarderCarte(pokemonData, numeroPokedex, isShiny, isMega, megaForm) {
     if (!currentUser) return; 
-    
-    // Ajout local
     currentUserData.collection.push({
         data: pokemonData, pokedexNumber: numeroPokedex, shiny: isShiny, mega: isMega, megaForm: megaForm, date: new Date().getTime()
     });
-    
-    // Envoi de la mise à jour à Firebase
-    db.collection('users').doc(currentUser).update({
-        collection: currentUserData.collection
-    }).catch(err => console.error("Erreur de sauvegarde:", err));
+    db.collection('users').doc(currentUser).update({ collection: currentUserData.collection })
+        .catch(err => console.error("Erreur de sauvegarde:", err));
 }
 
 function formatMegaName(nom, form) {
@@ -172,7 +262,6 @@ function formatMegaName(nom, form) {
     return `Méga ${nom}`;
 }
 
-// === GESTION DES 4 ONGLETS DE COLLECTION ===
 function setTabActive(activeTab) {
     [tabNormal, tabShiny, tabMega, tabMegaShiny].forEach(tab => tab.classList.remove('active'));
     activeTab.classList.add('active');
@@ -182,10 +271,8 @@ tabNormal.addEventListener('click', () => { collectionMode = 'normal'; setTabAct
 tabShiny.addEventListener('click', () => { collectionMode = 'shiny'; setTabActive(tabShiny); afficherCollection(); });
 tabMega.addEventListener('click', () => { collectionMode = 'mega'; setTabActive(tabMega); afficherCollection(); });
 tabMegaShiny.addEventListener('click', () => { collectionMode = 'mega-shiny'; setTabActive(tabMegaShiny); afficherCollection(); });
-
 navCollectionBtn.addEventListener('click', afficherCollection);
 
-// === AFFICHAGE DE LA COLLECTION ===
 function afficherCollection() {
     if (!currentUser) return collectionContainer.innerHTML = "<p>Veuillez vous connecter.</p>", collectionCount.textContent = `0 / ${MAX_POKEMON}`;
     if (pokemonDataList.length === 0) return collectionContainer.innerHTML = "<p>Chargement des données...</p>";
@@ -195,7 +282,6 @@ function afficherCollection() {
     
     maCollection.forEach(carte => {
         if (!cartesPossedeesMap[carte.pokedexNumber]) cartesPossedeesMap[carte.pokedexNumber] = { normal: 0, shiny: 0, megas: {} };
-        
         if (carte.mega) {
             const form = carte.megaForm || "mega";
             if (!cartesPossedeesMap[carte.pokedexNumber].megas[form]) cartesPossedeesMap[carte.pokedexNumber].megas[form] = { normal: 0, shiny: 0 };
@@ -206,7 +292,6 @@ function afficherCollection() {
     });
 
     let maxAffiche = 0; let uniquesCount = 0;
-    
     if (collectionMode === 'mega' || collectionMode === 'mega-shiny') {
         Object.keys(megaIds).forEach(id => {
             megaIds[id].forEach(form => {
@@ -240,11 +325,9 @@ function afficherCollection() {
         if (form) nomAffiche = formatMegaName(nomAffiche, form);
 
         let numeroFormate = String(i).padStart(3, '0');
-        let nomPourUrl = nomEn.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace('♀', '-f').replace('♂', '-m').replace('. ', '-').replace(':', '').replace("'", "").replace(" ", "-");
+        let nomPourUrl = nomEn.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace('♀', '-f').replace('♂', '-m').replace(/['’.]/g, '').replace(/\s+/g, "-");
         
-        let imageUrlNormale = form 
-            ? `https://img.pokemondb.net/artwork/${nomPourUrl}-${form}.jpg`
-            : `https://img.pokemondb.net/artwork/${nomPourUrl}.jpg`;
+        let imageUrlNormale = form ? `https://img.pokemondb.net/sprites/home/normal/${nomPourUrl}-${form}.png` : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${i}.png`;
         
         let possedeLaCarte = false; let quantite = 0; let afficheHolo = false;
         
@@ -253,61 +336,40 @@ function afficherCollection() {
         } else if (collectionMode === 'shiny') { 
             possedeLaCarte = cartesPossedeesMap[i]?.shiny > 0; quantite = cartesPossedeesMap[i]?.shiny || 0; afficheHolo = true; 
         } else if (collectionMode === 'mega') {
-            possedeLaCarte = cartesPossedeesMap[i]?.megas[form]?.normal > 0;
-            quantite = cartesPossedeesMap[i]?.megas[form]?.normal || 0;
+            possedeLaCarte = cartesPossedeesMap[i]?.megas[form]?.normal > 0; quantite = cartesPossedeesMap[i]?.megas[form]?.normal || 0;
         } else if (collectionMode === 'mega-shiny') {
-            possedeLaCarte = cartesPossedeesMap[i]?.megas[form]?.shiny > 0;
-            quantite = cartesPossedeesMap[i]?.megas[form]?.shiny || 0;
-            afficheHolo = true;
+            possedeLaCarte = cartesPossedeesMap[i]?.megas[form]?.shiny > 0; quantite = cartesPossedeesMap[i]?.megas[form]?.shiny || 0; afficheHolo = true;
         }
 
         let htmlInner = "";
         if (possedeLaCarte) {
             const bgColor = couleursRarete[pokemonRarity];
-            
-            let classFond = "card-front";
-            let styleFond = "";
-            if (form && afficheHolo) {
-                classFond += " mega-shiny-bg";
-            } else if (form) {
-                classFond += " mega-bg";
-            } else if (afficheHolo) {
-                classFond += " shiny-bg";
-            } else {
-                styleFond = `style="background-color: ${bgColor}"`;
-            }
+            let classFond = "card-front"; let styleFond = "";
+            if (form && afficheHolo) classFond += " mega-shiny-bg";
+            else if (form) classFond += " mega-bg";
+            else if (afficheHolo) classFond += " shiny-bg";
+            else styleFond = `style="background-color: ${bgColor}"`;
 
             let textCount = quantite > 1 ? ` (x${quantite})` : ""; 
-            
             let finalImageUrl = imageUrlNormale;
-            if (form && afficheHolo) {
-                finalImageUrl = `https://img.pokemondb.net/sprites/home/shiny/${nomPourUrl}-${form}.png`;
-            } else if (!form && afficheHolo) {
-                finalImageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${i}.png`;
-            }
+            if (form && afficheHolo) finalImageUrl = `https://img.pokemondb.net/sprites/home/shiny/${nomPourUrl}-${form}.png`;
+            else if (!form && afficheHolo) finalImageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${i}.png`;
 
             htmlInner = `
                 <div class="${classFond}" ${styleFond}>
-                    <div class="card-header">
-                        <h1 class="pokemon-name" data-en="${form ? formatMegaName(nomEn, form) : nomEn}" data-fr="${form ? formatMegaName(nomFr, form) : nomFr}" data-count="${quantite}">${nomAffiche}${textCount}</h1>
-                        <div class="icon">${pokemonRarity}</div>
-                    </div>
+                    <div class="card-header"><h1 class="pokemon-name" data-en="${form ? formatMegaName(nomEn, form) : nomEn}" data-fr="${form ? formatMegaName(nomFr, form) : nomFr}" data-count="${quantite}">${nomAffiche}${textCount}</h1><div class="icon">${pokemonRarity}</div></div>
                     <div class="image-wrapper"><img class="pokemon-image" src="${finalImageUrl}" alt="Image"><span class="image-id">#${numeroFormate}</span></div>
                     <div class="card-subtext">Pokémon</div>
                     <div class="stats-bar"><span class="pokemon-pow">...</span><span class="pokemon-aura">N° ${numeroFormate}</span></div>
-                </div>
-            `;
+                </div>`;
         } else {
             htmlInner = `
                 <div class="card-front locked-card" style="background-color: #1a1a1a;">
                     <div class="card-header"><h1 class="pokemon-name" style="color: #555;">???</h1><div class="icon" style="background-color: #333; color: #555;">?</div></div>
-                    <div class="image-wrapper" style="background-color: #222;">
-                        <div class="question-mark">?</div><img class="pokemon-image silhouette" src="${imageUrlNormale}" alt="Caché"><span class="image-id" style="color: #555;">#${numeroFormate}</span>
-                    </div>
+                    <div class="image-wrapper" style="background-color: #222;"><div class="question-mark">?</div><img class="pokemon-image silhouette" src="${imageUrlNormale}" alt="Caché"><span class="image-id" style="color: #555;">#${numeroFormate}</span></div>
                     <div class="card-subtext" style="color: #555;">Inconnu</div>
                     <div class="stats-bar" style="background-color: #111; color: #555;"><span class="pokemon-pow">POW ???</span><span class="pokemon-aura">N° ${numeroFormate}</span></div>
-                </div>
-            `;
+                </div>`;
         }
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = `<div class="card flipped" style="cursor: default;"><div class="card-inner">${htmlInner}</div></div>`;
@@ -315,15 +377,12 @@ function afficherCollection() {
     };
 
     if (collectionMode === 'mega' || collectionMode === 'mega-shiny') {
-        Object.keys(megaIds).map(Number).sort((a,b)=>a-b).forEach(i => {
-            megaIds[i].forEach(form => renderCard(i, form));
-        });
+        Object.keys(megaIds).map(Number).sort((a,b)=>a-b).forEach(i => megaIds[i].forEach(form => renderCard(i, form)));
     } else {
         for (let i = 1; i <= MAX_POKEMON; i++) renderCard(i);
     }
 }
 
-// === NAVIGATION (MENU) ET LANGUE ===
 navLinks.forEach(link => { link.addEventListener('click', () => allerASection(link.getAttribute('data-target'))); });
 function allerASection(targetId) {
     navLinks.forEach(l => l.classList.remove('active'));
@@ -333,18 +392,13 @@ function allerASection(targetId) {
 }
 
 langToggle.addEventListener('click', () => {
-    currentLang = currentLang === 'en' ? 'fr' : 'en';
-    langToggle.textContent = currentLang === 'en' ? '🇬🇧 EN' : '🇫🇷 FR';
+    currentLang = currentLang === 'en' ? 'fr' : 'en'; langToggle.textContent = currentLang === 'en' ? '🇬🇧 EN' : '🇫🇷 FR';
     document.querySelectorAll('.pokemon-name').forEach(el => {
         const nomTraduit = el.getAttribute(`data-${currentLang}`);
-        if (nomTraduit) { 
-            const count = el.getAttribute('data-count');
-            el.textContent = count && parseInt(count) > 1 ? `${nomTraduit} (x${count})` : nomTraduit;
-        }
+        if (nomTraduit) { const count = el.getAttribute('data-count'); el.textContent = count && parseInt(count) > 1 ? `${nomTraduit} (x${count})` : nomTraduit; }
     });
 });
 
-// === LOGIQUE DE TIRAGE ===
 function tirerRarete() {
     const chance = Math.random() * 100; 
     if (chance < 60) return "C"; if (chance < 80) return "U"; if (chance < 90) return "R"; 
@@ -352,20 +406,16 @@ function tirerRarete() {
 }
 
 function creerCarte(pokemonData, numeroPokedex, index) {
-    let nomEn = pokemonData.en; let nomFr = pokemonData.fr;
-    let pokemonRarity = pokemonData.rarity;
+    let nomEn = pokemonData.en; let nomFr = pokemonData.fr; let pokemonRarity = pokemonData.rarity;
     
-    let isMega = false;
-    let selectedMegaForm = null;
+    let isMega = false; let selectedMegaForm = null;
     if (megaIds[numeroPokedex] && Math.floor(Math.random() * 50) === 0) {
-        isMega = true;
-        pokemonRarity = "MG";
+        isMega = true; pokemonRarity = "MG";
         const possibles = megaIds[numeroPokedex];
         selectedMegaForm = possibles[Math.floor(Math.random() * possibles.length)];
     }
 
     const isShiny = Math.floor(Math.random() * 250) === 0;
-
     let nomAffiche = currentLang === 'en' ? nomEn : nomFr;
     if (isMega) nomAffiche = formatMegaName(nomAffiche, selectedMegaForm);
 
@@ -373,25 +423,20 @@ function creerCarte(pokemonData, numeroPokedex, index) {
     const bgColor = couleursRarete[pokemonRarity];
     
     let imageUrl = ""; let classFond = "card-front"; let styleFond = "";
-    let nomPourUrl = nomEn.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace('♀', '-f').replace('♂', '-m').replace('. ', '-').replace(':', '').replace("'", "").replace(" ", "-");
+    let nomPourUrl = nomEn.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace('♀', '-f').replace('♂', '-m').replace(/['’.]/g, '').replace(/\s+/g, "-");
     
     if (isMega) {
         let megaUrlName = `${nomPourUrl}-${selectedMegaForm}`;
         if (isShiny) {
-            imageUrl = `https://img.pokemondb.net/sprites/home/shiny/${megaUrlName}.png`;
-            classFond += " mega-shiny-bg"; 
+            imageUrl = `https://img.pokemondb.net/sprites/home/shiny/${megaUrlName}.png`; classFond += " mega-shiny-bg"; 
         } else {
-            imageUrl = `https://img.pokemondb.net/artwork/${megaUrlName}.jpg`;
-            classFond += " mega-bg"; 
+            imageUrl = `https://img.pokemondb.net/sprites/home/normal/${megaUrlName}.png`; classFond += " mega-bg"; 
         }
-        console.log(`INCROYABLE ! Vous avez pioché un ${nomAffiche} !`);
     } else {
         if (isShiny) {
-            imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${numeroPokedex}.png`;
-            classFond += " shiny-bg";
+            imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${numeroPokedex}.png`; classFond += " shiny-bg";
         } else {
-            imageUrl = `https://img.pokemondb.net/artwork/${nomPourUrl}.jpg`;
-            styleFond = `style="background-color: ${bgColor}"`;
+            imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${numeroPokedex}.png`; styleFond = `style="background-color: ${bgColor}"`;
         }
     }
 
@@ -400,16 +445,13 @@ function creerCarte(pokemonData, numeroPokedex, index) {
             <div class="card-inner">
                 <div class="card-back"><div class="card-back-design">PokéApp</div></div>
                 <div class="${classFond}" ${styleFond}>
-                    <div class="card-header">
-                        <h1 class="pokemon-name" data-en="${isMega ? formatMegaName(nomEn, selectedMegaForm) : nomEn}" data-fr="${isMega ? formatMegaName(nomFr, selectedMegaForm) : nomFr}">${nomAffiche}</h1><div class="icon">${pokemonRarity}</div>
-                    </div>
+                    <div class="card-header"><h1 class="pokemon-name" data-en="${isMega ? formatMegaName(nomEn, selectedMegaForm) : nomEn}" data-fr="${isMega ? formatMegaName(nomFr, selectedMegaForm) : nomFr}">${nomAffiche}</h1><div class="icon">${pokemonRarity}</div></div>
                     <div class="image-wrapper"><img class="pokemon-image" src="${imageUrl}" alt="Image"><span class="image-id">#${numeroFormate}</span></div>
                     <div class="card-subtext">Pokémon</div>
                     <div class="stats-bar"><span class="pokemon-pow">POW ...</span><span class="pokemon-aura">N° ${numeroFormate}</span></div>
                 </div>
             </div>
-        </div>
-    `;
+        </div>`;
 
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = cardHTML;
@@ -430,15 +472,32 @@ function creerCarte(pokemonData, numeroPokedex, index) {
         .then(response => response.json())
         .then(apiData => {
             let totalStats = 0; apiData.stats.forEach(s => totalStats += s.base_stat);
-            if (isMega) totalStats += 100;
-            powElement.textContent = `POW ${totalStats}`;
-        })
-        .catch(error => { powElement.textContent = `POW ???`; });
+            if (isMega) totalStats += 100; powElement.textContent = `POW ${totalStats}`;
+        }).catch(error => { powElement.textContent = `POW ???`; });
 }
 
 function ouvrirBooster() {
     if (!currentUser) return alert("Vous devez être connecté !"), allerASection('section-auth');
     if (pokemonDataList.length === 0) return alert("Les données chargent...");
+
+    // VÉRIFICATION DE L'ÉNERGIE
+    if (currentUserData.boostersLeft <= 0) {
+        alert("Vous n'avez plus de boosters ! Revenez plus tard ou utilisez la triche dans les paramètres.");
+        return;
+    }
+
+    // Déduction d'un booster
+    currentUserData.boostersLeft--;
+    if (currentUserData.boostersLeft === MAX_BOOSTERS - 1) {
+        // Le chrono redémarre exactement au moment où on passe sous le maximum
+        currentUserData.lastBoosterTime = Date.now();
+    }
+    
+    db.collection('users').doc(currentUser).update({
+        boostersLeft: currentUserData.boostersLeft,
+        lastBoosterTime: currentUserData.lastBoosterTime
+    });
+    renderBoosterStatus(); // Mise à jour de l'UI instantanée
 
     boosterElement.classList.add('hidden'); cardsContainer.classList.remove('hidden'); cartesRetournees = 0; 
     let cartesTirees = [];
@@ -462,9 +521,10 @@ function ouvrirBooster() {
 boosterElement.addEventListener('click', ouvrirBooster);
 resetButton.addEventListener('click', () => { cardsContainer.innerHTML = ''; ouvrirBooster(); });
 
-// === OUTILS DE TEST (TRICHE - SYNCHRONISÉS FIREBASE) ===
+// === OUTILS DE TEST ===
 const btnUnlockAll = document.getElementById('cheat-unlock-all');
 const btnClearAll = document.getElementById('cheat-clear-all');
+const btnRefillBoosters = document.getElementById('cheat-refill-boosters'); // NOUVEAU
 
 btnUnlockAll.addEventListener('click', async () => {
     if (!currentUser) return alert("Vous devez être connecté !");
@@ -492,4 +552,16 @@ btnClearAll.addEventListener('click', async () => {
     currentUserData.collection = [];
     await db.collection('users').doc(currentUser).update({ collection: [] });
     alert("Collection vidée en ligne !");
+});
+
+btnRefillBoosters.addEventListener('click', async () => {
+    if (!currentUser) return;
+    currentUserData.boostersLeft = MAX_BOOSTERS;
+    currentUserData.lastBoosterTime = Date.now();
+    await db.collection('users').doc(currentUser).update({
+        boostersLeft: currentUserData.boostersLeft,
+        lastBoosterTime: currentUserData.lastBoosterTime
+    });
+    updateBoosterLogic();
+    alert("Triche activée : Vous avez récupéré vos 10 boosters !");
 });

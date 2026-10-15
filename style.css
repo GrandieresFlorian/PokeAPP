@@ -443,3 +443,18 @@ h2 { font-family: sans-serif; font-weight: normal; }
     color: #fceea7; 
     text-shadow: 1px 1px 3px black;
 }
+
+/* === STATUS DES BOOSTERS === */
+.booster-status {
+    background-color: #242424;
+    border: 2px solid #f1c40f;
+    border-radius: 8px;
+    padding: 15px 30px;
+    margin-bottom: 30px;
+    text-align: center;
+    font-family: sans-serif;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+.booster-status p { margin: 5px 0; font-size: 1.1rem; font-weight: bold; }
+#booster-count-display { color: #3498db; font-size: 1.5rem; font-family: 'Arial Black', Impact, sans-serif; }
+#booster-timer-display { color: #e74c3c; font-size: 1.3rem; font-family: 'Arial Black', Impact, sans-serif; }
