@@ -4,30 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Application Pokémon</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-
     <div class="app-container">
-        <!-- Le menu latéral -->
         <nav class="sidebar">
             <div class="logo">PokéApp</div>
-            
             <div id="user-info" class="user-info">
                 <span id="user-name-display">Non connecté</span>
                 <button id="auth-nav-btn" class="auth-btn-small" data-target="section-auth">Se connecter</button>
             </div>
-
             <ul class="nav-links">
                 <li class="active" data-target="section-boosters">Boosters</li>
                 <li data-target="section-collection" id="nav-collection">Collection</li>
-                <li data-target="section-amis" id="nav-amis">Amis</li>
+                <li data-target="section-amis" id="nav-amis">Amis 🤝</li>
                 <li data-target="section-settings">Paramètres</li>
             </ul>
         </nav>
 
         <main class="main-content">
-            
             <section id="section-auth" class="view-section hidden">
                 <div class="auth-container">
                     <h2>Connexion / Inscription</h2>
@@ -43,22 +38,20 @@
             </section>
 
             <section id="section-boosters" class="view-section">
-                <!-- NOUVEAU : Affichage du temps et des boosters restants -->
                 <div id="booster-status" class="booster-status hidden">
                     <p>Boosters disponibles : <span id="booster-count-display">10</span> / 10</p>
                     <p id="booster-timer-text">Prochain booster dans : <span id="booster-timer-display">00:00</span></p>
                 </div>
-
                 <div id="booster-pack" class="booster">
                     <h2>Pokémon</h2>
                     <p>Édition Complète</p>
                     <div class="booster-text">Cliquez pour ouvrir</div>
                 </div>
                 <div id="cards-container" class="cards-container hidden"></div>
-                <!-- NOUVEAU BOUTON -->
                 <button id="auto-open-btn" class="btn hidden" style="background-color: #9b59b6; margin-bottom: 10px;">Tout révéler ✨</button>
                 <button id="reset-button" class="btn hidden">Ouvrir un autre booster</button>
             </section>
+
             <section id="section-collection" class="view-section hidden">
                 <h2>Votre Collection (<span id="collection-count">0 / 1025</span>)</h2>
                 <div class="collection-tabs">
@@ -67,8 +60,6 @@
                     <button id="tab-mega" class="tab-btn">Méga 🧬</button>
                     <button id="tab-mega-shiny" class="tab-btn">Méga Shiny ✨🧬</button>
                 </div>
-
-                <!-- NOUVEAU : Barre de filtres -->
                 <div class="collection-filters">
                     <label for="filter-rarity">Rareté :</label>
                     <select id="filter-rarity" class="filter-select">
@@ -80,69 +71,50 @@
                         <option value="L">Légendaire (L)</option>
                         <option value="M">Mythique (M)</option>
                     </select>
-
                     <label class="filter-checkbox">
-                        <input type="checkbox" id="filter-owned"> Uniquement les cartes possédées
+                        <input type="checkbox" id="filter-owned"> Uniquement possédées
                     </label>
                 </div>
-
                 <div id="collection-container" class="cards-container"></div>
             </section>
 
-            <!-- NOUVELLE SECTION AMIS -->
             <section id="section-amis" class="view-section hidden">
                 <h2>Vos Amis</h2>
-                
                 <div class="friend-actions" style="margin-bottom: 30px; text-align: center;">
                     <input type="text" id="friend-id-input" class="auth-input" placeholder="Pseudo du joueur à ajouter" style="width: 250px; display: inline-block;">
                     <button id="add-friend-btn" class="btn btn-secondary" style="padding: 10px 20px; font-size: 1rem; margin-top: 0;">Envoyer la demande</button>
                     <div id="friend-message" style="margin-top: 10px; font-family: sans-serif; font-weight: bold;"></div>
                 </div>
-
                 <div class="friends-layout">
                     <div class="friends-list-container">
                         <h3 style="margin-top: 0; color: #3498db;">Mes Amis</h3>
-                        <ul id="friends-list" class="friend-ul">
-                            <!-- Amis injectés ici -->
-                        </ul>
+                        <ul id="friends-list" class="friend-ul"></ul>
                     </div>
-
                     <div class="friend-requests-container" style="margin-top: 20px; width: 100%;">
                         <h3 style="margin-top: 0; color: #f1c40f;">Propositions d'échange reçues</h3>
-                        <ul id="trade-requests-list" class="friend-ul">
-                            <!-- Échanges injectés ici -->
-                        </ul>
+                        <ul id="trade-requests-list" class="friend-ul"></ul>
                     </div>
-
                     <div class="friend-requests-container">
                         <h3 style="margin-top: 0; color: #e74c3c;">Demandes en attente</h3>
-                        <ul id="friend-requests-list" class="friend-ul">
-                            <!-- Demandes injectées ici -->
-                        </ul>
+                        <ul id="friend-requests-list" class="friend-ul"></ul>
                     </div>
                 </div>
             </section>
 
-            <!-- NOUVELLE SECTION D'ÉCHANGE -->
             <section id="section-trade" class="view-section hidden">
                 <h2>Proposition d'échange avec <span id="trade-target-name" style="color: #3498db;"></span></h2>
-                
                 <div class="trade-layout">
-                    <!-- Ce que je propose -->
                     <div class="trade-panel">
                         <h3>Je propose</h3>
                         <div id="my-trade-selection" class="trade-selection-box"></div>
                         <div id="my-trade-collection" class="trade-collection-grid"></div>
                     </div>
-
-                    <!-- Ce que je demande -->
                     <div class="trade-panel">
                         <h3>Je demande</h3>
                         <div id="their-trade-selection" class="trade-selection-box"></div>
                         <div id="their-trade-collection" class="trade-collection-grid"></div>
                     </div>
                 </div>
-
                 <div style="text-align: center; margin-top: 20px;">
                     <button id="send-trade-btn" class="btn" style="background-color: #2ecc71;">Envoyer la proposition</button>
                     <button id="cancel-trade-btn" class="btn btn-secondary" style="background-color: #e74c3c;">Annuler</button>
@@ -152,15 +124,9 @@
 
             <section id="section-settings" class="view-section hidden">
                 <h2>Paramètres</h2>
-                
-                <!-- Message affiché si l'utilisateur n'est pas "test" -->
                 <div id="debug-denied">
-                    <p style="color: #e74c3c; text-align: center; margin-top: 20px;">
-                        L'accès aux outils de développement est restreint.
-                    </p>
+                    <p style="color: #e74c3c; text-align: center; margin-top: 20px;">L'accès aux outils de développement est restreint.</p>
                 </div>
-
-                <!-- Outils de test (cachés par défaut) -->
                 <div id="debug-tools" class="hidden">
                     <p>Utilisez ces boutons pour tester l'affichage du Pokédex.</p>
                     <div style="display: flex; gap: 15px; margin-top: 20px;">
@@ -175,9 +141,8 @@
 
     <button id="lang-toggle" class="lang-btn">🇬🇧 EN</button>
 
-    <!-- Bibliothèques Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
-    <script src="script.js"></script>
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>

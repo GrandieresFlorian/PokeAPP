@@ -1,0 +1,6 @@
+.friends-layout { display: flex; gap: 30px; width: 100%; max-width: 800px; justify-content: space-between; }
+.friends-list-container, .friend-requests-container { flex: 1; background-color: var(--bg-panel); padding: 20px; border-radius: 8px; border: 2px solid #333; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+.friend-ul { list-style: none; padding: 0; margin: 0; }
+.friend-item { padding: 12px 10px; border-bottom: 1px solid #444; display: flex; justify-content: space-between; align-items: center; font-family: sans-serif; font-size: 1.1rem; color: #fceea7; }
+.btn-small-action { border: none; color: white; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+.btn-accept { background-color: #2ecc71; margin-right: 5px; } .btn-reject { background-color: #e74c3c; }

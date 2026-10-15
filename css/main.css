@@ -1,0 +1,14 @@
+@import url('layout.css');
+@import url('components/auth.css');
+@import url('components/booster.css');
+@import url('components/card.css');
+@import url('components/collection.css');
+@import url('components/friends.css');
+@import url('components/trade.css');
+
+:root {
+    --bg-dark: #1a1a1a;
+    --bg-panel: #242424;
+    --primary: #3498db;
+    --text-light: white;
+}
