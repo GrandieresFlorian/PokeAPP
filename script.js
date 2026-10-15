@@ -892,7 +892,7 @@ window.initierEchange = async function(friendId) {
     myOfferSelection = [];
     theirOfferSelection = [];
     
-    // 1. AFFICHAGE IMMÉDIAT : On bascule tout de suite sur la vue pour prouver que le clic a fonctionné
+    // 1. AFFICHAGE IMMÉDIAT
     allerASection('section-trade');
     document.getElementById('trade-target-name').textContent = friendId + " (Chargement...)";
     document.getElementById('trade-message').textContent = "";
@@ -911,10 +911,19 @@ window.initierEchange = async function(friendId) {
         }
         targetCollectionCache = doc.data().collection || [];
         
-        // SÉCURITÉ : Assurer que toutes les cartes ont un identifiant unique (date) pour la sélection
-        targetCollectionCache.forEach(c => { if (!c.date) c.date = Math.random(); });
+        // CORRECTION DU BUG DE SÉLECTION (Doublons de dates dus à la triche)
+        let usedDates = new Set();
+        targetCollectionCache.forEach(c => { 
+            while (!c.date || usedDates.has(c.date)) c.date = Date.now() + Math.random();
+            usedDates.add(c.date);
+        });
+        
+        usedDates.clear();
         if (currentUserData.collection) {
-            currentUserData.collection.forEach(c => { if (!c.date) c.date = Math.random(); });
+            currentUserData.collection.forEach(c => { 
+                while (!c.date || usedDates.has(c.date)) c.date = Date.now() + Math.random();
+                usedDates.add(c.date);
+            });
         }
 
     } catch (e) { 
@@ -925,7 +934,7 @@ window.initierEchange = async function(friendId) {
     }
 
     document.getElementById('trade-target-name').textContent = friendId;
-    renderTradeGrids(); // Maintenant on affiche les vraies cartes
+    renderTradeGrids(); 
 };
 
 function renderTradeGrids() {
