@@ -1,4 +1,4 @@
-import { CONSTS } from './state.js';
+import { state, CONSTS } from './state.js';
 
 export function tirerRarete() {
     const chance = Math.random() * 100; 
@@ -18,4 +18,15 @@ export function getMiniCardUrl(carte) {
     let nomPourUrl = nomEn.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace('♀', '-f').replace('♂', '-m').replace(/['’.]/g, '').replace(/\s+/g, "-");
     if (carte.mega) return carte.shiny ? `https://img.pokemondb.net/sprites/home/shiny/${nomPourUrl}-${carte.megaForm}.png` : `https://img.pokemondb.net/sprites/home/normal/${nomPourUrl}-${carte.megaForm}.png`;
     return carte.shiny ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${carte.pokedexNumber}.png` : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${carte.pokedexNumber}.png`;
+}
+
+export function sauvegarderCarte(pokemonData, numeroPokedex, isShiny, isMega, megaForm) {
+    import('./firebase-config.js').then(({db}) => {
+        if (!state.currentUser) return; 
+        state.currentUserData.collection.push({
+            data: pokemonData, pokedexNumber: numeroPokedex, shiny: isShiny, mega: isMega, megaForm: megaForm, date: new Date().getTime()
+        });
+        db.collection('users').doc(state.currentUser).update({ collection: state.currentUserData.collection })
+            .catch(err => console.error("Erreur de sauvegarde:", err));
+    });
 }
