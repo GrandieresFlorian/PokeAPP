@@ -153,6 +153,8 @@ body, html {
     background-color: transparent; /* On enlève le fond ici, il sera sur les faces */
     cursor: pointer;
     animation: fadeIn 0.6s ease-out backwards;
+    content-visibility: auto; /* Indique au navigateur de ne pas calculer le rendu des cartes hors-écran */
+    contain-intrinsic-size: 240px 380px;
 }
 
 /* Le conteneur interne qui va tourner */
@@ -504,4 +506,34 @@ h2 { font-family: sans-serif; font-weight: normal; }
     width: 18px;
     height: 18px;
     cursor: pointer;
+}
+
+/* === ANIMATION D'OUVERTURE DU BOOSTER === */
+@keyframes shakeAndBurst {
+    0% { transform: translateX(0) scale(1); filter: brightness(1); }
+    10% { transform: translateX(-10px) scale(1.02) rotate(-3deg); filter: brightness(1.1); }
+    20% { transform: translateX(10px) scale(1.02) rotate(3deg); }
+    30% { transform: translateX(-15px) scale(1.04) rotate(-5deg); }
+    40% { transform: translateX(15px) scale(1.04) rotate(5deg); }
+    50% { transform: translateX(-20px) scale(1.06) rotate(-7deg); filter: brightness(1.3); }
+    60% { transform: translateX(20px) scale(1.06) rotate(7deg); }
+    70% { transform: translateX(-25px) scale(1.08) rotate(-10deg); }
+    80% { transform: translateX(25px) scale(1.08) rotate(10deg); filter: brightness(1.6); box-shadow: 0 0 40px #f1c40f; }
+    90% { transform: translateX(0) scale(1.15); filter: brightness(2); box-shadow: 0 0 80px white; }
+    100% { transform: scale(1.5); filter: brightness(3); opacity: 0; }
+}
+
+.booster-animating {
+    animation: shakeAndBurst 1.2s cubic-bezier(.36,.07,.19,.97) forwards;
+    pointer-events: none; /* Empêche de recliquer pendant l'animation */
+}
+
+/* On s'assure que les cartes ont un effet d'apparition fluide */
+.cards-container .card {
+    animation: dropIn 0.5s ease-out backwards;
+}
+
+@keyframes dropIn {
+    0% { transform: translateY(-50px) scale(0.8); opacity: 0; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
 }

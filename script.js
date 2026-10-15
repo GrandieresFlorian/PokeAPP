@@ -14,6 +14,8 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // === ÉLÉMENTS DU DOM ===
+const autoOpenBtn = document.getElementById('auto-open-btn');
+let isOpening = false; // Pour éviter les clics multiples pendant l'animation
 const boosterElement = document.getElementById('booster-pack');
 const cardsContainer = document.getElementById('cards-container');
 const resetButton = document.getElementById('reset-button');
@@ -286,8 +288,49 @@ filterRarity.addEventListener('change', afficherCollection);
 filterOwned.addEventListener('change', afficherCollection);
 navCollectionBtn.addEventListener('click', afficherCollection);
 
+// === CORRECTION DU POW (Chargement paresseux) ===
+function chargerPowDynamiquement() {
+    const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const span = entry.target;
+                const id = span.dataset.id;
+                const isMega = span.dataset.mega === "true";
+                
+                // Vérifie si on a déjà enregistré le POW pour éviter de requêter l'API
+                const cacheKey = `powCache_${id}`;
+                const cachedPow = localStorage.getItem(cacheKey);
+                
+                if (cachedPow) {
+                    let totalStats = parseInt(cachedPow);
+                    if (isMega) totalStats += 100;
+                    span.textContent = `POW ${totalStats}`;
+                } else {
+                    // Sinon, on requête PokéAPI et on sauvegarde le résultat
+                    fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
+                        .then(res => res.json())
+                        .then(apiData => {
+                            let totalStats = 0; 
+                            apiData.stats.forEach(s => totalStats += s.base_stat);
+                            localStorage.setItem(cacheKey, totalStats); // Mise en cache
+                            if (isMega) totalStats += 100;
+                            span.textContent = `POW ${totalStats}`;
+                        }).catch(() => {
+                            span.textContent = "POW ???";
+                        });
+                }
+                obs.unobserve(span); // On arrête d'observer cet élément une fois chargé
+            }
+        });
+    }, { rootMargin: "300px" }); // Charge les POW des cartes juste avant qu'elles n'apparaissent à l'écran
 
+    // On observe uniquement les cartes que l'utilisateur possède ("...")
+    document.querySelectorAll('.pokemon-pow').forEach(span => {
+        if (span.textContent === "...") observer.observe(span);
+    });
+}
 // === AFFICHAGE DE LA COLLECTION ===
+
 function afficherCollection() {
     if (!currentUser) return collectionContainer.innerHTML = "<p>Veuillez vous connecter.</p>", collectionCount.textContent = `0 / ${MAX_POKEMON}`;
     if (pokemonDataList.length === 0) return collectionContainer.innerHTML = "<p>Chargement des données...</p>";
@@ -295,7 +338,6 @@ function afficherCollection() {
     const maCollection = currentUserData.collection || [];
     const cartesPossedeesMap = {}; 
     
-    // Valeurs des filtres
     const rarityVal = filterRarity.value;
     const ownedOnlyVal = filterOwned.checked;
     
@@ -312,14 +354,13 @@ function afficherCollection() {
 
     let maxAffiche = 0; 
     let uniquesCount = 0;
-    collectionContainer.innerHTML = ""; 
+    let htmlContent = ""; // OPTIMISATION 1 : Stocker le HTML en mémoire plutôt que de modifier le DOM à chaque boucle
 
     const renderCard = (i, form = null) => {
         const dataOrigine = pokemonDataList[i - 1]; 
         if (!dataOrigine) return;
 
         let pokemonRarity = (collectionMode === 'mega' || collectionMode === 'mega-shiny') ? "MG" : dataOrigine.rarity;
-        
         let possedeLaCarte = false; let quantite = 0; let afficheHolo = false;
         
         if (collectionMode === 'normal') { 
@@ -332,9 +373,8 @@ function afficherCollection() {
             possedeLaCarte = cartesPossedeesMap[i]?.megas[form]?.shiny > 0; quantite = cartesPossedeesMap[i]?.megas[form]?.shiny || 0; afficheHolo = true;
         }
 
-        // === APPLICATION DES FILTRES ===
-        if (rarityVal !== 'all' && pokemonRarity !== rarityVal) return; // Ignore la carte si elle n'a pas la bonne rareté
-        if (ownedOnlyVal && !possedeLaCarte) return; // Ignore la carte si l'option "Possédées uniquement" est cochée
+        if (rarityVal !== 'all' && pokemonRarity !== rarityVal) return; 
+        if (ownedOnlyVal && !possedeLaCarte) return; 
 
         maxAffiche++;
         if (possedeLaCarte) uniquesCount++;
@@ -348,7 +388,8 @@ function afficherCollection() {
         
         let imageUrlNormale = form ? `https://img.pokemondb.net/sprites/home/normal/${nomPourUrl}-${form}.png` : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${i}.png`;
 
-        let htmlInner = "";
+        // OPTIMISATION 2 : Ajout de l'attribut loading="lazy" sur les images pour éviter de tout télécharger d'un coup
+        // OPTIMISATION 3 : Ajout des attributs data-id et data-mega sur le <span> POW pour notre script de chargement
         if (possedeLaCarte) {
             const bgColor = couleursRarete[pokemonRarity];
             let classFond = "card-front"; let styleFond = "";
@@ -362,25 +403,30 @@ function afficherCollection() {
             if (form && afficheHolo) finalImageUrl = `https://img.pokemondb.net/sprites/home/shiny/${nomPourUrl}-${form}.png`;
             else if (!form && afficheHolo) finalImageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${i}.png`;
 
-            htmlInner = `
-                <div class="${classFond}" ${styleFond}>
-                    <div class="card-header"><h1 class="pokemon-name" data-en="${form ? formatMegaName(nomEn, form) : nomEn}" data-fr="${form ? formatMegaName(nomFr, form) : nomFr}" data-count="${quantite}">${nomAffiche}${textCount}</h1><div class="icon">${pokemonRarity}</div></div>
-                    <div class="image-wrapper"><img class="pokemon-image" src="${finalImageUrl}" alt="Image"><span class="image-id">#${numeroFormate}</span></div>
-                    <div class="card-subtext">Pokémon</div>
-                    <div class="stats-bar"><span class="pokemon-pow">...</span><span class="pokemon-aura">N° ${numeroFormate}</span></div>
+            htmlContent += `
+                <div class="card flipped" style="cursor: default;">
+                    <div class="card-inner">
+                        <div class="${classFond}" ${styleFond}>
+                            <div class="card-header"><h1 class="pokemon-name" data-en="${form ? formatMegaName(nomEn, form) : nomEn}" data-fr="${form ? formatMegaName(nomFr, form) : nomFr}" data-count="${quantite}">${nomAffiche}${textCount}</h1><div class="icon">${pokemonRarity}</div></div>
+                            <div class="image-wrapper"><img class="pokemon-image" src="${finalImageUrl}" alt="Image" loading="lazy"><span class="image-id">#${numeroFormate}</span></div>
+                            <div class="card-subtext">Pokémon</div>
+                            <div class="stats-bar"><span class="pokemon-pow" data-id="${i}" data-mega="${form ? 'true' : 'false'}">...</span><span class="pokemon-aura">N° ${numeroFormate}</span></div>
+                        </div>
+                    </div>
                 </div>`;
         } else {
-            htmlInner = `
-                <div class="card-front locked-card" style="background-color: #1a1a1a;">
-                    <div class="card-header"><h1 class="pokemon-name" style="color: #555;">???</h1><div class="icon" style="background-color: #333; color: #555;">?</div></div>
-                    <div class="image-wrapper" style="background-color: #222;"><div class="question-mark">?</div><img class="pokemon-image silhouette" src="${imageUrlNormale}" alt="Caché"><span class="image-id" style="color: #555;">#${numeroFormate}</span></div>
-                    <div class="card-subtext" style="color: #555;">Inconnu</div>
-                    <div class="stats-bar" style="background-color: #111; color: #555;"><span class="pokemon-pow">POW ???</span><span class="pokemon-aura">N° ${numeroFormate}</span></div>
+            htmlContent += `
+                <div class="card flipped" style="cursor: default;">
+                    <div class="card-inner">
+                        <div class="card-front locked-card" style="background-color: #1a1a1a;">
+                            <div class="card-header"><h1 class="pokemon-name" style="color: #555;">???</h1><div class="icon" style="background-color: #333; color: #555;">?</div></div>
+                            <div class="image-wrapper" style="background-color: #222;"><div class="question-mark">?</div><img class="pokemon-image silhouette" src="${imageUrlNormale}" alt="Caché" loading="lazy"><span class="image-id" style="color: #555;">#${numeroFormate}</span></div>
+                            <div class="card-subtext" style="color: #555;">Inconnu</div>
+                            <div class="stats-bar" style="background-color: #111; color: #555;"><span class="pokemon-pow">POW ???</span><span class="pokemon-aura">N° ${numeroFormate}</span></div>
+                        </div>
+                    </div>
                 </div>`;
         }
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = `<div class="card flipped" style="cursor: default;"><div class="card-inner">${htmlInner}</div></div>`;
-        collectionContainer.appendChild(tempDiv.firstElementChild);
     };
 
     if (collectionMode === 'mega' || collectionMode === 'mega-shiny') {
@@ -389,8 +435,10 @@ function afficherCollection() {
         for (let i = 1; i <= MAX_POKEMON; i++) renderCard(i);
     }
     
-    // Met à jour le compteur dynamique avec le résultat des filtres
+    collectionContainer.innerHTML = htmlContent; // Injection dans le DOM en 1 seule fois
     collectionCount.textContent = `${uniquesCount} / ${maxAffiche}`;
+
+    chargerPowDynamiquement(); // Lance le script qui récupère les POW sans faire ramer la page
 }
 
 navLinks.forEach(link => { link.addEventListener('click', () => allerASection(link.getAttribute('data-target'))); });
@@ -473,7 +521,10 @@ function creerCarte(pokemonData, numeroPokedex, index) {
         if (!nouvelleCarte.classList.contains('flipped')) {
             nouvelleCarte.classList.add('flipped'); cartesRetournees++; 
             sauvegarderCarte(pokemonData, numeroPokedex, isShiny, isMega, selectedMegaForm);
-            if (cartesRetournees === 5) resetButton.disabled = false;
+            if (cartesRetournees === 5) {
+                resetButton.disabled = false;
+                autoOpenBtn.classList.add('hidden'); // Cache le bouton d'ouverture auto
+            }
         }
     });
 
@@ -495,6 +546,9 @@ function ouvrirBooster() {
         return;
     }
 
+    if (isOpening) return; // Empêche de cliquer 10 fois pendant l'animation
+    isOpening = true;
+
     currentUserData.boostersLeft--;
     if (currentUserData.boostersLeft === MAX_BOOSTERS - 1) {
         currentUserData.lastBoosterTime = Date.now();
@@ -506,27 +560,65 @@ function ouvrirBooster() {
     });
     renderBoosterStatus();
 
-    boosterElement.classList.add('hidden'); cardsContainer.classList.remove('hidden'); cartesRetournees = 0; 
-    let cartesTirees = [];
-    
-    const pokemonListAvecIndex = pokemonDataList.map((pokemon, index) => { return { donnees: pokemon, vraiNumero: index + 1 }; });
-    
-    for(let i = 0; i < 5; i++) {
-        const rareteCible = tirerRarete();
-        const pokemonsPossibles = pokemonListAvecIndex.filter(p => p.donnees.rarity === rareteCible);
-        if (pokemonsPossibles.length === 0) { i--; continue; }
+    // 1. DÉMARRE L'ANIMATION DU BOOSTER
+    boosterElement.classList.add('booster-animating');
 
-        const randomPossibiliteIndex = Math.floor(Math.random() * pokemonsPossibles.length);
-        cartesTirees.push({ data: pokemonsPossibles[randomPossibiliteIndex].donnees, pokedexNumber: pokemonsPossibles[randomPossibiliteIndex].vraiNumero });
-    }
-    
-    cartesTirees.sort((a, b) => poidsRarete[a.data.rarity] - poidsRarete[b.data.rarity]);
-    cartesTirees.forEach((carte, index) => creerCarte(carte.data, carte.pokedexNumber, index));
-    setTimeout(() => { resetButton.classList.remove('hidden'); resetButton.disabled = true; }, 1000);
+    // 2. ATTEND LA FIN DE L'ANIMATION (1.2 secondes)
+    setTimeout(() => {
+        boosterElement.classList.remove('booster-animating');
+        boosterElement.classList.add('hidden'); 
+        cardsContainer.classList.remove('hidden'); 
+        cartesRetournees = 0; 
+        
+        let cartesTirees = [];
+        const pokemonListAvecIndex = pokemonDataList.map((pokemon, index) => { return { donnees: pokemon, vraiNumero: index + 1 }; });
+        
+        for(let i = 0; i < 5; i++) {
+            const rareteCible = tirerRarete();
+            const pokemonsPossibles = pokemonListAvecIndex.filter(p => p.donnees.rarity === rareteCible);
+            if (pokemonsPossibles.length === 0) { i--; continue; }
+
+            const randomPossibiliteIndex = Math.floor(Math.random() * pokemonsPossibles.length);
+            cartesTirees.push({ data: pokemonsPossibles[randomPossibiliteIndex].donnees, pokedexNumber: pokemonsPossibles[randomPossibiliteIndex].vraiNumero });
+        }
+        
+        cartesTirees.sort((a, b) => poidsRarete[a.data.rarity] - poidsRarete[b.data.rarity]);
+        
+        // Ajoute un léger délai visuel d'apparition entre chaque carte
+        cartesTirees.forEach((carte, index) => {
+            setTimeout(() => {
+                creerCarte(carte.data, carte.pokedexNumber, index);
+            }, index * 100); // 100ms de décalage entre chaque carte
+        });
+
+        setTimeout(() => { 
+            resetButton.classList.remove('hidden'); 
+            resetButton.disabled = true; 
+            autoOpenBtn.classList.remove('hidden'); // Affiche le bouton Auto
+            autoOpenBtn.disabled = false;
+            isOpening = false; 
+        }, (5 * 100) + 200);
+
+    }, 1200); // Temps de l'animation CSS shakeAndBurst
 }
-
 boosterElement.addEventListener('click', ouvrirBooster);
 resetButton.addEventListener('click', () => { cardsContainer.innerHTML = ''; ouvrirBooster(); });
+
+// === ÉVÈNEMENT DU BOUTON OUVERTURE AUTO ===
+autoOpenBtn.addEventListener('click', () => {
+    autoOpenBtn.disabled = true; // Désactive le bouton pour éviter de cliquer plusieurs fois
+    
+    // Récupère toutes les cartes non retournées
+    const unflippedCards = Array.from(cardsContainer.querySelectorAll('.card:not(.flipped)'));
+    
+    unflippedCards.forEach((carteElement, i) => {
+        // Retourne les cartes une par une avec un délai
+        setTimeout(() => {
+            // Simule un clic sur la carte pour déclencher votre logique existante (sauvegarde, etc)
+            carteElement.click(); 
+        }, i * 400); // 400ms entre chaque carte
+    });
+});
 
 // === OUTILS DE TEST ===
 const btnUnlockAll = document.getElementById('cheat-unlock-all');
