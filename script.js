@@ -936,7 +936,12 @@ function renderTradeGrids() {
 
     const createMiniCard = (carte, isMine) => {
         const div = document.createElement('div');
-        if (!carte || !carte.data) return div; // SÉCURITÉ : Ignore les vieilles cartes corrompues
+        
+        // SÉCURITÉ : Ignore totalement les cartes corrompues (elles ne s'afficheront pas et ne feront pas planter le code)
+        if (!carte || !carte.data || !carte.data.en) {
+            div.style.display = "none";
+            return div;
+        }
 
         const isSelected = isMine ? myOfferSelection.some(c => c.date === carte.date) : theirOfferSelection.some(c => c.date === carte.date);
         
@@ -956,7 +961,7 @@ function renderTradeGrids() {
                 if (isSelected) theirOfferSelection = theirOfferSelection.filter(c => c.date !== carte.date);
                 else theirOfferSelection.push(carte);
             }
-            renderTradeGrids();
+            renderTradeGrids(); // Met à jour l'affichage
         };
         return div;
     };
