@@ -21,6 +21,7 @@
             <ul class="nav-links">
                 <li class="active" data-target="section-boosters">Boosters</li>
                 <li data-target="section-collection" id="nav-collection">Collection</li>
+                <li data-target="section-amis" id="nav-amis">Amis</li>
                 <li data-target="section-settings">Paramètres</li>
             </ul>
         </nav>
@@ -58,7 +59,7 @@
                 <button id="auto-open-btn" class="btn hidden" style="background-color: #9b59b6; margin-bottom: 10px;">Tout révéler ✨</button>
                 <button id="reset-button" class="btn hidden">Ouvrir un autre booster</button>
             </section>
-<section id="section-collection" class="view-section hidden">
+            <section id="section-collection" class="view-section hidden">
                 <h2>Votre Collection (<span id="collection-count">0 / 1025</span>)</h2>
                 <div class="collection-tabs">
                     <button id="tab-normal" class="tab-btn active">Classique</button>
@@ -86,6 +87,33 @@
                 </div>
 
                 <div id="collection-container" class="cards-container"></div>
+            </section>
+
+            <!-- NOUVELLE SECTION AMIS -->
+            <section id="section-amis" class="view-section hidden">
+                <h2>Vos Amis</h2>
+                
+                <div class="friend-actions" style="margin-bottom: 30px; text-align: center;">
+                    <input type="text" id="friend-id-input" class="auth-input" placeholder="Pseudo du joueur à ajouter" style="width: 250px; display: inline-block;">
+                    <button id="add-friend-btn" class="btn btn-secondary" style="padding: 10px 20px; font-size: 1rem; margin-top: 0;">Envoyer la demande</button>
+                    <div id="friend-message" style="margin-top: 10px; font-family: sans-serif; font-weight: bold;"></div>
+                </div>
+
+                <div class="friends-layout">
+                    <div class="friends-list-container">
+                        <h3 style="margin-top: 0; color: #3498db;">Mes Amis</h3>
+                        <ul id="friends-list" class="friend-ul">
+                            <!-- Amis injectés ici -->
+                        </ul>
+                    </div>
+
+                    <div class="friend-requests-container">
+                        <h3 style="margin-top: 0; color: #e74c3c;">Demandes en attente</h3>
+                        <ul id="friend-requests-list" class="friend-ul">
+                            <!-- Demandes injectées ici -->
+                        </ul>
+                    </div>
+                </div>
             </section>
 
             <section id="section-settings" class="view-section hidden">

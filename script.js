@@ -101,6 +101,7 @@ if (currentUser) {
             }
             updateAuthUI();
             updateBoosterLogic();
+            startFriendsListener();
         } else {
             currentUser = null; localStorage.removeItem('pokeAppCurrentUser'); updateAuthUI();
         }
@@ -198,6 +199,7 @@ loginBtn.addEventListener('click', async () => {
             authMessage.textContent = ""; usernameInput.value = ""; passwordInput.value = "";
             updateAuthUI(); 
             updateBoosterLogic();
+            startFriendsListener();
             allerASection('section-boosters'); 
         } else { 
             authMessage.textContent = "Identifiants incorrects."; 
@@ -231,6 +233,7 @@ signupBtn.addEventListener('click', async () => {
 
 authNavBtn.addEventListener('click', () => {
     if (currentUser) {
+        if (friendsListener) { friendsListener(); friendsListener = null; }
         currentUser = null; currentUserData = { collection: [] };
         localStorage.removeItem('pokeAppCurrentUser');
         updateAuthUI(); 
@@ -707,3 +710,129 @@ btnRefillBoosters.addEventListener('click', async () => {
     updateBoosterLogic();
     alert("Triche activée : Vous avez récupéré vos 10 boosters !");
 });
+
+// === GESTION DES AMIS ===
+const friendIdInput = document.getElementById('friend-id-input');
+const addFriendBtn = document.getElementById('add-friend-btn');
+const friendMessage = document.getElementById('friend-message');
+const friendsList = document.getElementById('friends-list');
+const friendRequestsList = document.getElementById('friend-requests-list');
+let friendsListener = null;
+
+// Lance l'écoute en temps réel du document du joueur
+function startFriendsListener() {
+    if (!currentUser) return;
+    if (friendsListener) friendsListener(); // Coupe l'ancienne écoute
+    
+    friendsListener = db.collection('users').doc(currentUser).onSnapshot(doc => {
+        if (doc.exists) {
+            const data = doc.data();
+            currentUserData.friends = data.friends || [];
+            currentUserData.friendRequests = data.friendRequests || [];
+            renderFriendsUI();
+        }
+    });
+}
+
+// Affichage dynamique des amis et demandes
+function renderFriendsUI() {
+    if (!currentUser) return;
+    
+    friendsList.innerHTML = "";
+    friendRequestsList.innerHTML = "";
+    
+    const friends = currentUserData.friends || [];
+    const requests = currentUserData.friendRequests || [];
+    
+    // Rendu des Amis
+    if (friends.length === 0) {
+        friendsList.innerHTML = "<li class='friend-item' style='color: #777;'>Aucun ami pour le moment.</li>";
+    } else {
+        friends.forEach(friend => {
+            friendsList.innerHTML += `<li class="friend-item"><span>${friend}</span></li>`;
+        });
+    }
+    
+    // Rendu des Demandes
+    if (requests.length === 0) {
+        friendRequestsList.innerHTML = "<li class='friend-item' style='color: #777;'>Aucune demande en attente.</li>";
+    } else {
+        requests.forEach(req => {
+            const li = document.createElement('li');
+            li.className = "friend-item";
+            li.innerHTML = `<span>${req}</span>
+                <div>
+                    <button class="btn-small-action btn-accept" onclick="acceptFriend('${req}')">✔</button>
+                    <button class="btn-small-action btn-reject" onclick="rejectFriend('${req}')">✖</button>
+                </div>`;
+            friendRequestsList.appendChild(li);
+        });
+    }
+}
+
+// Envoyer une demande d'ami
+addFriendBtn.addEventListener('click', async () => {
+    const targetId = friendIdInput.value.trim();
+    if (!currentUser) return;
+    if (!targetId) return friendMessage.textContent = "Veuillez entrer un pseudo.", friendMessage.style.color = "#e74c3c";
+    if (targetId === currentUser) return friendMessage.textContent = "Vous ne pouvez pas vous ajouter vous-même.", friendMessage.style.color = "#e74c3c";
+    
+    friendMessage.textContent = "Recherche...";
+    friendMessage.style.color = "#f1c40f";
+    
+    try {
+        const targetRef = db.collection('users').doc(targetId);
+        const targetDoc = await targetRef.get();
+        
+        if (!targetDoc.exists) return friendMessage.textContent = "Joueur introuvable.", friendMessage.style.color = "#e74c3c";
+        
+        const targetData = targetDoc.data();
+        const targetRequests = targetData.friendRequests || [];
+        const targetFriends = targetData.friends || [];
+        
+        if (targetFriends.includes(currentUser)) return friendMessage.textContent = "Vous êtes déjà amis !", friendMessage.style.color = "#e74c3c";
+        if (targetRequests.includes(currentUser)) return friendMessage.textContent = "Demande déjà envoyée.", friendMessage.style.color = "#e74c3c";
+        
+        targetRequests.push(currentUser);
+        await targetRef.update({ friendRequests: targetRequests });
+        
+        friendMessage.textContent = "Demande envoyée avec succès !";
+        friendMessage.style.color = "#2ecc71";
+        friendIdInput.value = "";
+        setTimeout(() => friendMessage.textContent = "", 3000);
+    } catch (error) {
+        friendMessage.textContent = "Erreur de connexion.";
+        friendMessage.style.color = "#e74c3c";
+    }
+});
+
+// Accepter l'ami (ajoute l'id chez les deux joueurs)
+window.acceptFriend = async function(friendId) {
+    if (!currentUser) return;
+    try {
+        let myRequests = currentUserData.friendRequests.filter(id => id !== friendId);
+        let myFriends = currentUserData.friends || [];
+        if (!myFriends.includes(friendId)) myFriends.push(friendId);
+        
+        // Met à jour MON profil
+        await db.collection('users').doc(currentUser).update({ friendRequests: myRequests, friends: myFriends });
+        
+        // Met à jour LE profil de l'autre
+        const friendRef = db.collection('users').doc(friendId);
+        const friendDoc = await friendRef.get();
+        if (friendDoc.exists) {
+            let theirFriends = friendDoc.data().friends || [];
+            if (!theirFriends.includes(currentUser)) {
+                theirFriends.push(currentUser);
+                await friendRef.update({ friends: theirFriends });
+            }
+        }
+    } catch(e) { console.error(e); }
+};
+
+// Refuser l'ami
+window.rejectFriend = async function(friendId) {
+    if (!currentUser) return;
+    let myRequests = currentUserData.friendRequests.filter(id => id !== friendId);
+    await db.collection('users').doc(currentUser).update({ friendRequests: myRequests });
+};
