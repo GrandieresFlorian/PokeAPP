@@ -676,14 +676,16 @@ btnUnlockAll.addEventListener('click', async () => {
     if (pokemonDataList.length === 0) return alert("Les données chargent...");
 
     currentUserData.collection = [];
+    let timeOffset = 0; // Ajoute 1 milliseconde à chaque carte pour qu'elles soient uniques
+
     pokemonDataList.forEach((pokemon, index) => {
         const id = index + 1;
-        currentUserData.collection.push({ data: pokemon, pokedexNumber: id, shiny: false, mega: false, megaForm: null, date: Date.now() });
-        currentUserData.collection.push({ data: pokemon, pokedexNumber: id, shiny: true, mega: false, megaForm: null, date: Date.now() });
+        currentUserData.collection.push({ data: pokemon, pokedexNumber: id, shiny: false, mega: false, megaForm: null, date: Date.now() + timeOffset++ });
+        currentUserData.collection.push({ data: pokemon, pokedexNumber: id, shiny: true, mega: false, megaForm: null, date: Date.now() + timeOffset++ });
         if (megaIds[id]) {
             megaIds[id].forEach(form => {
-                currentUserData.collection.push({ data: pokemon, pokedexNumber: id, shiny: false, mega: true, megaForm: form, date: Date.now() });
-                currentUserData.collection.push({ data: pokemon, pokedexNumber: id, shiny: true, mega: true, megaForm: form, date: Date.now() });
+                currentUserData.collection.push({ data: pokemon, pokedexNumber: id, shiny: false, mega: true, megaForm: form, date: Date.now() + timeOffset++ });
+                currentUserData.collection.push({ data: pokemon, pokedexNumber: id, shiny: true, mega: true, megaForm: form, date: Date.now() + timeOffset++ });
             });
         }
     });
