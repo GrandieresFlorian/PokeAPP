@@ -218,7 +218,7 @@ signupBtn.addEventListener('click', async () => {
         if (doc.exists) {
             authMessage.textContent = "Ce nom d'utilisateur existe déjà.";
         } else {
-            currentUserData = { password: pass, collection: [], boostersLeft: MAX_BOOSTERS, lastBoosterTime: Date.now() };
+            currentUserData = { password: pass, collection: [], boostersLeft: MAX_BOOSTERS, lastBoosterTime: Date.now(), friends: [], friendRequests: [], trades: [] };
             await docRef.set(currentUserData);
             
             currentUser = user; 
@@ -745,11 +745,45 @@ function renderFriendsUI() {
     const requests = currentUserData.friendRequests || [];
     
     // Rendu des Amis
+// Rendu des Amis (Modifié pour ajouter le bouton Échanger)
     if (friends.length === 0) {
         friendsList.innerHTML = "<li class='friend-item' style='color: #777;'>Aucun ami pour le moment.</li>";
     } else {
         friends.forEach(friend => {
-            friendsList.innerHTML += `<li class="friend-item"><span>${friend}</span></li>`;
+            friendsList.innerHTML += `
+                <li class="friend-item">
+                    <span>${friend}</span>
+                    <button class="btn-small-action" style="background-color: #9b59b6;" onclick="initierEchange('${friend}')">Échanger 🔄</button>
+                </li>`;
+        });
+    }
+
+    // NOUVEAU : Rendu des Propositions d'Échange
+    const tradeRequestsList = document.getElementById('trade-requests-list');
+    const trades = currentUserData.trades || [];
+    tradeRequestsList.innerHTML = "";
+
+    if (trades.length === 0) {
+        tradeRequestsList.innerHTML = "<li class='friend-item' style='color: #777;'>Aucune proposition.</li>";
+    } else {
+        trades.forEach(trade => {
+            const li = document.createElement('li');
+            li.className = "friend-item";
+            li.style.flexDirection = "column";
+            li.style.alignItems = "flex-start";
+            li.innerHTML = `
+                <div style="width: 100%; display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <span><b>${trade.from}</b> propose un échange :</span>
+                    <div>
+                        <button class="btn-small-action btn-accept" onclick="accepterEchange('${trade.id}', '${trade.from}')">✔ Accepter</button>
+                        <button class="btn-small-action btn-reject" onclick="refuserEchange('${trade.id}')">✖ Refuser</button>
+                    </div>
+                </div>
+                <div style="font-size: 0.9rem; color: #aaa;">
+                    <b>Il offre :</b> ${trade.offer.length} carte(s)<br>
+                    <b>Il demande :</b> ${trade.request.length} carte(s)
+                </div>`;
+            tradeRequestsList.appendChild(li);
         });
     }
     
@@ -835,4 +869,159 @@ window.rejectFriend = async function(friendId) {
     if (!currentUser) return;
     let myRequests = currentUserData.friendRequests.filter(id => id !== friendId);
     await db.collection('users').doc(currentUser).update({ friendRequests: myRequests });
+};
+
+// === SYSTÈME D'ÉCHANGE ===
+let currentTradeTarget = null;
+let targetCollectionCache = [];
+let myOfferSelection = [];
+let theirOfferSelection = [];
+
+function getMiniCardUrl(carte) {
+    let nomEn = carte.data.en;
+    let nomPourUrl = nomEn.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace('♀', '-f').replace('♂', '-m').replace(/['’.]/g, '').replace(/\s+/g, "-");
+    if (carte.mega) return carte.shiny ? `https://img.pokemondb.net/sprites/home/shiny/${nomPourUrl}-${carte.megaForm}.png` : `https://img.pokemondb.net/sprites/home/normal/${nomPourUrl}-${carte.megaForm}.png`;
+    return carte.shiny ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${carte.pokedexNumber}.png` : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${carte.pokedexNumber}.png`;
+}
+
+window.initierEchange = async function(friendId) {
+    currentTradeTarget = friendId;
+    myOfferSelection = [];
+    theirOfferSelection = [];
+    document.getElementById('trade-target-name').textContent = friendId;
+    document.getElementById('trade-message').textContent = "";
+    
+    // Récupérer la collection de l'ami
+    try {
+        const doc = await db.collection('users').doc(friendId).get();
+        if (!doc.exists) return alert("Joueur introuvable.");
+        targetCollectionCache = doc.data().collection || [];
+    } catch (e) { return alert("Erreur réseau."); }
+
+    renderTradeGrids();
+    allerASection('section-trade');
+};
+
+function renderTradeGrids() {
+    const myGrid = document.getElementById('my-trade-collection');
+    const theirGrid = document.getElementById('their-trade-collection');
+    const mySelectionBox = document.getElementById('my-trade-selection');
+    const theirSelectionBox = document.getElementById('their-trade-selection');
+
+    const createMiniCard = (carte, isMine) => {
+        const div = document.createElement('div');
+        const isSelected = isMine ? myOfferSelection.some(c => c.date === carte.date) : theirOfferSelection.some(c => c.date === carte.date);
+        
+        div.className = `mini-card ${isSelected ? 'selected' : ''}`;
+        div.style.backgroundImage = `url('${getMiniCardUrl(carte)}')`;
+        div.style.backgroundColor = couleursRarete[carte.mega ? "MG" : carte.data.rarity];
+        
+        if (carte.shiny || (carte.mega && carte.shiny)) div.innerHTML = '<div class="mini-card-holo"></div>';
+
+        div.onclick = () => {
+            if (isMine) {
+                if (isSelected) myOfferSelection = myOfferSelection.filter(c => c.date !== carte.date);
+                else myOfferSelection.push(carte);
+            } else {
+                if (isSelected) theirOfferSelection = theirOfferSelection.filter(c => c.date !== carte.date);
+                else theirOfferSelection.push(carte);
+            }
+            renderTradeGrids();
+        };
+        return div;
+    };
+
+    myGrid.innerHTML = ""; theirGrid.innerHTML = "";
+    mySelectionBox.innerHTML = ""; theirSelectionBox.innerHTML = "";
+
+    (currentUserData.collection || []).forEach(carte => myGrid.appendChild(createMiniCard(carte, true)));
+    targetCollectionCache.forEach(carte => theirGrid.appendChild(createMiniCard(carte, false)));
+
+    myOfferSelection.forEach(carte => {
+        let clone = createMiniCard(carte, true); clone.onclick = null; mySelectionBox.appendChild(clone);
+    });
+    theirOfferSelection.forEach(carte => {
+        let clone = createMiniCard(carte, false); clone.onclick = null; theirSelectionBox.appendChild(clone);
+    });
+}
+
+document.getElementById('cancel-trade-btn').addEventListener('click', () => allerASection('section-amis'));
+
+document.getElementById('send-trade-btn').addEventListener('click', async () => {
+    if (myOfferSelection.length === 0 && theirOfferSelection.length === 0) return alert("Sélectionnez au moins une carte.");
+    
+    const tradeMsg = document.getElementById('trade-message');
+    tradeMsg.textContent = "Envoi en cours..."; tradeMsg.style.color = "#f1c40f";
+    document.getElementById('send-trade-btn').disabled = true;
+
+    try {
+        const targetRef = db.collection('users').doc(currentTradeTarget);
+        const doc = await targetRef.get();
+        let targetTrades = doc.data().trades || [];
+        
+        targetTrades.push({
+            id: Date.now().toString(),
+            from: currentUser,
+            offer: myOfferSelection,
+            request: theirOfferSelection
+        });
+
+        await targetRef.update({ trades: targetTrades });
+        tradeMsg.textContent = "Proposition envoyée !"; tradeMsg.style.color = "#2ecc71";
+        setTimeout(() => { document.getElementById('send-trade-btn').disabled = false; allerASection('section-amis'); }, 1500);
+    } catch (e) {
+        tradeMsg.textContent = "Erreur lors de l'envoi."; tradeMsg.style.color = "#e74c3c";
+        document.getElementById('send-trade-btn').disabled = false;
+    }
+});
+
+window.refuserEchange = async function(tradeId) {
+    if (!currentUser) return;
+    let myTrades = (currentUserData.trades || []).filter(t => t.id !== tradeId);
+    await db.collection('users').doc(currentUser).update({ trades: myTrades });
+};
+
+window.accepterEchange = async function(tradeId, senderId) {
+    if (!currentUser) return;
+    const trade = currentUserData.trades.find(t => t.id === tradeId);
+    if (!trade) return;
+
+    try {
+        const senderRef = db.collection('users').doc(senderId);
+        const senderDoc = await senderRef.get();
+        if (!senderDoc.exists) return alert("Le joueur n'existe plus.");
+        
+        let senderData = senderDoc.data();
+        let myCollection = [...currentUserData.collection];
+        let senderCollection = [...(senderData.collection || [])];
+
+        // 1. Vérification que les cartes existent toujours chez les deux joueurs (basé sur la date unique d'obtention)
+        const iHaveCards = trade.request.every(reqCard => myCollection.some(c => c.date === reqCard.date));
+        const senderHasCards = trade.offer.every(offCard => senderCollection.some(c => c.date === offCard.date));
+
+        if (!iHaveCards || !senderHasCards) {
+            alert("Échange impossible : Une ou plusieurs cartes ne sont plus possédées.");
+            return refuserEchange(tradeId); // Annule l'échange obsolète
+        }
+
+        // 2. Transfert des cartes
+        // Je donne (request de son point de vue)
+        trade.request.forEach(reqCard => {
+            myCollection = myCollection.filter(c => c.date !== reqCard.date);
+            senderCollection.push(reqCard);
+        });
+
+        // Il donne (offer de son point de vue)
+        trade.offer.forEach(offCard => {
+            senderCollection = senderCollection.filter(c => c.date !== offCard.date);
+            myCollection.push(offCard);
+        });
+
+        // 3. Mise à jour des deux bases de données et suppression de la requête
+        let myTrades = currentUserData.trades.filter(t => t.id !== tradeId);
+        await db.collection('users').doc(currentUser).update({ collection: myCollection, trades: myTrades });
+        await senderRef.update({ collection: senderCollection });
+        
+        alert("Échange réussi !");
+    } catch(e) { alert("Erreur lors de la transaction."); }
 };
