@@ -877,7 +877,10 @@ let targetCollectionCache = [];
 let myOfferSelection = [];
 let theirOfferSelection = [];
 
+// SÉCURITÉ : Vérifie que la carte possède bien des données avant de charger l'URL
 function getMiniCardUrl(carte) {
+    if (!carte || !carte.data || !carte.data.en) return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/0.png";
+    
     let nomEn = carte.data.en;
     let nomPourUrl = nomEn.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace('♀', '-f').replace('♂', '-m').replace(/['’.]/g, '').replace(/\s+/g, "-");
     if (carte.mega) return carte.shiny ? `https://img.pokemondb.net/sprites/home/shiny/${nomPourUrl}-${carte.megaForm}.png` : `https://img.pokemondb.net/sprites/home/normal/${nomPourUrl}-${carte.megaForm}.png`;
@@ -888,18 +891,41 @@ window.initierEchange = async function(friendId) {
     currentTradeTarget = friendId;
     myOfferSelection = [];
     theirOfferSelection = [];
-    document.getElementById('trade-target-name').textContent = friendId;
-    document.getElementById('trade-message').textContent = "";
     
-    // Récupérer la collection de l'ami
+    // 1. AFFICHAGE IMMÉDIAT : On bascule tout de suite sur la vue pour prouver que le clic a fonctionné
+    allerASection('section-trade');
+    document.getElementById('trade-target-name').textContent = friendId + " (Chargement...)";
+    document.getElementById('trade-message').textContent = "";
+    document.getElementById('my-trade-collection').innerHTML = "<p style='color:#ccc;'>Chargement de vos cartes...</p>";
+    document.getElementById('their-trade-collection').innerHTML = "<p style='color:#ccc;'>Récupération des cartes de l'ami...</p>";
+    document.getElementById('my-trade-selection').innerHTML = "";
+    document.getElementById('their-trade-selection').innerHTML = "";
+    
+    // 2. Récupérer la collection de l'ami
     try {
         const doc = await db.collection('users').doc(friendId).get();
-        if (!doc.exists) return alert("Joueur introuvable.");
+        if (!doc.exists) {
+            alert("Joueur introuvable.");
+            allerASection('section-amis');
+            return;
+        }
         targetCollectionCache = doc.data().collection || [];
-    } catch (e) { return alert("Erreur réseau."); }
+        
+        // SÉCURITÉ : Assurer que toutes les cartes ont un identifiant unique (date) pour la sélection
+        targetCollectionCache.forEach(c => { if (!c.date) c.date = Math.random(); });
+        if (currentUserData.collection) {
+            currentUserData.collection.forEach(c => { if (!c.date) c.date = Math.random(); });
+        }
 
-    renderTradeGrids();
-    allerASection('section-trade');
+    } catch (e) { 
+        console.error(e);
+        alert("Erreur de réseau ou de base de données."); 
+        allerASection('section-amis');
+        return; 
+    }
+
+    document.getElementById('trade-target-name').textContent = friendId;
+    renderTradeGrids(); // Maintenant on affiche les vraies cartes
 };
 
 function renderTradeGrids() {
@@ -910,11 +936,15 @@ function renderTradeGrids() {
 
     const createMiniCard = (carte, isMine) => {
         const div = document.createElement('div');
+        if (!carte || !carte.data) return div; // SÉCURITÉ : Ignore les vieilles cartes corrompues
+
         const isSelected = isMine ? myOfferSelection.some(c => c.date === carte.date) : theirOfferSelection.some(c => c.date === carte.date);
         
         div.className = `mini-card ${isSelected ? 'selected' : ''}`;
         div.style.backgroundImage = `url('${getMiniCardUrl(carte)}')`;
-        div.style.backgroundColor = couleursRarete[carte.mega ? "MG" : carte.data.rarity];
+        
+        const rarete = carte.mega ? "MG" : (carte.data.rarity || "C");
+        div.style.backgroundColor = couleursRarete[rarete] || "#333";
         
         if (carte.shiny || (carte.mega && carte.shiny)) div.innerHTML = '<div class="mini-card-holo"></div>';
 
@@ -995,29 +1025,24 @@ window.accepterEchange = async function(tradeId, senderId) {
         let myCollection = [...currentUserData.collection];
         let senderCollection = [...(senderData.collection || [])];
 
-        // 1. Vérification que les cartes existent toujours chez les deux joueurs (basé sur la date unique d'obtention)
         const iHaveCards = trade.request.every(reqCard => myCollection.some(c => c.date === reqCard.date));
         const senderHasCards = trade.offer.every(offCard => senderCollection.some(c => c.date === offCard.date));
 
         if (!iHaveCards || !senderHasCards) {
             alert("Échange impossible : Une ou plusieurs cartes ne sont plus possédées.");
-            return refuserEchange(tradeId); // Annule l'échange obsolète
+            return refuserEchange(tradeId); 
         }
 
-        // 2. Transfert des cartes
-        // Je donne (request de son point de vue)
         trade.request.forEach(reqCard => {
             myCollection = myCollection.filter(c => c.date !== reqCard.date);
             senderCollection.push(reqCard);
         });
 
-        // Il donne (offer de son point de vue)
         trade.offer.forEach(offCard => {
             senderCollection = senderCollection.filter(c => c.date !== offCard.date);
             myCollection.push(offCard);
         });
 
-        // 3. Mise à jour des deux bases de données et suppression de la requête
         let myTrades = currentUserData.trades.filter(t => t.id !== tradeId);
         await db.collection('users').doc(currentUser).update({ collection: myCollection, trades: myTrades });
         await senderRef.update({ collection: senderCollection });
