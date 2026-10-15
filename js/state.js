@@ -51,13 +51,13 @@ export const CONSTS = {
         655: ["mega"],  // Goupelin
         658: ["mega"],  // Amphinobi
         668: ["mega"],  // Némélios
-        670: ["mega-em"], // Floette Fleur Éternelle (Forme Spéciale)
+        670: ["mega"], // Floette Fleur Éternelle (Forme Spéciale)
         678: ["mega"],  // Mistigrix
         687: ["mega"],  // Sepiatroce
         689: ["mega"],  // Golgopathe
         691: ["mega"],  // Kravarech
         701: ["mega"],  // Brutalibré
-        718: ["mega-pam"], // Zygarde (Forme Spéciale / Parfaite)
+        718: ["mega"], // Zygarde (Forme Spéciale / Parfaite)
         740: ["mega"],  // Crabominable
         768: ["mega"],  // Sarmuraï
         780: ["mega"],  // Draïeul
