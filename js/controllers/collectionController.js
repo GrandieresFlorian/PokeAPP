@@ -1,7 +1,5 @@
 import { state, CONSTS } from '../state.js';
-import { formatMegaName } from '../utils.js';
-import { state, CONSTS } from '../state.js';
-import { formatMegaName, getCardImageUrl } from '../utils.js'; // <- AJOUT DE getCardImageUrl
+import { formatMegaName, getCardImageUrl } from '../utils.js';
 
 export function initCollection() {
     const tabNormal = document.getElementById('tab-normal'); 
@@ -98,6 +96,7 @@ export function afficherCollection() {
         if (form) nomAffiche = formatMegaName(nomAffiche, form);
 
         let numeroFormate = String(i).padStart(3, '0');
+        
         const carteTemp = {
             data: dataOrigine,
             pokedexNumber: i,
@@ -106,7 +105,8 @@ export function afficherCollection() {
             shiny: afficheHolo
         };
         
-        let imageUrlNormale = getCardImageUrl({ ...carteTemp, shiny: false });
+        let finalImageUrl = getCardImageUrl(carteTemp);
+        let imageUrlNormale = getCardImageUrl({ ...carteTemp, shiny: false, mega: false, megaForm: null });
 
         if (possedeLaCarte) {
             const bgColor = CONSTS.couleursRarete[pokemonRarity];
@@ -117,7 +117,6 @@ export function afficherCollection() {
             else styleFond = `style="background-color: ${bgColor}"`;
 
             let textCount = quantite > 1 ? ` (x${quantite})` : ""; 
-            let finalImageUrl = getCardImageUrl(carteTemp);
 
             htmlContent += `
                 <div class="card flipped" style="cursor: default;">
