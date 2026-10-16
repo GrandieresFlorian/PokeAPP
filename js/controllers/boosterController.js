@@ -194,6 +194,24 @@ function creerCarte(pokemonData, numeroPokedex, index) {
 
     nouvelleCarte.addEventListener('click', () => {
         if (!nouvelleCarte.classList.contains('flipped')) {
+            
+            // --- NOUVEAUTÉ : Vérification Doublon ou Nouveau ---
+            const estDoublon = state.currentUserData.collection.some(c => 
+                c.pokedexNumber === numeroPokedex && 
+                c.shiny === isShiny && 
+                c.mega === isMega && 
+                c.megaForm === selectedMegaForm
+            );
+            
+            // Création de l'étiquette
+            const badge = document.createElement('div');
+            badge.className = `badge-status ${estDoublon ? 'badge-doublon' : 'badge-nouveau'}`;
+            badge.textContent = estDoublon ? 'Doublon' : 'Nouveau !';
+            
+            // On l'ajoute sur la face avant de la carte
+            nouvelleCarte.querySelector('.card-front').appendChild(badge);
+            // ---------------------------------------------------
+
             nouvelleCarte.classList.add('flipped'); 
             state.cartesRetournees++; 
             sauvegarderCarte(pokemonData, numeroPokedex, isShiny, isMega, selectedMegaForm);
