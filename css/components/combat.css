@@ -1,0 +1,16 @@
+.combat-layout { display: flex; gap: 30px; width: 100%; max-width: 1100px; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; }
+.combat-panel { flex: 1; min-width: 300px; background-color: var(--bg-panel); padding: 20px; border-radius: 8px; border: 2px solid #333; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+
+.special-booster {
+    background: linear-gradient(135deg, #f39c12, #d35400) !important;
+    border: 6px solid #fff !important;
+    animation: floatBooster 3s ease-in-out infinite;
+    margin-top: 0;
+}
+.special-booster:hover { filter: brightness(1.2) drop-shadow(0 0 20px #f1c40f) !important; transform: scale(1.05) translateY(-10px); }
+#special-booster-count { font-size: 1.2rem; font-weight: bold; margin-top: 15px; background: rgba(0,0,0,0.4); padding: 5px 15px; border-radius: 20px; border: 1px solid #f1c40f; }
+
+@keyframes floatBooster {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}

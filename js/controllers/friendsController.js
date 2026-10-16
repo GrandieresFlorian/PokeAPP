@@ -1,7 +1,9 @@
 import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
 import { initierEchange, accepterEchange, refuserEchange } from './tradeController.js';
-import { getCardImageUrl } from '../utils.js'; // Importation de la fonction d'URL
+import { proposerCombat, renderBattleUI } from './battleController.js';
+import { getCardImageUrl } from '../utils.js';
+import { updateSpecialBoosterUI } from './boosterController.js';
 
 let friendsListener = null;
 
@@ -13,7 +15,15 @@ export function startFriendsListener() {
             state.currentUserData.friends = doc.data().friends || [];
             state.currentUserData.friendRequests = doc.data().friendRequests || [];
             state.currentUserData.trades = doc.data().trades || [];
+            state.currentUserData.battleRequests = doc.data().battleRequests || [];
+            state.currentUserData.battleHistory = doc.data().battleHistory || [];
+            state.currentUserData.specialBoostersLeft = doc.data().specialBoostersLeft || 0;
+            state.currentUserData.battlesProposedToday = doc.data().battlesProposedToday || 0;
+            state.currentUserData.lastBattleDate = doc.data().lastBattleDate || null;
+            
             renderFriendsUI();
+            renderBattleUI();
+            updateSpecialBoosterUI();
         }
     });
 }
@@ -75,20 +85,23 @@ function renderFriendsUI() {
     const friends = state.currentUserData.friends || [];
     const requests = state.currentUserData.friendRequests || [];
     
-    // --- LISTE DES AMIS ---
     if (friends.length === 0) {
         friendsList.innerHTML = "<li class='friend-item' style='color: #777;'>Aucun ami pour le moment.</li>";
     } else {
         friends.forEach(friend => {
             const li = document.createElement('li');
             li.className = "friend-item";
-            li.innerHTML = `<span>${friend}</span><button class="btn-small-action" style="background-color: #9b59b6;">Échanger 🔄</button>`;
-            li.querySelector('button').addEventListener('click', () => initierEchange(friend));
+            li.innerHTML = `<span>${friend}</span>
+            <div>
+                <button class="btn-small-action btn-trade" style="background-color: #9b59b6; margin-right: 5px;" title="Proposer un échange">🔄</button>
+                <button class="btn-small-action btn-combat" style="background-color: #e74c3c;" title="Défier (3 max/j)">⚔️</button>
+            </div>`;
+            li.querySelector('.btn-trade').addEventListener('click', () => initierEchange(friend));
+            li.querySelector('.btn-combat').addEventListener('click', () => proposerCombat(friend));
             friendsList.appendChild(li);
         });
     }
 
-    // --- PROPOSITIONS D'ÉCHANGE ---
     const tradeRequestsList = document.getElementById('trade-requests-list');
     const trades = state.currentUserData.trades || [];
     tradeRequestsList.innerHTML = "";
@@ -102,17 +115,13 @@ function renderFriendsUI() {
             li.style.flexDirection = "column";
             li.style.alignItems = "flex-start";
 
-            // Fonction pour générer le HTML visuel des mini-cartes
             const renderMiniCards = (cartes) => {
                 if (!cartes || cartes.length === 0) return '<span style="color:#777; font-size:0.8rem; font-style: italic;">Rien</span>';
-                
                 return cartes.map(carte => {
-                    if (!carte || !carte.data) return ''; // Sécurité
+                    if (!carte || !carte.data) return '';
                     const rarete = carte.mega ? "MG" : (carte.data.rarity || "C");
                     const bgColor = CONSTS.couleursRarete[rarete] || "#333";
                     const holoHtml = (carte.shiny || (carte.mega && carte.shiny)) ? '<div class="mini-card-holo"></div>' : '';
-                    
-                    // On force des dimensions plus petites pour l'aperçu avec le style inline
                     return `
                         <div class="mini-card" style="background-image: url('${getCardImageUrl(carte)}'); background-color: ${bgColor}; width: 45px; height: 60px; cursor: default;" title="${carte.data.fr || carte.data.en}">
                             ${holoHtml}
@@ -131,20 +140,15 @@ function renderFriendsUI() {
                         <button class="btn-small-action btn-reject">✖ Refuser</button>
                     </div>
                 </div>
-                
                 <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; background: #1a1a1a; padding: 12px; border-radius: 8px; border: 1px solid #333;">
                     <div>
                         <span style="font-size: 0.9rem; color: #aaa; margin-bottom: 8px; display: block;">Il vous offre :</span>
-                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                            ${offerHtml}
-                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">${offerHtml}</div>
                     </div>
                     <hr style="border: 0; border-top: 1px dashed #444; width: 100%; margin: 5px 0;">
                     <div>
                         <span style="font-size: 0.9rem; color: #aaa; margin-bottom: 8px; display: block;">En échange de :</span>
-                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                            ${requestHtml}
-                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">${requestHtml}</div>
                     </div>
                 </div>`;
 
@@ -154,7 +158,6 @@ function renderFriendsUI() {
         });
     }
     
-    // --- DEMANDES D'AMIS EN ATTENTE ---
     if (requests.length === 0) {
         friendRequestsList.innerHTML = "<li class='friend-item' style='color: #777;'>Aucune demande en attente.</li>";
     } else {

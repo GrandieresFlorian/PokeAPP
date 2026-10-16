@@ -1,7 +1,7 @@
 import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
 import { allerASection } from './navController.js';
-import { tirerRarete, formatMegaName, sauvegarderCarte } from '../utils.js';
+import { tirerRarete, formatMegaName, sauvegarderCarte, getCardImageUrl } from '../utils.js';
 
 export function updateBoosterLogic() {
     const boosterStatus = document.getElementById('booster-status');
@@ -39,6 +39,7 @@ export function updateBoosterLogic() {
     }
 
     renderBoosterStatus(boosterCountDisplay, boosterTimerText, boosterTimerDisplay);
+    updateSpecialBoosterUI();
     
     clearInterval(state.boosterTimerInterval);
     state.boosterTimerInterval = setInterval(() => {
@@ -81,19 +82,38 @@ function renderBoosterStatus(countDisplay, textDisplay, timerDisplay) {
     }
 }
 
+export function updateSpecialBoosterUI() {
+    const sbPack = document.getElementById('special-booster-pack');
+    const sbCount = document.getElementById('special-booster-count');
+    if (!state.currentUser || state.currentUserData.specialBoostersLeft === undefined) {
+        if(sbPack) sbPack.classList.add('hidden');
+        return;
+    }
+    if (state.currentUserData.specialBoostersLeft > 0) {
+        if(!state.isOpening) sbPack.classList.remove('hidden');
+        sbCount.textContent = `${state.currentUserData.specialBoostersLeft} disponible(s)`;
+    } else {
+        sbPack.classList.add('hidden');
+    }
+}
+
 export function initBooster() {
     const boosterElement = document.getElementById('booster-pack');
+    const specialBoosterElement = document.getElementById('special-booster-pack');
     const resetButton = document.getElementById('reset-button');
     const autoOpenBtn = document.getElementById('auto-open-btn');
     const cardsContainer = document.getElementById('cards-container');
 
-    boosterElement.addEventListener('click', ouvrirBooster);
+    boosterElement.addEventListener('click', () => ouvrirBooster(false));
+    specialBoosterElement.addEventListener('click', () => ouvrirBooster(true));
 
     resetButton.addEventListener('click', () => { 
         cardsContainer.innerHTML = ''; 
         cardsContainer.classList.add('hidden');
         resetButton.classList.add('hidden');
+        
         boosterElement.classList.remove('hidden'); 
+        updateSpecialBoosterUI(); 
     });
 
     autoOpenBtn.addEventListener('click', () => {
@@ -127,7 +147,8 @@ function creerCarte(pokemonData, numeroPokedex, index) {
     }
 
     const chanceShiny = Math.random() * 100;
-    const isShiny = chanceShiny <= state.probabilities.shiny;
+    const shinyThreshold = state.currentPullIsSpecial ? (state.probabilities.shiny * 3) : state.probabilities.shiny;
+    const isShiny = chanceShiny <= shinyThreshold;
 
     let nomAffiche = state.currentLang === 'en' ? nomEn : nomFr;
     if (isMega) nomAffiche = formatMegaName(nomAffiche, selectedMegaForm);
@@ -135,22 +156,22 @@ function creerCarte(pokemonData, numeroPokedex, index) {
     let numeroFormate = String(numeroPokedex).padStart(3, '0');
     const bgColor = CONSTS.couleursRarete[pokemonRarity];
     
-    let imageUrl = ""; let classFond = "card-front"; let styleFond = "";
-    let nomPourUrl = nomEn.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace('♀', '-f').replace('♂', '-m').replace(/['’.]/g, '').replace(/\s+/g, "-");
+    const carteTemp = {
+        data: pokemonData,
+        pokedexNumber: numeroPokedex,
+        mega: isMega,
+        megaForm: selectedMegaForm,
+        shiny: isShiny
+    };
+
+    let imageUrl = getCardImageUrl(carteTemp);
+    let classFond = "card-front"; let styleFond = "";
     
     if (isMega) {
-        let megaUrlName = `${nomPourUrl}-${selectedMegaForm}`;
-        if (isShiny) {
-            imageUrl = `https://img.pokemondb.net/sprites/home/shiny/${megaUrlName}.png`; classFond += " mega-shiny-bg"; 
-        } else {
-            imageUrl = `https://img.pokemondb.net/sprites/home/normal/${megaUrlName}.png`; classFond += " mega-bg"; 
-        }
+        classFond += isShiny ? " mega-shiny-bg" : " mega-bg";
     } else {
-        if (isShiny) {
-            imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${numeroPokedex}.png`; classFond += " shiny-bg";
-        } else {
-            imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${numeroPokedex}.png`; styleFond = `style="background-color: ${bgColor}"`;
-        }
+        if (isShiny) classFond += " shiny-bg";
+        else styleFond = `style="background-color: ${bgColor}"`;
     }
 
     const cardHTML = `
@@ -205,39 +226,58 @@ function creerCarte(pokemonData, numeroPokedex, index) {
         }).catch(error => { powElement.textContent = `POW ???`; });
 }
 
-function ouvrirBooster() {
+function ouvrirBooster(isSpecial = false) {
     if (!state.currentUser) { alert("Vous devez être connecté !"); return allerASection('section-auth'); }
     if (state.pokemonDataList.length === 0) return alert("Les données chargent...");
 
-    if (state.currentUserData.boostersLeft <= 0) {
-        alert("Vous n'avez plus de boosters ! Revenez plus tard.");
-        return;
+    if (isSpecial) {
+        if (state.currentUserData.specialBoostersLeft <= 0) {
+            alert("Vous n'avez pas de boosters spéciaux ! Remportez des combats pour en gagner.");
+            return;
+        }
+    } else {
+        if (state.currentUserData.boostersLeft <= 0) {
+            alert("Vous n'avez plus de boosters ! Revenez plus tard.");
+            return;
+        }
     }
 
     if (state.isOpening) return; 
     state.isOpening = true;
+    state.currentPullIsSpecial = isSpecial;
 
-    state.currentUserData.boostersLeft--;
-    if (state.currentUserData.boostersLeft === CONSTS.MAX_BOOSTERS - 1) {
-        state.currentUserData.lastBoosterTime = Date.now();
+    if (isSpecial) {
+        state.currentUserData.specialBoostersLeft--;
+        db.collection('users').doc(state.currentUser).update({
+            specialBoostersLeft: state.currentUserData.specialBoostersLeft
+        });
+    } else {
+        state.currentUserData.boostersLeft--;
+        if (state.currentUserData.boostersLeft === CONSTS.MAX_BOOSTERS - 1) {
+            state.currentUserData.lastBoosterTime = Date.now();
+        }
+        db.collection('users').doc(state.currentUser).update({
+            boostersLeft: state.currentUserData.boostersLeft,
+            lastBoosterTime: state.currentUserData.lastBoosterTime
+        });
     }
     
-    db.collection('users').doc(state.currentUser).update({
-        boostersLeft: state.currentUserData.boostersLeft,
-        lastBoosterTime: state.currentUserData.lastBoosterTime
-    });
     updateBoosterLogic();
 
-    const boosterElement = document.getElementById('booster-pack');
+    const normalBoosterElement = document.getElementById('booster-pack');
+    const specialBoosterElement = document.getElementById('special-booster-pack');
+    const activeBooster = isSpecial ? specialBoosterElement : normalBoosterElement;
+    
     const cardsContainer = document.getElementById('cards-container');
     const autoOpenBtn = document.getElementById('auto-open-btn');
     const resetButton = document.getElementById('reset-button');
 
-    boosterElement.classList.add('booster-animating');
+    activeBooster.classList.add('booster-animating');
 
     setTimeout(() => {
-        boosterElement.classList.remove('booster-animating');
-        boosterElement.classList.add('hidden'); 
+        activeBooster.classList.remove('booster-animating');
+        normalBoosterElement.classList.add('hidden'); 
+        specialBoosterElement.classList.add('hidden');
         
         cardsContainer.innerHTML = ''; 
         cardsContainer.classList.remove('hidden'); 
