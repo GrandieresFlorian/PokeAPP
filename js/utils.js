@@ -37,15 +37,17 @@ export function getCardImageUrl(carte, format = 'normal') {
     let nomPourUrl = nomEn.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace('♀', '-f').replace('♂', '-m').replace(/['’.]/g, '').replace(/\s+/g, "-");
     
     if (carte.mega) {
-        if (carte.shiny) {
-            let dittoId = DITTOBASE_IDS[carte.pokedexNumber] || carte.pokedexNumber;
-            let formSuffix = carte.megaForm === "mega" ? "mega" : carte.megaForm; 
-            return `https://assets.dittobase.com/home/${dittoId}-${nomPourUrl}-${formSuffix}-shiny.png`;
-        } else {
-            return `https://img.pokemondb.net/artwork/${nomPourUrl}-${carte.megaForm}.jpg`;
+        // On force le suffixe d'image à "mega" pour les formes spéciales (Floette et Zygarde)
+        let formImageSuffix = carte.megaForm;
+        if (carte.pokedexNumber === 670 || carte.pokedexNumber === 718) {
+            formImageSuffix = "mega";
         }
+        
+        // NOUVEAUTÉ : On affiche toujours l'artwork normal du Méga, qu'il soit Shiny ou non !
+        return `https://img.pokemondb.net/artwork/${nomPourUrl}-${formImageSuffix}.jpg`;
     }
     
+    // Pour les Pokémon normaux (non-mégas), on garde la distinction normal/shiny avec PokéAPI
     return carte.shiny 
         ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${carte.pokedexNumber}.png` 
         : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${carte.pokedexNumber}.png`;
