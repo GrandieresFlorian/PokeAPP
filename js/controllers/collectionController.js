@@ -119,13 +119,15 @@ export function afficherCollection() {
             else if (afficheHolo) classFond += " shiny-bg";
             else styleFond = `style="background-color: ${bgColor}"`;
 
-            let textCount = quantite > 1 ? ` (x${quantite})` : ""; 
+            // NOUVEAUTÉ : On crée un badge séparé au lieu de modifier le nom
+            let badgeQuantite = quantite > 1 ? `<div class="badge-quantite">X${quantite}</div>` : ""; 
 
             htmlContent += `
                 <div class="card flipped" style="cursor: default;">
                     <div class="card-inner">
                         <div class="${classFond}" ${styleFond}>
-                            <div class="card-header"><h1 class="pokemon-name" data-en="${form ? formatMegaName(nomEn, form) : nomEn}" data-fr="${form ? formatMegaName(nomFr, form) : nomFr}" data-count="${quantite}">${nomAffiche}${textCount}</h1><div class="icon">${pokemonRarity}</div></div>
+                            ${badgeQuantite}
+                            <div class="card-header"><h1 class="pokemon-name" data-en="${form ? formatMegaName(nomEn, form) : nomEn}" data-fr="${form ? formatMegaName(nomFr, form) : nomFr}" data-count="${quantite}">${nomAffiche}</h1><div class="icon">${pokemonRarity}</div></div>
                             <div class="image-wrapper"><img class="pokemon-image" src="${finalImageUrl}" alt="Image" loading="lazy"><span class="image-id">#${numeroFormate}</span></div>
                             <div class="card-subtext type-container-col" data-id="${i}">${cachedTypes}</div>
                             <div class="stats-bar"><span class="pokemon-pow" data-id="${i}" data-mega="${form ? 'true' : 'false'}">...</span><span class="pokemon-aura">N° ${numeroFormate}</span></div>

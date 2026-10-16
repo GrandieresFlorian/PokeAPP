@@ -92,3 +92,19 @@
     80% { transform: translateX(-50%) translateY(-5px) scale(1.1); }
     100% { transform: translateX(-50%) translateY(0) scale(1); opacity: 1; }
 }
+
+/* --- BADGE QUANTITÉ DANS LA COLLECTION --- */
+.badge-quantite {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    background-color: #f39c12; /* Joli orange doré */
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 1rem;
+    font-weight: 900;
+    z-index: 50;
+    border: 3px solid #1e1c22;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+}
