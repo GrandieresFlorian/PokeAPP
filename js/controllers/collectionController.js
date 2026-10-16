@@ -1,5 +1,5 @@
 import { state, CONSTS } from '../state.js';
-import { formatMegaName, getCardImageUrl } from '../utils.js';
+import { formatMegaName, getCardImageUrl, getPokemonDetails, generateTypeBadgesHTML, pokemonTypeCache } from '../utils.js';
 
 export function initCollection() {
     const tabNormal = document.getElementById('tab-normal'); 
@@ -107,6 +107,9 @@ export function afficherCollection() {
         
         let finalImageUrl = getCardImageUrl(carteTemp);
         let imageUrlNormale = getCardImageUrl({ ...carteTemp, shiny: false, mega: false, megaForm: null });
+        
+        // Initialiser avec les données en cache si existantes pour l'affichage immédiat
+        const cachedTypes = pokemonTypeCache[i] ? generateTypeBadgesHTML(pokemonTypeCache[i]) : 'Pokémon';
 
         if (possedeLaCarte) {
             const bgColor = CONSTS.couleursRarete[pokemonRarity];
@@ -124,7 +127,7 @@ export function afficherCollection() {
                         <div class="${classFond}" ${styleFond}>
                             <div class="card-header"><h1 class="pokemon-name" data-en="${form ? formatMegaName(nomEn, form) : nomEn}" data-fr="${form ? formatMegaName(nomFr, form) : nomFr}" data-count="${quantite}">${nomAffiche}${textCount}</h1><div class="icon">${pokemonRarity}</div></div>
                             <div class="image-wrapper"><img class="pokemon-image" src="${finalImageUrl}" alt="Image" loading="lazy"><span class="image-id">#${numeroFormate}</span></div>
-                            <div class="card-subtext">Pokémon</div>
+                            <div class="card-subtext type-container-col" data-id="${i}">${cachedTypes}</div>
                             <div class="stats-bar"><span class="pokemon-pow" data-id="${i}" data-mega="${form ? 'true' : 'false'}">...</span><span class="pokemon-aura">N° ${numeroFormate}</span></div>
                         </div>
                     </div>
@@ -164,26 +167,16 @@ function chargerPowDynamiquement() {
                 const id = span.dataset.id;
                 const isMega = span.dataset.mega === "true";
                 
-                const cacheKey = `powCache_${id}`;
-                const cachedPow = localStorage.getItem(cacheKey);
+                const typeContainer = span.closest('.card-front').querySelector('.type-container-col');
                 
-                if (cachedPow) {
-                    let totalStats = parseInt(cachedPow);
-                    if (isMega) totalStats += 100;
-                    span.textContent = `POW ${totalStats}`;
-                } else {
-                    fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
-                        .then(res => res.json())
-                        .then(apiData => {
-                            let totalStats = 0; 
-                            apiData.stats.forEach(s => totalStats += s.base_stat);
-                            localStorage.setItem(cacheKey, totalStats); 
-                            if (isMega) totalStats += 100;
-                            span.textContent = `POW ${totalStats}`;
-                        }).catch(() => {
-                            span.textContent = "POW ???";
-                        });
-                }
+                // Nouvelle méthode : on charge à la fois POW et types !
+                getPokemonDetails({ pokedexNumber: id, mega: isMega }).then(details => {
+                    span.textContent = `POW ${details.pow}`;
+                    if(typeContainer) {
+                        typeContainer.innerHTML = generateTypeBadgesHTML(details.types);
+                    }
+                });
+
                 obs.unobserve(span); 
             }
         });

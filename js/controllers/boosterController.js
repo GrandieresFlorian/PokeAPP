@@ -1,7 +1,7 @@
 import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
 import { allerASection } from './navController.js';
-import { tirerRarete, formatMegaName, sauvegarderCarte, getCardImageUrl } from '../utils.js';
+import { tirerRarete, formatMegaName, sauvegarderCarte, getCardImageUrl, getPokemonDetails, generateTypeBadgesHTML, pokemonTypeCache } from '../utils.js';
 
 export function updateBoosterLogic() {
     const boosterStatus = document.getElementById('booster-status');
@@ -181,7 +181,7 @@ function creerCarte(pokemonData, numeroPokedex, index) {
                 <div class="${classFond}" ${styleFond}>
                     <div class="card-header"><h1 class="pokemon-name" data-en="${isMega ? formatMegaName(nomEn, selectedMegaForm) : nomEn}" data-fr="${isMega ? formatMegaName(nomFr, selectedMegaForm) : nomFr}">${nomAffiche}</h1><div class="icon">${pokemonRarity}</div></div>
                     <div class="image-wrapper"><img class="pokemon-image" src="${imageUrl}" alt="Image"><span class="image-id">#${numeroFormate}</span></div>
-                    <div class="card-subtext">Pokémon</div>
+                    <div class="card-subtext" id="type-container-boost-${index}">Pokémon</div>
                     <div class="stats-bar"><span class="pokemon-pow">POW ...</span><span class="pokemon-aura">N° ${numeroFormate}</span></div>
                 </div>
             </div>
@@ -195,7 +195,6 @@ function creerCarte(pokemonData, numeroPokedex, index) {
     nouvelleCarte.addEventListener('click', () => {
         if (!nouvelleCarte.classList.contains('flipped')) {
             
-            // --- NOUVEAUTÉ : Vérification Doublon ou Nouveau ---
             const estDoublon = state.currentUserData.collection.some(c => 
                 c.pokedexNumber === numeroPokedex && 
                 c.shiny === isShiny && 
@@ -203,14 +202,11 @@ function creerCarte(pokemonData, numeroPokedex, index) {
                 c.megaForm === selectedMegaForm
             );
             
-            // Création de l'étiquette
             const badge = document.createElement('div');
             badge.className = `badge-status ${estDoublon ? 'badge-doublon' : 'badge-nouveau'}`;
             badge.textContent = estDoublon ? 'Doublon' : 'Nouveau !';
             
-            // On l'ajoute sur la face avant de la carte
             nouvelleCarte.querySelector('.card-front').appendChild(badge);
-            // ---------------------------------------------------
 
             nouvelleCarte.classList.add('flipped'); 
             state.cartesRetournees++; 
@@ -236,12 +232,15 @@ function creerCarte(pokemonData, numeroPokedex, index) {
         }
     });
     document.getElementById('cards-container').appendChild(nouvelleCarte);
-    fetch(`https://pokeapi.co/api/v2/pokemon/${numeroPokedex}`)
-        .then(response => response.json())
-        .then(apiData => {
-            let totalStats = 0; apiData.stats.forEach(s => totalStats += s.base_stat);
-            if (isMega) totalStats += 100; powElement.textContent = `POW ${totalStats}`;
-        }).catch(error => { powElement.textContent = `POW ???`; });
+    
+    // NOUVEAUTÉ : Chargement du POW + des Types
+    getPokemonDetails(carteTemp).then(details => {
+        powElement.textContent = `POW ${details.pow}`;
+        const typeContainer = document.getElementById(`type-container-boost-${index}`);
+        if(typeContainer) {
+            typeContainer.innerHTML = generateTypeBadgesHTML(details.types);
+        }
+    });
 }
 
 function ouvrirBooster(isSpecial = false) {

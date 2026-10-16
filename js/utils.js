@@ -53,27 +53,70 @@ export function getCardImageUrl(carte, format = 'normal') {
         : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${carte.pokedexNumber}.png`;
 }
 
-export async function getPokemonPow(carte) {
+// Map pour stocker les types récupérés depuis PokeAPI
+export const pokemonTypeCache = {};
+
+// Dictionnaire de traduction des types (PokeAPI renvoie en anglais)
+const TYPE_TRANSLATIONS = {
+    "normal": "Normal", "fire": "Feu", "water": "Eau", "electric": "Électrik", "grass": "Plante",
+    "ice": "Glace", "fighting": "Combat", "poison": "Poison", "ground": "Sol", "flying": "Vol",
+    "psychic": "Psy", "bug": "Insecte", "rock": "Roche", "ghost": "Spectre", "dragon": "Dragon",
+    "dark": "Ténèbres", "steel": "Acier", "fairy": "Fée"
+};
+
+export async function getPokemonDetails(carte) {
     const id = carte.pokedexNumber;
-    const cacheKey = `powCache_${id}`;
-    const cachedPow = localStorage.getItem(cacheKey);
+    const cacheKey = `pokeDetails_${id}`;
+    const cachedData = localStorage.getItem(cacheKey);
+    
     let pow = 0;
-    if (cachedPow) {
-        pow = parseInt(cachedPow);
+    let types = [];
+    
+    if (cachedData) {
+        const parsed = JSON.parse(cachedData);
+        pow = parsed.pow;
+        types = parsed.types;
+        pokemonTypeCache[id] = types;
     } else {
         try {
             const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
             const apiData = await res.json();
+            
             let totalStats = 0;
             apiData.stats.forEach(s => totalStats += s.base_stat);
-            localStorage.setItem(cacheKey, totalStats);
             pow = totalStats;
+            
+            types = apiData.types.map(t => t.type.name);
+            
+            const toCache = { pow: pow, types: types };
+            localStorage.setItem(cacheKey, JSON.stringify(toCache));
+            pokemonTypeCache[id] = types;
         } catch (e) {
             pow = 300; 
+            types = ["normal"];
+            pokemonTypeCache[id] = types;
         }
     }
+    
     if (carte.mega) pow += 100;
-    return pow;
+    
+    return { pow, types };
+}
+
+export function generateTypeBadgesHTML(types) {
+    if (!types || types.length === 0) return '<span style="color:#aaa;">Pokémon</span>';
+    
+    let html = '';
+    types.forEach(t => {
+        const displayName = state.currentLang === 'fr' ? (TYPE_TRANSLATIONS[t] || t) : t;
+        html += `<span class="type-badge type-${t}">${displayName}</span>`;
+    });
+    return html;
+}
+
+export function getPokemonPow(carte) {
+    // Wrapper asynchrone pour préserver la compatibilité
+    return getPokemonDetails(carte).then(res => res.pow);
 }
 
 export function sauvegarderCarte(pokemonData, numeroPokedex, isShiny, isMega, megaForm) {
