@@ -19,11 +19,9 @@ export function tirerRarete() {
 }
 
 export function formatMegaName(nom, form) {
-    if (form === "mega-x") return `Méga ${nom} X`;
-    if (form === "mega-y") return `Méga ${nom} Y`;
-    if (form === "mega-z") return `Méga ${nom} Z`;
-    if (form === "mega-em") return `Méga ${nom} F.É.`; 
-    if (form === "mega-pam") return `Méga ${nom} Parfait`; 
+    if (form && form !== "mega") {
+        return `Méga ${nom} ${form.replace('mega-', '').toUpperCase()}`;
+    }
     return `Méga ${nom}`;
 }
 
@@ -108,8 +106,14 @@ export function generateTypeBadgesHTML(types) {
     
     let html = '';
     types.forEach(t => {
-        const displayName = state.currentLang === 'fr' ? (TYPE_TRANSLATIONS[t] || t) : t;
-        html += `<span class="type-badge type-${t}">${displayName}</span>`;
+        // Met la première lettre du type anglais en majuscule (ex: "water" -> "Water")
+        const enName = t.charAt(0).toUpperCase() + t.slice(1); 
+        const frName = TYPE_TRANSLATIONS[t] || enName;
+        
+        const displayName = state.currentLang === 'fr' ? frName : enName;
+        
+        // On ajoute data-en et data-fr pour que le bouton de langue puisse les trouver
+        html += `<span class="type-badge type-${t}" data-en="${enName}" data-fr="${frName}">${displayName}</span>`;
     });
     return html;
 }

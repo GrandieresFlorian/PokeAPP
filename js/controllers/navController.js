@@ -10,9 +10,17 @@ export function initNav() {
     langToggle.addEventListener('click', () => {
         state.currentLang = state.currentLang === 'en' ? 'fr' : 'en'; 
         langToggle.textContent = state.currentLang === 'en' ? '🇬🇧 EN' : '🇫🇷 FR';
+
+        // Met à jour les noms des Pokémon
         document.querySelectorAll('.pokemon-name').forEach(el => {
             const nomTraduit = el.getAttribute(`data-${state.currentLang}`);
             if (nomTraduit) el.textContent = nomTraduit;
+        });
+
+        // NOUVEAUTÉ : Met à jour les badges de Types en temps réel
+        document.querySelectorAll('.type-badge').forEach(el => {
+            const typeTraduit = el.getAttribute(`data-${state.currentLang}`);
+            if (typeTraduit) el.textContent = typeTraduit;
         });
     });
 }
@@ -23,6 +31,7 @@ export function allerASection(targetId) {
     navLinks.forEach(l => l.classList.remove('active'));
     const link = Array.from(navLinks).find(l => l.getAttribute('data-target') === targetId);
     if(link) link.classList.add('active');
+    
     sections.forEach(sec => sec.classList.add('hidden')); 
     document.getElementById(targetId).classList.remove('hidden');
 }
