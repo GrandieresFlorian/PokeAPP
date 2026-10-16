@@ -14,8 +14,12 @@ export async function proposerCombat(friendId) {
         lastDate = today;
     }
     
-    if (proposed >= 3) {
-        alert("Vous avez atteint votre limite de 3 défis par jour ! Revenez demain.");
+    const baseLimit = 3;
+    const bonus = state.currentUserData.bonusBattles || 0; // Vaut 0 par défaut
+    const totalLimit = baseLimit + bonus;
+    
+    if (proposed >= totalLimit) {
+        alert(`Vous avez atteint votre limite de défis aujourd'hui ! Revenez demain.`);
         return;
     }
 
@@ -43,7 +47,7 @@ export async function proposerCombat(friendId) {
             lastBattleDate: today
         });
         
-        alert(`Défi envoyé à ${friendId} ! ⚔️ (Reste ${2 - proposed} défis aujourd'hui)`);
+        alert(`Défi envoyé à ${friendId} ! ⚔️ (Reste ${totalLimit - (proposed + 1)} défis aujourd'hui)`);
     } catch (e) {
         console.error(e);
         alert("Erreur lors de l'envoi du défi.");
