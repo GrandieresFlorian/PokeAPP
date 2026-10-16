@@ -57,23 +57,21 @@
 /* --- ÉTIQUETTES NOUVEAU / DOUBLON --- */
 .badge-status {
     position: absolute;
-    /* On le remonte encore plus pour qu'il sorte du haut de la carte */
-    top: -25px; 
+    /* On positionne l'étiquette AU-DESSUS de la bordure supérieure (qui est à top: 0) */
+    top: -40px; 
     left: 50%;
-    /* On s'assure qu'il est bien centré et qu'il commence un peu plus haut dans l'animation */
     transform: translateX(-50%);
     padding: 6px 16px;
     border-radius: 20px;
     font-size: 0.85rem;
     font-weight: bold;
     color: white;
-    /* Z-index élevé pour être sûr de passer au-dessus des autres éléments */
     z-index: 100;
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
     text-transform: uppercase;
     letter-spacing: 1px;
     border: 2px solid white;
-    white-space: nowrap; /* Empêche le texte de passer à la ligne */
+    white-space: nowrap; 
     animation: badgePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
@@ -81,8 +79,8 @@
 .badge-doublon { background-color: #7f8c8d; }
 
 @keyframes badgePop {
-    /* L'animation rebondit maintenant autour de translateY(0) sans descendre trop bas */
-    0% { transform: translateX(-50%) translateY(10px) scale(0); opacity: 0; }
+    /* L'animation atterrit sur translateY(0) sans la ramener vers le bas sur la carte */
+    0% { transform: translateX(-50%) translateY(20px) scale(0); opacity: 0; }
     80% { transform: translateX(-50%) translateY(-5px) scale(1.1); }
     100% { transform: translateX(-50%) translateY(0) scale(1); opacity: 1; }
 }
