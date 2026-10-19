@@ -1,8 +1,3 @@
-import { db } from '../firebase-config.js';
-import { state, CONSTS } from '../state.js';
-import { getCardImageUrl, getPokemonDetails, getEffectiveness, formatMegaName, getMovesForLevel, getMoveDetails, TYPE_TRANSLATIONS } from '../utils.js';
-import { allerASection, applyTranslation } from './navController.js';
-
 const ZONES = [
     { id: "route1", name: "Route 1", minLvl: 2, maxLvl: 5, encounters: [{id: 16, chance: 50}, {id: 19, chance: 50}] },
     { id: "route2", name: "Route 2", minLvl: 3, maxLvl: 6, encounters: [{id: 19, chance: 45}, {id: 16, chance: 45}, {id: 10, chance: 5}, {id: 13, chance: 5}] },
