@@ -203,15 +203,6 @@ export const BAIES_BOOSTERS = [
     { id: "nanana", fr: "Baie Nanana", en: "Pinap Berry" }
 ];
 
-export const BAIES_BOOSTERS = [
-    { id: "ceriz", fr: "Baie Ceriz", en: "Cheri Berry" },
-    { id: "pecha", fr: "Baie Pêcha", en: "Pecha Berry" },
-    { id: "oran", fr: "Baie Oran", en: "Oran Berry" },
-    { id: "sitrus", fr: "Baie Sitrus", en: "Sitrus Berry" },
-    { id: "nanana", fr: "Baie Nanana", en: "Pinap Berry" }
-];
-
-
 export function sauvegarderBaie(baieData) {
     import('./firebase-config.js').then(({db}) => {
         if (!state.currentUser) return;
