@@ -16,18 +16,18 @@
                 <div class="avatar-container">
                     <img id="sidebar-avatar" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/0.png" style="display:none;">
                 </div>
-                <span id="user-name-display">Non connecté</span>
-                <button id="auth-nav-btn" class="auth-btn-small" data-target="section-auth">Se connecter</button>
+                <span id="user-name-display" class="translatable" data-fr="Non connecté" data-en="Not connected">Non connecté</span>
+                <button id="auth-nav-btn" class="auth-btn-small translatable" data-target="section-auth" data-fr="Se connecter" data-en="Login">Se connecter</button>
             </div>
             <ul class="nav-links">
-                <li class="active" data-target="section-boosters">Boosters</li>
-                <li data-target="section-collection" id="nav-collection">Collection</li>
-                <li data-target="section-amis" id="nav-amis">Amis 🤝</li>
-                <li data-target="section-combats" id="nav-combats">Combats ⚔️</li>
-                <li data-target="section-jardin" id="nav-jardin">Jardin 🌱</li>
-                <li data-target="section-campagne" id="nav-campagne">Campagne 🗺️</li>
-                <li data-target="section-profil" id="nav-profil">Profil 👤</li>
-                <li data-target="section-settings">Paramètres</li>
+                <li class="active translatable" data-target="section-boosters" data-fr="Boosters" data-en="Packs">Boosters</li>
+                <li data-target="section-collection" id="nav-collection" class="translatable" data-fr="Collection" data-en="Collection">Collection</li>
+                <li data-target="section-amis" id="nav-amis" class="translatable" data-fr="Amis 🤝" data-en="Friends 🤝">Amis 🤝</li>
+                <li data-target="section-combats" id="nav-combats" class="translatable" data-fr="Combats ⚔️" data-en="Battles ⚔️">Combats ⚔️</li>
+                <li data-target="section-jardin" id="nav-jardin" class="translatable" data-fr="Jardin 🌱" data-en="Garden 🌱">Jardin 🌱</li>
+                <li data-target="section-campagne" id="nav-campagne" class="translatable" data-fr="Campagne 🗺️" data-en="Campaign 🗺️">Campagne 🗺️</li>
+                <li data-target="section-profil" id="nav-profil" class="translatable" data-fr="Profil 👤" data-en="Profile 👤">Profil 👤</li>
+                <li data-target="section-settings" class="translatable" data-fr="Paramètres" data-en="Settings">Paramètres</li>
             </ul>
         </nav>
 
@@ -35,13 +35,13 @@
             <!-- SECTION AUTH -->
             <section id="section-auth" class="view-section hidden">
                 <div class="auth-container glass-panel">
-                    <h2>Connexion / Inscription</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 25px;">Connectez-vous pour ouvrir des boosters et sauvegarder votre collection !</p>
+                    <h2 class="translatable" data-fr="Connexion / Inscription" data-en="Login / Sign Up">Connexion / Inscription</h2>
+                    <p class="translatable" data-fr="Connectez-vous pour ouvrir des boosters et sauvegarder votre collection !" data-en="Log in to open packs and save your collection!" style="color: var(--text-muted); margin-bottom: 25px;">Connectez-vous pour ouvrir des boosters et sauvegarder votre collection !</p>
                     <input type="text" id="username-input" placeholder="Nom d'utilisateur" class="auth-input">
                     <input type="password" id="password-input" placeholder="Mot de passe" class="auth-input">
                     <div class="auth-buttons">
-                        <button id="login-btn" class="btn">Se connecter</button>
-                        <button id="signup-btn" class="btn btn-secondary">Créer un compte</button>
+                        <button id="login-btn" class="btn translatable" data-fr="Se connecter" data-en="Login">Se connecter</button>
+                        <button id="signup-btn" class="btn btn-secondary translatable" data-fr="Créer un compte" data-en="Create account">Créer un compte</button>
                     </div>
                     <div id="auth-message" class="auth-message"></div>
                 </div>
@@ -50,50 +50,50 @@
             <!-- SECTION BOOSTERS -->
             <section id="section-boosters" class="view-section">
                 <div id="booster-status" class="booster-status glass-panel hidden">
-                    <p>Boosters disponibles : <span id="booster-count-display" class="highlight">10</span> / 10</p>
-                    <p id="booster-timer-text" class="timer-text">Prochain booster dans : <span id="booster-timer-display">00:00</span></p>
+                    <p><span class="translatable" data-fr="Boosters disponibles :" data-en="Available packs :">Boosters disponibles :</span> <span id="booster-count-display" class="highlight">10</span> / 10</p>
+                    <p id="booster-timer-text" class="timer-text"><span class="translatable" data-fr="Prochain booster dans :" data-en="Next pack in :">Prochain booster dans :</span> <span id="booster-timer-display">00:00</span></p>
                 </div>
                 <div style="display:flex; justify-content:center; align-items:center; gap:40px; flex-wrap:wrap; margin-top:20px; margin-bottom: 40px;">
                     <div id="booster-pack" class="booster">
                         <h2>Pokémon</h2>
-                        <p>Édition Complète</p>
-                        <div class="booster-text">Cliquez pour ouvrir</div>
+                        <p class="translatable" data-fr="Édition Complète" data-en="Complete Edition">Édition Complète</p>
+                        <div class="booster-text translatable" data-fr="Cliquez pour ouvrir" data-en="Click to open">Cliquez pour ouvrir</div>
                     </div>
                     <div id="special-booster-pack" class="booster special-booster hidden">
-                        <h2>Booster Rare</h2>
+                        <h2 class="translatable" data-fr="Booster Rare" data-en="Rare Pack">Booster Rare</h2>
                         <p>Shiny x3 ✨</p>
-                        <div class="booster-text">Cliquez pour ouvrir</div>
+                        <div class="booster-text translatable" data-fr="Cliquez pour ouvrir" data-en="Click to open">Cliquez pour ouvrir</div>
                         <div id="special-booster-count">0 disponible(s)</div>
                     </div>
                 </div>
                 <div id="cards-container" class="cards-container hidden"></div>
-                <button id="auto-open-btn" class="btn hidden" style="background: linear-gradient(135deg, #a29bfe, #6c5ce7); margin-bottom: 10px;">Tout révéler ✨</button>
-                <button id="reset-button" class="btn btn-danger hidden">Fermer et retourner aux boosters</button>
+                <button id="auto-open-btn" class="btn hidden translatable" data-fr="Tout révéler ✨" data-en="Reveal All ✨" style="background: linear-gradient(135deg, #a29bfe, #6c5ce7); margin-bottom: 10px;">Tout révéler ✨</button>
+                <button id="reset-button" class="btn btn-danger hidden translatable" data-fr="Fermer et retourner aux boosters" data-en="Close and return to packs">Fermer et retourner aux boosters</button>
             </section>
 
             <!-- SECTION COLLECTION -->
             <section id="section-collection" class="view-section hidden">
-                <h2 class="section-title">Votre Collection (<span id="collection-count" class="highlight">0 / 1025</span>)</h2>
+                <h2 class="section-title"><span class="translatable" data-fr="Votre Collection" data-en="Your Collection">Votre Collection</span> (<span id="collection-count" class="highlight">0 / 1025</span>)</h2>
                 <div class="collection-tabs glass-panel">
-                    <button id="tab-normal" class="tab-btn active">Classique</button>
+                    <button id="tab-normal" class="tab-btn active translatable" data-fr="Classique" data-en="Classic">Classique</button>
                     <button id="tab-shiny" class="tab-btn">Shiny ✨</button>
                     <button id="tab-mega" class="tab-btn">Méga 🧬</button>
                     <button id="tab-mega-shiny" class="tab-btn">Méga Shiny ✨🧬</button>
-                    <button id="tab-baies" class="tab-btn">Baies 🍒</button>
+                    <button id="tab-baies" class="tab-btn translatable" data-fr="Baies 🍒" data-en="Berries 🍒">Baies 🍒</button>
                 </div>
                 <div class="collection-filters glass-panel">
-                    <label for="filter-rarity">Rareté :</label>
+                    <label for="filter-rarity" class="translatable" data-fr="Rareté :" data-en="Rarity :">Rareté :</label>
                     <select id="filter-rarity" class="filter-select">
-                        <option value="all">Toutes</option>
-                        <option value="C">Commune (C)</option>
-                        <option value="U">Peu Commune (U)</option>
-                        <option value="R">Rare (R)</option>
-                        <option value="E">Épique (E)</option>
-                        <option value="L">Légendaire (L)</option>
-                        <option value="M">Mythique (M)</option>
+                        <option value="all" class="translatable" data-fr="Toutes" data-en="All">Toutes</option>
+                        <option value="C" class="translatable" data-fr="Commune (C)" data-en="Common (C)">Commune (C)</option>
+                        <option value="U" class="translatable" data-fr="Peu Commune (U)" data-en="Uncommon (U)">Peu Commune (U)</option>
+                        <option value="R" class="translatable" data-fr="Rare (R)" data-en="Rare (R)">Rare (R)</option>
+                        <option value="E" class="translatable" data-fr="Épique (E)" data-en="Epic (E)">Épique (E)</option>
+                        <option value="L" class="translatable" data-fr="Légendaire (L)" data-en="Legendary (L)">Légendaire (L)</option>
+                        <option value="M" class="translatable" data-fr="Mythique (M)" data-en="Mythic (M)">Mythique (M)</option>
                     </select>
                     <label class="filter-checkbox">
-                        <input type="checkbox" id="filter-owned"> Uniquement possédées
+                        <input type="checkbox" id="filter-owned"> <span class="translatable" data-fr="Uniquement possédées" data-en="Owned only">Uniquement possédées</span>
                     </label>
                 </div>
                 <div id="collection-container" class="cards-container"></div>
@@ -101,23 +101,23 @@
 
             <!-- SECTION AMIS -->
             <section id="section-amis" class="view-section hidden">
-                <h2 class="section-title">Vos Amis</h2>
+                <h2 class="section-title translatable" data-fr="Vos Amis" data-en="Your Friends">Vos Amis</h2>
                 <div class="friend-actions glass-panel" style="margin-bottom: 30px; text-align: center;">
                     <input type="text" id="friend-id-input" class="auth-input" placeholder="Pseudo du joueur à ajouter" style="width: 300px; display: inline-block;">
-                    <button id="add-friend-btn" class="btn btn-secondary" style="padding: 12px 20px; font-size: 1rem; margin-top: 0; transform: translateY(-2px);">Ajouter</button>
+                    <button id="add-friend-btn" class="btn btn-secondary translatable" data-fr="Ajouter" data-en="Add" style="padding: 12px 20px; font-size: 1rem; margin-top: 0; transform: translateY(-2px);">Ajouter</button>
                     <div id="friend-message" style="margin-top: 10px; font-weight: bold;"></div>
                 </div>
                 <div class="friends-layout">
                     <div class="friends-list-container glass-panel">
-                        <h3 class="panel-heading text-primary">Mes Amis</h3>
+                        <h3 class="panel-heading text-primary translatable" data-fr="Mes Amis" data-en="My Friends">Mes Amis</h3>
                         <ul id="friends-list" class="friend-ul"></ul>
                     </div>
                     <div class="friend-requests-container glass-panel" style="width: 100%;">
-                        <h3 class="panel-heading text-accent">Propositions d'échange</h3>
+                        <h3 class="panel-heading text-accent translatable" data-fr="Propositions d'échange" data-en="Trade Offers">Propositions d'échange</h3>
                         <ul id="trade-requests-list" class="friend-ul"></ul>
                     </div>
                     <div class="friend-requests-container glass-panel">
-                        <h3 class="panel-heading text-danger">Demandes en attente</h3>
+                        <h3 class="panel-heading text-danger translatable" data-fr="Demandes en attente" data-en="Pending Requests">Demandes en attente</h3>
                         <ul id="friend-requests-list" class="friend-ul"></ul>
                     </div>
                 </div>
@@ -125,15 +125,15 @@
 
             <!-- SECTION COMBATS -->
             <section id="section-combats" class="view-section hidden">
-                <h2 class="section-title">Arène de Combat</h2>
-                <p class="section-subtitle">Défiez vos amis pour gagner des <b>Boosters Spéciaux (Shiny x3 ✨)</b> !<br>Chaque combat se joue automatiquement en 3 manches (la carte avec le plus grand POW l'emporte). Limite de 3 défis envoyés par jour.</p>
+                <h2 class="section-title translatable" data-fr="Arène de Combat" data-en="Battle Arena">Arène de Combat</h2>
+                <p class="section-subtitle translatable" data-fr="Défiez vos amis pour gagner des <b>Boosters Spéciaux (Shiny x3 ✨)</b> !<br>Chaque combat se joue automatiquement en 3 manches. Limite de 3 défis envoyés par jour." data-en="Challenge your friends to earn <b>Special Packs (Shiny x3 ✨)</b> !<br>Each battle runs automatically in 3 rounds. Limit of 3 challenges per day.">Défiez vos amis pour gagner des <b>Boosters Spéciaux (Shiny x3 ✨)</b> !<br>Chaque combat se joue automatiquement en 3 manches. Limite de 3 défis envoyés par jour.</p>
                 <div class="combat-layout">
                     <div class="combat-panel glass-panel">
-                        <h3 class="panel-heading text-danger">Défis reçus</h3>
+                        <h3 class="panel-heading text-danger translatable" data-fr="Défis reçus" data-en="Received Challenges">Défis reçus</h3>
                         <ul id="combat-requests-list" class="friend-ul"></ul>
                     </div>
                     <div class="combat-panel glass-panel" style="flex: 2;">
-                        <h3 class="panel-heading text-accent">Historique des combats</h3>
+                        <h3 class="panel-heading text-accent translatable" data-fr="Historique des combats" data-en="Battle History">Historique des combats</h3>
                         <ul id="combat-history-list" class="friend-ul"></ul>
                     </div>
                 </div>
@@ -141,69 +141,65 @@
 
             <!-- SECTION TRADE -->
             <section id="section-trade" class="view-section hidden">
-                <h2 class="section-title">Proposition d'échange avec <span id="trade-target-name" class="text-primary"></span></h2>
+                <h2 class="section-title"><span class="translatable" data-fr="Proposition d'échange avec" data-en="Trade Offer with">Proposition d'échange avec</span> <span id="trade-target-name" class="text-primary"></span></h2>
                 <div class="trade-layout">
                     <div class="trade-panel glass-panel">
-                        <h3 class="panel-heading">Je propose</h3>
+                        <h3 class="panel-heading translatable" data-fr="Je propose" data-en="My Offer">Je propose</h3>
                         <div id="my-trade-selection" class="trade-selection-box"></div>
                         <div id="my-trade-collection" class="trade-collection-grid"></div>
                     </div>
                     <div class="trade-panel glass-panel">
-                        <h3 class="panel-heading">Je demande</h3>
+                        <h3 class="panel-heading translatable" data-fr="Je demande" data-en="My Request">Je demande</h3>
                         <div id="their-trade-selection" class="trade-selection-box"></div>
                         <div id="their-trade-collection" class="trade-collection-grid"></div>
                     </div>
                 </div>
                 <div style="text-align: center; margin-top: 30px; display:flex; gap:20px; justify-content:center;">
-                    <button id="send-trade-btn" class="btn btn-secondary">Envoyer la proposition</button>
-                    <button id="cancel-trade-btn" class="btn btn-danger">Annuler</button>
+                    <button id="send-trade-btn" class="btn btn-secondary translatable" data-fr="Envoyer la proposition" data-en="Send Offer">Envoyer la proposition</button>
+                    <button id="cancel-trade-btn" class="btn btn-danger translatable" data-fr="Annuler" data-en="Cancel">Annuler</button>
                 </div>
                 <div id="trade-message" style="margin-top: 15px; font-weight: bold; text-align: center;"></div>
             </section>
 
             <!-- SECTION JARDIN -->
             <section id="section-jardin" class="view-section hidden">
-                <h2 class="section-title">Serre à Baies</h2>
+                <h2 class="section-title translatable" data-fr="Serre à Baies" data-en="Berry Greenhouse">Serre à Baies</h2>
                 <div class="jardin-top-bar glass-panel" style="padding:15px 25px; border-radius:16px;">
                     <div class="pokeberry-count">PokeBerrys : <span id="pokeberry-display" class="text-accent">0</span> 💰</div>
-                    <button id="btn-sell-berries" class="btn btn-secondary" style="margin-top: 0; padding:10px 20px;">Boutique & Vente</button>
+                    <button id="btn-sell-berries" class="btn btn-secondary translatable" data-fr="Boutique & Vente" data-en="Shop & Sell" style="margin-top: 0; padding:10px 20px;">Boutique & Vente</button>
                 </div>
                 <div class="jardin-layout">
                     <div class="garden-grid-container glass-panel">
                         <div id="garden-grid" class="garden-grid"></div>
                     </div>
                     <div id="garden-action-panel" class="garden-action-panel glass-panel">
-                        <h3 id="garden-action-title" class="panel-heading text-accent">Jardin</h3>
-                        <div id="garden-action-content">Sélectionnez un terrain pour commencer.</div>
+                        <h3 id="garden-action-title" class="panel-heading text-accent translatable" data-fr="Jardin" data-en="Garden">Jardin</h3>
+                        <div id="garden-action-content" class="translatable" data-fr="Sélectionnez un terrain pour commencer." data-en="Select a plot to start.">Sélectionnez un terrain pour commencer.</div>
                     </div>
                 </div>
             </section>
 
             <!-- SECTION CAMPAGNE -->
             <section id="section-campagne" class="view-section hidden">
-                <h2 class="section-title">Mode Campagne Kanto 🗺️</h2>
+                <h2 class="section-title translatable" data-fr="Mode Campagne Kanto 🗺️" data-en="Kanto Campaign Mode 🗺️">Mode Campagne Kanto 🗺️</h2>
                 
-                <!-- Vue 1: Sélection du Pokémon -->
                 <div id="campagne-select-pokemon" class="campagne-view glass-panel">
-                    <h3 class="panel-heading text-accent">1. Choisissez votre Combattant</h3>
-                    <p style="color:var(--text-muted); margin-bottom: 20px;">Cliquez sur un de vos Pokémon pour partir à l'aventure ! Les stats dépendent de son niveau.</p>
+                    <h3 class="panel-heading text-accent translatable" data-fr="1. Choisissez votre Combattant" data-en="1. Choose your Fighter">1. Choisissez votre Combattant</h3>
+                    <p class="translatable" data-fr="Cliquez sur un de vos Pokémon pour partir à l'aventure ! Les stats dépendent de son niveau." data-en="Click on a Pokémon to start your adventure! Stats depend on its level." style="color:var(--text-muted); margin-bottom: 20px;">Cliquez sur un de vos Pokémon pour partir à l'aventure ! Les stats dépendent de son niveau.</p>
                     <div id="campagne-team-grid" class="trade-collection-grid" style="max-height: 400px; justify-content:center;"></div>
                 </div>
 
-                <!-- Vue 2: Sélection de la Zone -->
                 <div id="campagne-select-zone" class="campagne-view glass-panel hidden">
-                    <h3 class="panel-heading text-primary">2. Choisissez une Zone d'exploration</h3>
+                    <h3 class="panel-heading text-primary translatable" data-fr="2. Choisissez une Zone d'exploration" data-en="2. Choose an exploration Zone">2. Choisissez une Zone d'exploration</h3>
                     <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
                         <div id="campagne-active-pokemon" class="active-fighter-badge"></div>
-                        <button id="btn-change-fighter" class="btn-small-action" style="background:var(--bg-dark); border:1px solid #555;">Changer de Pokémon</button>
+                        <button id="btn-change-fighter" class="btn-small-action translatable" data-fr="Changer de Pokémon" data-en="Change Pokémon" style="background:var(--bg-dark); border:1px solid #555;">Changer de Pokémon</button>
                     </div>
                     <div id="campagne-zones-list" class="zones-grid"></div>
                 </div>
 
-                <!-- Vue 3: Le Combat -->
                 <div id="campagne-battle-arena" class="campagne-view glass-panel hidden" style="width: 100%; max-width: 900px; padding:0; overflow:hidden;">
                     <div class="battle-scene">
-                        <!-- Ennemi -->
                         <div class="battle-entity enemy">
                             <div class="hp-bar-container">
                                 <div class="entity-info"><span id="enemy-name" style="font-weight:bold;">???</span> <span id="enemy-lvl">Niv. ?</span></div>
@@ -213,7 +209,6 @@
                             <img id="enemy-sprite" src="" class="battle-sprite">
                         </div>
                         
-                        <!-- Joueur -->
                         <div class="battle-entity player">
                             <img id="player-sprite" src="" class="battle-sprite player-sprite">
                             <div class="hp-bar-container">
@@ -225,11 +220,10 @@
                     </div>
                     
                     <div class="battle-ui">
-                        <div id="battle-log" class="battle-log">Un Pokémon sauvage apparaît !</div>
+                        <div id="battle-log" class="battle-log translatable" data-fr="Un Pokémon sauvage apparaît !" data-en="A wild Pokémon appears!">Un Pokémon sauvage apparaît !</div>
                         <div class="battle-actions-wrapper">
-                            <!-- NOUVEAU: Le conteneur en grille pour les 4 attaques ! -->
                             <div id="moves-container" class="battle-moves-grid"></div>
-                            <button id="btn-battle-flee" class="btn btn-danger" style="width:100%;">Fuir 🏃</button>
+                            <button id="btn-battle-flee" class="btn btn-danger translatable" data-fr="Fuir 🏃" data-en="Flee 🏃" style="width:100%;">Fuir 🏃</button>
                         </div>
                     </div>
                 </div>
@@ -241,60 +235,60 @@
                     <div class="profile-header">
                         <img id="profil-avatar" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/0.png" alt="Avatar">
                         <div class="profile-info">
-                            <h2 id="profil-name">Chargement...</h2>
+                            <h2 id="profil-name" class="translatable" data-fr="Chargement..." data-en="Loading...">Chargement...</h2>
                             <p id="profil-id-text" style="color: var(--text-muted); font-size: 0.9rem; margin-top: -5px;">@id</p>
-                            <p id="profil-desc" class="profile-desc">Aucune description.</p>
+                            <p id="profil-desc" class="profile-desc translatable" data-fr="Aucune description." data-en="No description.">Aucune description.</p>
                         </div>
-                        <button id="btn-edit-profil" class="btn btn-secondary hidden" style="margin-left: auto;">Modifier</button>
+                        <button id="btn-edit-profil" class="btn btn-secondary hidden translatable" data-fr="Modifier" data-en="Edit" style="margin-left: auto;">Modifier</button>
                     </div>
                     
-                    <h3 class="panel-heading text-accent" style="margin-top: 30px;">Vitrine</h3>
+                    <h3 class="panel-heading text-accent translatable" data-fr="Vitrine" data-en="Showcase" style="margin-top: 30px;">Vitrine</h3>
                     <div id="profil-vitrine" class="cards-container" style="margin-top: 20px;"></div>
                 </div>
 
                 <div id="profil-edit-mode" class="profile-container glass-panel hidden">
-                    <h2 class="section-title" style="font-size:1.8rem;">Modifier mon Profil</h2>
+                    <h2 class="section-title translatable" data-fr="Modifier mon Profil" data-en="Edit my Profile" style="font-size:1.8rem;">Modifier mon Profil</h2>
                     
                     <div class="form-group">
-                        <label>Pseudo affiché :</label>
+                        <label class="translatable" data-fr="Pseudo affiché :" data-en="Display Name :">Pseudo affiché :</label>
                         <input type="text" id="edit-pseudo" class="auth-input" placeholder="Votre pseudo" maxlength="20">
                     </div>
                     
                     <div class="form-group">
-                        <label>Photo de profil (URL ou numéro Pokédex) :</label>
-                        <input type="text" id="edit-avatar" class="auth-input" placeholder="Ex: 25 (pour Pikachu) ou https://...">
+                        <label class="translatable" data-fr="Photo de profil (URL ou numéro Pokédex) :" data-en="Profile Picture (URL or Pokédex number) :">Photo de profil (URL ou numéro Pokédex) :</label>
+                        <input type="text" id="edit-avatar" class="auth-input" placeholder="Ex: 25">
                     </div>
                     
                     <div class="form-group">
-                        <label>Description :</label>
-                        <textarea id="edit-desc" class="auth-input" placeholder="Décrivez-vous..." rows="3" maxlength="150" style="resize: vertical;"></textarea>
+                        <label class="translatable" data-fr="Description :" data-en="Description :">Description :</label>
+                        <textarea id="edit-desc" class="auth-input" placeholder="..." rows="3" maxlength="150" style="resize: vertical;"></textarea>
                     </div>
                     
-                    <h3 class="panel-heading" style="margin-top: 30px;">Ma Vitrine (Sélectionnez jusqu'à 4 cartes)</h3>
-                    <p style="color: var(--text-muted); margin-top:-10px; margin-bottom:10px;">Cartes sélectionnées : <span id="vitrine-count" class="text-accent font-bold">0 / 4</span></p>
+                    <h3 class="panel-heading translatable" data-fr="Ma Vitrine (Sélectionnez jusqu'à 4 cartes)" data-en="My Showcase (Select up to 4 cards)" style="margin-top: 30px;">Ma Vitrine (Sélectionnez jusqu'à 4 cartes)</h3>
+                    <p style="color: var(--text-muted); margin-top:-10px; margin-bottom:10px;"><span class="translatable" data-fr="Cartes sélectionnées :" data-en="Selected cards :">Cartes sélectionnées :</span> <span id="vitrine-count" class="text-accent font-bold">0 / 4</span></p>
                     
                     <div id="edit-vitrine-selection" class="trade-selection-box"></div>
                     <div id="edit-vitrine-collection" class="trade-collection-grid" style="max-height: 300px;"></div>
 
                     <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: center;">
-                        <button id="btn-save-profil" class="btn">Enregistrer les modifications</button>
-                        <button id="btn-cancel-profil" class="btn btn-danger">Annuler</button>
+                        <button id="btn-save-profil" class="btn translatable" data-fr="Enregistrer les modifications" data-en="Save changes">Enregistrer les modifications</button>
+                        <button id="btn-cancel-profil" class="btn btn-danger translatable" data-fr="Annuler" data-en="Cancel">Annuler</button>
                     </div>
                 </div>
             </section>
 
             <!-- SECTION SETTINGS -->
             <section id="section-settings" class="view-section hidden">
-                <h2 class="section-title">Paramètres Administrateur</h2>
+                <h2 class="section-title translatable" data-fr="Paramètres Administrateur" data-en="Admin Settings">Paramètres Administrateur</h2>
                 <div id="debug-denied" class="glass-panel" style="padding:40px; text-align:center;">
-                    <p class="text-danger" style="font-size:1.2rem; font-weight:bold;">L'accès aux outils de développement est restreint.</p>
+                    <p class="text-danger translatable" data-fr="L'accès aux outils de développement est restreint." data-en="Access to developer tools is restricted." style="font-size:1.2rem; font-weight:bold;">L'accès aux outils de développement est restreint.</p>
                 </div>
                 <div id="debug-tools" class="hidden glass-panel" style="padding:40px; max-width:800px;">
-                    <p style="color:var(--text-muted); margin-bottom:20px;">Utilisez ces boutons pour tester l'affichage du Pokédex.</p>
+                    <p class="translatable" data-fr="Utilisez ces boutons pour tester l'affichage du Pokédex." data-en="Use these buttons to test the Pokédex display." style="color:var(--text-muted); margin-bottom:20px;">Utilisez ces boutons pour tester l'affichage du Pokédex.</p>
                     <div style="display: flex; gap: 15px; justify-content:center; flex-wrap:wrap;">
-                        <button id="cheat-unlock-all" class="btn">Tout débloquer</button>
-                        <button id="cheat-refill-boosters" class="btn" style="background: linear-gradient(135deg, #f39c12, #e67e22);">Recharger mes boosters</button>
-                        <button id="cheat-clear-all" class="btn btn-danger">Vider ma collection</button>
+                        <button id="cheat-unlock-all" class="btn translatable" data-fr="Tout débloquer" data-en="Unlock All">Tout débloquer</button>
+                        <button id="cheat-refill-boosters" class="btn translatable" data-fr="Recharger mes boosters" data-en="Refill my packs" style="background: linear-gradient(135deg, #f39c12, #e67e22);">Recharger mes boosters</button>
+                        <button id="cheat-clear-all" class="btn btn-danger translatable" data-fr="Vider ma collection" data-en="Clear my collection">Vider ma collection</button>
                     </div>
                 </div>
             </section>

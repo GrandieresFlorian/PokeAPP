@@ -3,7 +3,7 @@ body, html {
     padding: 0; 
     height: 100vh; 
     background-color: var(--bg-dark); 
-    background-image: radial-gradient(circle at 50% -20%, #1f2235 0%, var(--bg-dark) 70%); /* Joli fond lumineux centré en haut */
+    background-image: radial-gradient(circle at 50% -20%, #1f2235 0%, var(--bg-dark) 70%);
     font-family: var(--font-main); 
     color: var(--text-light); 
     overflow: hidden; 
@@ -56,7 +56,7 @@ h1, h2, h3, h4, h5, h6 {
 .nav-links li:hover { 
     background-color: rgba(255, 255, 255, 0.05); 
     color: var(--text-light);
-    transform: translateX(5px); /* Petit effet de glissement au survol */
+    transform: translateX(5px);
 }
 
 .nav-links li.active { 
@@ -81,7 +81,7 @@ h1, h2, h3, h4, h5, h6 {
     display: flex; 
     flex-direction: column; 
     align-items: center; 
-    animation: fadeIn 0.4s ease-out; /* Animation douce au changement d'onglet */
+    animation: fadeIn 0.4s ease-out; 
 }
 
 @keyframes fadeIn { 
@@ -91,7 +91,6 @@ h1, h2, h3, h4, h5, h6 {
 
 .hidden { display: none !important; }
 
-/* Classe magique pour créer de jolis blocs translucides */
 .glass-panel {
     background: var(--bg-panel);
     backdrop-filter: blur(16px);
@@ -168,3 +167,30 @@ h1, h2, h3, h4, h5, h6 {
 ::-webkit-scrollbar-track { background: var(--bg-dark); }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
+
+/* --- BOUTON DE TRADUCTION MANQUANT --- */
+.lang-btn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: var(--bg-panel);
+    color: var(--text-light);
+    border: var(--border-glass);
+    padding: 12px 20px;
+    border-radius: var(--radius-lg);
+    font-family: var(--font-heading);
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: var(--shadow-soft);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.lang-btn:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-3px) scale(1.05);
+}
