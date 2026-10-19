@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Application Pokémon</title>
     <link rel="stylesheet" href="css/main.css">
+    <link rel="icon" type="image/png" href="C:\Users\i2401028\Documents\Projet\PokeAPP\ball.jpg" />
 </head>
 <body>
     <div class="app-container">
@@ -20,6 +21,7 @@
                 <li data-target="section-collection" id="nav-collection">Collection</li>
                 <li data-target="section-amis" id="nav-amis">Amis 🤝</li>
                 <li data-target="section-combats" id="nav-combats">Combats ⚔️</li>
+                <li data-target="section-jardin" id="nav-jardin">Jardin 🌱</li>
                 <li data-target="section-profil" id="nav-profil">Profil 👤</li>
                 <li data-target="section-settings">Paramètres</li>
             </ul>
@@ -148,22 +150,24 @@
                     <div id="trade-message" style="margin-top: 10px; font-weight: bold;"></div>
                 </div>
             </section>
-
-            <section id="section-settings" class="view-section hidden">
-                <h2>Paramètres</h2>
-                <div id="debug-denied">
-                    <p style="color: #e74c3c; text-align: center; margin-top: 20px;">L'accès aux outils de développement est restreint.</p>
+            
+            <section id="section-jardin" class="view-section hidden">
+                <h2>Serre à Baies</h2>
+                <div class="jardin-top-bar">
+                    <div class="pokeberry-count">PokeBerrys : <span id="pokeberry-display">0</span> 💰</div>
+                    <button id="btn-sell-berries" class="btn btn-secondary" style="margin-top: 0;">Boutique & Vente</button>
                 </div>
-                <div id="debug-tools" class="hidden">
-                    <p>Utilisez ces boutons pour tester l'affichage du Pokédex.</p>
-                    <div style="display: flex; gap: 15px; margin-top: 20px;">
-                        <button id="cheat-unlock-all" class="btn btn-secondary">Tout débloquer</button>
-                        <button id="cheat-refill-boosters" class="btn" style="background-color: #f39c12;">Recharger mes boosters</button>
-                        <button id="cheat-clear-all" class="btn" style="background-color: #e74c3c;">Vider ma collection</button>
+                <div class="jardin-layout">
+                    <div class="garden-grid-container">
+                        <div id="garden-grid" class="garden-grid"></div>
+                    </div>
+                    <div id="garden-action-panel" class="garden-action-panel">
+                        <h3 id="garden-action-title" style="color: #fceea7; border-bottom: 1px solid #444; padding-bottom: 10px; margin-top: 0;">Jardin</h3>
+                        <div id="garden-action-content">Sélectionnez un terrain pour commencer.</div>
                     </div>
                 </div>
             </section>
-        
+
             <section id="section-profil" class="view-section hidden">
                 <div id="profil-view-mode" class="profile-container">
                     <div class="profile-header">
@@ -203,6 +207,20 @@
                 </div>
             </section>
 
+            <section id="section-settings" class="view-section hidden">
+                <h2>Paramètres</h2>
+                <div id="debug-denied">
+                    <p style="color: #e74c3c; text-align: center; margin-top: 20px;">L'accès aux outils de développement est restreint.</p>
+                </div>
+                <div id="debug-tools" class="hidden">
+                    <p>Utilisez ces boutons pour tester l'affichage du Pokédex.</p>
+                    <div style="display: flex; gap: 15px; margin-top: 20px;">
+                        <button id="cheat-unlock-all" class="btn btn-secondary">Tout débloquer</button>
+                        <button id="cheat-refill-boosters" class="btn" style="background-color: #f39c12;">Recharger mes boosters</button>
+                        <button id="cheat-clear-all" class="btn" style="background-color: #e74c3c;">Vider ma collection</button>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 

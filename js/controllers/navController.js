@@ -11,13 +11,11 @@ export function initNav() {
         state.currentLang = state.currentLang === 'en' ? 'fr' : 'en'; 
         langToggle.textContent = state.currentLang === 'en' ? '🇬🇧 EN' : '🇫🇷 FR';
 
-        // Met à jour les noms des Pokémon
         document.querySelectorAll('.pokemon-name').forEach(el => {
             const nomTraduit = el.getAttribute(`data-${state.currentLang}`);
             if (nomTraduit) el.textContent = nomTraduit;
         });
 
-        // NOUVEAUTÉ : Met à jour les badges de Types en temps réel
         document.querySelectorAll('.type-badge').forEach(el => {
             const typeTraduit = el.getAttribute(`data-${state.currentLang}`);
             if (typeTraduit) el.textContent = typeTraduit;
@@ -29,6 +27,8 @@ export function allerASection(targetId) {
     const navLinks = document.querySelectorAll('.nav-links li');
     const sections = document.querySelectorAll('.view-section');
     navLinks.forEach(l => l.classList.remove('active'));
+    
+    // Le menu nav-jardin
     const link = Array.from(navLinks).find(l => l.getAttribute('data-target') === targetId);
     if(link) link.classList.add('active');
     

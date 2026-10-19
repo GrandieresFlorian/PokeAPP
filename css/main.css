@@ -7,6 +7,7 @@
 @import url('components/friends.css');
 @import url('components/trade.css');
 @import url('components/combat.css');
+@import url('components/jardin.css');
 
 :root {
     --bg-dark: #1a1a1a;
