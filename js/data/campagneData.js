@@ -1,4 +1,4 @@
-const ZONES = [
+export const ZONES = [
     { id: "route1", name: "Route 1", minLvl: 2, maxLvl: 5, encounters: [{id: 16, chance: 50}, {id: 19, chance: 50}] },
     { id: "route2", name: "Route 2", minLvl: 3, maxLvl: 6, encounters: [{id: 19, chance: 45}, {id: 16, chance: 45}, {id: 10, chance: 5}, {id: 13, chance: 5}] },
     { id: "foretjade", name: "Forêt de Jade", minLvl: 4, maxLvl: 8, encounters: [{id: 10, chance: 40}, {id: 13, chance: 40}, {id: 11, chance: 10}, {id: 14, chance: 5}, {id: 25, chance: 5}] },
@@ -23,19 +23,19 @@ const ZONES = [
 ];
 
 // LISTES DES MÉCANIQUES SPÉCIALES
-const USELESS_MOVES = ["splash"];
-const PRIORITY_MOVES = ["quick-attack", "mach-punch", "extreme-speed", "aqua-jet", "bullet-punch", "ice-shard", "sucker-punch", "fake-out", "shadow-sneak", "vacuum-wave"];
-const HEAL_MOVES = ["recover", "roost", "soft-boiled", "synthesis", "morning-sun", "moonlight", "heal-order", "milk-drink", "slack-off"];
-const DRAIN_MOVES = ["absorb", "mega-drain", "giga-drain", "leech-life", "drain-punch", "horn-leech", "dream-eater"];
-const RECOIL_MOVES = ["take-down", "double-edge", "submission", "wood-hammer", "flare-blitz", "brave-bird", "wild-charge"];
+export const USELESS_MOVES = ["splash"];
+export const PRIORITY_MOVES = ["quick-attack", "mach-punch", "extreme-speed", "aqua-jet", "bullet-punch", "ice-shard", "sucker-punch", "fake-out", "shadow-sneak", "vacuum-wave"];
+export const HEAL_MOVES = ["recover", "roost", "soft-boiled", "synthesis", "morning-sun", "moonlight", "heal-order", "milk-drink", "slack-off"];
+export const DRAIN_MOVES = ["absorb", "mega-drain", "giga-drain", "leech-life", "drain-punch", "horn-leech", "dream-eater"];
+export const RECOIL_MOVES = ["take-down", "double-edge", "submission", "wood-hammer", "flare-blitz", "brave-bird", "wild-charge"];
 
 // NOUVEAU : LISTES DES ATTAQUES À EFFETS
-const MULTI_HIT_2_5 = ["fury-attack", "fury-swipes", "double-slap", "bullet-seed", "icicle-spear", "rock-blast", "pin-missile", "bone-rush", "arm-thrust", "tail-slap"];
-const MULTI_HIT_2 = ["double-kick", "twin-needle", "bonemerang", "gear-grind", "dual-chop"];
-const FLINCH_MOVES = ["bite", "headbutt", "air-slash", "iron-head", "zen-headbutt", "waterfall", "dark-pulse", "astonish", "fake-out"];
+export const MULTI_HIT_2_5 = ["fury-attack", "fury-swipes", "double-slap", "bullet-seed", "icicle-spear", "rock-blast", "pin-missile", "bone-rush", "arm-thrust", "tail-slap"];
+export const MULTI_HIT_2 = ["double-kick", "twin-needle", "bonemerang", "gear-grind", "dual-chop"];
+export const FLINCH_MOVES = ["bite", "headbutt", "air-slash", "iron-head", "zen-headbutt", "waterfall", "dark-pulse", "astonish", "fake-out"];
 
 // NOUVEAU : EFFETS SECONDAIRES DES ATTAQUES (Dégâts ET changement de stat)
-const SECONDARY_EFFECTS = {
+export const SECONDARY_EFFECTS = {
     "close-combat": { target: "self", effects: [{stat: "def", stage: -1}, {stat: "spdef", stage: -1}], chance: 1 },
     "superpower": { target: "self", effects: [{stat: "atk", stage: -1}, {stat: "def", stage: -1}], chance: 1 },
     "overheat": { target: "self", effects: [{stat: "spatk", stage: -2}], chance: 1 },
@@ -51,7 +51,7 @@ const SECONDARY_EFFECTS = {
     "moonblast": { target: "enemy", effects: [{stat: "spatk", stage: -1}], chance: 0.3 }
 };
 
-const STATUS_MOVES = {
+export const STATUS_MOVES = {
     "growl": { effects: [{stat: "atk", stage: -1}], target: "enemy", fr: "l'Attaque", en: "Attack" },
     "tail-whip": { effects: [{stat: "def", stage: -1}], target: "enemy", fr: "la Défense", en: "Defense" },
     "leer": { effects: [{stat: "def", stage: -1}], target: "enemy", fr: "la Défense", en: "Defense" },
@@ -78,7 +78,7 @@ const STATUS_MOVES = {
     "tail-glow": { effects: [{stat: "spatk", stage: 3}], target: "self", fr: "l'Att. Spé", en: "Sp. Atk" },
 };
 
-const STAT_NAMES = {
+export const STAT_NAMES = {
     fr: { atk: "Atk", def: "Déf", spatk: "AtkS", spdef: "DéfS", speed: "Vit" },
     en: { atk: "Atk", def: "Def", spatk: "SpA", spdef: "SpD", speed: "Spe" }
 };
