@@ -3,15 +3,29 @@ import { state, CONSTS } from '../state.js';
 import { getCardImageUrl, getPokemonDetails, getEffectiveness, formatMegaName, getMovesForLevel, getMoveDetails, TYPE_TRANSLATIONS } from '../utils.js';
 import { allerASection, applyTranslation } from './navController.js';
 
+// VRAIE CARTE DE KANTO AVEC LES TABLES D'APPARITION OFFICIELLES (Numéros du Pokédex)
 const ZONES = [
-    { id: "route1", name: "Route 1", minLvl: 2, maxLvl: 5, types: ["normal", "flying"] },
-    { id: "foretjade", name: "Forêt de Jade", minLvl: 4, maxLvl: 8, types: ["bug", "grass", "poison"] },
-    { id: "montselenite", name: "Mont Sélénite", minLvl: 8, maxLvl: 12, types: ["rock", "ground", "fairy", "poison"] },
-    { id: "azuria", name: "Cap d'Azuria", minLvl: 12, maxLvl: 18, types: ["water", "grass", "bug"] },
-    { id: "lavanville", name: "Tour Pokémon (Lavanville)", minLvl: 20, maxLvl: 30, types: ["ghost", "poison"] },
-    { id: "parcsafari", name: "Parc Safari", minLvl: 25, maxLvl: 35, types: ["normal", "grass", "poison", "psychic", "bug"] },
-    { id: "routevictoire", name: "Route Victoire", minLvl: 40, maxLvl: 50, types: ["fighting", "rock", "ground", "dragon"] },
-    { id: "caverneazure", name: "Caverne Azurée", minLvl: 60, maxLvl: 75, types: ["psychic", "water", "poison", "electric", "fire", "ice"] }
+    { id: "route1", name: "Route 1", minLvl: 2, maxLvl: 5, encounters: [16, 19] }, // Roucool, Rattata
+    { id: "route2", name: "Route 2", minLvl: 3, maxLvl: 6, encounters: [10, 13, 16, 19, 29, 32] }, // Chenipan, Aspicot, Nidoran...
+    { id: "foretjade", name: "Forêt de Jade", minLvl: 4, maxLvl: 8, encounters: [10, 11, 13, 14, 25] }, // + Pikachu
+    { id: "route3", name: "Route 3", minLvl: 6, maxLvl: 10, encounters: [16, 19, 21, 27, 39, 56] }, // Piafabec, Sabelette, Rondoudou, Férosinge
+    { id: "montselenite", name: "Mont Sélénite", minLvl: 8, maxLvl: 12, encounters: [27, 35, 41, 46, 74] }, // Mélofée, Nosferapti, Paras, Racaillou
+    { id: "route4", name: "Route 4", minLvl: 10, maxLvl: 14, encounters: [19, 21, 23, 27, 56] }, // Abo
+    { id: "route24", name: "Routes 24 & 25", minLvl: 10, maxLvl: 15, encounters: [10, 11, 13, 14, 16, 43, 63, 69] }, // Mystherbe, Abra, Chétiflor
+    { id: "route5", name: "Routes 5 & 6", minLvl: 13, maxLvl: 17, encounters: [16, 43, 52, 56, 69] }, // + Miaouss
+    { id: "cavetaupiqueur", name: "Cave Taupiqueur", minLvl: 15, maxLvl: 22, encounters: [50, 51] }, // Taupiqueur, Triopikeur
+    { id: "route9", name: "Routes 9 & 10", minLvl: 14, maxLvl: 19, encounters: [19, 21, 23, 27, 66, 81, 100] }, // Machoc, Magnéti, Voltorbe
+    { id: "grottesombre", name: "Grotte Sombre", minLvl: 16, maxLvl: 22, encounters: [41, 66, 74, 95] }, // + Onix
+    { id: "lavanville", name: "Tour Pokémon", minLvl: 20, maxLvl: 26, encounters: [92, 93, 104] }, // Fantominus, Spectrum, Osselait
+    { id: "route12", name: "Routes 12 à 15", minLvl: 22, maxLvl: 28, encounters: [16, 17, 43, 44, 48, 69, 70, 132] }, // Mimitoss, Métamorph
+    { id: "pistecyclable", name: "Piste Cyclable", minLvl: 24, maxLvl: 30, encounters: [20, 22, 84, 88, 89, 109] }, // Doduo, Tadmorv, Smogo
+    { id: "parcsafari", name: "Parc Safari", minLvl: 25, maxLvl: 35, encounters: [30, 33, 47, 48, 84, 102, 105, 111, 113, 114, 115, 123, 127, 128] }, // Leveinard, Insécateur, Scarabrute, Tauros...
+    { id: "ilesecume", name: "Îles Écume", minLvl: 28, maxLvl: 36, encounters: [41, 42, 54, 55, 79, 80, 86, 87, 90, 98, 116, 124] }, // Otaria, Lippoutou, Krabby...
+    { id: "manoir", name: "Manoir Pokémon", minLvl: 30, maxLvl: 38, encounters: [37, 58, 77, 88, 89, 109, 110, 126, 132] }, // Goupix, Caninos, Ponyta, Magmar
+    { id: "centrale", name: "Centrale", minLvl: 32, maxLvl: 40, encounters: [25, 26, 81, 82, 88, 89, 100, 101, 125] }, // Élektek
+    { id: "route21", name: "Chenal 21 (Surf)", minLvl: 25, maxLvl: 35, encounters: [72, 73, 114] }, // Tentacool, Tentacruel, Saquedeneu
+    { id: "routevictoire", name: "Route Victoire", minLvl: 40, maxLvl: 50, encounters: [41, 42, 49, 66, 67, 74, 75, 95, 105] }, // Gravalanch, Machopeur, Nosferalto
+    { id: "caverneazure", name: "Caverne Azurée", minLvl: 55, maxLvl: 65, encounters: [24, 26, 28, 40, 42, 47, 49, 64, 70, 85, 97, 105, 108, 112, 113, 114, 132] } // Kadabra, Rhinocorne, Excelangue...
 ];
 
 let activeFighter = null;
@@ -156,10 +170,11 @@ async function startBattle(zone) {
     document.getElementById('moves-container').innerHTML = `<p style="color:#aaa; text-align:center; grid-column: span 2; margin-top:20px;">Chargement des capacités...</p>`;
     document.getElementById('btn-battle-flee').disabled = true;
 
-    const gen1Pokemon = state.pokemonDataList.slice(0, 151);
-    const randIndex = Math.floor(Math.random() * gen1Pokemon.length);
-    const wData = gen1Pokemon[randIndex];
-    const wId = randIndex + 1;
+    // NOUVEAU : Tirage aléatoire basé sur les apparitions exactes de la zone séléctionnée !
+    const possibleEncounters = zone.encounters;
+    const randomPokedexNumber = possibleEncounters[Math.floor(Math.random() * possibleEncounters.length)];
+    const wData = state.pokemonDataList[randomPokedexNumber - 1]; // -1 car le tableau javascript commence à 0
+    const wId = randomPokedexNumber;
     
     const wLevel = Math.floor(Math.random() * (zone.maxLvl - zone.minLvl + 1)) + zone.minLvl;
     
@@ -426,7 +441,6 @@ async function handleLevelUpMoves(oldLvl, newLvl) {
     newMovesInfo.sort((a,b) => a.level - b.level);
     
     for (let mInfo of newMovesInfo) {
-        // NOUVEAU : Lecture instantanée par le nom depuis moves.json !
         const moveData = await getMoveDetails(mInfo.name); 
         if (activeFighter.moves.some(m => m.nameEn === moveData.nameEn)) continue;
         
