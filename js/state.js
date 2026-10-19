@@ -2,7 +2,7 @@ export const state = {
     currentUser: localStorage.getItem('pokeAppCurrentUser') || null,
     currentUserData: { collection: [], berries: [], garden: null, pokeBerrys: 0, boostersLeft: 10, lastBoosterTime: Date.now(), friends: [], friendRequests: [], trades: [], battleRequests: [], battleHistory: [], specialBoostersLeft: 0, battlesProposedToday: 0, lastBattleDate: null },
     pokemonDataList: [],
-    currentLang: 'en',
+    currentLang: localStorage.getItem('pokeAppLang') || 'fr', // MÉMOIRE DE LA LANGUE
     collectionMode: 'normal',
     cartesRetournees: 0,
     currentPulls: [],
@@ -12,16 +12,14 @@ export const state = {
     boosterTimerInterval: null,
     probabilities: { "C": 60, "U": 20, "R": 10, "E": 7, "L": 2, "M": 1, "mega": 2, "shiny": 0.4 },
     berryConfig: {
-        // Configuration par défaut si Firebase ne renvoie rien
-        // Temps en millisecondes
         default: { 
-            growTime: 3 * 60 * 1000, // Pousse en 3 minutes
-            yieldMin: 2,             // Donne au minimum 2 baies
-            yieldMax: 4,             // Donne au maximum 4 baies
-            needsWater: true,        // A besoin d'eau
-            waterInterval: 60 * 1000, // Demande de l'eau toutes les 1 min
-            witherTime: 2 * 60 * 1000, // Meurt si pas arrosée pendant 2 min d'affilée
-            sellPrice: 10            // Se vend pour 10 PokeBerrys
+            growTime: 3 * 60 * 1000,
+            yieldMin: 2,
+            yieldMax: 4,
+            needsWater: true,
+            waterInterval: 60 * 1000,
+            witherTime: 2 * 60 * 1000,
+            sellPrice: 10
         }
     }
 };

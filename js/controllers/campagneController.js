@@ -1,7 +1,7 @@
 import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
-import { getCardImageUrl, getPokemonDetails, getEffectiveness, formatMegaName, getMovesForLevel, TYPE_TRANSLATIONS } from '../utils.js';
-import { allerASection } from './navController.js';
+import { getCardImageUrl, getPokemonDetails, getEffectiveness, formatMegaName, getMovesForLevel, getMoveDetails, TYPE_TRANSLATIONS } from '../utils.js';
+import { allerASection, applyTranslation } from './navController.js';
 
 const ZONES = [
     { id: "route1", name: "Route 1", minLvl: 2, maxLvl: 5, types: ["normal", "flying"] },
@@ -31,7 +31,7 @@ export function initCampagne() {
     
     document.getElementById('btn-battle-flee').addEventListener('click', () => {
         if(isAnimating) return;
-        logMessage("Vous prenez la fuite... 🏃");
+        logMessage(state.currentLang === 'en' ? "You fled... 🏃" : "Vous prenez la fuite... 🏃");
         toggleMoves(true);
         setTimeout(() => {
             document.getElementById('campagne-battle-arena').classList.add('hidden');
@@ -124,11 +124,12 @@ function renderZones() {
         div.className = "zone-card";
         div.innerHTML = `
             <h4>${z.name}</h4>
-            <p>Niveau des Pokémon : <span class="text-accent">${z.minLvl} - ${z.maxLvl}</span></p>
+            <p><span class="translatable" data-fr="Niveau des Pokémon :" data-en="Pokémon Levels :">Niveau des Pokémon :</span> <span class="text-accent">${z.minLvl} - ${z.maxLvl}</span></p>
         `;
         div.onclick = () => startBattle(z);
         list.appendChild(div);
     });
+    applyTranslation();
 }
 
 async function startBattle(zone) {
@@ -137,7 +138,9 @@ async function startBattle(zone) {
     
     document.getElementById('enemy-name').textContent = "Recherche...";
     document.getElementById('enemy-sprite').src = "";
-    document.getElementById('battle-log').innerHTML = `Vous marchez dans la zone : ${zone.name}...`;
+    let msgStart = state.currentLang === 'en' ? `You walk into ${zone.name}...` : `Vous marchez dans la zone : ${zone.name}...`;
+    document.getElementById('battle-log').innerHTML = msgStart;
+    
     document.getElementById('moves-container').innerHTML = `<p style="color:#aaa; text-align:center; grid-column: span 2; margin-top:20px;">Chargement des capacités...</p>`;
     document.getElementById('btn-battle-flee').disabled = true;
 
@@ -173,26 +176,31 @@ async function startBattle(zone) {
     };
 
     currentEnemy.moves = await getMovesForLevel(wId, wLevel);
-    activeFighter.battleStats.moves = await getMovesForLevel(activeFighter.pokedexNumber, activeFighter.level || 1);
-
+    
+    // MÉMOIRE DES ATTAQUES DU JOUEUR : S'il n'en a pas, on lui attribue les siennes pour son niveau
+    if (!activeFighter.moves || activeFighter.moves.length === 0) {
+        activeFighter.moves = await getMovesForLevel(activeFighter.pokedexNumber, activeFighter.level || 1);
+        db.collection('users').doc(state.currentUser).update({ collection: state.currentUserData.collection });
+    }
+    
     updateBattleUI();
     renderMovesUI();
     toggleMoves(false);
 
     let eName = state.currentLang === 'en' ? currentEnemy.nameEn : currentEnemy.nameFr;
-    logMessage(`Un <b>${eName}</b> sauvage apparaît ! (Niv. ${currentEnemy.level})`);
+    let msgApp = state.currentLang === 'en' ? `A wild <b>${eName}</b> appears! (Lvl ${currentEnemy.level})` : `Un <b>${eName}</b> sauvage apparaît ! (Niv. ${currentEnemy.level})`;
+    logMessage(msgApp);
 }
 
 function renderMovesUI() {
     const container = document.getElementById('moves-container');
     container.innerHTML = "";
     
-    activeFighter.battleStats.moves.forEach(move => {
+    activeFighter.moves.forEach(move => {
         const btn = document.createElement('button');
         btn.className = `move-btn type-${move.type}`;
         const moveName = state.currentLang === 'en' ? move.nameEn : move.nameFr;
         
-        // Ajout de la classe .move-name et des data-en / data-fr pour la traduction à la volée !
         btn.innerHTML = `<span class="move-name" data-en="${move.nameEn}" data-fr="${move.nameFr}">${moveName}</span><span style="font-size:0.7rem; opacity:0.8; font-weight:normal;">POW ${move.power}</span>`;
         btn.onclick = () => processTurn(move);
         container.appendChild(btn);
@@ -206,7 +214,6 @@ function toggleMoves(disabled) {
 }
 
 function updateBattleUI() {
-    // Enemy
     const enemyNameEl = document.getElementById('enemy-name');
     enemyNameEl.setAttribute('data-en', currentEnemy.nameEn);
     enemyNameEl.setAttribute('data-fr', currentEnemy.nameFr);
@@ -218,7 +225,6 @@ function updateBattleUI() {
     document.getElementById('enemy-sprite').src = currentEnemy.sprite;
     updateBarColor('enemy-hp-fill', currentEnemy.hp, currentEnemy.maxHp);
 
-    // Player
     const playerNameEl = document.getElementById('player-name');
     let pNameEn = activeFighter.data.en;
     let pNameFr = activeFighter.data.fr;
@@ -270,7 +276,8 @@ async function processTurn(playerMove) {
     if (activeFighter.mega) pName = formatMegaName(pName, activeFighter.megaForm);
     let moveName = state.currentLang === 'en' ? playerMove.nameEn : playerMove.nameFr;
     
-    logMessage(`<b>${pName}</b> utilise <b style="color:var(--accent);">${moveName}</b> !`);
+    let msgUse = state.currentLang === 'en' ? `<b>${pName}</b> uses <b style="color:var(--accent);">${moveName}</b>!` : `<b>${pName}</b> utilise <b style="color:var(--accent);">${moveName}</b> !`;
+    logMessage(msgUse);
     playAnimation('player-sprite', 'anim-attack');
 
     await new Promise(r => setTimeout(r, 600));
@@ -282,9 +289,9 @@ async function processTurn(playerMove) {
     currentEnemy.hp -= damage;
     playAnimation('enemy-sprite', 'anim-damage');
     
-    if (mult > 1) logMessage(`C'est super efficace ! (${damage} dégâts)`);
-    else if (mult < 1) logMessage(`Ce n'est pas très efficace. (${damage} dégâts)`);
-    else logMessage(`(${damage} dégâts)`);
+    if (mult > 1) logMessage(state.currentLang === 'en' ? `It's super effective! (${damage} dmg)` : `C'est super efficace ! (${damage} dégâts)`);
+    else if (mult < 1) logMessage(state.currentLang === 'en' ? `It's not very effective. (${damage} dmg)` : `Ce n'est pas très efficace. (${damage} dégâts)`);
+    else logMessage(`(${damage} ${state.currentLang === 'en' ? 'dmg' : 'dégâts'})`);
 
     updateBattleUI();
 
@@ -298,7 +305,6 @@ async function processTurn(playerMove) {
 
     let bestEnemyMove = currentEnemy.moves[0];
     let maxExpectedDamage = -1;
-    
     currentEnemy.moves.forEach(m => {
         let mMult = getEffectiveness(m.type, activeFighter.battleStats.types);
         let expected = (m.power / 40) * mMult;
@@ -311,7 +317,8 @@ async function processTurn(playerMove) {
     let eMoveName = state.currentLang === 'en' ? bestEnemyMove.nameEn : bestEnemyMove.nameFr;
     let eName = state.currentLang === 'en' ? currentEnemy.nameEn : currentEnemy.nameFr;
     
-    logMessage(`<b>${eName}</b> sauvage utilise <b style="color:var(--danger);">${eMoveName}</b> !`);
+    let msgEUse = state.currentLang === 'en' ? `Wild <b>${eName}</b> uses <b style="color:var(--danger);">${eMoveName}</b>!` : `<b>${eName}</b> sauvage utilise <b style="color:var(--danger);">${eMoveName}</b> !`;
+    logMessage(msgEUse);
     playAnimation('enemy-sprite', 'anim-attack');
 
     await new Promise(r => setTimeout(r, 600));
@@ -323,14 +330,15 @@ async function processTurn(playerMove) {
     activeFighter.battleStats.hp -= eDamage;
     playAnimation('player-sprite', 'anim-damage');
     
-    if (eMult > 1) logMessage(`C'est super efficace ! (${eDamage} dégâts reçus)`);
-    else if (eMult < 1) logMessage(`Ce n'est pas très efficace. (${eDamage} dégâts reçus)`);
-    else logMessage(`(${eDamage} dégâts reçus)`);
+    if (eMult > 1) logMessage(state.currentLang === 'en' ? `It's super effective! (${eDamage} dmg taken)` : `C'est super efficace ! (${eDamage} dégâts reçus)`);
+    else if (eMult < 1) logMessage(state.currentLang === 'en' ? `It's not very effective. (${eDamage} dmg taken)` : `Ce n'est pas très efficace. (${eDamage} dégâts reçus)`);
+    else logMessage(`(${eDamage} ${state.currentLang === 'en' ? 'dmg taken' : 'dégâts reçus'})`);
 
     updateBattleUI();
 
     if (activeFighter.battleStats.hp <= 0) {
-        logMessage(`<span class="text-danger">${pName} est K.O. ! Vous fuyez en urgence...</span>`);
+        let msgFaint = state.currentLang === 'en' ? `<span class="text-danger">${pName} fainted! You flee...</span>` : `<span class="text-danger">${pName} est K.O. ! Vous fuyez en urgence...</span>`;
+        logMessage(msgFaint);
         setTimeout(() => {
             document.getElementById('campagne-battle-arena').classList.add('hidden');
             document.getElementById('campagne-select-zone').classList.remove('hidden');
@@ -342,13 +350,88 @@ async function processTurn(playerMove) {
     isAnimating = false;
 }
 
+// LA FENÊTRE DE CHOIX D'ATTAQUE (Apprentissage)
+function promptLearnMove(newMove) {
+    return new Promise(resolve => {
+        const modal = document.getElementById('move-learn-modal');
+        const text = document.getElementById('move-learn-text');
+        const list = document.getElementById('current-moves-list');
+        const skipBtn = document.getElementById('btn-skip-move');
+        
+        let pName = state.currentLang === 'en' ? activeFighter.data.en : activeFighter.data.fr;
+        let mName = state.currentLang === 'en' ? newMove.nameEn : newMove.nameFr;
+        
+        let promptText = state.currentLang === 'en' 
+            ? `<b>${pName}</b> wants to learn <b class="text-accent">${mName}</b> (POW ${newMove.power}).<br>But it already knows 4 moves! Which move should be forgotten?` 
+            : `<b>${pName}</b> veut apprendre <b class="text-accent">${mName}</b> (POW ${newMove.power}).<br>Mais il connaît déjà 4 capacités ! Laquelle oublier ?`;
+        
+        text.innerHTML = promptText;
+        list.innerHTML = '';
+        
+        activeFighter.moves.forEach((m, index) => {
+            const btn = document.createElement('button');
+            btn.className = `move-btn type-${m.type}`;
+            let currentMName = state.currentLang === 'en' ? m.nameEn : m.nameFr;
+            btn.innerHTML = `<span class="move-name" data-en="${m.nameEn}" data-fr="${m.nameFr}">${currentMName}</span><span style="font-size:0.7rem; font-weight:normal;">POW ${m.power}</span>`;
+            
+            btn.onclick = () => {
+                let oldName = state.currentLang === 'en' ? m.nameEn : m.nameFr;
+                let msgLearn = state.currentLang === 'en' ? `1, 2 and... Poof! ${pName} forgot ${oldName} and learned ${mName}!` : `1, 2 et... Pouf ! ${pName} a oublié ${oldName} et appris ${mName} !`;
+                logMessage(msgLearn);
+                activeFighter.moves[index] = newMove;
+                closeModal();
+            };
+            list.appendChild(btn);
+        });
+        
+        skipBtn.onclick = () => {
+            logMessage(state.currentLang === 'en' ? `${pName} did not learn ${mName}.` : `${pName} n'a pas appris ${mName}.`);
+            closeModal();
+        };
+        
+        function closeModal() {
+            modal.classList.add('hidden');
+            resolve();
+        }
+        
+        modal.classList.remove('hidden');
+        applyTranslation(); // On traduit la fenêtre dynamique !
+    });
+}
+
+// Gestion de la montée de niveau et de l'apprentissage des nouvelles capacités
+async function handleLevelUpMoves(oldLvl, newLvl) {
+    const details = await getPokemonDetails(activeFighter);
+    // On récupère toutes les attaques débloquées entre l'ancien et le nouveau niveau
+    let newMovesInfo = details.allMoves.filter(m => m.level > oldLvl && m.level <= newLvl);
+    newMovesInfo.sort((a,b) => a.level - b.level);
+    
+    for (let mInfo of newMovesInfo) {
+        const moveData = await getMoveDetails(mInfo.url);
+        // Si on connait déjà cette attaque, on passe
+        if (activeFighter.moves.some(m => m.nameEn === moveData.nameEn)) continue;
+        
+        if (activeFighter.moves.length < 4) {
+            activeFighter.moves.push(moveData);
+            let moveName = state.currentLang === 'en' ? moveData.nameEn : moveData.nameFr;
+            let pName = state.currentLang === 'en' ? activeFighter.data.en : activeFighter.data.fr;
+            let msg = state.currentLang === 'en' ? `✨ ${pName} learned ${moveName}!` : `✨ ${pName} a appris ${moveName} !`;
+            logMessage(msg);
+        } else {
+            // S'il connait déjà 4 attaques, on lance la fenêtre modale
+            await promptLearnMove(moveData);
+        }
+    }
+}
+
 async function winBattle() {
     let eName = state.currentLang === 'en' ? currentEnemy.nameEn : currentEnemy.nameFr;
-    logMessage(`<b style="color:#2ecc71;">${eName} sauvage est vaincu !</b>`);
+    logMessage(`<b style="color:#2ecc71;">${eName} ${state.currentLang === 'en' ? 'defeated!' : 'sauvage est vaincu !'}</b>`);
     
     let xpGained = currentEnemy.level * 15;
-    logMessage(`Vous gagnez <span class="text-accent">${xpGained} XP</span> !`);
+    logMessage(state.currentLang === 'en' ? `You gained <span class="text-accent">${xpGained} XP</span>!` : `Vous gagnez <span class="text-accent">${xpGained} XP</span> !`);
     
+    let oldLvl = activeFighter.level || 1;
     let currentLvl = activeFighter.level || 1;
     let currentXp = activeFighter.xp || 0;
     let maxLvl = activeFighter.maxLevel || 20;
@@ -374,13 +457,19 @@ async function winBattle() {
     activeFighter.xp = currentXp;
     
     if (leveledUp) {
-        logMessage(`<span class="text-accent font-bold">🎉 NIVEAU SUPÉRIEUR ! (Niveau ${currentLvl})</span>`);
+        logMessage(state.currentLang === 'en' ? `<span class="text-accent font-bold">🎉 LEVEL UP! (Level ${currentLvl})</span>` : `<span class="text-accent font-bold">🎉 NIVEAU SUPÉRIEUR ! (Niveau ${currentLvl})</span>`);
+        
+        // C'est ICI qu'on check les nouvelles attaques !
+        await handleLevelUpMoves(oldLvl, currentLvl);
+        
         if (currentLvl === maxLvl) {
-            logMessage(`<span class="text-danger">Rang Max atteint ! Fusionnez des doublons dans la collection pour aller plus haut.</span>`);
+            logMessage(state.currentLang === 'en' ? `<span class="text-danger">Max Rank reached! Merge duplicates in Collection to go higher.</span>` : `<span class="text-danger">Rang Max atteint ! Fusionnez des doublons dans la collection pour aller plus haut.</span>`);
         }
     }
     
     updateBattleUI();
+    renderMovesUI(); // Mets à jour le panel des 4 attaques au cas où
+    applyTranslation();
     
     try {
         await db.collection('users').doc(state.currentUser).update({
@@ -392,5 +481,5 @@ async function winBattle() {
         document.getElementById('campagne-battle-arena').classList.add('hidden');
         document.getElementById('campagne-select-zone').classList.remove('hidden');
         updateFighterBadge(); 
-    }, 3000);
+    }, 4000);
 }

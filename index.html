@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PokéApp - Collection & Jardin</title>
-    <!-- Nouvelles polices modernes -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/main.css">
 </head>
@@ -293,6 +292,16 @@
                 </div>
             </section>
         </main>
+    </div>
+
+    <!-- MODAL APPRENTISSAGE CAPACITÉ (CACHÉ) -->
+    <div id="move-learn-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel">
+            <h3 class="text-accent translatable" data-fr="Nouvelle Capacité !" data-en="New Move!" style="font-size: 2rem;">Nouvelle Capacité !</h3>
+            <p id="move-learn-text" style="margin-bottom: 20px;">...</p>
+            <div id="current-moves-list" class="battle-moves-grid" style="margin-bottom:20px;"></div>
+            <button id="btn-skip-move" class="btn btn-danger translatable" data-fr="Ne pas l'apprendre" data-en="Don't learn">Ne pas l'apprendre</button>
+        </div>
     </div>
 
     <button id="lang-toggle" class="lang-btn glass-panel">🇬🇧 EN</button>

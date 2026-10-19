@@ -7,40 +7,45 @@ export function initNav() {
     });
 
     const langToggle = document.getElementById('lang-toggle');
+    
+    // Application de la langue sauvegardée dès le lancement !
+    langToggle.textContent = state.currentLang === 'en' ? '🇬🇧 EN' : '🇫🇷 FR';
+    applyTranslation();
+
     langToggle.addEventListener('click', () => {
         state.currentLang = state.currentLang === 'en' ? 'fr' : 'en'; 
+        localStorage.setItem('pokeAppLang', state.currentLang); // SAUVEGARDE EN MÉMOIRE
         langToggle.textContent = state.currentLang === 'en' ? '🇬🇧 EN' : '🇫🇷 FR';
+        applyTranslation();
+    });
+}
 
-        // 1. NOUVEAU : Traduire tout le texte statique (Menu, Titres, Boutons)
-        document.querySelectorAll('.translatable').forEach(el => {
-            const texteTraduit = el.getAttribute(`data-${state.currentLang}`);
-            if (texteTraduit) el.innerHTML = texteTraduit; // Utilise innerHTML pour garder les emojis/balises
-        });
+// Nouvelle fonction exportée pour pouvoir traduire les nouveaux boutons d'attaques à la volée !
+export function applyTranslation() {
+    document.querySelectorAll('.translatable').forEach(el => {
+        const texteTraduit = el.getAttribute(`data-${state.currentLang}`);
+        if (texteTraduit) el.innerHTML = texteTraduit; 
+    });
 
-        // 2. Met à jour les noms des Pokémon et Baies (Collection, Boosters, Jardin, Profil, Arène)
-        document.querySelectorAll('.pokemon-name, #enemy-name, #player-name').forEach(el => {
-            const nomTraduit = el.getAttribute(`data-${state.currentLang}`);
-            if (nomTraduit) el.textContent = nomTraduit;
-        });
+    document.querySelectorAll('.pokemon-name, #enemy-name, #player-name').forEach(el => {
+        const nomTraduit = el.getAttribute(`data-${state.currentLang}`);
+        if (nomTraduit) el.textContent = nomTraduit;
+    });
 
-        // 3. Mettre à jour le badge du combattant actif en haut de la page Campagne
-        const activeFighterSpan = document.querySelector('#campagne-active-pokemon span');
-        if (activeFighterSpan) {
-            const badgeTraduit = activeFighterSpan.getAttribute(`data-${state.currentLang}`);
-            if (badgeTraduit) activeFighterSpan.textContent = badgeTraduit;
-        }
+    const activeFighterSpan = document.querySelector('#campagne-active-pokemon span');
+    if (activeFighterSpan) {
+        const badgeTraduit = activeFighterSpan.getAttribute(`data-${state.currentLang}`);
+        if (badgeTraduit) activeFighterSpan.textContent = badgeTraduit;
+    }
 
-        // 4. Met à jour les badges de Types
-        document.querySelectorAll('.type-badge').forEach(el => {
-            const typeTraduit = el.getAttribute(`data-${state.currentLang}`);
-            if (typeTraduit) el.textContent = typeTraduit;
-        });
+    document.querySelectorAll('.type-badge').forEach(el => {
+        const typeTraduit = el.getAttribute(`data-${state.currentLang}`);
+        if (typeTraduit) el.textContent = typeTraduit;
+    });
 
-        // 5. Met à jour les Noms des Capacités (Boutons d'attaque de la Campagne)
-        document.querySelectorAll('.move-name').forEach(el => {
-            const moveTraduit = el.getAttribute(`data-${state.currentLang}`);
-            if (moveTraduit) el.textContent = moveTraduit;
-        });
+    document.querySelectorAll('.move-name').forEach(el => {
+        const moveTraduit = el.getAttribute(`data-${state.currentLang}`);
+        if (moveTraduit) el.textContent = moveTraduit;
     });
 }
 
@@ -67,7 +72,6 @@ export function updateAuthUI() {
         sbAvatar.style.display = 'block';
         sbAvatar.src = state.currentUserData.avatar || 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/0.png';
         
-        // Mise à jour dynamique pour la traduction de "Se déconnecter"
         authNavBtn.setAttribute('data-fr', 'Se déconnecter');
         authNavBtn.setAttribute('data-en', 'Logout');
         authNavBtn.textContent = state.currentLang === 'en' ? 'Logout' : 'Se déconnecter';
@@ -79,7 +83,6 @@ export function updateAuthUI() {
         
         document.getElementById('sidebar-avatar').style.display = 'none';
         
-        // Mise à jour dynamique pour la traduction de "Se connecter"
         authNavBtn.setAttribute('data-fr', 'Se connecter');
         authNavBtn.setAttribute('data-en', 'Login');
         authNavBtn.textContent = state.currentLang === 'en' ? 'Login' : 'Se connecter';
