@@ -124,7 +124,7 @@ export function initBooster() {
             
             if (unflippedCard) {
                 unflippedCard.click(); 
-                setTimeout(flipNextAutomatically, 800); 
+                setTimeout(flipNextAutomatically, 200); 
             } else if (state.cartesRetournees < 5) {
                 setTimeout(flipNextAutomatically, 100);
             }
@@ -217,7 +217,7 @@ function creerCarte(pokemonData, numeroPokedex, index) {
                 setTimeout(() => {
                     const nextCard = state.currentPulls[state.currentPullIndex];
                     creerCarte(nextCard.data, nextCard.pokedexNumber, state.currentPullIndex);
-                }, 400); 
+                }, 150); 
             }
 
             if (state.cartesRetournees === 5) {
@@ -227,7 +227,7 @@ function creerCarte(pokemonData, numeroPokedex, index) {
                     resetButton.classList.remove('hidden');
                     resetButton.disabled = false;
                     autoOpenBtn.classList.add('hidden'); 
-                }, 600);
+                }, 200);
             }
         }
     });
@@ -324,5 +324,5 @@ function ouvrirBooster(isSpecial = false) {
         creerCarte(state.currentPulls[0].data, state.currentPulls[0].pokedexNumber, 0);
 
         state.isOpening = false; 
-    }, 1200); 
+    }, 600); 
 }
