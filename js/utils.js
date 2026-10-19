@@ -168,15 +168,15 @@ export const TOUTES_LES_BAIES = [
     { id: "kebia", fr: "Baie Kébia", en: "Kebia Berry" },
     { id: "jouca", fr: "Baie Jouca", en: "Shuca Berry" },
     { id: "cobaba", fr: "Baie Cobaba", en: "Coba Berry" },
-    { id: "yapap", fr: "Baie Yapap", en: "Payapa Berry" },
-    { id: "panga", fr: "Baie Panga", en: "Tanga Berry" },
+    { id: "payapa", fr: "Baie Payapa", en: "Payapa Berry" },
+    { id: "tanga", fr: "Baie Tanga", en: "Tanga Berry" },
     { id: "charti", fr: "Baie Charti", en: "Charti Berry" },
     { id: "sedra", fr: "Baie Sédra", en: "Kasib Berry" },
     { id: "fraigo", fr: "Baie Fraigo", en: "Haban Berry" },
     { id: "lampou", fr: "Baie Lampou", en: "Colbur Berry" },
     { id: "babiri", fr: "Baie Babiri", en: "Babiri Berry" },
     { id: "zalis", fr: "Baie Zalis", en: "Chilan Berry" },
-    { id: "lichii", fr: "Baie Lichii", en: "Liechi Berry" },
+    { id: "litchii", fr: "Baie Litchii", en: "Liechi Berry" },
     { id: "lingan", fr: "Baie Lingan", en: "Ganlon Berry" },
     { id: "sailak", fr: "Baie Sailak", en: "Salac Berry" },
     { id: "pitaye", fr: "Baie Pitaye", en: "Petaya Berry" },
@@ -198,6 +198,28 @@ export const BAIES_BOOSTERS = [
     { id: "oran", fr: "Baie Oran", en: "Oran Berry" },
     { id: "sitrus", fr: "Baie Sitrus", en: "Sitrus Berry" },
     { id: "nanana", fr: "Baie Nanana", en: "Pinap Berry" }
+];
+
+export const MUTATION_RECIPES = [
+    // Mutations Basiques (Création du Tier 2)
+    { p1: "nanana", p2: "nanana", result: "maron", chance: 0.05 },
+    { p1: "ceriz", p2: "pecha", result: "fraive", chance: 0.05 },
+    { p1: "oran", p2: "sitrus", result: "willia", chance: 0.05 },
+    { p1: "pecha", p2: "oran", result: "mepo", chance: 0.05 },
+    { p1: "sitrus", p2: "nanana", result: "kika", chance: 0.05 },
+    { p1: "ceriz", p2: "oran", result: "prine", chance: 0.05 },
+
+    // Mutations Avancées (Création du Tier 3)
+    { p1: "maron", p2: "fraive", result: "figuy", chance: 0.02 },
+    { p1: "willia", p2: "mepo", result: "wiki", chance: 0.02 },
+    { p1: "kika", p2: "prine", result: "mago", chance: 0.02 },
+    { p1: "maron", p2: "willia", result: "gowav", chance: 0.02 },
+    { p1: "fraive", p2: "mepo", result: "papaya", chance: 0.02 },
+
+    // Mutations Expertes (Création du Tier 4)
+    { p1: "figuy", p2: "wiki", result: "framby", chance: 0.01 },
+    { p1: "mago", p2: "gowav", result: "remu", chance: 0.01 },
+    { p1: "papaya", p2: "figuy", result: "nanab", chance: 0.01 }
 ];
 
 export function sauvegarderBaie(baieData) {

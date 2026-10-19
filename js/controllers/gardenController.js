@@ -1,35 +1,9 @@
 import { db } from '../firebase-config.js';
 import { state } from '../state.js';
-import { TOUTES_LES_BAIES } from '../utils.js';
+import { TOUTES_LES_BAIES, MUTATION_RECIPES } from '../utils.js';
 
 let selectedPlot = null;
-let mutationTick = 0; // Compteur pour les mutations
-
-// --- RECETTES DE MUTATIONS ---
-// chance: 0.05 = 5% de chance que la mutation réussisse toutes les 5 secondes
-const MUTATION_RECIPES = [
-    // Mutations Basiques (Création du Tier 2)
-    { p1: "nanana", p2: "nanana", result: "maron", chance: 0.05 }, // Exemple demandé !
-    { p1: "ceriz", p2: "pecha", result: "fraive", chance: 0.05 },
-    { p1: "oran", p2: "sitrus", result: "willia", chance: 0.05 },
-    { p1: "pecha", p2: "oran", result: "mepo", chance: 0.05 },
-    { p1: "sitrus", p2: "nanana", result: "kika", chance: 0.05 },
-    { p1: "ceriz", p2: "oran", result: "prine", chance: 0.05 },
-
-    // Mutations Avancées (Création du Tier 3)
-    { p1: "maron", p2: "fraive", result: "figuy", chance: 0.02 },
-    { p1: "willia", p2: "mepo", result: "wiki", chance: 0.02 },
-    { p1: "kika", p2: "prine", result: "mago", chance: 0.02 },
-    { p1: "maron", p2: "willia", result: "gowav", chance: 0.02 },
-    { p1: "fraive", p2: "mepo", result: "papaya", chance: 0.02 },
-
-    // Mutations Expertes (Création du Tier 4)
-    { p1: "figuy", p2: "wiki", result: "framby", chance: 0.01 },
-    { p1: "mago", p2: "gowav", result: "remu", chance: 0.01 },
-    { p1: "papaya", p2: "figuy", result: "nanab", chance: 0.01 },
-    
-    // N'hésitez pas à ajouter d'autres recettes ici !
-];
+let mutationTick = 0; 
 
 export function initGarden() {
     document.getElementById('nav-jardin').addEventListener('click', () => {
@@ -39,14 +13,12 @@ export function initGarden() {
 
     document.getElementById('btn-sell-berries').addEventListener('click', openSellMenu);
 
-    // Rafraîchir la grille chaque seconde quand la page est ouverte
     setInterval(() => {
         const sect = document.getElementById('section-jardin');
         if (sect && !sect.classList.contains('hidden')) {
             renderGardenGrid();
             updateActionPanel();
             
-            // On vérifie les mutations toutes les 5 secondes
             mutationTick++;
             if (mutationTick >= 5) {
                 checkMutations();
@@ -55,7 +27,6 @@ export function initGarden() {
         }
     }, 1000);
 
-    // Gestion globale des clics sur la grille
     document.getElementById('garden-grid').addEventListener('click', (e) => {
         const plotEl = e.target.closest('.garden-plot');
         if(plotEl) {
@@ -63,7 +34,6 @@ export function initGarden() {
         }
     });
 
-    // Délégation des actions
     document.getElementById('garden-action-content').addEventListener('click', (e) => {
         const target = e.target.closest('[data-action]');
         if (!target) return;
@@ -96,60 +66,52 @@ function checkMutations() {
     let mutated = false;
     
     garden.forEach((plot, i) => {
-        // La mutation ne peut se produire QUE sur un terrain débloqué et VIDE
         if (plot.locked || plot.berryId !== null) return; 
         
         const row = Math.floor(i / 9);
         const col = i % 9;
         const adjacentBerries = [];
         
-        // Fonction pour récupérer les baies adjacentes qui sont en train de pousser (et non fanées)
         const checkAndAdd = (idx) => {
             const p = garden[idx];
             if (!p.locked && p.berryId !== null) {
                 const st = getPlotState(p);
-                // La plante adjacente doit être vivante
                 if (st.stage === 'growing' || st.stage === 'thirsty' || st.stage === 'ready') {
                     adjacentBerries.push(p.berryId);
                 }
             }
         };
         
-        if (row > 0) checkAndAdd(i - 9); // Haut
-        if (row < 8) checkAndAdd(i + 9); // Bas
-        if (col > 0) checkAndAdd(i - 1); // Gauche
-        if (col < 8) checkAndAdd(i + 1); // Droite
+        if (row > 0) checkAndAdd(i - 9); 
+        if (row < 8) checkAndAdd(i + 9); 
+        if (col > 0) checkAndAdd(i - 1); 
+        if (col < 8) checkAndAdd(i + 1); 
         
-        // Si le terrain vide est touché par au moins 2 baies
         if (adjacentBerries.length >= 2) {
             for (let recipe of MUTATION_RECIPES) {
                 const hasP1 = adjacentBerries.includes(recipe.p1);
                 let hasP2 = false;
                 
-                // Si la recette demande 2 baies identiques (ex: nanana + nanana)
                 if (recipe.p1 === recipe.p2) {
                     hasP2 = adjacentBerries.filter(b => b === recipe.p1).length >= 2;
                 } else {
                     hasP2 = adjacentBerries.includes(recipe.p2);
                 }
                 
-                // Si les deux baies parentes sont présentes autour du terrain vide
                 if (hasP1 && hasP2) {
-                    // On lance les dés !
                     if (Math.random() <= recipe.chance) {
                         plot.berryId = recipe.result;
                         plot.plantedAt = Date.now();
                         plot.lastWatered = Date.now();
                         mutated = true;
                         
-                        // Notification visuelle dans le panel
                         document.getElementById('garden-action-title').textContent = "Mutation ! ✨";
                         const baieDef = TOUTES_LES_BAIES.find(b => b.id === recipe.result);
                         document.getElementById('garden-action-content').innerHTML = `
                             <p style="color:#f1c40f; font-weight:bold;">Une nouvelle espèce est apparue !</p>
                             <p>Une <b style="color:#2ecc71;">${baieDef.fr}</b> a poussé spontanément grâce aux baies voisines !</p>
                         `;
-                        break; // Une seule mutation par terrain maximum
+                        break; 
                     }
                 }
             }
@@ -258,7 +220,6 @@ function handlePlotClick(index) {
     const st = getPlotState(plot);
     const content = document.getElementById('garden-action-content');
     
-    // Si la fenêtre affiche une mutation on ne la remplace pas tout de suite
     if(document.getElementById('garden-action-title').textContent !== "Mutation ! ✨") {
         document.getElementById('garden-action-title').textContent = "Détails du Terrain";
     } else {

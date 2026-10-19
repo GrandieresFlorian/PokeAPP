@@ -1,5 +1,5 @@
 import { state, CONSTS } from '../state.js';
-import { formatMegaName, getCardImageUrl, getPokemonDetails, generateTypeBadgesHTML, pokemonTypeCache, TOUTES_LES_BAIES } from '../utils.js';
+import { formatMegaName, getCardImageUrl, getPokemonDetails, generateTypeBadgesHTML, pokemonTypeCache, TOUTES_LES_BAIES, BAIES_BOOSTERS, MUTATION_RECIPES } from '../utils.js';
 
 export function initCollection() {
     const tabNormal = document.getElementById('tab-normal'); 
@@ -81,7 +81,6 @@ export function afficherCollection() {
         let pokemonRarity = (state.collectionMode === 'mega' || state.collectionMode === 'mega-shiny') ? "MG" : dataOrigine.rarity;
         let possedeLaCarte = false; let quantite = 0; let afficheHolo = false;
         
-        // Sécurisation totale des accès aux objets
         if (state.collectionMode === 'normal') { 
             quantite = (cartesPossedeesMap[i] && cartesPossedeesMap[i].normal) ? cartesPossedeesMap[i].normal : 0;
             possedeLaCarte = quantite > 0;
@@ -199,6 +198,21 @@ function chargerPowDynamiquement() {
     });
 }
 
+function getBerryHint(baieId) {
+    if (BAIES_BOOSTERS.some(b => b.id === baieId)) {
+        return "Obtenable : Dans les Boosters Pokémon ✨";
+    }
+    const recipe = MUTATION_RECIPES.find(r => r.result === baieId);
+    if (recipe) {
+        const p1Def = TOUTES_LES_BAIES.find(b => b.id === recipe.p1);
+        const p2Def = TOUTES_LES_BAIES.find(b => b.id === recipe.p2);
+        const name1 = p1Def ? p1Def.fr : recipe.p1;
+        const name2 = p2Def ? p2Def.fr : recipe.p2;
+        return `Indice de mutation 🔬 : Plantez une ${name1} à côté d'une ${name2}`;
+    }
+    return "Indice : Mutation secrète non découverte...";
+}
+
 function afficherBaies(container, countDisplay, ownedOnlyVal) {
     const mesBaies = state.currentUserData.berries || [];
     const baiesMap = {};
@@ -218,18 +232,21 @@ function afficherBaies(container, countDisplay, ownedOnlyVal) {
         if (possedeLaCarte) uniquesCount++;
 
         let nomAffiche = state.currentLang === 'en' ? baie.en : baie.fr;
-        let finalImageUrl = `https://www.media.pokekalos.fr/img/pokemon/baies/big/${baie.id}.png`;
+        let enName = baie.en.toLowerCase().replace(/\s+/g, '-');
+        let finalImageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${enName}.png`;
+
+        let hint = getBerryHint(baie.id);
 
         if (possedeLaCarte) {
             let badgeQuantite = quantite > 1 ? `<div class="badge-quantite">X${quantite}</div>` : "";
 
             htmlContent += `
-                <div class="card flipped" style="cursor: default;">
+                <div class="card flipped" style="cursor: help;" title="${hint}">
                     <div class="card-inner">
                         <div class="card-front" style="background-color: #2ecc71; border-color: #27ae60;">
                             ${badgeQuantite}
                             <div class="card-header"><h1 class="pokemon-name" data-en="${baie.en}" data-fr="${baie.fr}">${nomAffiche}</h1><div class="icon" style="background-color: white; color: #27ae60;">B</div></div>
-                            <div class="image-wrapper" style="background-color: #fceea7;"><img class="pokemon-image" src="${finalImageUrl}" alt="Baie" style="object-fit: contain; height: 160px; padding: 15px;" loading="lazy"></div>
+                            <div class="image-wrapper" style="background-color: #fceea7;"><img class="pokemon-image" src="${finalImageUrl}" alt="Baie" style="object-fit: contain; height: 160px; padding: 15px; image-rendering: pixelated;" loading="lazy"></div>
                             <div class="card-subtext" style="justify-content:center;">Objet Consommable</div>
                             <div class="stats-bar" style="justify-content:center;"><span style="font-weight:bold; color: white;">BAIE POKÉMON</span></div>
                         </div>
@@ -237,11 +254,11 @@ function afficherBaies(container, countDisplay, ownedOnlyVal) {
                 </div>`;
         } else {
             htmlContent += `
-                <div class="card flipped" style="cursor: default;">
+                <div class="card flipped" style="cursor: help;" title="${hint}">
                     <div class="card-inner">
                         <div class="card-front locked-card" style="background-color: #1a1a1a;">
                             <div class="card-header"><h1 class="pokemon-name" style="color: #555;">???</h1><div class="icon" style="background-color: #333; color: #555;">?</div></div>
-                            <div class="image-wrapper" style="background-color: #222;"><div class="question-mark">?</div><img class="pokemon-image silhouette" src="${finalImageUrl}" alt="Caché" style="object-fit: contain; height: 160px; padding: 15px;" loading="lazy"></div>
+                            <div class="image-wrapper" style="background-color: #222;"><div class="question-mark">?</div><img class="pokemon-image silhouette" src="${finalImageUrl}" alt="Caché" style="object-fit: contain; height: 160px; padding: 15px; image-rendering: pixelated;" loading="lazy"></div>
                             <div class="card-subtext" style="color: #555; justify-content:center;">Objet Inconnu</div>
                             <div class="stats-bar" style="background-color: #111; color: #555; justify-content:center;"><span style="font-weight:bold;">BAIE INCONNUE</span></div>
                         </div>
