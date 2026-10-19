@@ -186,6 +186,18 @@
                 <div id="campagne-select-pokemon" class="campagne-view glass-panel">
                     <h3 class="panel-heading text-accent translatable" data-fr="1. Choisissez votre Combattant" data-en="1. Choose your Fighter">1. Choisissez votre Combattant</h3>
                     <p class="translatable" data-fr="Cliquez sur un de vos Pokémon pour partir à l'aventure ! Les stats dépendent de son niveau." data-en="Click on a Pokémon to start your adventure! Stats depend on its level." style="color:var(--text-muted); margin-bottom: 20px;">Cliquez sur un de vos Pokémon pour partir à l'aventure ! Les stats dépendent de son niveau.</p>
+                    
+                    <!-- NOUVEAU: Menu déroulant pour le tri -->
+                    <div style="margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 10px;">
+                        <label for="campagne-sort" class="translatable" data-fr="Trier par :" data-en="Sort by :">Trier par :</label>
+                        <select id="campagne-sort" class="filter-select">
+                            <option value="pokedex" class="translatable" data-fr="Pokédex" data-en="Pokédex">Pokédex</option>
+                            <option value="level" class="translatable" data-fr="Niveau" data-en="Level">Niveau</option>
+                            <option value="rarity" class="translatable" data-fr="Rareté" data-en="Rarity">Rareté</option>
+                            <option value="alpha" class="translatable" data-fr="Alphabétique" data-en="Alphabetical">Alphabétique</option>
+                        </select>
+                    </div>
+
                     <div id="campagne-team-grid" class="trade-collection-grid" style="max-height: 400px; justify-content:center;"></div>
                 </div>
 
