@@ -130,13 +130,84 @@ export function sauvegarderCarte(pokemonData, numeroPokedex, isShiny, isMega, me
     });
 }
 
-export const BAIES_DISPONIBLES = [
+
+export const TOUTES_LES_BAIES = [
+    { id: "ceriz", fr: "Baie Ceriz", en: "Cheri Berry" },
+    { id: "maron", fr: "Baie Maron", en: "Chesto Berry" },
+    { id: "pecha", fr: "Baie Pêcha", en: "Pecha Berry" },
+    { id: "fraive", fr: "Baie Fraive", en: "Rawst Berry" },
+    { id: "wilma", fr: "Baie Wilma", en: "Aspear Berry" },
+    { id: "mepo", fr: "Baie Mepo", en: "Leppa Berry" },
+    { id: "oran", fr: "Baie Oran", en: "Oran Berry" },
+    { id: "kika", fr: "Baie Kika", en: "Persim Berry" },
+    { id: "prine", fr: "Baie Prine", en: "Lum Berry" },
+    { id: "sitrus", fr: "Baie Sitrus", en: "Sitrus Berry" },
+    { id: "figuy", fr: "Baie Figuy", en: "Figy Berry" },
+    { id: "wiki", fr: "Baie Wiki", en: "Wiki Berry" },
+    { id: "mago", fr: "Baie Mago", en: "Mago Berry" },
+    { id: "gowav", fr: "Baie Gowav", en: "Aguav Berry" },
+    { id: "papaya", fr: "Baie Papaya", en: "Iapapa Berry" },
+    { id: "framby", fr: "Baie Framby", en: "Razz Berry" },
+    { id: "remu", fr: "Baie Remu", en: "Bluk Berry" },
+    { id: "nanab", fr: "Baie Nanab", en: "Nanab Berry" },
+    { id: "repo", fr: "Baie Repo", en: "Wepear Berry" },
+    { id: "nanana", fr: "Baie Nanana", en: "Pinap Berry" },
+    { id: "grena", fr: "Baie Grena", en: "Pomeg Berry" },
+    { id: "alga", fr: "Baie Alga", en: "Kelpsy Berry" },
+    { id: "qualot", fr: "Baie Qualot", en: "Qualot Berry" },
+    { id: "lonme", fr: "Baie Lonme", en: "Hondew Berry" },
+    { id: "resin", fr: "Baie Resin", en: "Grepa Berry" },
+    { id: "tamato", fr: "Baie Tamato", en: "Tamato Berry" },
+    { id: "siro", fr: "Baie Siro", en: "Cornn Berry" },
+    { id: "mangou", fr: "Baie Mangou", en: "Magost Berry" },
+    { id: "rabuta", fr: "Baie Rabuta", en: "Rabuta Berry" },
+    { id: "tronci", fr: "Baie Tronci", en: "Nomel Berry" },
+    { id: "kiwan", fr: "Baie Kiwan", en: "Spelon Berry" },
+    { id: "palma", fr: "Baie Palma", en: "Pamtre Berry" },
+    { id: "stekpa", fr: "Baie Stekpa", en: "Watmel Berry" },
+    { id: "durin", fr: "Baie Durin", en: "Durin Berry" },
+    { id: "myrte", fr: "Baie Myrte", en: "Belue Berry" },
+    { id: "occa", fr: "Baie Occa", en: "Occa Berry" },
+    { id: "passho", fr: "Baie Passho", en: "Passho Berry" },
+    { id: "wacan", fr: "Baie Wacan", en: "Wacan Berry" },
+    { id: "rindo", fr: "Baie Rindo", en: "Rindo Berry" },
+    { id: "yache", fr: "Baie Yache", en: "Yache Berry" },
+    { id: "chople", fr: "Baie Chople", en: "Chople Berry" },
+    { id: "kebia", fr: "Baie Kebia", en: "Kebia Berry" },
+    { id: "shuca", fr: "Baie Shuca", en: "Shuca Berry" },
+    { id: "coba", fr: "Baie Coba", en: "Coba Berry" },
+    { id: "payapa", fr: "Baie Payapa", en: "Payapa Berry" },
+    { id: "tanga", fr: "Baie Tanga", en: "Tanga Berry" },
+    { id: "charti", fr: "Baie Charti", en: "Charti Berry" },
+    { id: "kasib", fr: "Baie Kasib", en: "Kasib Berry" },
+    { id: "haban", fr: "Baie Haban", en: "Haban Berry" },
+    { id: "colbur", fr: "Baie Colbur", en: "Colbur Berry" },
+    { id: "babiri", fr: "Baie Babiri", en: "Babiri Berry" },
+    { id: "chilan", fr: "Baie Chilan", en: "Chilan Berry" },
+    { id: "liechi", fr: "Baie Liechi", en: "Liechi Berry" },
+    { id: "ganlon", fr: "Baie Ganlon", en: "Ganlon Berry" },
+    { id: "salac", fr: "Baie Salac", en: "Salac Berry" },
+    { id: "petaya", fr: "Baie Petaya", en: "Petaya Berry" },
+    { id: "apicot", fr: "Baie Apicot", en: "Apicot Berry" },
+    { id: "lansat", fr: "Baie Lansat", en: "Lansat Berry" },
+    { id: "frena", fr: "Baie Frena", en: "Starf Berry" },
+    { id: "enigma", fr: "Baie Enigma", en: "Enigma Berry" },
+    { id: "micle", fr: "Baie Micle", en: "Micle Berry" },
+    { id: "custap", fr: "Baie Custap", en: "Custap Berry" },
+    { id: "jaboca", fr: "Baie Jaboca", en: "Jaboca Berry" },
+    { id: "rowap", fr: "Baie Rowap", en: "Rowap Berry" },
+    { id: "roseli", fr: "Baie Roseli", en: "Roseli Berry" },
+    { id: "maranga", fr: "Baie Maranga", en: "Maranga Berry" }
+];
+
+export const BAIES_BOOSTERS = [
     { id: "ceriz", fr: "Baie Ceriz", en: "Cheri Berry" },
     { id: "pecha", fr: "Baie Pêcha", en: "Pecha Berry" },
     { id: "oran", fr: "Baie Oran", en: "Oran Berry" },
     { id: "sitrus", fr: "Baie Sitrus", en: "Sitrus Berry" },
     { id: "nanana", fr: "Baie Nanana", en: "Pinap Berry" }
 ];
+
 
 export function sauvegarderBaie(baieData) {
     import('./firebase-config.js').then(({db}) => {

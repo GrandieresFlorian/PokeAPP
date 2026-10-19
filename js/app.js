@@ -7,6 +7,7 @@ import { initCollection } from './controllers/collectionController.js';
 import { initFriends, startFriendsListener } from './controllers/friendsController.js';
 import { initTrade } from './controllers/tradeController.js';
 import { initCheats } from './controllers/cheatController.js';
+import { initProfile } from './controllers/profileController.js';
 
 document.addEventListener("DOMContentLoaded", () => {
     initNav();
@@ -16,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initFriends();
     initTrade();
     initCheats();
+    initProfile();
 
     db.collection('settings').doc('probabilities').get().then(doc => {
         if (doc.exists) {

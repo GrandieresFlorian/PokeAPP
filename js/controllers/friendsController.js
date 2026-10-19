@@ -88,17 +88,35 @@ function renderFriendsUI() {
     if (friends.length === 0) {
         friendsList.innerHTML = "<li class='friend-item' style='color: #777;'>Aucun ami pour le moment.</li>";
     } else {
-        friends.forEach(friend => {
-            const li = document.createElement('li');
-            li.className = "friend-item";
-            li.innerHTML = `<span>${friend}</span>
-            <div>
-                <button class="btn-small-action btn-trade" style="background-color: #9b59b6; margin-right: 5px;" title="Proposer un échange">🔄</button>
-                <button class="btn-small-action btn-combat" style="background-color: #e74c3c;" title="Défier (3 max/j)">⚔️</button>
-            </div>`;
-            li.querySelector('.btn-trade').addEventListener('click', () => initierEchange(friend));
-            li.querySelector('.btn-combat').addEventListener('click', () => proposerCombat(friend));
-            friendsList.appendChild(li);
+        friendsList.innerHTML = "<li class='friend-item' style='color: #777;'>Chargement des amis...</li>";
+        Promise.all(friends.map(f => db.collection('users').doc(f).get())).then(docs => {
+            friendsList.innerHTML = "";
+            docs.forEach(doc => {
+                if(!doc.exists) return;
+                const friendId = doc.id;
+                const data = doc.data();
+                const friendName = data.displayName || friendId;
+                const avatarUrl = data.avatar || 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/0.png';
+                
+                const li = document.createElement('li');
+                li.className = "friend-item";
+                li.innerHTML = `
+                <div style="display:flex; align-items:center; cursor:pointer;" class="friend-profile-link" title="Voir le profil">
+                    <img src="${avatarUrl}" style="width:45px; height:45px; border-radius:50%; margin-right:15px; border: 2px solid #3498db; object-fit:cover;">
+                    <span style="font-weight:bold; font-size:1.1rem; flex-grow:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${friendName}</span>
+                </div>
+                <div style="display:flex; gap:8px; margin-left: 10px;">
+                    <button class="btn-small-action btn-trade" style="background-color: #9b59b6;" title="Proposer un échange">🔄</button>
+                    <button class="btn-small-action btn-combat" style="background-color: #e74c3c;" title="Défier (3 max/j)">⚔️</button>
+                </div>`;
+                
+                li.querySelector('.friend-profile-link').addEventListener('click', () => {
+                    import('./profileController.js').then(({voirProfil}) => voirProfil(friendId));
+                });
+                li.querySelector('.btn-trade').addEventListener('click', () => initierEchange(friendId));
+                li.querySelector('.btn-combat').addEventListener('click', () => proposerCombat(friendId));
+                friendsList.appendChild(li);
+            });
         });
     }
 

@@ -11,7 +11,8 @@
         <nav class="sidebar">
             <div class="logo">PokéApp</div>
             <div id="user-info" class="user-info">
-                <span id="user-name-display">Non connecté</span>
+                <div style="display:flex; flex-direction:column; align-items:center; gap:10px;"><img id="sidebar-avatar" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/0.png" style="width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid #f1c40f; display:none;">
+                <span id="user-name-display">Non connecté</span></div>
                 <button id="auth-nav-btn" class="auth-btn-small" data-target="section-auth">Se connecter</button>
             </div>
             <ul class="nav-links">
@@ -19,6 +20,7 @@
                 <li data-target="section-collection" id="nav-collection">Collection</li>
                 <li data-target="section-amis" id="nav-amis">Amis 🤝</li>
                 <li data-target="section-combats" id="nav-combats">Combats ⚔️</li>
+                <li data-target="section-profil" id="nav-profil">Profil 👤</li>
                 <li data-target="section-settings">Paramètres</li>
             </ul>
         </nav>
@@ -161,6 +163,46 @@
                     </div>
                 </div>
             </section>
+        
+            <section id="section-profil" class="view-section hidden">
+                <div id="profil-view-mode" class="profile-container">
+                    <div class="profile-header">
+                        <img id="profil-avatar" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/0.png" alt="Avatar">
+                        <div class="profile-info">
+                            <h2 id="profil-name">Chargement...</h2>
+                            <p id="profil-id-text" style="color: #aaa; font-size: 0.9rem; margin-top: -10px;">@id</p>
+                            <p id="profil-desc" class="profile-desc">Aucune description.</p>
+                        </div>
+                        <button id="btn-edit-profil" class="btn btn-secondary hidden" style="margin-left: auto;">Modifier</button>
+                    </div>
+                    
+                    <h3 style="margin-top: 30px; border-bottom: 2px solid #444; padding-bottom: 10px; color: #f1c40f;">Vitrine</h3>
+                    <div id="profil-vitrine" class="cards-container" style="margin-top: 20px;"></div>
+                </div>
+
+                <div id="profil-edit-mode" class="profile-container hidden">
+                    <h2>Modifier mon Profil</h2>
+                    <label>Pseudo affiché :</label>
+                    <input type="text" id="edit-pseudo" class="auth-input" placeholder="Votre pseudo" maxlength="20">
+                    
+                    <label>Photo de profil (URL ou numéro Pokédex) :</label>
+                    <input type="text" id="edit-avatar" class="auth-input" placeholder="Ex: 25 (pour Pikachu) ou https://...">
+                    
+                    <label>Description :</label>
+                    <textarea id="edit-desc" class="auth-input" placeholder="Décrivez-vous..." rows="3" maxlength="150" style="resize: vertical;"></textarea>
+                    
+                    <h3 style="margin-top: 20px;">Ma Vitrine (Sélectionnez jusqu'à 4 cartes parmi vos cartes uniques)</h3>
+                    <p id="vitrine-count" style="color: #f1c40f; font-weight: bold;">0 / 4</p>
+                    <div id="edit-vitrine-selection" class="trade-selection-box"></div>
+                    <div id="edit-vitrine-collection" class="trade-collection-grid" style="max-height: 300px;"></div>
+
+                    <div style="margin-top: 20px; display: flex; gap: 15px; justify-content: center;">
+                        <button id="btn-save-profil" class="btn">Enregistrer</button>
+                        <button id="btn-cancel-profil" class="btn btn-secondary" style="background-color: #e74c3c;">Annuler</button>
+                    </div>
+                </div>
+            </section>
+
         </main>
     </div>
 

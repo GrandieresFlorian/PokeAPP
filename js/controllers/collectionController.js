@@ -1,5 +1,5 @@
 import { state, CONSTS } from '../state.js';
-import { formatMegaName, getCardImageUrl, getPokemonDetails, generateTypeBadgesHTML, pokemonTypeCache, BAIES_DISPONIBLES } from '../utils.js';
+import { formatMegaName, getCardImageUrl, getPokemonDetails, generateTypeBadgesHTML, pokemonTypeCache, TOUTES_LES_BAIES } from '../utils.js';
 
 export function initCollection() {
     const tabNormal = document.getElementById('tab-normal'); 
@@ -202,7 +202,7 @@ function afficherBaies(container, countDisplay, ownedOnlyVal) {
     let uniquesCount = 0;
     let htmlContent = "";
 
-    BAIES_DISPONIBLES.forEach(baie => {
+    TOUTES_LES_BAIES.forEach(baie => {
         const quantite = baiesMap[baie.id] || 0;
         const possedeLaCarte = quantite > 0;
 

@@ -43,10 +43,14 @@ export function updateAuthUI() {
     const debugDenied = document.getElementById('debug-denied');
 
     if (state.currentUser) {
-        userNameDisplay.textContent = `Joueur : ${state.currentUser}`;
+        userNameDisplay.textContent = state.currentUserData.displayName || state.currentUser;
+        const sbAvatar = document.getElementById('sidebar-avatar');
+        sbAvatar.style.display = 'block';
+        sbAvatar.src = state.currentUserData.avatar || 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/0.png';
         authNavBtn.textContent = "Se déconnecter"; authNavBtn.style.backgroundColor = "#e74c3c"; 
     } else {
         userNameDisplay.textContent = "Non connecté";
+        document.getElementById('sidebar-avatar').style.display = 'none';
         authNavBtn.textContent = "Se connecter"; authNavBtn.style.backgroundColor = "#3498db"; 
     }
 

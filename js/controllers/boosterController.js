@@ -1,7 +1,7 @@
 import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
 import { allerASection } from './navController.js';
-import { tirerRarete, formatMegaName, sauvegarderCarte, getCardImageUrl, getPokemonDetails, generateTypeBadgesHTML, pokemonTypeCache, BAIES_DISPONIBLES, sauvegarderBaie } from '../utils.js';
+import { tirerRarete, formatMegaName, sauvegarderCarte, getCardImageUrl, getPokemonDetails, generateTypeBadgesHTML, pokemonTypeCache, BAIES_BOOSTERS, sauvegarderBaie } from '../utils.js';
 
 export function updateBoosterLogic() {
     const boosterStatus = document.getElementById('booster-status');
@@ -103,7 +103,6 @@ export function initBooster() {
     const resetButton = document.getElementById('reset-button');
     const autoOpenBtn = document.getElementById('auto-open-btn');
     const cardsContainer = document.getElementById('cards-container');
-    const sectionBoosters = document.getElementById('section-boosters'); // NOUVEAU
 
     boosterElement.addEventListener('click', () => ouvrirBooster(false));
     specialBoosterElement.addEventListener('click', () => ouvrirBooster(true));
@@ -132,20 +131,6 @@ export function initBooster() {
         }
         
         flipNextAutomatically();
-    });
-
-    // --- NOUVEAUTÉ : Clic n'importe où pour révéler la carte ---
-    sectionBoosters.addEventListener('click', (e) => {
-        // On ignore le clic s'il a été fait sur un bouton, un booster fermé, ou directement sur la carte (car elle a déjà son propre clic)
-        if (e.target.closest('.btn') || e.target.closest('.booster') || e.target.closest('.card')) return;
-
-        // Si l'ouverture est en cours (les cartes sont affichées)
-        if (!cardsContainer.classList.contains('hidden')) {
-            const unflippedCard = cardsContainer.querySelector('.card:not(.flipped)');
-            if (unflippedCard) {
-                unflippedCard.click();
-            }
-        }
     });
 }
 
@@ -332,7 +317,7 @@ function ouvrirBooster(isSpecial = false) {
         
         // --- 5% DE CHANCE D'AVOIR UNE BAIE --- 
         if (Math.random() * 100 <= 5) {
-            const randomBaie = BAIES_DISPONIBLES[Math.floor(Math.random() * BAIES_DISPONIBLES.length)];
+            const randomBaie = BAIES_BOOSTERS[Math.floor(Math.random() * BAIES_BOOSTERS.length)];
             cartesTirees.push({ isBaie: true, data: randomBaie });
         }
         // -------------------------------------
