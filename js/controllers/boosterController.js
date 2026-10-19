@@ -1,7 +1,7 @@
 import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
 import { allerASection } from './navController.js';
-import { tirerRarete, formatMegaName, sauvegarderCarte, getCardImageUrl, getPokemonDetails, generateTypeBadgesHTML, pokemonTypeCache } from '../utils.js';
+import { tirerRarete, formatMegaName, sauvegarderCarte, getCardImageUrl, getPokemonDetails, generateTypeBadgesHTML, pokemonTypeCache, BAIES_DISPONIBLES, sauvegarderBaie } from '../utils.js';
 
 export function updateBoosterLogic() {
     const boosterStatus = document.getElementById('booster-status');
@@ -103,6 +103,7 @@ export function initBooster() {
     const resetButton = document.getElementById('reset-button');
     const autoOpenBtn = document.getElementById('auto-open-btn');
     const cardsContainer = document.getElementById('cards-container');
+    const sectionBoosters = document.getElementById('section-boosters'); // NOUVEAU
 
     boosterElement.addEventListener('click', () => ouvrirBooster(false));
     specialBoosterElement.addEventListener('click', () => ouvrirBooster(true));
@@ -124,13 +125,27 @@ export function initBooster() {
             
             if (unflippedCard) {
                 unflippedCard.click(); 
-                setTimeout(flipNextAutomatically, 200); 
-            } else if (state.cartesRetournees < 5) {
+                setTimeout(flipNextAutomatically, 800); 
+            } else if (state.cartesRetournees < state.currentPulls.length) {
                 setTimeout(flipNextAutomatically, 100);
             }
         }
         
         flipNextAutomatically();
+    });
+
+    // --- NOUVEAUTÉ : Clic n'importe où pour révéler la carte ---
+    sectionBoosters.addEventListener('click', (e) => {
+        // On ignore le clic s'il a été fait sur un bouton, un booster fermé, ou directement sur la carte (car elle a déjà son propre clic)
+        if (e.target.closest('.btn') || e.target.closest('.booster') || e.target.closest('.card')) return;
+
+        // Si l'ouverture est en cours (les cartes sont affichées)
+        if (!cardsContainer.classList.contains('hidden')) {
+            const unflippedCard = cardsContainer.querySelector('.card:not(.flipped)');
+            if (unflippedCard) {
+                unflippedCard.click();
+            }
+        }
     });
 }
 
@@ -212,22 +227,23 @@ function creerCarte(pokemonData, numeroPokedex, index) {
             state.cartesRetournees++; 
             sauvegarderCarte(pokemonData, numeroPokedex, isShiny, isMega, selectedMegaForm);
             
-            if (state.currentPullIndex < 4) {
+            if (state.currentPullIndex < state.currentPulls.length - 1) {
                 state.currentPullIndex++;
                 setTimeout(() => {
-                    const nextCard = state.currentPulls[state.currentPullIndex];
-                    creerCarte(nextCard.data, nextCard.pokedexNumber, state.currentPullIndex);
-                }, 150); 
+                    const nextItem = state.currentPulls[state.currentPullIndex];
+                    if (nextItem.isBaie) creerCarteBaie(nextItem.data, state.currentPullIndex);
+                    else creerCarte(nextItem.data, nextItem.pokedexNumber, state.currentPullIndex);
+                }, 400); 
             }
 
-            if (state.cartesRetournees === 5) {
+            if (state.cartesRetournees === state.currentPulls.length) {
                 setTimeout(() => {
                     const resetButton = document.getElementById('reset-button');
                     const autoOpenBtn = document.getElementById('auto-open-btn');
                     resetButton.classList.remove('hidden');
                     resetButton.disabled = false;
                     autoOpenBtn.classList.add('hidden'); 
-                }, 200);
+                }, 600);
             }
         }
     });
@@ -309,10 +325,17 @@ function ouvrirBooster(isSpecial = false) {
             if (pokemonsPossibles.length === 0) { i--; continue; }
 
             const randomPossibiliteIndex = Math.floor(Math.random() * pokemonsPossibles.length);
-            cartesTirees.push({ data: pokemonsPossibles[randomPossibiliteIndex].donnees, pokedexNumber: pokemonsPossibles[randomPossibiliteIndex].vraiNumero });
+            cartesTirees.push({ isBaie: false, data: pokemonsPossibles[randomPossibiliteIndex].donnees, pokedexNumber: pokemonsPossibles[randomPossibiliteIndex].vraiNumero });
         }
         
         cartesTirees.sort((a, b) => CONSTS.poidsRarete[a.data.rarity] - CONSTS.poidsRarete[b.data.rarity]);
+        
+        // --- 5% DE CHANCE D'AVOIR UNE BAIE --- 
+        if (Math.random() * 100 <= 5) {
+            const randomBaie = BAIES_DISPONIBLES[Math.floor(Math.random() * BAIES_DISPONIBLES.length)];
+            cartesTirees.push({ isBaie: true, data: randomBaie });
+        }
+        // -------------------------------------
         
         state.currentPulls = cartesTirees;
         state.currentPullIndex = 0;
@@ -321,8 +344,68 @@ function ouvrirBooster(isSpecial = false) {
         autoOpenBtn.disabled = false;
         resetButton.classList.add('hidden');
 
-        creerCarte(state.currentPulls[0].data, state.currentPulls[0].pokedexNumber, 0);
+        const firstItem = state.currentPulls[0];
+        if (firstItem.isBaie) creerCarteBaie(firstItem.data, 0);
+        else creerCarte(firstItem.data, firstItem.pokedexNumber, 0);
 
         state.isOpening = false; 
-    }, 600); 
+    }, 1200); 
+}
+
+export function creerCarteBaie(baieData, index) {
+    let nomAffiche = state.currentLang === 'en' ? baieData.en : baieData.fr;
+    let imageUrl = `https://www.media.pokekalos.fr/img/pokemon/baies/big/${baieData.id}.png`;
+
+    const cardHTML = `
+        <div class="card">
+            <div class="card-inner">
+                <div class="card-back"><div class="card-back-design">PokéApp</div></div>
+                <div class="card-front" style="background-color: #2ecc71; border-color: #27ae60;">
+                    <div class="card-header"><h1 class="pokemon-name" data-en="${baieData.en}" data-fr="${baieData.fr}">${nomAffiche}</h1><div class="icon" style="background: white; color: #27ae60;">B</div></div>
+                    <div class="image-wrapper" style="background-color: #fceea7;"><img class="pokemon-image" src="${imageUrl}" alt="Baie" style="object-fit: contain; height: 160px; padding: 15px;"></div>
+                    <div class="card-subtext" style="justify-content:center;">Objet Consommable</div>
+                    <div class="stats-bar" style="justify-content:center;"><span style="font-weight:bold; color: white;">BAIE POKÉMON</span></div>
+                </div>
+            </div>
+        </div>`;
+
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = cardHTML;
+    const nouvelleCarte = tempDiv.firstElementChild;
+
+    nouvelleCarte.addEventListener('click', () => {
+        if (!nouvelleCarte.classList.contains('flipped')) {
+            const mesBaies = state.currentUserData.berries || [];
+            const estDoublon = mesBaies.some(b => b.id === baieData.id);
+
+            const badge = document.createElement('div');
+            badge.className = `badge-status ${estDoublon ? 'badge-doublon' : 'badge-nouveau'}`;
+            badge.textContent = estDoublon ? 'Doublon' : 'Nouveau !';
+            nouvelleCarte.querySelector('.card-front').appendChild(badge);
+
+            nouvelleCarte.classList.add('flipped'); 
+            state.cartesRetournees++; 
+            sauvegarderBaie(baieData);
+            
+            if (state.currentPullIndex < state.currentPulls.length - 1) {
+                state.currentPullIndex++;
+                setTimeout(() => {
+                    const nextItem = state.currentPulls[state.currentPullIndex];
+                    if (nextItem.isBaie) creerCarteBaie(nextItem.data, state.currentPullIndex);
+                    else creerCarte(nextItem.data, nextItem.pokedexNumber, state.currentPullIndex);
+                }, 150); 
+            }
+
+            if (state.cartesRetournees === state.currentPulls.length) {
+                setTimeout(() => {
+                    const resetButton = document.getElementById('reset-button');
+                    const autoOpenBtn = document.getElementById('auto-open-btn');
+                    resetButton.classList.remove('hidden');
+                    resetButton.disabled = false;
+                    autoOpenBtn.classList.add('hidden'); 
+                }, 200);
+            }
+        }
+    });
+    document.getElementById('cards-container').appendChild(nouvelleCarte);
 }

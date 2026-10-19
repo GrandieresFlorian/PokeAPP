@@ -19,9 +19,11 @@ export function tirerRarete() {
 }
 
 export function formatMegaName(nom, form) {
-    if (form && form !== "mega") {
-        return `Méga ${nom} ${form.replace('mega-', '').toUpperCase()}`;
-    }
+    if (form === "mega-x") return `Méga ${nom} X`;
+    if (form === "mega-y") return `Méga ${nom} Y`;
+    if (form === "mega-z") return `Méga ${nom} Z`;
+    if (form === "mega-em") return `Méga ${nom} F.É.`; 
+    if (form === "mega-pam") return `Méga ${nom} Parfait`; 
     return `Méga ${nom}`;
 }
 
@@ -37,17 +39,15 @@ export function getCardImageUrl(carte, format = 'normal') {
     let nomPourUrl = nomEn.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace('♀', '-f').replace('♂', '-m').replace(/['’.]/g, '').replace(/\s+/g, "-");
     
     if (carte.mega) {
-        // On force le suffixe d'image à "mega" pour les formes spéciales (Floette et Zygarde)
-        let formImageSuffix = carte.megaForm;
-        if (carte.pokedexNumber === 670 || carte.pokedexNumber === 718) {
-            formImageSuffix = "mega";
+        if (carte.shiny) {
+            let dittoId = DITTOBASE_IDS[carte.pokedexNumber] || carte.pokedexNumber;
+            let formSuffix = carte.megaForm === "mega" ? "mega" : carte.megaForm; 
+            return `https://assets.dittobase.com/home/${dittoId}-${nomPourUrl}-${formSuffix}-shiny.png`;
+        } else {
+            return `https://img.pokemondb.net/artwork/${nomPourUrl}-${carte.megaForm}.jpg`;
         }
-        
-        // NOUVEAUTÉ : On affiche toujours l'artwork normal du Méga, qu'il soit Shiny ou non !
-        return `https://img.pokemondb.net/artwork/${nomPourUrl}-${formImageSuffix}.jpg`;
     }
     
-    // Pour les Pokémon normaux (non-mégas), on garde la distinction normal/shiny avec PokéAPI
     return carte.shiny 
         ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${carte.pokedexNumber}.png` 
         : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${carte.pokedexNumber}.png`;
@@ -108,14 +108,8 @@ export function generateTypeBadgesHTML(types) {
     
     let html = '';
     types.forEach(t => {
-        // Met la première lettre du type anglais en majuscule (ex: "water" -> "Water")
-        const enName = t.charAt(0).toUpperCase() + t.slice(1); 
-        const frName = TYPE_TRANSLATIONS[t] || enName;
-        
-        const displayName = state.currentLang === 'fr' ? frName : enName;
-        
-        // On ajoute data-en et data-fr pour que le bouton de langue puisse les trouver
-        html += `<span class="type-badge type-${t}" data-en="${enName}" data-fr="${frName}">${displayName}</span>`;
+        const displayName = state.currentLang === 'fr' ? (TYPE_TRANSLATIONS[t] || t) : t;
+        html += `<span class="type-badge type-${t}">${displayName}</span>`;
     });
     return html;
 }
@@ -133,5 +127,25 @@ export function sauvegarderCarte(pokemonData, numeroPokedex, isShiny, isMega, me
         });
         db.collection('users').doc(state.currentUser).update({ collection: state.currentUserData.collection })
             .catch(err => console.error("Erreur de sauvegarde:", err));
+    });
+}
+
+export const BAIES_DISPONIBLES = [
+    { id: "ceriz", fr: "Baie Ceriz", en: "Cheri Berry" },
+    { id: "pecha", fr: "Baie Pêcha", en: "Pecha Berry" },
+    { id: "oran", fr: "Baie Oran", en: "Oran Berry" },
+    { id: "sitrus", fr: "Baie Sitrus", en: "Sitrus Berry" },
+    { id: "nanana", fr: "Baie Nanana", en: "Pinap Berry" }
+];
+
+export function sauvegarderBaie(baieData) {
+    import('./firebase-config.js').then(({db}) => {
+        if (!state.currentUser) return;
+        if (!state.currentUserData.berries) state.currentUserData.berries = [];
+        state.currentUserData.berries.push({
+            data: baieData, id: baieData.id, date: new Date().getTime()
+        });
+        db.collection('users').doc(state.currentUser).update({ berries: state.currentUserData.berries })
+            .catch(err => console.error("Erreur de sauvegarde baie:", err));
     });
 }

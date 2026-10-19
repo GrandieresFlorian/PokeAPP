@@ -1,19 +1,20 @@
 import { state, CONSTS } from '../state.js';
-import { formatMegaName, getCardImageUrl, getPokemonDetails, generateTypeBadgesHTML, pokemonTypeCache } from '../utils.js';
+import { formatMegaName, getCardImageUrl, getPokemonDetails, generateTypeBadgesHTML, pokemonTypeCache, BAIES_DISPONIBLES } from '../utils.js';
 
 export function initCollection() {
     const tabNormal = document.getElementById('tab-normal'); 
     const tabShiny = document.getElementById('tab-shiny');   
     const tabMega = document.getElementById('tab-mega'); 
-    const tabMegaShiny = document.getElementById('tab-mega-shiny'); 
+    const tabMegaShiny = document.getElementById('tab-mega-shiny');
+    const tabBaies = document.getElementById('tab-baies'); 
     const filterRarity = document.getElementById('filter-rarity');
     const filterOwned = document.getElementById('filter-owned');
 
     function setTabActive(activeTab) {
-        [tabNormal, tabShiny, tabMega, tabMegaShiny].forEach(tab => tab.classList.remove('active'));
+        [tabNormal, tabShiny, tabMega, tabMegaShiny, tabBaies].forEach(tab => { if(tab) tab.classList.remove('active'); });
         activeTab.classList.add('active');
         
-        if (activeTab === tabMega || activeTab === tabMegaShiny) {
+        if (activeTab === tabMega || activeTab === tabMegaShiny || activeTab === tabBaies) {
             filterRarity.value = "all";
             filterRarity.disabled = true;
         } else {
@@ -25,6 +26,7 @@ export function initCollection() {
     tabShiny.addEventListener('click', () => { state.collectionMode = 'shiny'; setTabActive(tabShiny); afficherCollection(); });
     tabMega.addEventListener('click', () => { state.collectionMode = 'mega'; setTabActive(tabMega); afficherCollection(); });
     tabMegaShiny.addEventListener('click', () => { state.collectionMode = 'mega-shiny'; setTabActive(tabMegaShiny); afficherCollection(); });
+    if(tabBaies) tabBaies.addEventListener('click', () => { state.collectionMode = 'baies'; setTabActive(tabBaies); afficherCollection(); });
 
     filterRarity.addEventListener('change', afficherCollection);
     filterOwned.addEventListener('change', afficherCollection);
@@ -37,6 +39,10 @@ export function afficherCollection() {
     const filterRarity = document.getElementById('filter-rarity');
     const filterOwned = document.getElementById('filter-owned');
 
+    if (state.collectionMode === 'baies') {
+        afficherBaies(collectionContainer, collectionCount, filterOwned.checked);
+        return;
+    }
     if (!state.currentUser) {
         collectionContainer.innerHTML = "<p>Veuillez vous connecter.</p>";
         collectionCount.textContent = `0 / ${CONSTS.MAX_POKEMON}`;
@@ -119,15 +125,13 @@ export function afficherCollection() {
             else if (afficheHolo) classFond += " shiny-bg";
             else styleFond = `style="background-color: ${bgColor}"`;
 
-            // NOUVEAUTÉ : On crée un badge séparé au lieu de modifier le nom
-            let badgeQuantite = quantite > 1 ? `<div class="badge-quantite">X${quantite}</div>` : ""; 
+            let textCount = quantite > 1 ? ` (x${quantite})` : ""; 
 
             htmlContent += `
                 <div class="card flipped" style="cursor: default;">
                     <div class="card-inner">
                         <div class="${classFond}" ${styleFond}>
-                            ${badgeQuantite}
-                            <div class="card-header"><h1 class="pokemon-name" data-en="${form ? formatMegaName(nomEn, form) : nomEn}" data-fr="${form ? formatMegaName(nomFr, form) : nomFr}" data-count="${quantite}">${nomAffiche}</h1><div class="icon">${pokemonRarity}</div></div>
+                            <div class="card-header"><h1 class="pokemon-name" data-en="${form ? formatMegaName(nomEn, form) : nomEn}" data-fr="${form ? formatMegaName(nomFr, form) : nomFr}" data-count="${quantite}">${nomAffiche}${textCount}</h1><div class="icon">${pokemonRarity}</div></div>
                             <div class="image-wrapper"><img class="pokemon-image" src="${finalImageUrl}" alt="Image" loading="lazy"><span class="image-id">#${numeroFormate}</span></div>
                             <div class="card-subtext type-container-col" data-id="${i}">${cachedTypes}</div>
                             <div class="stats-bar"><span class="pokemon-pow" data-id="${i}" data-mega="${form ? 'true' : 'false'}">...</span><span class="pokemon-aura">N° ${numeroFormate}</span></div>
@@ -187,4 +191,59 @@ function chargerPowDynamiquement() {
     document.querySelectorAll('.pokemon-pow').forEach(span => {
         if (span.textContent === "...") observer.observe(span);
     });
+}
+
+function afficherBaies(container, countDisplay, ownedOnlyVal) {
+    const mesBaies = state.currentUserData.berries || [];
+    const baiesMap = {};
+    mesBaies.forEach(b => { baiesMap[b.id] = (baiesMap[b.id] || 0) + 1; });
+
+    let maxAffiche = 0;
+    let uniquesCount = 0;
+    let htmlContent = "";
+
+    BAIES_DISPONIBLES.forEach(baie => {
+        const quantite = baiesMap[baie.id] || 0;
+        const possedeLaCarte = quantite > 0;
+
+        if (ownedOnlyVal && !possedeLaCarte) return;
+
+        maxAffiche++;
+        if (possedeLaCarte) uniquesCount++;
+
+        let nomAffiche = state.currentLang === 'en' ? baie.en : baie.fr;
+        let finalImageUrl = `https://www.media.pokekalos.fr/img/pokemon/baies/big/${baie.id}.png`;
+
+        if (possedeLaCarte) {
+            let badgeQuantite = quantite > 1 ? `<div class="badge-quantite">X${quantite}</div>` : "";
+
+            htmlContent += `
+                <div class="card flipped" style="cursor: default;">
+                    <div class="card-inner">
+                        <div class="card-front" style="background-color: #2ecc71; border-color: #27ae60;">
+                            ${badgeQuantite}
+                            <div class="card-header"><h1 class="pokemon-name" data-en="${baie.en}" data-fr="${baie.fr}">${nomAffiche}</h1><div class="icon" style="background-color: white; color: #27ae60;">B</div></div>
+                            <div class="image-wrapper" style="background-color: #fceea7;"><img class="pokemon-image" src="${finalImageUrl}" alt="Baie" style="object-fit: contain; height: 160px; padding: 15px;" loading="lazy"></div>
+                            <div class="card-subtext" style="justify-content:center;">Objet Consommable</div>
+                            <div class="stats-bar" style="justify-content:center;"><span style="font-weight:bold; color: white;">BAIE POKÉMON</span></div>
+                        </div>
+                    </div>
+                </div>`;
+        } else {
+            htmlContent += `
+                <div class="card flipped" style="cursor: default;">
+                    <div class="card-inner">
+                        <div class="card-front locked-card" style="background-color: #1a1a1a;">
+                            <div class="card-header"><h1 class="pokemon-name" style="color: #555;">???</h1><div class="icon" style="background-color: #333; color: #555;">?</div></div>
+                            <div class="image-wrapper" style="background-color: #222;"><div class="question-mark">?</div><img class="pokemon-image silhouette" src="${finalImageUrl}" alt="Caché" style="object-fit: contain; height: 160px; padding: 15px;" loading="lazy"></div>
+                            <div class="card-subtext" style="color: #555; justify-content:center;">Objet Inconnu</div>
+                            <div class="stats-bar" style="background-color: #111; color: #555; justify-content:center;"><span style="font-weight:bold;">BAIE INCONNUE</span></div>
+                        </div>
+                    </div>
+                </div>`;
+        }
+    });
+
+    container.innerHTML = htmlContent;
+    countDisplay.textContent = `${uniquesCount} / ${maxAffiche}`;
 }
