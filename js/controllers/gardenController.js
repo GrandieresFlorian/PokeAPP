@@ -107,9 +107,13 @@ function checkMutations() {
                         
                         document.getElementById('garden-action-title').textContent = "Mutation ! ✨";
                         const baieDef = TOUTES_LES_BAIES.find(b => b.id === recipe.result);
+                        let nameEn = baieDef.en;
+                        let nameFr = baieDef.fr;
+                        let currentName = state.currentLang === 'en' ? nameEn : nameFr;
+
                         document.getElementById('garden-action-content').innerHTML = `
                             <p style="color:#f1c40f; font-weight:bold;">Une nouvelle espèce est apparue !</p>
-                            <p>Une <b style="color:#2ecc71;">${baieDef.fr}</b> a poussé spontanément grâce aux baies voisines !</p>
+                            <p>Une <b class="pokemon-name" data-en="${nameEn}" data-fr="${nameFr}" style="color:#2ecc71;">${currentName}</b> a poussé spontanément grâce aux baies voisines !</p>
                         `;
                         break; 
                     }
@@ -257,7 +261,11 @@ function handlePlotClick(index) {
             ? `${hoursRemaining}h ${minsRemaining}m` 
             : `${minsRemaining}m ${secsRemaining}s`;
         
-        let html = `<h4 style="color:#fceea7; font-size:1.3rem; margin-top:0;">${baieDef.fr}</h4>`;
+        let nameEn = baieDef.en;
+        let nameFr = baieDef.fr;
+        let currentName = state.currentLang === 'en' ? nameEn : nameFr;
+
+        let html = `<h4 class="pokemon-name" data-en="${nameEn}" data-fr="${nameFr}" style="color:#fceea7; font-size:1.3rem; margin-top:0;">${currentName}</h4>`;
         
         if (st.stage === 'withered') {
             html += `<p style="color:#e74c3c;">La plante a fané par manque d'eau...</p>
@@ -321,18 +329,22 @@ function openPlantMenu(plotIndex) {
         const baieDef = TOUTES_LES_BAIES.find(b => b.id === id);
         if(!baieDef) return;
         const conf = state.berryConfig[id] || state.berryConfig.default;
-        const enName = baieDef.en.toLowerCase().replace(/\s+/g, '-');
-        const imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${enName}.png`;
+        const enNameImg = baieDef.en.toLowerCase().replace(/\s+/g, '-');
+        const imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${enNameImg}.png`;
 
         let timeStr = conf.growTime >= 3600000 
             ? `${Math.round(conf.growTime / 3600000)}h` 
             : `${Math.round(conf.growTime / 60000)}m`;
 
+        let nameEn = baieDef.en;
+        let nameFr = baieDef.fr;
+        let currentName = state.currentLang === 'en' ? nameEn : nameFr;
+
         html += `
             <div style="display:flex; justify-content:space-between; align-items:center; background:#1a1a1a; padding:10px; border-radius:5px; margin-bottom:5px; cursor:pointer; border:1px solid #444;" data-action="plant" data-id="${id}">
                 <div style="display:flex; align-items:center; gap:10px; pointer-events:none;">
                     <img src="${imgUrl}" style="width:30px; height:30px; image-rendering:pixelated;">
-                    <span style="color:white; font-size:0.9rem;">${baieDef.fr} (x${qty})</span>
+                    <span class="pokemon-name" data-en="${nameEn} (x${qty})" data-fr="${nameFr} (x${qty})" style="color:white; font-size:0.9rem;">${currentName} (x${qty})</span>
                 </div>
                 <div style="font-size:0.8rem; color:#f1c40f; pointer-events:none;">
                     ⏱ ${timeStr}
@@ -443,7 +455,11 @@ function harvestPlot(index) {
     
     saveGardenData();
     renderGardenGrid();
-    document.getElementById('garden-action-content').innerHTML = `<p style="color:#2ecc71;">Vous avez récolté ${yieldAmount} ${baieDef.fr} !</p>`;
+    
+    let nameEn = baieDef.en;
+    let nameFr = baieDef.fr;
+    let currentName = state.currentLang === 'en' ? nameEn : nameFr;
+    document.getElementById('garden-action-content').innerHTML = `<p style="color:#2ecc71;">Vous avez récolté ${yieldAmount} <span class="pokemon-name" data-en="${nameEn}" data-fr="${nameFr}">${currentName}</span> !</p>`;
 }
 
 function clearPlot(index) {

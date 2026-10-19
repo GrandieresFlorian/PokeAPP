@@ -100,12 +100,18 @@ function renderTeamSelection() {
 function updateFighterBadge() {
     if(!activeFighter) return;
     const badge = document.getElementById('campagne-active-pokemon');
-    let name = state.currentLang === 'en' ? activeFighter.data.en : activeFighter.data.fr;
-    if (activeFighter.mega) name = formatMegaName(name, activeFighter.megaForm);
+    let nameEn = activeFighter.data.en;
+    let nameFr = activeFighter.data.fr;
+    if (activeFighter.mega) {
+        nameEn = formatMegaName(nameEn, activeFighter.megaForm);
+        nameFr = formatMegaName(nameFr, activeFighter.megaForm);
+    }
+    let currentName = state.currentLang === 'en' ? nameEn : nameFr;
+    let lvlStr = activeFighter.level || 1;
     
     badge.innerHTML = `
         <img src="${getCardImageUrl(activeFighter)}" style="width:40px; height:40px; object-fit:cover; border-radius:50%; background:#222;">
-        <span>${name} (Niv. ${activeFighter.level || 1})</span>
+        <span data-en="${nameEn} (Niv. ${lvlStr})" data-fr="${nameFr} (Niv. ${lvlStr})">${currentName} (Niv. ${lvlStr})</span>
     `;
 }
 
@@ -149,7 +155,8 @@ async function startBattle(zone) {
     const calcAtk = (pow, lvl) => Math.floor(pow / 5) + (lvl * 2) + 5;
 
     currentEnemy = {
-        name: state.currentLang === 'en' ? wData.en : wData.fr,
+        nameEn: wData.en,
+        nameFr: wData.fr,
         level: wLevel,
         maxHp: calcHP(wDetails.pow, wLevel),
         hp: calcHP(wDetails.pow, wLevel),
@@ -165,7 +172,6 @@ async function startBattle(zone) {
         types: pDetails.types
     };
 
-    // TÉLÉCHARGEMENT DES CAPACITÉS
     currentEnemy.moves = await getMovesForLevel(wId, wLevel);
     activeFighter.battleStats.moves = await getMovesForLevel(activeFighter.pokedexNumber, activeFighter.level || 1);
 
@@ -173,7 +179,8 @@ async function startBattle(zone) {
     renderMovesUI();
     toggleMoves(false);
 
-    logMessage(`Un <b>${currentEnemy.name}</b> sauvage apparaît ! (Niv. ${currentEnemy.level})`);
+    let eName = state.currentLang === 'en' ? currentEnemy.nameEn : currentEnemy.nameFr;
+    logMessage(`Un <b>${eName}</b> sauvage apparaît ! (Niv. ${currentEnemy.level})`);
 }
 
 function renderMovesUI() {
@@ -185,7 +192,8 @@ function renderMovesUI() {
         btn.className = `move-btn type-${move.type}`;
         const moveName = state.currentLang === 'en' ? move.nameEn : move.nameFr;
         
-        btn.innerHTML = `<span>${moveName}</span><span style="font-size:0.7rem; opacity:0.8; font-weight:normal;">POW ${move.power}</span>`;
+        // Ajout de la classe .move-name et des data-en / data-fr pour la traduction à la volée !
+        btn.innerHTML = `<span class="move-name" data-en="${move.nameEn}" data-fr="${move.nameFr}">${moveName}</span><span style="font-size:0.7rem; opacity:0.8; font-weight:normal;">POW ${move.power}</span>`;
         btn.onclick = () => processTurn(move);
         container.appendChild(btn);
     });
@@ -199,7 +207,11 @@ function toggleMoves(disabled) {
 
 function updateBattleUI() {
     // Enemy
-    document.getElementById('enemy-name').textContent = currentEnemy.name;
+    const enemyNameEl = document.getElementById('enemy-name');
+    enemyNameEl.setAttribute('data-en', currentEnemy.nameEn);
+    enemyNameEl.setAttribute('data-fr', currentEnemy.nameFr);
+    enemyNameEl.textContent = state.currentLang === 'en' ? currentEnemy.nameEn : currentEnemy.nameFr;
+    
     document.getElementById('enemy-lvl').textContent = `Niv. ${currentEnemy.level}`;
     document.getElementById('enemy-hp-text').textContent = `${Math.max(0, currentEnemy.hp)} / ${currentEnemy.maxHp}`;
     document.getElementById('enemy-hp-fill').style.width = `${(Math.max(0, currentEnemy.hp) / currentEnemy.maxHp) * 100}%`;
@@ -207,9 +219,17 @@ function updateBattleUI() {
     updateBarColor('enemy-hp-fill', currentEnemy.hp, currentEnemy.maxHp);
 
     // Player
-    let pName = state.currentLang === 'en' ? activeFighter.data.en : activeFighter.data.fr;
-    if (activeFighter.mega) pName = formatMegaName(pName, activeFighter.megaForm);
-    document.getElementById('player-name').textContent = pName;
+    const playerNameEl = document.getElementById('player-name');
+    let pNameEn = activeFighter.data.en;
+    let pNameFr = activeFighter.data.fr;
+    if (activeFighter.mega) {
+        pNameEn = formatMegaName(pNameEn, activeFighter.megaForm);
+        pNameFr = formatMegaName(pNameFr, activeFighter.megaForm);
+    }
+    playerNameEl.setAttribute('data-en', pNameEn);
+    playerNameEl.setAttribute('data-fr', pNameFr);
+    playerNameEl.textContent = state.currentLang === 'en' ? pNameEn : pNameFr;
+    
     document.getElementById('player-lvl').textContent = `Niv. ${activeFighter.level || 1}`;
     document.getElementById('player-hp-text').textContent = `${Math.max(0, activeFighter.battleStats.hp)} / ${activeFighter.battleStats.maxHp}`;
     document.getElementById('player-hp-fill').style.width = `${(Math.max(0, activeFighter.battleStats.hp) / activeFighter.battleStats.maxHp) * 100}%`;
@@ -241,25 +261,21 @@ function playAnimation(id, animClass) {
     setTimeout(() => el.classList.remove(animClass), 500);
 }
 
-// Fonction de combat principale
 async function processTurn(playerMove) {
     if (isAnimating || !currentEnemy || currentEnemy.hp <= 0 || activeFighter.battleStats.hp <= 0) return;
     isAnimating = true;
     toggleMoves(true);
 
-    // --- TOUR DU JOUEUR ---
     let pName = state.currentLang === 'en' ? activeFighter.data.en : activeFighter.data.fr;
     if (activeFighter.mega) pName = formatMegaName(pName, activeFighter.megaForm);
-    
     let moveName = state.currentLang === 'en' ? playerMove.nameEn : playerMove.nameFr;
+    
     logMessage(`<b>${pName}</b> utilise <b style="color:var(--accent);">${moveName}</b> !`);
     playAnimation('player-sprite', 'anim-attack');
 
     await new Promise(r => setTimeout(r, 600));
 
     let mult = getEffectiveness(playerMove.type, currentEnemy.types);
-    
-    // Le calcul des dégâts prend en compte la puissance (base 40) de l'attaque
     let damage = Math.floor(activeFighter.battleStats.atk * (playerMove.power / 40) * mult * (Math.random() * 0.2 + 0.9));
     damage = Math.max(1, damage); 
     
@@ -280,8 +296,6 @@ async function processTurn(playerMove) {
 
     await new Promise(r => setTimeout(r, 1000));
 
-    // --- TOUR DE L'ENNEMI ---
-    // L'ennemi (IA) simule les attaques de son deck et choisit celle qui fait le plus de dégâts !
     let bestEnemyMove = currentEnemy.moves[0];
     let maxExpectedDamage = -1;
     
@@ -295,7 +309,9 @@ async function processTurn(playerMove) {
     });
 
     let eMoveName = state.currentLang === 'en' ? bestEnemyMove.nameEn : bestEnemyMove.nameFr;
-    logMessage(`<b>${currentEnemy.name}</b> sauvage utilise <b style="color:var(--danger);">${eMoveName}</b> !`);
+    let eName = state.currentLang === 'en' ? currentEnemy.nameEn : currentEnemy.nameFr;
+    
+    logMessage(`<b>${eName}</b> sauvage utilise <b style="color:var(--danger);">${eMoveName}</b> !`);
     playAnimation('enemy-sprite', 'anim-attack');
 
     await new Promise(r => setTimeout(r, 600));
@@ -320,14 +336,15 @@ async function processTurn(playerMove) {
             document.getElementById('campagne-select-zone').classList.remove('hidden');
         }, 2500);
     } else {
-        toggleMoves(false); // Le joueur peut rejouer
+        toggleMoves(false);
     }
     
     isAnimating = false;
 }
 
 async function winBattle() {
-    logMessage(`<b style="color:#2ecc71;">${currentEnemy.name} sauvage est vaincu !</b>`);
+    let eName = state.currentLang === 'en' ? currentEnemy.nameEn : currentEnemy.nameFr;
+    logMessage(`<b style="color:#2ecc71;">${eName} sauvage est vaincu !</b>`);
     
     let xpGained = currentEnemy.level * 15;
     logMessage(`Vous gagnez <span class="text-accent">${xpGained} XP</span> !`);

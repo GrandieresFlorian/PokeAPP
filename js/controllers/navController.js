@@ -11,14 +11,29 @@ export function initNav() {
         state.currentLang = state.currentLang === 'en' ? 'fr' : 'en'; 
         langToggle.textContent = state.currentLang === 'en' ? '🇬🇧 EN' : '🇫🇷 FR';
 
-        document.querySelectorAll('.pokemon-name').forEach(el => {
+        // 1. Met à jour les noms des Pokémon et Baies (Collection, Boosters, Jardin, Profil, Arène)
+        document.querySelectorAll('.pokemon-name, #enemy-name, #player-name').forEach(el => {
             const nomTraduit = el.getAttribute(`data-${state.currentLang}`);
             if (nomTraduit) el.textContent = nomTraduit;
         });
 
+        // 2. Mettre à jour le badge du combattant actif en haut de la page Campagne
+        const activeFighterSpan = document.querySelector('#campagne-active-pokemon span');
+        if (activeFighterSpan) {
+            const badgeTraduit = activeFighterSpan.getAttribute(`data-${state.currentLang}`);
+            if (badgeTraduit) activeFighterSpan.textContent = badgeTraduit;
+        }
+
+        // 3. Met à jour les badges de Types
         document.querySelectorAll('.type-badge').forEach(el => {
             const typeTraduit = el.getAttribute(`data-${state.currentLang}`);
             if (typeTraduit) el.textContent = typeTraduit;
+        });
+
+        // 4. Met à jour les Noms des Capacités (Boutons d'attaque de la Campagne)
+        document.querySelectorAll('.move-name').forEach(el => {
+            const moveTraduit = el.getAttribute(`data-${state.currentLang}`);
+            if (moveTraduit) el.textContent = moveTraduit;
         });
     });
 }
@@ -27,8 +42,6 @@ export function allerASection(targetId) {
     const navLinks = document.querySelectorAll('.nav-links li');
     const sections = document.querySelectorAll('.view-section');
     navLinks.forEach(l => l.classList.remove('active'));
-    
-    // Le menu nav-jardin
     const link = Array.from(navLinks).find(l => l.getAttribute('data-target') === targetId);
     if(link) link.classList.add('active');
     
