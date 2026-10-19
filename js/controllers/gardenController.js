@@ -3,6 +3,33 @@ import { state } from '../state.js';
 import { TOUTES_LES_BAIES } from '../utils.js';
 
 let selectedPlot = null;
+let mutationTick = 0; // Compteur pour les mutations
+
+// --- RECETTES DE MUTATIONS ---
+// chance: 0.05 = 5% de chance que la mutation réussisse toutes les 5 secondes
+const MUTATION_RECIPES = [
+    // Mutations Basiques (Création du Tier 2)
+    { p1: "nanana", p2: "nanana", result: "maron", chance: 0.05 }, // Exemple demandé !
+    { p1: "ceriz", p2: "pecha", result: "fraive", chance: 0.05 },
+    { p1: "oran", p2: "sitrus", result: "willia", chance: 0.05 },
+    { p1: "pecha", p2: "oran", result: "mepo", chance: 0.05 },
+    { p1: "sitrus", p2: "nanana", result: "kika", chance: 0.05 },
+    { p1: "ceriz", p2: "oran", result: "prine", chance: 0.05 },
+
+    // Mutations Avancées (Création du Tier 3)
+    { p1: "maron", p2: "fraive", result: "figuy", chance: 0.02 },
+    { p1: "willia", p2: "mepo", result: "wiki", chance: 0.02 },
+    { p1: "kika", p2: "prine", result: "mago", chance: 0.02 },
+    { p1: "maron", p2: "willia", result: "gowav", chance: 0.02 },
+    { p1: "fraive", p2: "mepo", result: "papaya", chance: 0.02 },
+
+    // Mutations Expertes (Création du Tier 4)
+    { p1: "figuy", p2: "wiki", result: "framby", chance: 0.01 },
+    { p1: "mago", p2: "gowav", result: "remu", chance: 0.01 },
+    { p1: "papaya", p2: "figuy", result: "nanab", chance: 0.01 },
+    
+    // N'hésitez pas à ajouter d'autres recettes ici !
+];
 
 export function initGarden() {
     document.getElementById('nav-jardin').addEventListener('click', () => {
@@ -18,6 +45,13 @@ export function initGarden() {
         if (sect && !sect.classList.contains('hidden')) {
             renderGardenGrid();
             updateActionPanel();
+            
+            // On vérifie les mutations toutes les 5 secondes
+            mutationTick++;
+            if (mutationTick >= 5) {
+                checkMutations();
+                mutationTick = 0;
+            }
         }
     }, 1000);
 
@@ -29,7 +63,7 @@ export function initGarden() {
         }
     });
 
-    // Délégation des actions (Planter, Arroser, Vendre, etc.)
+    // Délégation des actions
     document.getElementById('garden-action-content').addEventListener('click', (e) => {
         const target = e.target.closest('[data-action]');
         if (!target) return;
@@ -55,13 +89,85 @@ export function initGarden() {
     });
 }
 
+function checkMutations() {
+    const garden = state.currentUserData.garden;
+    if (!garden) return;
+    
+    let mutated = false;
+    
+    garden.forEach((plot, i) => {
+        // La mutation ne peut se produire QUE sur un terrain débloqué et VIDE
+        if (plot.locked || plot.berryId !== null) return; 
+        
+        const row = Math.floor(i / 9);
+        const col = i % 9;
+        const adjacentBerries = [];
+        
+        // Fonction pour récupérer les baies adjacentes qui sont en train de pousser (et non fanées)
+        const checkAndAdd = (idx) => {
+            const p = garden[idx];
+            if (!p.locked && p.berryId !== null) {
+                const st = getPlotState(p);
+                // La plante adjacente doit être vivante
+                if (st.stage === 'growing' || st.stage === 'thirsty' || st.stage === 'ready') {
+                    adjacentBerries.push(p.berryId);
+                }
+            }
+        };
+        
+        if (row > 0) checkAndAdd(i - 9); // Haut
+        if (row < 8) checkAndAdd(i + 9); // Bas
+        if (col > 0) checkAndAdd(i - 1); // Gauche
+        if (col < 8) checkAndAdd(i + 1); // Droite
+        
+        // Si le terrain vide est touché par au moins 2 baies
+        if (adjacentBerries.length >= 2) {
+            for (let recipe of MUTATION_RECIPES) {
+                const hasP1 = adjacentBerries.includes(recipe.p1);
+                let hasP2 = false;
+                
+                // Si la recette demande 2 baies identiques (ex: nanana + nanana)
+                if (recipe.p1 === recipe.p2) {
+                    hasP2 = adjacentBerries.filter(b => b === recipe.p1).length >= 2;
+                } else {
+                    hasP2 = adjacentBerries.includes(recipe.p2);
+                }
+                
+                // Si les deux baies parentes sont présentes autour du terrain vide
+                if (hasP1 && hasP2) {
+                    // On lance les dés !
+                    if (Math.random() <= recipe.chance) {
+                        plot.berryId = recipe.result;
+                        plot.plantedAt = Date.now();
+                        plot.lastWatered = Date.now();
+                        mutated = true;
+                        
+                        // Notification visuelle dans le panel
+                        document.getElementById('garden-action-title').textContent = "Mutation ! ✨";
+                        const baieDef = TOUTES_LES_BAIES.find(b => b.id === recipe.result);
+                        document.getElementById('garden-action-content').innerHTML = `
+                            <p style="color:#f1c40f; font-weight:bold;">Une nouvelle espèce est apparue !</p>
+                            <p>Une <b style="color:#2ecc71;">${baieDef.fr}</b> a poussé spontanément grâce aux baies voisines !</p>
+                        `;
+                        break; // Une seule mutation par terrain maximum
+                    }
+                }
+            }
+        }
+    });
+    
+    if (mutated) {
+        saveGardenData();
+        renderGardenGrid();
+    }
+}
+
 function openGarden() {
     import('./navController.js').then(({allerASection}) => allerASection('section-jardin'));
     
-    // Initialisation si le joueur n'a jamais ouvert le jardin
     if (!state.currentUserData.garden) {
         state.currentUserData.garden = Array.from({length: 81}, (_, i) => ({
-            locked: i !== 40, // 40 est le centre d'une grille 9x9
+            locked: i !== 40,
             berryId: null,
             plantedAt: 0,
             lastWatered: 0
@@ -86,22 +192,16 @@ function getPlotState(plot) {
     const conf = state.berryConfig[plot.berryId] || state.berryConfig.default;
     const now = Date.now();
     
-    // Test fanaison
     if (conf.needsWater && (now - plot.lastWatered > conf.witherTime)) {
-        // Est-ce qu'elle avait le temps d'être mûre AVANT de faner ?
         if (plot.plantedAt + conf.growTime <= plot.lastWatered + conf.witherTime) {
             return { stage: 'ready', label: '' };
         }
         return { stage: 'withered', label: '🥀' };
     }
     
-    // Test maturité
     if (now - plot.plantedAt >= conf.growTime) return { stage: 'ready', label: '' };
-    
-    // Test soif
     if (conf.needsWater && (now - plot.lastWatered > conf.waterInterval)) return { stage: 'thirsty', label: '' };
     
-    // Pousse normale
     return { stage: 'growing', label: '' };
 }
 
@@ -110,10 +210,10 @@ function isAdjacentToUnlocked(index) {
     const col = index % 9;
     const garden = state.currentUserData.garden;
     
-    if (row > 0 && !garden[index - 9].locked) return true; // Haut
-    if (row < 8 && !garden[index + 9].locked) return true; // Bas
-    if (col > 0 && !garden[index - 1].locked) return true; // Gauche
-    if (col < 8 && !garden[index + 1].locked) return true; // Droite
+    if (row > 0 && !garden[index - 9].locked) return true;
+    if (row < 8 && !garden[index + 9].locked) return true;
+    if (col > 0 && !garden[index - 1].locked) return true;
+    if (col < 8 && !garden[index + 1].locked) return true;
     return false;
 }
 
@@ -134,7 +234,7 @@ function renderGardenGrid() {
             return;
         } else if (plot.berryId && st.stage !== 'withered') {
             const baieDef = TOUTES_LES_BAIES.find(b => b.id === plot.berryId);
-            const enName = baieDef.en.toLowerCase().replace(/\s+/g, '-');
+            const enName = (baieDef.en || baieDef.data.en).toLowerCase().replace(/\s+/g, '-');
             const imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${enName}.png`;
             
             let size = st.stage === 'ready' ? '120%' : '70%';
@@ -157,7 +257,13 @@ function handlePlotClick(index) {
     const plot = state.currentUserData.garden[index];
     const st = getPlotState(plot);
     const content = document.getElementById('garden-action-content');
-    document.getElementById('garden-action-title').textContent = "Détails du Terrain";
+    
+    // Si la fenêtre affiche une mutation on ne la remplace pas tout de suite
+    if(document.getElementById('garden-action-title').textContent !== "Mutation ! ✨") {
+        document.getElementById('garden-action-title').textContent = "Détails du Terrain";
+    } else {
+        document.getElementById('garden-action-title').textContent = "Détails du Terrain";
+    }
 
     if (st.stage === 'locked') {
         const unlockedCount = state.currentUserData.garden.filter(p => !p.locked).length;
@@ -182,8 +288,13 @@ function handlePlotClick(index) {
         const now = Date.now();
         
         let timeRemaining = Math.max(0, conf.growTime - (now - plot.plantedAt));
-        let minsRemaining = Math.floor(timeRemaining / 60000);
+        let hoursRemaining = Math.floor(timeRemaining / 3600000);
+        let minsRemaining = Math.floor((timeRemaining % 3600000) / 60000);
         let secsRemaining = Math.floor((timeRemaining % 60000) / 1000);
+        
+        let tempsTexte = hoursRemaining > 0 
+            ? `${hoursRemaining}h ${minsRemaining}m` 
+            : `${minsRemaining}m ${secsRemaining}s`;
         
         let html = `<h4 style="color:#fceea7; font-size:1.3rem; margin-top:0;">${baieDef.fr}</h4>`;
         
@@ -194,15 +305,18 @@ function handlePlotClick(index) {
             html += `<p style="color:#2ecc71;">La baie est parfaitement mûre !</p>
                      <button class="btn" style="width:100%; background:#2ecc71;" data-action="harvest" data-index="${index}">Récolter</button>`;
         } else {
-            html += `<p style="color:#ccc;">Temps de pousse : <b style="color:white;">${minsRemaining}m ${secsRemaining}s</b></p>`;
+            html += `<p style="color:#ccc;">Temps de pousse : <b style="color:white;">${tempsTexte}</b></p>`;
             if (st.stage === 'thirsty') {
                 html += `<p style="color:#3498db; font-weight:bold;">La plante réclame de l'eau !</p>
                          <button class="btn" style="width:100%; background:#3498db;" data-action="water" data-index="${index}">Arroser 💧</button>`;
             } else if (conf.needsWater) {
                 let waterTimeLeft = Math.max(0, conf.waterInterval - (now - plot.lastWatered));
-                let wMins = Math.floor(waterTimeLeft / 60000);
+                let wHours = Math.floor(waterTimeLeft / 3600000);
+                let wMins = Math.floor((waterTimeLeft % 3600000) / 60000);
                 let wSecs = Math.floor((waterTimeLeft % 60000) / 1000);
-                html += `<p style="font-size:0.9rem; color:#aaa;">Prochain besoin d'eau dans : ${wMins}m ${wSecs}s</p>`;
+                
+                let waterTexte = wHours > 0 ? `${wHours}h ${wMins}m` : `${wMins}m ${wSecs}s`;
+                html += `<p style="font-size:0.9rem; color:#aaa;">Prochain besoin d'eau dans : ${waterTexte}</p>`;
             }
         }
         content.innerHTML = html;
@@ -249,6 +363,10 @@ function openPlantMenu(plotIndex) {
         const enName = baieDef.en.toLowerCase().replace(/\s+/g, '-');
         const imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${enName}.png`;
 
+        let timeStr = conf.growTime >= 3600000 
+            ? `${Math.round(conf.growTime / 3600000)}h` 
+            : `${Math.round(conf.growTime / 60000)}m`;
+
         html += `
             <div style="display:flex; justify-content:space-between; align-items:center; background:#1a1a1a; padding:10px; border-radius:5px; margin-bottom:5px; cursor:pointer; border:1px solid #444;" data-action="plant" data-id="${id}">
                 <div style="display:flex; align-items:center; gap:10px; pointer-events:none;">
@@ -256,7 +374,7 @@ function openPlantMenu(plotIndex) {
                     <span style="color:white; font-size:0.9rem;">${baieDef.fr} (x${qty})</span>
                 </div>
                 <div style="font-size:0.8rem; color:#f1c40f; pointer-events:none;">
-                    ⏱ ${Math.round(conf.growTime / 60000)}m
+                    ⏱ ${timeStr}
                 </div>
             </div>
         `;
@@ -314,7 +432,7 @@ function unlockPlot(index) {
         saveGardenData();
         document.getElementById('pokeberry-display').textContent = state.currentUserData.pokeBerrys;
         renderGardenGrid();
-        handlePlotClick(index); // Refresh actions
+        handlePlotClick(index); 
     } else {
         alert("Pas assez de PokeBerrys !");
     }
@@ -350,7 +468,6 @@ function harvestPlot(index) {
     const conf = state.berryConfig[plot.berryId] || state.berryConfig.default;
     const baieDef = TOUTES_LES_BAIES.find(b => b.id === plot.berryId);
     
-    // Calcule le rendement
     const yieldAmount = Math.floor(Math.random() * (conf.yieldMax - conf.yieldMin + 1)) + conf.yieldMin;
     
     for(let i=0; i<yieldAmount; i++) {
