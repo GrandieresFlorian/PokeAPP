@@ -1,6 +1,6 @@
 import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
-import { getCardImageUrl, getPokemonDetails, getEffectiveness, formatMegaName } from '../utils.js';
+import { getCardImageUrl, getPokemonDetails, getEffectiveness, formatMegaName, getMovesForLevel, TYPE_TRANSLATIONS } from '../utils.js';
 import { allerASection } from './navController.js';
 
 const ZONES = [
@@ -28,15 +28,15 @@ export function initCampagne() {
         document.getElementById('campagne-select-zone').classList.add('hidden');
         document.getElementById('campagne-select-pokemon').classList.remove('hidden');
     });
-
-    document.getElementById('btn-battle-attack').addEventListener('click', processTurn);
     
     document.getElementById('btn-battle-flee').addEventListener('click', () => {
+        if(isAnimating) return;
         logMessage("Vous prenez la fuite... 🏃");
+        toggleMoves(true);
         setTimeout(() => {
             document.getElementById('campagne-battle-arena').classList.add('hidden');
             document.getElementById('campagne-select-zone').classList.remove('hidden');
-        }, 1000);
+        }, 1500);
     });
 }
 
@@ -65,7 +65,6 @@ function renderTeamSelection() {
         return;
     }
 
-    // Regrouper par Pokémon unique (on prend celui avec le plus haut niveau)
     const uniqueCardsMap = {};
     myCollection.forEach(c => {
         const key = `${c.pokedexNumber}_${c.shiny}_${c.mega}_${c.megaForm}`;
@@ -82,7 +81,6 @@ function renderTeamSelection() {
         div.style.backgroundColor = CONSTS.couleursRarete[rarete] || "#333";
         if (carte.shiny || (carte.mega && carte.shiny)) div.innerHTML = '<div class="mini-card-holo"></div>';
 
-        // Petit niveau affiché
         const lvlBadge = document.createElement('div');
         lvlBadge.textContent = `Niv. ${carte.level || 1}`;
         lvlBadge.style.cssText = "position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.7); color:white; font-size:0.7rem; font-weight:bold;";
@@ -131,28 +129,22 @@ async function startBattle(zone) {
     document.getElementById('campagne-select-zone').classList.add('hidden');
     document.getElementById('campagne-battle-arena').classList.remove('hidden');
     
-    // Set UI to loading
     document.getElementById('enemy-name').textContent = "Recherche...";
     document.getElementById('enemy-sprite').src = "";
     document.getElementById('battle-log').innerHTML = `Vous marchez dans la zone : ${zone.name}...`;
+    document.getElementById('moves-container').innerHTML = `<p style="color:#aaa; text-align:center; grid-column: span 2; margin-top:20px;">Chargement des capacités...</p>`;
+    document.getElementById('btn-battle-flee').disabled = true;
 
-    // 1. Generation du Pokémon sauvage (Génération 1 uniquement : id <= 151)
     const gen1Pokemon = state.pokemonDataList.slice(0, 151);
-    
-    // Essayer de trouver un pokémon du bon type
-    // On doit récupérer les détails pour connaître les types, mais pour aller vite on pioche au hasard et on vérifie si ça matche
-    // Ou mieux, on pioche simplement un ID gen 1 au hasard et c'est tout, c'est plus rapide.
     const randIndex = Math.floor(Math.random() * gen1Pokemon.length);
     const wData = gen1Pokemon[randIndex];
     const wId = randIndex + 1;
     
     const wLevel = Math.floor(Math.random() * (zone.maxLvl - zone.minLvl + 1)) + zone.minLvl;
     
-    // Obtenir les stats
     const wDetails = await getPokemonDetails({ pokedexNumber: wId, mega: false });
     const pDetails = await getPokemonDetails(activeFighter);
 
-    // Formules de stats simplifiées
     const calcHP = (pow, lvl) => Math.floor(pow / 3) + (lvl * 5) + 10;
     const calcAtk = (pow, lvl) => Math.floor(pow / 5) + (lvl * 2) + 5;
 
@@ -173,8 +165,36 @@ async function startBattle(zone) {
         types: pDetails.types
     };
 
+    // TÉLÉCHARGEMENT DES CAPACITÉS
+    currentEnemy.moves = await getMovesForLevel(wId, wLevel);
+    activeFighter.battleStats.moves = await getMovesForLevel(activeFighter.pokedexNumber, activeFighter.level || 1);
+
     updateBattleUI();
+    renderMovesUI();
+    toggleMoves(false);
+
     logMessage(`Un <b>${currentEnemy.name}</b> sauvage apparaît ! (Niv. ${currentEnemy.level})`);
+}
+
+function renderMovesUI() {
+    const container = document.getElementById('moves-container');
+    container.innerHTML = "";
+    
+    activeFighter.battleStats.moves.forEach(move => {
+        const btn = document.createElement('button');
+        btn.className = `move-btn type-${move.type}`;
+        const moveName = state.currentLang === 'en' ? move.nameEn : move.nameFr;
+        
+        btn.innerHTML = `<span>${moveName}</span><span style="font-size:0.7rem; opacity:0.8; font-weight:normal;">POW ${move.power}</span>`;
+        btn.onclick = () => processTurn(move);
+        container.appendChild(btn);
+    });
+}
+
+function toggleMoves(disabled) {
+    const btns = document.querySelectorAll('.move-btn');
+    btns.forEach(b => b.disabled = disabled);
+    document.getElementById('btn-battle-flee').disabled = disabled;
 }
 
 function updateBattleUI() {
@@ -193,8 +213,6 @@ function updateBattleUI() {
     document.getElementById('player-lvl').textContent = `Niv. ${activeFighter.level || 1}`;
     document.getElementById('player-hp-text').textContent = `${Math.max(0, activeFighter.battleStats.hp)} / ${activeFighter.battleStats.maxHp}`;
     document.getElementById('player-hp-fill').style.width = `${(Math.max(0, activeFighter.battleStats.hp) / activeFighter.battleStats.maxHp) * 100}%`;
-    
-    // Le sprite du joueur de dos est compliqué via l'API, on utilise de face mais inversé par le CSS
     document.getElementById('player-sprite').src = getCardImageUrl(activeFighter);
     updateBarColor('player-hp-fill', activeFighter.battleStats.hp, activeFighter.battleStats.maxHp);
     
@@ -223,30 +241,34 @@ function playAnimation(id, animClass) {
     setTimeout(() => el.classList.remove(animClass), 500);
 }
 
-async function processTurn() {
+// Fonction de combat principale
+async function processTurn(playerMove) {
     if (isAnimating || !currentEnemy || currentEnemy.hp <= 0 || activeFighter.battleStats.hp <= 0) return;
     isAnimating = true;
+    toggleMoves(true);
 
     // --- TOUR DU JOUEUR ---
     let pName = state.currentLang === 'en' ? activeFighter.data.en : activeFighter.data.fr;
-    logMessage(`<b>${pName}</b> attaque !`);
+    if (activeFighter.mega) pName = formatMegaName(pName, activeFighter.megaForm);
+    
+    let moveName = state.currentLang === 'en' ? playerMove.nameEn : playerMove.nameFr;
+    logMessage(`<b>${pName}</b> utilise <b style="color:var(--accent);">${moveName}</b> !`);
     playAnimation('player-sprite', 'anim-attack');
 
     await new Promise(r => setTimeout(r, 600));
 
-    // L'attaque prend le premier type du joueur
-    let atkType = activeFighter.battleStats.types[0];
-    let mult = getEffectiveness(atkType, currentEnemy.types);
+    let mult = getEffectiveness(playerMove.type, currentEnemy.types);
     
-    let damage = Math.floor(activeFighter.battleStats.atk * mult * (Math.random() * 0.2 + 0.9));
-    damage = Math.max(1, damage); // Au moins 1 de dégat
+    // Le calcul des dégâts prend en compte la puissance (base 40) de l'attaque
+    let damage = Math.floor(activeFighter.battleStats.atk * (playerMove.power / 40) * mult * (Math.random() * 0.2 + 0.9));
+    damage = Math.max(1, damage); 
     
     currentEnemy.hp -= damage;
     playAnimation('enemy-sprite', 'anim-damage');
     
-    if (mult > 1) logMessage(`<span class="text-accent">C'est super efficace ! (${damage} dégâts)</span>`);
-    else if (mult < 1) logMessage(`<span style="color:#aaa;">Ce n'est pas très efficace... (${damage} dégâts)</span>`);
-    else logMessage(`Coup porté ! (${damage} dégâts)`);
+    if (mult > 1) logMessage(`C'est super efficace ! (${damage} dégâts)`);
+    else if (mult < 1) logMessage(`Ce n'est pas très efficace. (${damage} dégâts)`);
+    else logMessage(`(${damage} dégâts)`);
 
     updateBattleUI();
 
@@ -259,23 +281,35 @@ async function processTurn() {
     await new Promise(r => setTimeout(r, 1000));
 
     // --- TOUR DE L'ENNEMI ---
-    logMessage(`<b>${currentEnemy.name}</b> sauvage réplique !`);
+    // L'ennemi (IA) simule les attaques de son deck et choisit celle qui fait le plus de dégâts !
+    let bestEnemyMove = currentEnemy.moves[0];
+    let maxExpectedDamage = -1;
+    
+    currentEnemy.moves.forEach(m => {
+        let mMult = getEffectiveness(m.type, activeFighter.battleStats.types);
+        let expected = (m.power / 40) * mMult;
+        if (expected > maxExpectedDamage) {
+            maxExpectedDamage = expected;
+            bestEnemyMove = m;
+        }
+    });
+
+    let eMoveName = state.currentLang === 'en' ? bestEnemyMove.nameEn : bestEnemyMove.nameFr;
+    logMessage(`<b>${currentEnemy.name}</b> sauvage utilise <b style="color:var(--danger);">${eMoveName}</b> !`);
     playAnimation('enemy-sprite', 'anim-attack');
 
     await new Promise(r => setTimeout(r, 600));
 
-    let eAtkType = currentEnemy.types[0];
-    let eMult = getEffectiveness(eAtkType, activeFighter.battleStats.types);
-    
-    let eDamage = Math.floor(currentEnemy.atk * eMult * (Math.random() * 0.2 + 0.9));
+    let eMult = getEffectiveness(bestEnemyMove.type, activeFighter.battleStats.types);
+    let eDamage = Math.floor(currentEnemy.atk * (bestEnemyMove.power / 40) * eMult * (Math.random() * 0.2 + 0.9));
     eDamage = Math.max(1, eDamage);
     
     activeFighter.battleStats.hp -= eDamage;
     playAnimation('player-sprite', 'anim-damage');
     
-    if (eMult > 1) logMessage(`<span class="text-danger">C'est super efficace ! (${eDamage} dégâts reçus)</span>`);
-    else if (eMult < 1) logMessage(`<span style="color:#aaa;">Ce n'est pas très efficace... (${eDamage} dégâts reçus)</span>`);
-    else logMessage(`Coup reçu. (${eDamage} dégâts reçus)`);
+    if (eMult > 1) logMessage(`C'est super efficace ! (${eDamage} dégâts reçus)`);
+    else if (eMult < 1) logMessage(`Ce n'est pas très efficace. (${eDamage} dégâts reçus)`);
+    else logMessage(`(${eDamage} dégâts reçus)`);
 
     updateBattleUI();
 
@@ -285,6 +319,8 @@ async function processTurn() {
             document.getElementById('campagne-battle-arena').classList.add('hidden');
             document.getElementById('campagne-select-zone').classList.remove('hidden');
         }, 2500);
+    } else {
+        toggleMoves(false); // Le joueur peut rejouer
     }
     
     isAnimating = false;
@@ -314,7 +350,7 @@ async function winBattle() {
     
     if (currentLvl >= maxLvl) {
         currentLvl = maxLvl;
-        currentXp = 0; // Bloqué au rang
+        currentXp = 0; 
     }
     
     activeFighter.level = currentLvl;
@@ -329,7 +365,6 @@ async function winBattle() {
     
     updateBattleUI();
     
-    // Sauvegarder dans Firebase
     try {
         await db.collection('users').doc(state.currentUser).update({
             collection: state.currentUserData.collection
@@ -339,6 +374,6 @@ async function winBattle() {
     setTimeout(() => {
         document.getElementById('campagne-battle-arena').classList.add('hidden');
         document.getElementById('campagne-select-zone').classList.remove('hidden');
-        updateFighterBadge(); // Mettre à jour l'affichage en haut
+        updateFighterBadge(); 
     }, 3000);
 }

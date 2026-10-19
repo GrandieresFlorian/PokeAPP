@@ -226,9 +226,10 @@
                     
                     <div class="battle-ui">
                         <div id="battle-log" class="battle-log">Un Pokémon sauvage apparaît !</div>
-                        <div class="battle-actions">
-                            <button id="btn-battle-attack" class="btn btn-secondary" style="width:100%;">Attaquer ⚔️</button>
-                            <button id="btn-battle-flee" class="btn btn-danger" style="width:100%; margin-top:10px;">Fuir 🏃</button>
+                        <div class="battle-actions-wrapper">
+                            <!-- NOUVEAU: Le conteneur en grille pour les 4 attaques ! -->
+                            <div id="moves-container" class="battle-moves-grid"></div>
+                            <button id="btn-battle-flee" class="btn btn-danger" style="width:100%;">Fuir 🏃</button>
                         </div>
                     </div>
                 </div>

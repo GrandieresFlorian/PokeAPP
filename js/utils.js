@@ -46,14 +46,14 @@ export function getCardImageUrl(carte, format = 'normal') {
 
 export const pokemonTypeCache = {};
 
-const TYPE_TRANSLATIONS = {
+export const TYPE_TRANSLATIONS = {
     "normal": "Normal", "fire": "Feu", "water": "Eau", "electric": "Électrik", "grass": "Plante",
     "ice": "Glace", "fighting": "Combat", "poison": "Poison", "ground": "Sol", "flying": "Vol",
     "psychic": "Psy", "bug": "Insecte", "rock": "Roche", "ghost": "Spectre", "dragon": "Dragon",
     "dark": "Ténèbres", "steel": "Acier", "fairy": "Fée"
 };
 
-// MULTIPLICATEURS DE DEGATS (Matrice simplifiée standard)
+// MULTIPLICATEURS DE DEGATS OFFICIELS
 export const TYPE_EFFECTIVENESS = {
     normal: { rock: 0.5, ghost: 0, steel: 0.5 },
     fire: { fire: 0.5, water: 0.5, grass: 2, ice: 2, bug: 2, rock: 0.5, dragon: 0.5, steel: 2 },
@@ -90,15 +90,19 @@ export async function getPokemonDetails(carte) {
     const cacheKey = `pokeDetails_${id}`;
     const cachedData = localStorage.getItem(cacheKey);
     
-    let pow = 0;
-    let types = [];
+    let pow = 0, types = [], allMoves = null;
     
     if (cachedData) {
         const parsed = JSON.parse(cachedData);
-        pow = parsed.pow;
-        types = parsed.types;
-        pokemonTypeCache[id] = types;
-    } else {
+        if (parsed.allMoves) {
+            pow = parsed.pow;
+            types = parsed.types;
+            allMoves = parsed.allMoves;
+        }
+    }
+    
+    if (!allMoves) {
+        allMoves = [];
         try {
             const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
             const apiData = await res.json();
@@ -106,22 +110,82 @@ export async function getPokemonDetails(carte) {
             let totalStats = 0;
             apiData.stats.forEach(s => totalStats += s.base_stat);
             pow = totalStats;
-            
             types = apiData.types.map(t => t.type.name);
             
-            const toCache = { pow: pow, types: types };
+            // Extraction des capacités apprises par montée de niveau
+            apiData.moves.forEach(m => {
+                const levelUpDetail = m.version_group_details.find(d => d.move_learn_method.name === "level-up");
+                if (levelUpDetail) {
+                    allMoves.push({ name: m.move.name, url: m.move.url, level: levelUpDetail.level_learned_at });
+                }
+            });
+            
+            const toCache = { pow, types, allMoves };
             localStorage.setItem(cacheKey, JSON.stringify(toCache));
-            pokemonTypeCache[id] = types;
         } catch (e) {
-            pow = 300; 
-            types = ["normal"];
-            pokemonTypeCache[id] = types;
+            pow = 300; types = ["normal"]; allMoves = [];
         }
     }
     
     if (carte.mega) pow += 100;
     
-    return { pow, types };
+    return { pow, types, allMoves };
+}
+
+export const moveCache = {};
+
+export async function getMoveDetails(url) {
+    if (moveCache[url]) return moveCache[url];
+    const cached = localStorage.getItem(url);
+    if (cached) {
+        moveCache[url] = JSON.parse(cached);
+        return moveCache[url];
+    }
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+        const frNameObj = data.names.find(n => n.language.name === 'fr');
+        const result = {
+            nameEn: data.name,
+            nameFr: frNameObj ? frNameObj.name : data.name,
+            power: data.power || 40, // Les capacités de statut font 40 dégâts pour ne pas bloquer le jeu
+            type: data.type.name
+        };
+        localStorage.setItem(url, JSON.stringify(result));
+        moveCache[url] = result;
+        return result;
+    } catch(e) {
+        return { nameEn: "Tackle", nameFr: "Charge", power: 40, type: "normal" };
+    }
+}
+
+// Récupère les 4 meilleures attaques que le Pokémon connaît à ce niveau
+export async function getMovesForLevel(pokemonId, level) {
+    const details = await getPokemonDetails({pokedexNumber: pokemonId, mega: false});
+    if (!details.allMoves || details.allMoves.length === 0) {
+        return [{nameEn: "Tackle", nameFr: "Charge", power: 40, type: "normal"}];
+    }
+    
+    let available = details.allMoves.filter(m => m.level <= level).sort((a,b) => b.level - a.level);
+    
+    const uniqueMoves = [];
+    const seen = new Set();
+    for(let m of available) {
+        if(!seen.has(m.name)) {
+            seen.add(m.name);
+            uniqueMoves.push(m);
+        }
+    }
+    
+    const selected = uniqueMoves.slice(0, 4);
+    const finalMoves = [];
+    for (let m of selected) {
+        finalMoves.push(await getMoveDetails(m.url));
+    }
+    if (finalMoves.length === 0) {
+        finalMoves.push({nameEn: "Tackle", nameFr: "Charge", power: 40, type: "normal"});
+    }
+    return finalMoves;
 }
 
 export function generateTypeBadgesHTML(types) {
