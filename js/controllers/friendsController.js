@@ -1,7 +1,7 @@
 import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
 import { initierEchange, accepterEchange, refuserEchange } from './tradeController.js';
-import { proposerCombat, renderBattleUI } from './battleController.js';
+import { proposerCombat, renderBattleUI } from './campagneBattleController.js';
 import { getCardImageUrl } from '../utils.js';
 import { updateSpecialBoosterUI } from './boosterController.js';
 

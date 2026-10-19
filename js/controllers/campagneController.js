@@ -2,7 +2,7 @@ import { state, CONSTS } from '../state.js';
 import { getCardImageUrl, formatMegaName } from '../utils.js';
 import { allerASection, applyTranslation } from './navController.js';
 import { ZONES } from '../data/campagneData.js';
-import { startBattle, fleeBattle } from './battleController.js';
+import { startBattle, fleeBattle } from './campagneBattleController.js';
 
 let activeFighter = null;
 
