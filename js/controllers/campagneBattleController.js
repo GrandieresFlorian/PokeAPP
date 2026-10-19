@@ -33,6 +33,9 @@ export async function startBattle(zone, fighter, onEnd) {
     onBattleEndCallback = onEnd;
     isAnimating = false;
 
+    document.getElementById('campagne-select-zone').classList.add('hidden');
+    document.getElementById('campagne-battle-arena').classList.remove('hidden');
+
     document.getElementById('enemy-name').textContent = "Recherche...";
     document.getElementById('enemy-sprite').src = "";
     let msgStart = state.currentLang === 'en' ? `You walk into ${zone.name}...` : `Vous marchez dans la zone : ${zone.name}...`;
