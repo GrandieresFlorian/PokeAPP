@@ -1,7 +1,6 @@
-
 import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
-import { getCardImageUrl, formatMegaName } from '../utils.js';
+import { getCardImageUrl, formatMegaName, getPokemonDetails } from '../utils.js';
 import { allerASection } from './navController.js';
 
 let vitrineSelection = [];
@@ -68,7 +67,16 @@ function renderProfileData(userData, userId) {
     vitrineCards.forEach(carte => {
         const div = document.createElement('div');
         div.innerHTML = creerHtmlCarte(carte);
-        vitrineContainer.appendChild(div.firstElementChild);
+        const cardElement = div.firstElementChild;
+        vitrineContainer.appendChild(cardElement);
+
+        // CORRECTION : Chargement asynchrone du POW pour les Pokémon dans la vitrine
+        if (!carte.isBaie) {
+            const powSpan = cardElement.querySelector('.pokemon-pow');
+            getPokemonDetails(carte).then(details => {
+                if (powSpan) powSpan.textContent = `POW ${details.pow}`;
+            });
+        }
     });
 }
 
@@ -116,6 +124,7 @@ function renderEditVitrine() {
         if (carte.isBaie) {
             div.style.backgroundColor = "#2ecc71";
             div.style.backgroundSize = "contain";
+            div.style.imageRendering = "pixelated";
         } else {
             const rarete = carte.mega ? "MG" : (carte.data.rarity || "C");
             div.style.backgroundColor = CONSTS.couleursRarete[rarete] || "#333";
@@ -123,7 +132,6 @@ function renderEditVitrine() {
         }
         
         div.onclick = () => {
-            // Compare unique identifier
             const getKey = c => c.isBaie ? `baie_${c.id || c.data.id}` : `${c.pokedexNumber}_${c.shiny}_${c.mega}_${c.megaForm}`;
             const targetKey = getKey(carte);
             
@@ -169,7 +177,6 @@ async function saveProfile() {
     let newAvatar = document.getElementById('edit-avatar').value.trim();
     const newDesc = document.getElementById('edit-desc').value.trim();
     
-    // Si l'utilisateur a juste tapé un numéro (ex: 25), on le transforme en URL
     if (!isNaN(newAvatar) && newAvatar !== "") {
         newAvatar = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${newAvatar}.png`;
     }
@@ -187,7 +194,6 @@ async function saveProfile() {
             vitrine: state.currentUserData.vitrine
         });
         
-        // Mettre à jour la sidebar
         import('./navController.js').then(({updateAuthUI}) => updateAuthUI());
         
         voirProfil(state.currentUser);
@@ -200,19 +206,19 @@ async function saveProfile() {
     btn.textContent = "Enregistrer";
 }
 
-// Fonction utilitaire pour recréer le HTML d'une carte
 function creerHtmlCarte(carte) {
     if(!carte) return "";
     
     if (carte.isBaie) {
         let nomAffiche = state.currentLang === 'en' ? carte.data.en : carte.data.fr;
-        let imageUrl = `https://www.media.pokekalos.fr/img/pokemon/baies/big/${carte.id || carte.data.id}.png`;
+        let enName = carte.data.en.toLowerCase().replace(/\s+/g, '-');
+        let imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${enName}.png`;
         return `
             <div class="card flipped" style="cursor:default; transform: scale(0.9);">
                 <div class="card-inner">
                     <div class="card-front" style="background-color: #2ecc71; border-color: #27ae60;">
                         <div class="card-header"><h1 class="pokemon-name">${nomAffiche}</h1><div class="icon" style="background:white; color:#27ae60;">B</div></div>
-                        <div class="image-wrapper" style="background-color: #fceea7;"><img class="pokemon-image" src="${imageUrl}" style="object-fit:contain; height:160px; padding:15px;"></div>
+                        <div class="image-wrapper" style="background-color: #fceea7;"><img class="pokemon-image" src="${imageUrl}" style="object-fit:contain; height:160px; padding:15px; image-rendering: pixelated;"></div>
                         <div class="card-subtext" style="justify-content:center;">Objet Consommable</div>
                         <div class="stats-bar" style="justify-content:center;"><span style="color:white; font-weight:bold;">BAIE POKÉMON</span></div>
                     </div>
@@ -245,7 +251,7 @@ function creerHtmlCarte(carte) {
                     <div class="card-header"><h1 class="pokemon-name">${nomAffiche}</h1><div class="icon">${pokemonRarity}</div></div>
                     <div class="image-wrapper"><img class="pokemon-image" src="${imageUrl}"><span class="image-id">#${numeroFormate}</span></div>
                     <div class="card-subtext">Vitrine</div>
-                    <div class="stats-bar"><span class="pokemon-pow">POW ???</span><span class="pokemon-aura">N° ${numeroFormate}</span></div>
+                    <div class="stats-bar"><span class="pokemon-pow">POW ...</span><span class="pokemon-aura">N° ${numeroFormate}</span></div>
                 </div>
             </div>
         </div>`;
