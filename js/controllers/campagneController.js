@@ -132,6 +132,19 @@ function renderZones() {
     applyTranslation();
 }
 
+// Fonction de calcul des stats en fonction du Niveau
+function calcStats(baseStats, level) {
+    return {
+        maxHp: Math.floor((2 * baseStats.hp * level) / 100) + level + 10,
+        hp: Math.floor((2 * baseStats.hp * level) / 100) + level + 10,
+        atk: Math.floor((2 * baseStats.atk * level) / 100) + 5,
+        def: Math.floor((2 * baseStats.def * level) / 100) + 5,
+        spatk: Math.floor((2 * baseStats.spatk * level) / 100) + 5,
+        spdef: Math.floor((2 * baseStats.spdef * level) / 100) + 5,
+        speed: Math.floor((2 * baseStats.speed * level) / 100) + 5,
+    };
+}
+
 async function startBattle(zone) {
     document.getElementById('campagne-select-zone').classList.add('hidden');
     document.getElementById('campagne-battle-arena').classList.remove('hidden');
@@ -154,30 +167,22 @@ async function startBattle(zone) {
     const wDetails = await getPokemonDetails({ pokedexNumber: wId, mega: false });
     const pDetails = await getPokemonDetails(activeFighter);
 
-    const calcHP = (pow, lvl) => Math.floor(pow / 3) + (lvl * 5) + 10;
-    const calcAtk = (pow, lvl) => Math.floor(pow / 5) + (lvl * 2) + 5;
-
+    // Initialisation du Pokémon Sauvage
     currentEnemy = {
         nameEn: wData.en,
         nameFr: wData.fr,
         level: wLevel,
-        maxHp: calcHP(wDetails.pow, wLevel),
-        hp: calcHP(wDetails.pow, wLevel),
-        atk: calcAtk(wDetails.pow, wLevel),
-        types: wDetails.types,
+        battleStats: calcStats(wDetails.baseStats, wLevel),
         sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${wId}.png`
     };
+    currentEnemy.battleStats.types = wDetails.types;
 
-    activeFighter.battleStats = {
-        maxHp: calcHP(pDetails.pow, activeFighter.level || 1),
-        hp: calcHP(pDetails.pow, activeFighter.level || 1),
-        atk: calcAtk(pDetails.pow, activeFighter.level || 1),
-        types: pDetails.types
-    };
+    // Initialisation du Joueur
+    activeFighter.battleStats = calcStats(pDetails.baseStats, activeFighter.level || 1);
+    activeFighter.battleStats.types = pDetails.types;
 
     currentEnemy.moves = await getMovesForLevel(wId, wLevel);
     
-    // MÉMOIRE DES ATTAQUES DU JOUEUR : S'il n'en a pas, on lui attribue les siennes pour son niveau
     if (!activeFighter.moves || activeFighter.moves.length === 0) {
         activeFighter.moves = await getMovesForLevel(activeFighter.pokedexNumber, activeFighter.level || 1);
         db.collection('users').doc(state.currentUser).update({ collection: state.currentUserData.collection });
@@ -220,10 +225,10 @@ function updateBattleUI() {
     enemyNameEl.textContent = state.currentLang === 'en' ? currentEnemy.nameEn : currentEnemy.nameFr;
     
     document.getElementById('enemy-lvl').textContent = `Niv. ${currentEnemy.level}`;
-    document.getElementById('enemy-hp-text').textContent = `${Math.max(0, currentEnemy.hp)} / ${currentEnemy.maxHp}`;
-    document.getElementById('enemy-hp-fill').style.width = `${(Math.max(0, currentEnemy.hp) / currentEnemy.maxHp) * 100}%`;
+    document.getElementById('enemy-hp-text').textContent = `${Math.max(0, currentEnemy.battleStats.hp)} / ${currentEnemy.battleStats.maxHp}`;
+    document.getElementById('enemy-hp-fill').style.width = `${(Math.max(0, currentEnemy.battleStats.hp) / currentEnemy.battleStats.maxHp) * 100}%`;
     document.getElementById('enemy-sprite').src = currentEnemy.sprite;
-    updateBarColor('enemy-hp-fill', currentEnemy.hp, currentEnemy.maxHp);
+    updateBarColor('enemy-hp-fill', currentEnemy.battleStats.hp, currentEnemy.battleStats.maxHp);
 
     const playerNameEl = document.getElementById('player-name');
     let pNameEn = activeFighter.data.en;
@@ -267,76 +272,98 @@ function playAnimation(id, animClass) {
     setTimeout(() => el.classList.remove(animClass), 500);
 }
 
-async function processTurn(playerMove) {
-    if (isAnimating || !currentEnemy || currentEnemy.hp <= 0 || activeFighter.battleStats.hp <= 0) return;
-    isAnimating = true;
-    toggleMoves(true);
+// L'exécution d'une attaque en utilisant la VRAIE FORMULE de dégâts
+async function executeMove(attacker, defender, move, isPlayer) {
+    if(attacker.battleStats.hp <= 0 || defender.battleStats.hp <= 0) return;
 
-    let pName = state.currentLang === 'en' ? activeFighter.data.en : activeFighter.data.fr;
-    if (activeFighter.mega) pName = formatMegaName(pName, activeFighter.megaForm);
-    let moveName = state.currentLang === 'en' ? playerMove.nameEn : playerMove.nameFr;
+    let aName = isPlayer ? (state.currentLang === 'en' ? attacker.data.en : attacker.data.fr) : (state.currentLang === 'en' ? attacker.nameEn : attacker.nameFr);
+    if (isPlayer && attacker.mega) aName = formatMegaName(aName, attacker.megaForm);
     
-    let msgUse = state.currentLang === 'en' ? `<b>${pName}</b> uses <b style="color:var(--accent);">${moveName}</b>!` : `<b>${pName}</b> utilise <b style="color:var(--accent);">${moveName}</b> !`;
-    logMessage(msgUse);
-    playAnimation('player-sprite', 'anim-attack');
+    let mName = state.currentLang === 'en' ? move.nameEn : move.nameFr;
+    let colorClass = isPlayer ? "var(--accent)" : "var(--danger)";
+    
+    logMessage(`<b>${aName}</b> ${state.currentLang === 'en'?'uses':'utilise'} <b style="color:${colorClass};">${mName}</b> !`);
+    playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
 
     await new Promise(r => setTimeout(r, 600));
 
-    let mult = getEffectiveness(playerMove.type, currentEnemy.types);
-    let damage = Math.floor(activeFighter.battleStats.atk * (playerMove.power / 40) * mult * (Math.random() * 0.2 + 0.9));
-    damage = Math.max(1, damage); 
+    // Coup Critique 1/16
+    let isCrit = Math.random() < 0.0625; 
+    let level = attacker.level || 1;
     
-    currentEnemy.hp -= damage;
-    playAnimation('enemy-sprite', 'anim-damage');
+    // Attaque Spéciale vs Défense Spéciale  OU  Attaque vs Défense
+    let A = move.damageClass === 'special' ? attacker.battleStats.spatk : attacker.battleStats.atk;
+    let D = move.damageClass === 'special' ? defender.battleStats.spdef : defender.battleStats.def;
+    
+    let baseDmg = Math.floor(Math.floor(Math.floor(2 * level / 5 + 2) * move.power * A / D) / 50) + 2;
+    
+    let stab = attacker.battleStats.types.includes(move.type) ? 1.5 : 1;
+    let mult = getEffectiveness(move.type, defender.battleStats.types);
+    let random = (Math.random() * (1 - 0.85) + 0.85);
+    let critMult = isCrit ? 1.5 : 1;
+
+    let damage = Math.floor(baseDmg * stab * mult * random * critMult);
+    if (mult === 0) damage = 0; 
+    else damage = Math.max(1, damage); // Minimum 1 hp de dégât
+
+    defender.battleStats.hp -= damage;
+    playAnimation(isPlayer ? 'enemy-sprite' : 'player-sprite', 'anim-damage');
+
+    if (damage > 0 && isCrit) logMessage(state.currentLang === 'en' ? `<span style="color:#f39c12">A critical hit!</span>` : `<span style="color:#f39c12">Coup critique !</span>`);
     
     if (mult > 1) logMessage(state.currentLang === 'en' ? `It's super effective! (${damage} dmg)` : `C'est super efficace ! (${damage} dégâts)`);
-    else if (mult < 1) logMessage(state.currentLang === 'en' ? `It's not very effective. (${damage} dmg)` : `Ce n'est pas très efficace. (${damage} dégâts)`);
+    else if (mult > 0 && mult < 1) logMessage(state.currentLang === 'en' ? `It's not very effective. (${damage} dmg)` : `Ce n'est pas très efficace. (${damage} dégâts)`);
+    else if (mult === 0) logMessage(state.currentLang === 'en' ? `It has no effect...` : `Ça n'a aucun effet...`);
     else logMessage(`(${damage} ${state.currentLang === 'en' ? 'dmg' : 'dégâts'})`);
 
     updateBattleUI();
-
-    if (currentEnemy.hp <= 0) {
-        await winBattle();
-        isAnimating = false;
-        return;
-    }
-
     await new Promise(r => setTimeout(r, 1000));
+}
 
+async function processTurn(playerMove) {
+    if (isAnimating || !currentEnemy || currentEnemy.battleStats.hp <= 0 || activeFighter.battleStats.hp <= 0) return;
+    isAnimating = true;
+    toggleMoves(true);
+
+    let playerSpeed = activeFighter.battleStats.speed;
+    let enemySpeed = currentEnemy.battleStats.speed;
+    
+    // Le Pokémon le plus rapide attaque en premier
+    let playerGoesFirst = playerSpeed >= enemySpeed;
+    if(playerSpeed === enemySpeed) playerGoesFirst = Math.random() > 0.5; // Hasard si égalité
+
+    // L'ennemi (IA) simule les attaques de son deck et choisit celle qui fera le plus de dégâts réels
     let bestEnemyMove = currentEnemy.moves[0];
     let maxExpectedDamage = -1;
     currentEnemy.moves.forEach(m => {
         let mMult = getEffectiveness(m.type, activeFighter.battleStats.types);
-        let expected = (m.power / 40) * mMult;
+        let stab = currentEnemy.battleStats.types.includes(m.type) ? 1.5 : 1;
+        let A = m.damageClass === 'special' ? currentEnemy.battleStats.spatk : currentEnemy.battleStats.atk;
+        let D = m.damageClass === 'special' ? activeFighter.battleStats.spdef : activeFighter.battleStats.def;
+        let expected = m.power * mMult * stab * (A / D);
         if (expected > maxExpectedDamage) {
             maxExpectedDamage = expected;
             bestEnemyMove = m;
         }
     });
 
-    let eMoveName = state.currentLang === 'en' ? bestEnemyMove.nameEn : bestEnemyMove.nameFr;
-    let eName = state.currentLang === 'en' ? currentEnemy.nameEn : currentEnemy.nameFr;
-    
-    let msgEUse = state.currentLang === 'en' ? `Wild <b>${eName}</b> uses <b style="color:var(--danger);">${eMoveName}</b>!` : `<b>${eName}</b> sauvage utilise <b style="color:var(--danger);">${eMoveName}</b> !`;
-    logMessage(msgEUse);
-    playAnimation('enemy-sprite', 'anim-attack');
+    if (playerGoesFirst) {
+        await executeMove(activeFighter, currentEnemy, playerMove, true);
+        if (currentEnemy.battleStats.hp > 0) {
+            await executeMove(currentEnemy, activeFighter, bestEnemyMove, false);
+        }
+    } else {
+        await executeMove(currentEnemy, activeFighter, bestEnemyMove, false);
+        if (activeFighter.battleStats.hp > 0) {
+            await executeMove(activeFighter, currentEnemy, playerMove, true);
+        }
+    }
 
-    await new Promise(r => setTimeout(r, 600));
-
-    let eMult = getEffectiveness(bestEnemyMove.type, activeFighter.battleStats.types);
-    let eDamage = Math.floor(currentEnemy.atk * (bestEnemyMove.power / 40) * eMult * (Math.random() * 0.2 + 0.9));
-    eDamage = Math.max(1, eDamage);
-    
-    activeFighter.battleStats.hp -= eDamage;
-    playAnimation('player-sprite', 'anim-damage');
-    
-    if (eMult > 1) logMessage(state.currentLang === 'en' ? `It's super effective! (${eDamage} dmg taken)` : `C'est super efficace ! (${eDamage} dégâts reçus)`);
-    else if (eMult < 1) logMessage(state.currentLang === 'en' ? `It's not very effective. (${eDamage} dmg taken)` : `Ce n'est pas très efficace. (${eDamage} dégâts reçus)`);
-    else logMessage(`(${eDamage} ${state.currentLang === 'en' ? 'dmg taken' : 'dégâts reçus'})`);
-
-    updateBattleUI();
-
-    if (activeFighter.battleStats.hp <= 0) {
+    if (currentEnemy.battleStats.hp <= 0) {
+        await winBattle();
+    } else if (activeFighter.battleStats.hp <= 0) {
+        let pName = state.currentLang === 'en' ? activeFighter.data.en : activeFighter.data.fr;
+        if (activeFighter.mega) pName = formatMegaName(pName, activeFighter.megaForm);
         let msgFaint = state.currentLang === 'en' ? `<span class="text-danger">${pName} fainted! You flee...</span>` : `<span class="text-danger">${pName} est K.O. ! Vous fuyez en urgence...</span>`;
         logMessage(msgFaint);
         setTimeout(() => {
@@ -344,7 +371,7 @@ async function processTurn(playerMove) {
             document.getElementById('campagne-select-zone').classList.remove('hidden');
         }, 2500);
     } else {
-        toggleMoves(false);
+        toggleMoves(false); // Le joueur peut rejouer
     }
     
     isAnimating = false;
@@ -468,7 +495,7 @@ async function winBattle() {
     }
     
     updateBattleUI();
-    renderMovesUI(); // Mets à jour le panel des 4 attaques au cas où
+    renderMovesUI(); 
     applyTranslation();
     
     try {

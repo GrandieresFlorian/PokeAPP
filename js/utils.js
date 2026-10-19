@@ -53,7 +53,6 @@ export const TYPE_TRANSLATIONS = {
     "dark": "Ténèbres", "steel": "Acier", "fairy": "Fée"
 };
 
-// MULTIPLICATEURS DE DEGATS OFFICIELS
 export const TYPE_EFFECTIVENESS = {
     normal: { rock: 0.5, ghost: 0, steel: 0.5 },
     fire: { fire: 0.5, water: 0.5, grass: 2, ice: 2, bug: 2, rock: 0.5, dragon: 0.5, steel: 2 },
@@ -90,29 +89,39 @@ export async function getPokemonDetails(carte) {
     const cacheKey = `pokeDetails_${id}`;
     const cachedData = localStorage.getItem(cacheKey);
     
-    let pow = 0, types = [], allMoves = null;
+    let pow = 0, types = [], allMoves = null, baseStats = null;
     
     if (cachedData) {
         const parsed = JSON.parse(cachedData);
-        if (parsed.allMoves) {
+        // On vérifie que la sauvegarde contient bien la nouvelle architecture avec les BaseStats !
+        if (parsed.allMoves && parsed.baseStats) {
             pow = parsed.pow;
             types = parsed.types;
             allMoves = parsed.allMoves;
+            baseStats = parsed.baseStats;
         }
     }
     
     if (!allMoves) {
         allMoves = [];
+        baseStats = { hp: 50, atk: 50, def: 50, spatk: 50, spdef: 50, speed: 50 };
         try {
             const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
             const apiData = await res.json();
             
             let totalStats = 0;
-            apiData.stats.forEach(s => totalStats += s.base_stat);
+            apiData.stats.forEach(s => {
+                totalStats += s.base_stat;
+                if(s.stat.name === 'hp') baseStats.hp = s.base_stat;
+                if(s.stat.name === 'attack') baseStats.atk = s.base_stat;
+                if(s.stat.name === 'defense') baseStats.def = s.base_stat;
+                if(s.stat.name === 'special-attack') baseStats.spatk = s.base_stat;
+                if(s.stat.name === 'special-defense') baseStats.spdef = s.base_stat;
+                if(s.stat.name === 'speed') baseStats.speed = s.base_stat;
+            });
             pow = totalStats;
             types = apiData.types.map(t => t.type.name);
             
-            // Extraction des capacités apprises par montée de niveau
             apiData.moves.forEach(m => {
                 const levelUpDetail = m.version_group_details.find(d => d.move_learn_method.name === "level-up");
                 if (levelUpDetail) {
@@ -120,16 +129,24 @@ export async function getPokemonDetails(carte) {
                 }
             });
             
-            const toCache = { pow, types, allMoves };
+            const toCache = { pow, types, allMoves, baseStats };
             localStorage.setItem(cacheKey, JSON.stringify(toCache));
         } catch (e) {
             pow = 300; types = ["normal"]; allMoves = [];
         }
     }
     
-    if (carte.mega) pow += 100;
+    // Application des bonus Méga-Evolution
+    if (carte.mega) {
+        pow += 100;
+        baseStats.atk += 20;
+        baseStats.def += 20;
+        baseStats.spatk += 20;
+        baseStats.spdef += 20;
+        baseStats.speed += 20;
+    }
     
-    return { pow, types, allMoves };
+    return { pow, types, allMoves, baseStats };
 }
 
 export const moveCache = {};
@@ -138,8 +155,12 @@ export async function getMoveDetails(url) {
     if (moveCache[url]) return moveCache[url];
     const cached = localStorage.getItem(url);
     if (cached) {
-        moveCache[url] = JSON.parse(cached);
-        return moveCache[url];
+        const parsed = JSON.parse(cached);
+        // Si l'attaque en cache contient bien la classe de dégâts, on l'utilise
+        if (parsed.damageClass) {
+            moveCache[url] = parsed;
+            return parsed;
+        }
     }
     try {
         const res = await fetch(url);
@@ -148,22 +169,22 @@ export async function getMoveDetails(url) {
         const result = {
             nameEn: data.name,
             nameFr: frNameObj ? frNameObj.name : data.name,
-            power: data.power || 40, // Les capacités de statut font 40 dégâts pour ne pas bloquer le jeu
-            type: data.type.name
+            power: data.power || 40,
+            type: data.type.name,
+            damageClass: data.damage_class ? data.damage_class.name : "physical" // Extrait: Spécial ou Physique
         };
         localStorage.setItem(url, JSON.stringify(result));
         moveCache[url] = result;
         return result;
     } catch(e) {
-        return { nameEn: "Tackle", nameFr: "Charge", power: 40, type: "normal" };
+        return { nameEn: "Tackle", nameFr: "Charge", power: 40, type: "normal", damageClass: "physical" };
     }
 }
 
-// Récupère les 4 meilleures attaques que le Pokémon connaît à ce niveau
 export async function getMovesForLevel(pokemonId, level) {
     const details = await getPokemonDetails({pokedexNumber: pokemonId, mega: false});
     if (!details.allMoves || details.allMoves.length === 0) {
-        return [{nameEn: "Tackle", nameFr: "Charge", power: 40, type: "normal"}];
+        return [{nameEn: "Tackle", nameFr: "Charge", power: 40, type: "normal", damageClass: "physical"}];
     }
     
     let available = details.allMoves.filter(m => m.level <= level).sort((a,b) => b.level - a.level);
@@ -183,7 +204,7 @@ export async function getMovesForLevel(pokemonId, level) {
         finalMoves.push(await getMoveDetails(m.url));
     }
     if (finalMoves.length === 0) {
-        finalMoves.push({nameEn: "Tackle", nameFr: "Charge", power: 40, type: "normal"});
+        finalMoves.push({nameEn: "Tackle", nameFr: "Charge", power: 40, type: "normal", damageClass: "physical"});
     }
     return finalMoves;
 }
