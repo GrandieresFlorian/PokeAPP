@@ -1,7 +1,7 @@
 import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
 import { allerASection } from './navController.js';
-import { tirerRarete, formatMegaName, sauvegarderCarte, getCardImageUrl, getPokemonDetails, generateTypeBadgesHTML, pokemonTypeCache, BAIES_BOOSTERS, sauvegarderBaie } from '../utils.js';
+import { tirerRarete, formatMegaName, sauvegarderCarte, getCardImageUrl, getPokemonDetails, generateTypeBadgesHTML, BAIES_BOOSTERS, sauvegarderBaie } from '../utils.js';
 
 export function updateBoosterLogic() {
     const boosterStatus = document.getElementById('booster-status');
@@ -213,7 +213,8 @@ function creerCarte(pokemonData, numeroPokedex, index) {
             
             const badge = document.createElement('div');
             badge.className = `badge-status ${estDoublon ? 'badge-doublon' : 'badge-nouveau'}`;
-            badge.textContent = estDoublon ? 'Doublon' : 'Nouveau !';
+            let lbl = estDoublon ? (state.currentLang === 'en' ? 'Duplicate' : 'Doublon') : (state.currentLang === 'en' ? 'New!' : 'Nouveau !');
+            badge.textContent = lbl;
             
             nouvelleCarte.querySelector('.card-front').appendChild(badge);
 
@@ -243,7 +244,6 @@ function creerCarte(pokemonData, numeroPokedex, index) {
     });
     document.getElementById('cards-container').appendChild(nouvelleCarte);
     
-    // NOUVEAUTÉ : Chargement du POW + des Types
     getPokemonDetails(carteTemp).then(details => {
         powElement.textContent = `POW ${details.pow}`;
         const typeContainer = document.getElementById(`type-container-boost-${index}`);
@@ -254,17 +254,17 @@ function creerCarte(pokemonData, numeroPokedex, index) {
 }
 
 function ouvrirBooster(isSpecial = false) {
-    if (!state.currentUser) { alert("Vous devez être connecté !"); return allerASection('section-auth'); }
-    if (state.pokemonDataList.length === 0) return alert("Les données chargent...");
+    if (!state.currentUser) { alert(state.currentLang==='en'?"You must be logged in!":"Vous devez être connecté !"); return allerASection('section-auth'); }
+    if (state.pokemonDataList.length === 0) return alert(state.currentLang==='en'?"Loading data...":"Les données chargent...");
 
     if (isSpecial) {
         if (state.currentUserData.specialBoostersLeft <= 0) {
-            alert("Vous n'avez pas de boosters spéciaux ! Remportez des combats pour en gagner.");
+            alert(state.currentLang==='en'?"You have no special packs left!":"Vous n'avez pas de boosters spéciaux !");
             return;
         }
     } else {
         if (state.currentUserData.boostersLeft <= 0) {
-            alert("Vous n'avez plus de boosters ! Revenez plus tard.");
+            alert(state.currentLang==='en'?"You have no packs left! Come back later.":"Vous n'avez plus de boosters ! Revenez plus tard.");
             return;
         }
     }
@@ -296,7 +296,6 @@ function ouvrirBooster(isSpecial = false) {
     const activeBooster = isSpecial ? specialBoosterElement : normalBoosterElement;
     
     const cardsContainer = document.getElementById('cards-container');
-    const sectionBoosters = document.getElementById('section-boosters');
     const autoOpenBtn = document.getElementById('auto-open-btn');
     const resetButton = document.getElementById('reset-button');
 
@@ -325,12 +324,10 @@ function ouvrirBooster(isSpecial = false) {
         
         cartesTirees.sort((a, b) => CONSTS.poidsRarete[a.data.rarity] - CONSTS.poidsRarete[b.data.rarity]);
         
-        // --- 5% DE CHANCE D'AVOIR UNE BAIE --- 
         if (Math.random() * 100 <= 5) {
             const randomBaie = BAIES_BOOSTERS[Math.floor(Math.random() * BAIES_BOOSTERS.length)];
             cartesTirees.push({ isBaie: true, data: randomBaie });
         }
-        // -------------------------------------
         
         state.currentPulls = cartesTirees;
         state.currentPullIndex = 0;
@@ -349,7 +346,8 @@ function ouvrirBooster(isSpecial = false) {
 
 export function creerCarteBaie(baieData, index) {
     let nomAffiche = state.currentLang === 'en' ? baieData.en : baieData.fr;
-    let imageUrl = `https://www.media.pokekalos.fr/img/pokemon/baies/big/${baieData.id}.png`;
+    let enName = baieData.en.toLowerCase().replace(/\s+/g, '-');
+    let imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${enName}.png`;
 
     const cardHTML = `
         <div class="card">
@@ -357,7 +355,7 @@ export function creerCarteBaie(baieData, index) {
                 <div class="card-back"><div class="card-back-design">PokéApp</div></div>
                 <div class="card-front" style="background-color: #2ecc71; border-color: #27ae60;">
                     <div class="card-header"><h1 class="pokemon-name" data-en="${baieData.en}" data-fr="${baieData.fr}">${nomAffiche}</h1><div class="icon" style="background: white; color: #27ae60;">B</div></div>
-                    <div class="image-wrapper" style="background-color: #fceea7;"><img class="pokemon-image" src="${imageUrl}" alt="Baie" style="object-fit: contain; height: 160px; padding: 15px;"></div>
+                    <div class="image-wrapper" style="background-color: #fceea7;"><img class="pokemon-image" src="${imageUrl}" alt="Baie" style="object-fit: contain; height: 160px; padding: 15px; image-rendering: pixelated;"></div>
                     <div class="card-subtext" style="justify-content:center;">Objet Consommable</div>
                     <div class="stats-bar" style="justify-content:center;"><span style="font-weight:bold; color: white;">BAIE POKÉMON</span></div>
                 </div>
@@ -375,7 +373,8 @@ export function creerCarteBaie(baieData, index) {
 
             const badge = document.createElement('div');
             badge.className = `badge-status ${estDoublon ? 'badge-doublon' : 'badge-nouveau'}`;
-            badge.textContent = estDoublon ? 'Doublon' : 'Nouveau !';
+            let lbl = estDoublon ? (state.currentLang === 'en' ? 'Duplicate' : 'Doublon') : (state.currentLang === 'en' ? 'New!' : 'Nouveau !');
+            badge.textContent = lbl;
             nouvelleCarte.querySelector('.card-front').appendChild(badge);
 
             nouvelleCarte.classList.add('flipped'); 
