@@ -122,12 +122,13 @@ export function sauvegarderCarte(pokemonData, numeroPokedex, isShiny, isMega, me
     });
 }
 
+// IDs mis à jour avec les NOMS EXACTS de Pokékalos en français !
 export const TOUTES_LES_BAIES = [
     { id: "ceriz", fr: "Baie Ceriz", en: "Cheri Berry" },
     { id: "maron", fr: "Baie Maron", en: "Chesto Berry" },
     { id: "pecha", fr: "Baie Pêcha", en: "Pecha Berry" },
     { id: "fraive", fr: "Baie Fraive", en: "Rawst Berry" },
-    { id: "wilma", fr: "Baie Wilma", en: "Aspear Berry" },
+    { id: "willia", fr: "Baie Willia", en: "Aspear Berry" },
     { id: "mepo", fr: "Baie Mepo", en: "Leppa Berry" },
     { id: "oran", fr: "Baie Oran", en: "Oran Berry" },
     { id: "kika", fr: "Baie Kika", en: "Persim Berry" },
