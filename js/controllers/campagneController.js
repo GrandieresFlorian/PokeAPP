@@ -4,27 +4,27 @@ import { getCardImageUrl, getPokemonDetails, getEffectiveness, formatMegaName, g
 import { allerASection, applyTranslation } from './navController.js';
 
 const ZONES = [
-    { id: "route1", name: "Route 1", minLvl: 2, maxLvl: 5, encounters: [16, 19] },
-    { id: "route2", name: "Route 2", minLvl: 3, maxLvl: 6, encounters: [10, 13, 16, 19, 29, 32] },
-    { id: "foretjade", name: "Forêt de Jade", minLvl: 4, maxLvl: 8, encounters: [10, 11, 13, 14, 25] },
-    { id: "route3", name: "Route 3", minLvl: 6, maxLvl: 10, encounters: [16, 19, 21, 27, 39, 56] },
-    { id: "montselenite", name: "Mont Sélénite", minLvl: 8, maxLvl: 12, encounters: [27, 35, 41, 46, 74] },
-    { id: "route4", name: "Route 4", minLvl: 10, maxLvl: 14, encounters: [19, 21, 23, 27, 56] },
-    { id: "route24", name: "Routes 24 & 25", minLvl: 10, maxLvl: 15, encounters: [10, 11, 13, 14, 16, 43, 63, 69] },
-    { id: "route5", name: "Routes 5 & 6", minLvl: 13, maxLvl: 17, encounters: [16, 43, 52, 56, 69] },
-    { id: "cavetaupiqueur", name: "Cave Taupiqueur", minLvl: 15, maxLvl: 22, encounters: [50, 51] },
-    { id: "route9", name: "Routes 9 & 10", minLvl: 14, maxLvl: 19, encounters: [19, 21, 23, 27, 66, 81, 100] },
-    { id: "grottesombre", name: "Grotte Sombre", minLvl: 16, maxLvl: 22, encounters: [41, 66, 74, 95] },
-    { id: "lavanville", name: "Tour Pokémon", minLvl: 20, maxLvl: 26, encounters: [92, 93, 104] },
-    { id: "route12", name: "Routes 12 à 15", minLvl: 22, maxLvl: 28, encounters: [16, 17, 43, 44, 48, 69, 70, 132] },
-    { id: "pistecyclable", name: "Piste Cyclable", minLvl: 24, maxLvl: 30, encounters: [20, 22, 84, 88, 89, 109] },
-    { id: "parcsafari", name: "Parc Safari", minLvl: 25, maxLvl: 35, encounters: [30, 33, 47, 48, 84, 102, 105, 111, 113, 114, 115, 123, 127, 128] },
-    { id: "ilesecume", name: "Îles Écume", minLvl: 28, maxLvl: 36, encounters: [41, 42, 54, 55, 79, 80, 86, 87, 90, 98, 116, 124] },
-    { id: "manoir", name: "Manoir Pokémon", minLvl: 30, maxLvl: 38, encounters: [37, 58, 77, 88, 89, 109, 110, 126, 132] },
-    { id: "centrale", name: "Centrale", minLvl: 32, maxLvl: 40, encounters: [25, 26, 81, 82, 88, 89, 100, 101, 125] },
-    { id: "route21", name: "Chenal 21 (Surf)", minLvl: 25, maxLvl: 35, encounters: [72, 73, 114] },
-    { id: "routevictoire", name: "Route Victoire", minLvl: 40, maxLvl: 50, encounters: [41, 42, 49, 66, 67, 74, 75, 95, 105] },
-    { id: "caverneazure", name: "Caverne Azurée", minLvl: 55, maxLvl: 65, encounters: [24, 26, 28, 40, 42, 47, 49, 64, 70, 85, 97, 105, 108, 112, 113, 114, 132] }
+    { id: "route1", name: "Route 1", minLvl: 2, maxLvl: 5, encounters: [{id: 16, chance: 50}, {id: 19, chance: 50}] },
+    { id: "route2", name: "Route 2", minLvl: 3, maxLvl: 6, encounters: [{id: 19, chance: 45}, {id: 16, chance: 45}, {id: 10, chance: 5}, {id: 13, chance: 5}] },
+    { id: "foretjade", name: "Forêt de Jade", minLvl: 4, maxLvl: 8, encounters: [{id: 10, chance: 40}, {id: 13, chance: 40}, {id: 11, chance: 10}, {id: 14, chance: 5}, {id: 25, chance: 5}] },
+    { id: "route3", name: "Route 3", minLvl: 6, maxLvl: 10, encounters: [{id: 16, chance: 45}, {id: 21, chance: 45}, {id: 39, chance: 10}] },
+    { id: "montselenite", name: "Mont Sélénite", minLvl: 8, maxLvl: 12, encounters: [{id: 41, chance: 70}, {id: 74, chance: 20}, {id: 46, chance: 9}, {id: 35, chance: 1}] },
+    { id: "route4", name: "Route 4", minLvl: 10, maxLvl: 14, encounters: [{id: 19, chance: 40}, {id: 21, chance: 40}, {id: 23, chance: 20}] },
+    { id: "route24", name: "Routes 24 & 25", minLvl: 10, maxLvl: 15, encounters: [{id: 13, chance: 30}, {id: 10, chance: 30}, {id: 63, chance: 20}, {id: 43, chance: 15}, {id: 69, chance: 5}] },
+    { id: "route5", name: "Routes 5 & 6", minLvl: 13, maxLvl: 17, encounters: [{id: 16, chance: 40}, {id: 43, chance: 30}, {id: 52, chance: 30}] },
+    { id: "cavetaupiqueur", name: "Cave Taupiqueur", minLvl: 15, maxLvl: 22, encounters: [{id: 50, chance: 95}, {id: 51, chance: 5}] },
+    { id: "route9", name: "Routes 9 & 10", minLvl: 14, maxLvl: 19, encounters: [{id: 19, chance: 30}, {id: 21, chance: 30}, {id: 23, chance: 20}, {id: 100, chance: 20}] },
+    { id: "grottesombre", name: "Grotte Sombre", minLvl: 16, maxLvl: 22, encounters: [{id: 41, chance: 60}, {id: 74, chance: 30}, {id: 66, chance: 9}, {id: 95, chance: 1}] },
+    { id: "lavanville", name: "Tour Pokémon", minLvl: 20, maxLvl: 26, encounters: [{id: 92, chance: 85}, {id: 93, chance: 9}, {id: 104, chance: 6}] },
+    { id: "route12", name: "Routes 12 à 15", minLvl: 22, maxLvl: 28, encounters: [{id: 43, chance: 30}, {id: 48, chance: 30}, {id: 16, chance: 20}, {id: 132, chance: 20}] },
+    { id: "pistecyclable", name: "Piste Cyclable", minLvl: 24, maxLvl: 30, encounters: [{id: 84, chance: 40}, {id: 88, chance: 40}, {id: 20, chance: 20}] },
+    { id: "parcsafari", name: "Parc Safari", minLvl: 25, maxLvl: 35, encounters: [{id: 32, chance: 20}, {id: 29, chance: 20}, {id: 102, chance: 20}, {id: 111, chance: 15}, {id: 114, chance: 10}, {id: 123, chance: 5}, {id: 127, chance: 5}, {id: 128, chance: 4}, {id: 113, chance: 1}] },
+    { id: "ilesecume", name: "Îles Écume", minLvl: 28, maxLvl: 36, encounters: [{id: 41, chance: 40}, {id: 86, chance: 30}, {id: 90, chance: 20}, {id: 124, chance: 10}] },
+    { id: "manoir", name: "Manoir Pokémon", minLvl: 30, maxLvl: 38, encounters: [{id: 88, chance: 30}, {id: 109, chance: 30}, {id: 77, chance: 20}, {id: 37, chance: 10}, {id: 126, chance: 10}] },
+    { id: "centrale", name: "Centrale", minLvl: 32, maxLvl: 40, encounters: [{id: 81, chance: 40}, {id: 100, chance: 40}, {id: 25, chance: 10}, {id: 26, chance: 5}, {id: 125, chance: 5}] },
+    { id: "route21", name: "Chenal 21 (Surf)", minLvl: 25, maxLvl: 35, encounters: [{id: 72, chance: 90}, {id: 73, chance: 10}] },
+    { id: "routevictoire", name: "Route Victoire", minLvl: 40, maxLvl: 50, encounters: [{id: 74, chance: 40}, {id: 41, chance: 40}, {id: 66, chance: 15}, {id: 95, chance: 5}] },
+    { id: "caverneazure", name: "Caverne Azurée", minLvl: 55, maxLvl: 65, encounters: [{id: 42, chance: 25}, {id: 132, chance: 25}, {id: 105, chance: 15}, {id: 64, chance: 15}, {id: 47, chance: 10}, {id: 108, chance: 5}, {id: 113, chance: 5}] }
 ];
 
 let activeFighter = null;
@@ -42,7 +42,6 @@ export function initCampagne() {
         document.getElementById('campagne-select-pokemon').classList.remove('hidden');
     });
 
-    // Écouteur pour rafraîchir la grille dès qu'on change la méthode de tri
     document.getElementById('campagne-sort')?.addEventListener('change', renderTeamSelection);
     
     document.getElementById('btn-battle-flee').addEventListener('click', () => {
@@ -52,6 +51,7 @@ export function initCampagne() {
         setTimeout(() => {
             document.getElementById('campagne-battle-arena').classList.add('hidden');
             document.getElementById('campagne-select-zone').classList.remove('hidden');
+            renderZones(); // Rafraîchit les bulles d'info si un nouveau a été croisé !
         }, 1500);
     });
 }
@@ -67,6 +67,7 @@ function openCampagne() {
         document.getElementById('campagne-select-pokemon').classList.add('hidden');
         document.getElementById('campagne-select-zone').classList.remove('hidden');
         updateFighterBadge();
+        renderZones();
     }
 }
 
@@ -89,33 +90,21 @@ function renderTeamSelection() {
         }
     });
 
-    // Transformation en tableau pour appliquer le tri
     let uniqueCardsArray = Object.values(uniqueCardsMap);
-    
-    // Récupération de la méthode de tri sélectionnée
     const sortDropdown = document.getElementById('campagne-sort');
     const sortMode = sortDropdown ? sortDropdown.value : 'pokedex';
 
     uniqueCardsArray.sort((a, b) => {
-        if (sortMode === 'level') {
-            // Tri par niveau décroissant, si égalité on trie par Pokédex
-            return ((b.level || 1) - (a.level || 1)) || (a.pokedexNumber - b.pokedexNumber);
-        } else if (sortMode === 'rarity') {
-            // Tri par rareté décroissante, si égalité on trie par Pokédex
+        if (sortMode === 'level') return ((b.level || 1) - (a.level || 1)) || (a.pokedexNumber - b.pokedexNumber);
+        else if (sortMode === 'rarity') {
             const rarityA = a.mega ? "MG" : (a.data.rarity || "C");
             const rarityB = b.mega ? "MG" : (b.data.rarity || "C");
-            const poidsA = CONSTS.poidsRarete[rarityA] || 0;
-            const poidsB = CONSTS.poidsRarete[rarityB] || 0;
-            return (poidsB - poidsA) || (a.pokedexNumber - b.pokedexNumber);
+            return (CONSTS.poidsRarete[rarityB] || 0) - (CONSTS.poidsRarete[rarityA] || 0) || (a.pokedexNumber - b.pokedexNumber);
         } else if (sortMode === 'alpha') {
-            // Tri par ordre alphabétique en fonction de la langue actuelle
             const nameA = state.currentLang === 'en' ? a.data.en : a.data.fr;
             const nameB = state.currentLang === 'en' ? b.data.en : b.data.fr;
             return nameA.localeCompare(nameB) || (a.pokedexNumber - b.pokedexNumber);
-        } else {
-            // Par défaut : Tri par numéro de Pokédex
-            return a.pokedexNumber - b.pokedexNumber;
-        }
+        } else return a.pokedexNumber - b.pokedexNumber;
     });
 
     uniqueCardsArray.forEach(carte => {
@@ -164,12 +153,46 @@ function renderZones() {
     const list = document.getElementById('campagne-zones-list');
     list.innerHTML = "";
     
+    // Le joueur "connait" un Pokémon s'il l'a croisé (seen) OU s'il le possède dans sa collection
+    const seenArray = state.currentUserData.seen || [];
+    const collectionIds = (state.currentUserData.collection || []).map(c => c.pokedexNumber);
+    
     ZONES.forEach(z => {
         const div = document.createElement('div');
         div.className = "zone-card";
+        
+        let tooltipHtml = `<div class="zone-tooltip">
+            <div class="zone-tooltip-title" data-en="Wild Pokémon" data-fr="Pokémon Sauvages">Pokémon Sauvages</div>
+            <div class="zone-tooltip-grid">`;
+        
+        const totalChance = z.encounters.reduce((sum, enc) => sum + enc.chance, 0);
+
+        z.encounters.forEach(enc => {
+            const proba = Math.round((enc.chance / totalChance) * 100);
+            const isKnown = seenArray.includes(enc.id) || collectionIds.includes(enc.id);
+            
+            if (isKnown) {
+                const spriteUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${enc.id}.png`;
+                tooltipHtml += `
+                    <div class="tooltip-pkmn">
+                        <img src="${spriteUrl}" alt="pkmn">
+                        <span>${proba}%</span>
+                    </div>`;
+            } else {
+                tooltipHtml += `
+                    <div class="tooltip-pkmn unknown">
+                        <div class="unknown-sprite">?</div>
+                        <span>? %</span>
+                    </div>`;
+            }
+        });
+
+        tooltipHtml += `</div></div>`;
+
         div.innerHTML = `
             <h4>${z.name}</h4>
             <p><span class="translatable" data-fr="Niveau des Pokémon :" data-en="Pokémon Levels :">Niveau des Pokémon :</span> <span class="text-accent">${z.minLvl} - ${z.maxLvl}</span></p>
+            ${tooltipHtml}
         `;
         div.onclick = () => startBattle(z);
         list.appendChild(div);
@@ -202,9 +225,27 @@ async function startBattle(zone) {
     document.getElementById('btn-battle-flee').disabled = true;
 
     const possibleEncounters = zone.encounters;
-    const randomPokedexNumber = possibleEncounters[Math.floor(Math.random() * possibleEncounters.length)];
+    const totalChance = possibleEncounters.reduce((sum, enc) => sum + enc.chance, 0);
+    let randomVal = Math.random() * totalChance;
+    
+    let randomPokedexNumber = possibleEncounters[0].id;
+    for (let enc of possibleEncounters) {
+        if (randomVal < enc.chance) {
+            randomPokedexNumber = enc.id;
+            break;
+        }
+        randomVal -= enc.chance;
+    }
+
     const wData = state.pokemonDataList[randomPokedexNumber - 1];
     const wId = randomPokedexNumber;
+
+    // Ajout au Pokédex "Vu"
+    if (!state.currentUserData.seen) state.currentUserData.seen = [];
+    if (!state.currentUserData.seen.includes(wId)) {
+        state.currentUserData.seen.push(wId);
+        db.collection('users').doc(state.currentUser).update({ seen: state.currentUserData.seen }).catch(e => console.error(e));
+    }
     
     const wLevel = Math.floor(Math.random() * (zone.maxLvl - zone.minLvl + 1)) + zone.minLvl;
     
@@ -569,5 +610,6 @@ async function winBattle() {
         document.getElementById('campagne-battle-arena').classList.add('hidden');
         document.getElementById('campagne-select-zone').classList.remove('hidden');
         updateFighterBadge(); 
+        renderZones(); // Rafraîchit les bulles d'info si un nouveau a été croisé !
     }, 4000);
 }
