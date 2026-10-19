@@ -8,19 +8,17 @@ export function initNav() {
 
     const langToggle = document.getElementById('lang-toggle');
     
-    // Application de la langue sauvegardée dès le lancement !
     langToggle.textContent = state.currentLang === 'en' ? '🇬🇧 EN' : '🇫🇷 FR';
     applyTranslation();
 
     langToggle.addEventListener('click', () => {
         state.currentLang = state.currentLang === 'en' ? 'fr' : 'en'; 
-        localStorage.setItem('pokeAppLang', state.currentLang); // SAUVEGARDE EN MÉMOIRE
+        localStorage.setItem('pokeAppLang', state.currentLang); 
         langToggle.textContent = state.currentLang === 'en' ? '🇬🇧 EN' : '🇫🇷 FR';
         applyTranslation();
     });
 }
 
-// Nouvelle fonction exportée pour pouvoir traduire les nouveaux boutons d'attaques à la volée !
 export function applyTranslation() {
     document.querySelectorAll('.translatable').forEach(el => {
         const texteTraduit = el.getAttribute(`data-${state.currentLang}`);
@@ -67,7 +65,13 @@ export function updateAuthUI() {
     const debugDenied = document.getElementById('debug-denied');
 
     if (state.currentUser) {
-        userNameDisplay.textContent = state.currentUserData.displayName || state.currentUser;
+        const displayName = state.currentUserData.displayName || state.currentUser;
+        userNameDisplay.textContent = displayName;
+        
+        // CORRECTION : On met à jour les attributs de traduction pour qu'ils n'écrasent plus le pseudo
+        userNameDisplay.setAttribute('data-fr', displayName);
+        userNameDisplay.setAttribute('data-en', displayName);
+        
         const sbAvatar = document.getElementById('sidebar-avatar');
         sbAvatar.style.display = 'block';
         sbAvatar.src = state.currentUserData.avatar || 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/0.png';
