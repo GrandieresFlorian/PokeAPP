@@ -1,12 +1,14 @@
 import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
 import { updateBoosterLogic } from './boosterController.js';
+import { TOUTES_LES_BAIES } from '../utils.js';
 
 export function initCheats() {
     document.getElementById('cheat-clear-all').addEventListener('click', async () => {
         if (state.currentUser !== 'test') return;
         state.currentUserData.collection = [];
-        await db.collection('users').doc(state.currentUser).update({ collection: [] });
+        state.currentUserData.berries = [];
+        await db.collection('users').doc(state.currentUser).update({ collection: [], berries: [] });
         alert("Collection vidée !");
     });
 
@@ -15,8 +17,10 @@ export function initCheats() {
         if (state.pokemonDataList.length === 0) return alert("Les données chargent...");
 
         state.currentUserData.collection = [];
+        state.currentUserData.berries = [];
         let timeOffset = 0;
 
+        // Débloque tous les Pokémon
         state.pokemonDataList.forEach((pokemon, index) => {
             const id = index + 1;
             state.currentUserData.collection.push({ data: pokemon, pokedexNumber: id, shiny: false, mega: false, megaForm: null, date: Date.now() + timeOffset++ });
@@ -28,9 +32,19 @@ export function initCheats() {
                 });
             }
         });
+
+        // Débloque toutes les baies
+        TOUTES_LES_BAIES.forEach(baie => {
+            state.currentUserData.berries.push({
+                data: baie, id: baie.id, date: Date.now() + timeOffset++
+            });
+        });
         
-        await db.collection('users').doc(state.currentUser).update({ collection: state.currentUserData.collection });
-        alert("Triche activée : Collection complète synchronisée en ligne !");
+        await db.collection('users').doc(state.currentUser).update({ 
+            collection: state.currentUserData.collection,
+            berries: state.currentUserData.berries
+        });
+        alert("Triche activée : Collection complète (Pokémon + Baies) synchronisée en ligne !");
     });
 
     document.getElementById('cheat-refill-boosters').addEventListener('click', async () => {

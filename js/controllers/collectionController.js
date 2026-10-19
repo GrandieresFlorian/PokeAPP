@@ -81,14 +81,21 @@ export function afficherCollection() {
         let pokemonRarity = (state.collectionMode === 'mega' || state.collectionMode === 'mega-shiny') ? "MG" : dataOrigine.rarity;
         let possedeLaCarte = false; let quantite = 0; let afficheHolo = false;
         
+        // Sécurisation totale des accès aux objets
         if (state.collectionMode === 'normal') { 
-            possedeLaCarte = cartesPossedeesMap[i]?.normal > 0; quantite = cartesPossedeesMap[i]?.normal || 0; 
+            quantite = (cartesPossedeesMap[i] && cartesPossedeesMap[i].normal) ? cartesPossedeesMap[i].normal : 0;
+            possedeLaCarte = quantite > 0;
         } else if (state.collectionMode === 'shiny') { 
-            possedeLaCarte = cartesPossedeesMap[i]?.shiny > 0; quantite = cartesPossedeesMap[i]?.shiny || 0; afficheHolo = true; 
+            quantite = (cartesPossedeesMap[i] && cartesPossedeesMap[i].shiny) ? cartesPossedeesMap[i].shiny : 0;
+            possedeLaCarte = quantite > 0; 
+            afficheHolo = true; 
         } else if (state.collectionMode === 'mega') {
-            possedeLaCarte = cartesPossedeesMap[i]?.megas[form]?.normal > 0; quantite = cartesPossedeesMap[i]?.megas[form]?.normal || 0;
+            quantite = (cartesPossedeesMap[i] && cartesPossedeesMap[i].megas && cartesPossedeesMap[i].megas[form] && cartesPossedeesMap[i].megas[form].normal) ? cartesPossedeesMap[i].megas[form].normal : 0;
+            possedeLaCarte = quantite > 0;
         } else if (state.collectionMode === 'mega-shiny') {
-            possedeLaCarte = cartesPossedeesMap[i]?.megas[form]?.shiny > 0; quantite = cartesPossedeesMap[i]?.megas[form]?.shiny || 0; afficheHolo = true;
+            quantite = (cartesPossedeesMap[i] && cartesPossedeesMap[i].megas && cartesPossedeesMap[i].megas[form] && cartesPossedeesMap[i].megas[form].shiny) ? cartesPossedeesMap[i].megas[form].shiny : 0;
+            possedeLaCarte = quantite > 0; 
+            afficheHolo = true;
         }
 
         if (rarityVal !== 'all' && pokemonRarity !== rarityVal) return; 
@@ -114,7 +121,6 @@ export function afficherCollection() {
         let finalImageUrl = getCardImageUrl(carteTemp);
         let imageUrlNormale = getCardImageUrl({ ...carteTemp, shiny: false, mega: false, megaForm: null });
         
-        // Initialiser avec les données en cache si existantes pour l'affichage immédiat
         const cachedTypes = pokemonTypeCache[i] ? generateTypeBadgesHTML(pokemonTypeCache[i]) : 'Pokémon';
 
         if (possedeLaCarte) {
@@ -176,7 +182,6 @@ function chargerPowDynamiquement() {
                 
                 const typeContainer = span.closest('.card-front').querySelector('.type-container-col');
                 
-                // Nouvelle méthode : on charge à la fois POW et types !
                 getPokemonDetails({ pokedexNumber: id, mega: isMega }).then(details => {
                     span.textContent = `POW ${details.pow}`;
                     if(typeContainer) {

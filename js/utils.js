@@ -32,13 +32,11 @@ export function getCardImageUrl(carte, format = 'normal') {
     let nomPourUrl = nomEn.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace('♀', '-f').replace('♂', '-m').replace(/['’.]/g, '').replace(/\s+/g, "-");
     
     if (carte.mega) {
-        if (carte.shiny) {
-            let dittoId = DITTOBASE_IDS[carte.pokedexNumber] || carte.pokedexNumber;
-            let formSuffix = carte.megaForm === "mega" ? "mega" : carte.megaForm; 
-            return `https://assets.dittobase.com/home/${dittoId}-${nomPourUrl}-${formSuffix}-shiny.png`;
-        } else {
-            return `https://img.pokemondb.net/artwork/${nomPourUrl}-${carte.megaForm}.jpg`;
+        let formImageSuffix = carte.megaForm;
+        if (carte.pokedexNumber === 670 || carte.pokedexNumber === 718) {
+            formImageSuffix = "mega";
         }
+        return `https://img.pokemondb.net/artwork/${nomPourUrl}-${formImageSuffix}.jpg`;
     }
     
     return carte.shiny 
@@ -110,7 +108,6 @@ export function generateTypeBadgesHTML(types) {
 }
 
 export function getPokemonPow(carte) {
-    // Wrapper asynchrone pour préserver la compatibilité
     return getPokemonDetails(carte).then(res => res.pow);
 }
 
@@ -124,7 +121,6 @@ export function sauvegarderCarte(pokemonData, numeroPokedex, isShiny, isMega, me
             .catch(err => console.error("Erreur de sauvegarde:", err));
     });
 }
-
 
 export const TOUTES_LES_BAIES = [
     { id: "ceriz", fr: "Baie Ceriz", en: "Cheri Berry" },
