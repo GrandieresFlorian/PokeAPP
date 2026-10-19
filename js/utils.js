@@ -65,12 +65,9 @@ export function getEffectiveness(atkType, defTypes) {
 
 export async function getPokemonDetails(carte) {
     const id = carte.pokedexNumber;
-    // LECTURE INSTANTANÉE DEPUIS LA RAM (data.json)
     const dataOrigine = state.pokemonDataList[id - 1]; 
     
-    let pow = 300;
-    let types = ["normal"];
-    let baseStats = { hp: 50, atk: 50, def: 50, spatk: 50, spdef: 50, speed: 50 };
+    let pow = 300, types = ["normal"], baseStats = { hp: 50, atk: 50, def: 50, spatk: 50, spdef: 50, speed: 50 };
     
     if (dataOrigine) {
         if (dataOrigine.pow) pow = dataOrigine.pow;
@@ -83,60 +80,34 @@ export async function getPokemonDetails(carte) {
         baseStats.atk += 20; baseStats.def += 20; baseStats.spatk += 20; baseStats.spdef += 20; baseStats.speed += 20;
     }
     
-    // Pour les attaques, on interroge PokéAPI et on met en cache (seulement au moment d'un combat)
-    const cacheKey = `pokeMoves_${id}`;
-    const cachedMoves = localStorage.getItem(cacheKey);
-    let allMoves = [];
-    
-    if (cachedMoves) {
-        allMoves = JSON.parse(cachedMoves);
-    } else {
-        try {
-            const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-            const apiData = await res.json();
-            apiData.moves.forEach(m => {
-                const levelUpDetail = m.version_group_details.find(d => d.move_learn_method.name === "level-up");
-                if (levelUpDetail) {
-                    allMoves.push({ name: m.move.name, url: m.move.url, level: levelUpDetail.level_learned_at });
-                }
-            });
-            localStorage.setItem(cacheKey, JSON.stringify(allMoves));
-        } catch (e) { allMoves = []; }
-    }
+    // NOUVEAU : Lecture instantanée depuis moves.json en RAM
+    let allMoves = state.movesData.pokemonMoves[id] || [];
     
     return { pow, types, allMoves, baseStats };
 }
 
-export const moveCache = {};
-
-export async function getMoveDetails(url) {
-    if (moveCache[url]) return moveCache[url];
-    const cached = localStorage.getItem(url);
-    if (cached) {
-        const parsed = JSON.parse(cached);
-        if (parsed.damageClass) { moveCache[url] = parsed; return parsed; }
+export async function getMoveDetails(identifier) {
+    let name = identifier;
+    // Rétrocompatibilité : Si le jeu envoyait encore une URL, on extrait juste le nom
+    if (identifier.includes('/')) {
+        const parts = identifier.split('/').filter(Boolean);
+        name = parts[parts.length - 1]; 
     }
-    try {
-        const res = await fetch(url); const data = await res.json();
-        const frNameObj = data.names.find(n => n.language.name === 'fr');
-        const result = {
-            nameEn: data.name, nameFr: frNameObj ? frNameObj.name : data.name,
-            power: data.power || 40, type: data.type.name,
-            damageClass: data.damage_class ? data.damage_class.name : "physical"
-        };
-        localStorage.setItem(url, JSON.stringify(result));
-        moveCache[url] = result;
-        return result;
-    } catch(e) {
-        return { nameEn: "Tackle", nameFr: "Charge", power: 40, type: "normal", damageClass: "physical" };
+    
+    // NOUVEAU : Lecture instantanée depuis le dictionnaire moves.json en RAM
+    if (state.movesData.dictionary && state.movesData.dictionary[name]) {
+        return state.movesData.dictionary[name];
     }
+    
+    return { nameEn: "Tackle", nameFr: "Charge", power: 40, type: "normal", damageClass: "physical" };
 }
 
 export async function getMovesForLevel(pokemonId, level) {
     const details = await getPokemonDetails({pokedexNumber: pokemonId, mega: false});
-    if (!details.allMoves || details.allMoves.length === 0) return [{nameEn: "Tackle", nameFr: "Charge", power: 40, type: "normal", damageClass: "physical"}];
+    if (!details.allMoves || details.allMoves.length === 0) return [await getMoveDetails("tackle")];
     
     let available = details.allMoves.filter(m => m.level <= level).sort((a,b) => b.level - a.level);
+    
     const uniqueMoves = []; const seen = new Set();
     for(let m of available) {
         if(!seen.has(m.name)) { seen.add(m.name); uniqueMoves.push(m); }
@@ -144,8 +115,9 @@ export async function getMovesForLevel(pokemonId, level) {
     
     const selected = uniqueMoves.slice(0, 4);
     const finalMoves = [];
-    for (let m of selected) finalMoves.push(await getMoveDetails(m.url));
-    if (finalMoves.length === 0) finalMoves.push({nameEn: "Tackle", nameFr: "Charge", power: 40, type: "normal", damageClass: "physical"});
+    for (let m of selected) finalMoves.push(await getMoveDetails(m.name));
+    
+    if (finalMoves.length === 0) finalMoves.push(await getMoveDetails("tackle"));
     return finalMoves;
 }
 
@@ -161,7 +133,6 @@ export function generateTypeBadgesHTML(types) {
     return html;
 }
 
-// Fonction instantanée grâce aux données en RAM
 export async function getPokemonPow(carte) {
     const id = carte.pokedexNumber;
     const dataOrigine = state.pokemonDataList[id - 1];

@@ -132,16 +132,15 @@ function renderZones() {
     applyTranslation();
 }
 
-// Fonction de calcul des stats en fonction du Niveau
-function calcStats(baseStats, level) {
+function calcStats(baseStats, level, evs = { hp: 0, atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0 }) {
     return {
-        maxHp: Math.floor((2 * baseStats.hp * level) / 100) + level + 10,
-        hp: Math.floor((2 * baseStats.hp * level) / 100) + level + 10,
-        atk: Math.floor((2 * baseStats.atk * level) / 100) + 5,
-        def: Math.floor((2 * baseStats.def * level) / 100) + 5,
-        spatk: Math.floor((2 * baseStats.spatk * level) / 100) + 5,
-        spdef: Math.floor((2 * baseStats.spdef * level) / 100) + 5,
-        speed: Math.floor((2 * baseStats.speed * level) / 100) + 5,
+        maxHp: Math.floor(((2 * baseStats.hp + Math.floor(evs.hp / 4)) * level) / 100) + level + 10,
+        hp: Math.floor(((2 * baseStats.hp + Math.floor(evs.hp / 4)) * level) / 100) + level + 10,
+        atk: Math.floor(((2 * baseStats.atk + Math.floor(evs.atk / 4)) * level) / 100) + 5,
+        def: Math.floor(((2 * baseStats.def + Math.floor(evs.def / 4)) * level) / 100) + 5,
+        spatk: Math.floor(((2 * baseStats.spatk + Math.floor(evs.spatk / 4)) * level) / 100) + 5,
+        spdef: Math.floor(((2 * baseStats.spdef + Math.floor(evs.spdef / 4)) * level) / 100) + 5,
+        speed: Math.floor(((2 * baseStats.speed + Math.floor(evs.speed / 4)) * level) / 100) + 5,
     };
 }
 
@@ -167,18 +166,19 @@ async function startBattle(zone) {
     const wDetails = await getPokemonDetails({ pokedexNumber: wId, mega: false });
     const pDetails = await getPokemonDetails(activeFighter);
 
-    // Initialisation du Pokémon Sauvage
     currentEnemy = {
         nameEn: wData.en,
         nameFr: wData.fr,
         level: wLevel,
+        baseStats: wDetails.baseStats, 
         battleStats: calcStats(wDetails.baseStats, wLevel),
         sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${wId}.png`
     };
     currentEnemy.battleStats.types = wDetails.types;
 
-    // Initialisation du Joueur
-    activeFighter.battleStats = calcStats(pDetails.baseStats, activeFighter.level || 1);
+    if (!activeFighter.evs) activeFighter.evs = { hp: 0, atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0 };
+    
+    activeFighter.battleStats = calcStats(pDetails.baseStats, activeFighter.level || 1, activeFighter.evs);
     activeFighter.battleStats.types = pDetails.types;
 
     currentEnemy.moves = await getMovesForLevel(wId, wLevel);
@@ -272,7 +272,6 @@ function playAnimation(id, animClass) {
     setTimeout(() => el.classList.remove(animClass), 500);
 }
 
-// L'exécution d'une attaque en utilisant la VRAIE FORMULE de dégâts
 async function executeMove(attacker, defender, move, isPlayer) {
     if(attacker.battleStats.hp <= 0 || defender.battleStats.hp <= 0) return;
 
@@ -287,11 +286,9 @@ async function executeMove(attacker, defender, move, isPlayer) {
 
     await new Promise(r => setTimeout(r, 600));
 
-    // Coup Critique 1/16
     let isCrit = Math.random() < 0.0625; 
     let level = attacker.level || 1;
     
-    // Attaque Spéciale vs Défense Spéciale  OU  Attaque vs Défense
     let A = move.damageClass === 'special' ? attacker.battleStats.spatk : attacker.battleStats.atk;
     let D = move.damageClass === 'special' ? defender.battleStats.spdef : defender.battleStats.def;
     
@@ -304,7 +301,7 @@ async function executeMove(attacker, defender, move, isPlayer) {
 
     let damage = Math.floor(baseDmg * stab * mult * random * critMult);
     if (mult === 0) damage = 0; 
-    else damage = Math.max(1, damage); // Minimum 1 hp de dégât
+    else damage = Math.max(1, damage);
 
     defender.battleStats.hp -= damage;
     playAnimation(isPlayer ? 'enemy-sprite' : 'player-sprite', 'anim-damage');
@@ -328,11 +325,9 @@ async function processTurn(playerMove) {
     let playerSpeed = activeFighter.battleStats.speed;
     let enemySpeed = currentEnemy.battleStats.speed;
     
-    // Le Pokémon le plus rapide attaque en premier
     let playerGoesFirst = playerSpeed >= enemySpeed;
-    if(playerSpeed === enemySpeed) playerGoesFirst = Math.random() > 0.5; // Hasard si égalité
+    if(playerSpeed === enemySpeed) playerGoesFirst = Math.random() > 0.5;
 
-    // L'ennemi (IA) simule les attaques de son deck et choisit celle qui fera le plus de dégâts réels
     let bestEnemyMove = currentEnemy.moves[0];
     let maxExpectedDamage = -1;
     currentEnemy.moves.forEach(m => {
@@ -371,13 +366,12 @@ async function processTurn(playerMove) {
             document.getElementById('campagne-select-zone').classList.remove('hidden');
         }, 2500);
     } else {
-        toggleMoves(false); // Le joueur peut rejouer
+        toggleMoves(false);
     }
     
     isAnimating = false;
 }
 
-// LA FENÊTRE DE CHOIX D'ATTAQUE (Apprentissage)
 function promptLearnMove(newMove) {
     return new Promise(resolve => {
         const modal = document.getElementById('move-learn-modal');
@@ -422,20 +416,18 @@ function promptLearnMove(newMove) {
         }
         
         modal.classList.remove('hidden');
-        applyTranslation(); // On traduit la fenêtre dynamique !
+        applyTranslation();
     });
 }
 
-// Gestion de la montée de niveau et de l'apprentissage des nouvelles capacités
 async function handleLevelUpMoves(oldLvl, newLvl) {
     const details = await getPokemonDetails(activeFighter);
-    // On récupère toutes les attaques débloquées entre l'ancien et le nouveau niveau
     let newMovesInfo = details.allMoves.filter(m => m.level > oldLvl && m.level <= newLvl);
     newMovesInfo.sort((a,b) => a.level - b.level);
     
     for (let mInfo of newMovesInfo) {
-        const moveData = await getMoveDetails(mInfo.url);
-        // Si on connait déjà cette attaque, on passe
+        // NOUVEAU : Lecture instantanée par le nom depuis moves.json !
+        const moveData = await getMoveDetails(mInfo.name); 
         if (activeFighter.moves.some(m => m.nameEn === moveData.nameEn)) continue;
         
         if (activeFighter.moves.length < 4) {
@@ -445,7 +437,6 @@ async function handleLevelUpMoves(oldLvl, newLvl) {
             let msg = state.currentLang === 'en' ? `✨ ${pName} learned ${moveName}!` : `✨ ${pName} a appris ${moveName} !`;
             logMessage(msg);
         } else {
-            // S'il connait déjà 4 attaques, on lance la fenêtre modale
             await promptLearnMove(moveData);
         }
     }
@@ -455,6 +446,35 @@ async function winBattle() {
     let eName = state.currentLang === 'en' ? currentEnemy.nameEn : currentEnemy.nameFr;
     logMessage(`<b style="color:#2ecc71;">${eName} ${state.currentLang === 'en' ? 'defeated!' : 'sauvage est vaincu !'}</b>`);
     
+    let highestStat = 'hp';
+    let highestValue = 0;
+    for (const [stat, val] of Object.entries(currentEnemy.baseStats)) {
+        if (val > highestValue) {
+            highestValue = val;
+            highestStat = stat;
+        }
+    }
+    
+    let evYield = currentEnemy.level >= 40 ? 3 : (currentEnemy.level >= 20 ? 2 : 1);
+    let totalEVs = Object.values(activeFighter.evs).reduce((a, b) => a + b, 0);
+    let evsToAdd = 0;
+    
+    if (totalEVs < 510 && activeFighter.evs[highestStat] < 252) {
+        let spaceLeftInTotal = 510 - totalEVs;
+        let spaceLeftInStat = 252 - activeFighter.evs[highestStat];
+        evsToAdd = Math.min(evYield, spaceLeftInTotal, spaceLeftInStat);
+        
+        if (evsToAdd > 0) {
+            activeFighter.evs[highestStat] += evsToAdd;
+            const statNamesFR = { hp: "PV", atk: "Attaque", def: "Défense", spatk: "Attaque Spéciale", spdef: "Défense Spéciale", speed: "Vitesse" };
+            const statNamesEN = { hp: "HP", atk: "Attack", def: "Defense", spatk: "Special Attack", spdef: "Special Defense", speed: "Speed" };
+            
+            let statName = state.currentLang === 'en' ? statNamesEN[highestStat] : statNamesFR[highestStat];
+            let msgEV = state.currentLang === 'en' ? `+${evsToAdd} ${statName} Effort Values (EV)!` : `+${evsToAdd} EV en ${statName} !`;
+            logMessage(`<span style="color:#3498db; font-size:0.9rem;">${msgEV}</span>`);
+        }
+    }
+
     let xpGained = currentEnemy.level * 15;
     logMessage(state.currentLang === 'en' ? `You gained <span class="text-accent">${xpGained} XP</span>!` : `Vous gagnez <span class="text-accent">${xpGained} XP</span> !`);
     
@@ -485,10 +505,7 @@ async function winBattle() {
     
     if (leveledUp) {
         logMessage(state.currentLang === 'en' ? `<span class="text-accent font-bold">🎉 LEVEL UP! (Level ${currentLvl})</span>` : `<span class="text-accent font-bold">🎉 NIVEAU SUPÉRIEUR ! (Niveau ${currentLvl})</span>`);
-        
-        // C'est ICI qu'on check les nouvelles attaques !
         await handleLevelUpMoves(oldLvl, currentLvl);
-        
         if (currentLvl === maxLvl) {
             logMessage(state.currentLang === 'en' ? `<span class="text-danger">Max Rank reached! Merge duplicates in Collection to go higher.</span>` : `<span class="text-danger">Rang Max atteint ! Fusionnez des doublons dans la collection pour aller plus haut.</span>`);
         }

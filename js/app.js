@@ -9,39 +9,30 @@ import { initTrade } from './controllers/tradeController.js';
 import { initCheats } from './controllers/cheatController.js';
 import { initProfile } from './controllers/profileController.js';
 import { initGarden } from './controllers/gardenController.js';
-import { initCampagne } from './controllers/campagneController.js'; // <-- NOUVEAU
+import { initCampagne } from './controllers/campagneController.js';
 
 document.addEventListener("DOMContentLoaded", () => {
-    initNav();
-    initAuth();
-    initBooster();
-    initCollection();
-    initFriends();
-    initTrade();
-    initCheats();
-    initProfile();
-    initGarden();
-    initCampagne(); // <-- NOUVEAU
+    initNav(); initAuth(); initBooster(); initCollection(); initFriends();
+    initTrade(); initCheats(); initProfile(); initGarden(); initCampagne();
 
     db.collection('settings').doc('probabilities').get().then(doc => {
-        if (doc.exists) {
-            state.probabilities = { ...state.probabilities, ...doc.data() };
-            console.log("Probabilités synchronisées avec Firebase :", state.probabilities);
-        } else {
-            console.log("Paramètres introuvables sur Firebase, utilisation des valeurs par défaut.");
-        }
-    }).catch(e => console.error("Erreur de chargement des probabilités :", e));
+        if (doc.exists) state.probabilities = { ...state.probabilities, ...doc.data() };
+    }).catch(e => console.error(e));
 
     db.collection('settings').doc('berries').get().then(doc => {
-        if (doc.exists) {
-            state.berryConfig = { ...state.berryConfig, ...doc.data() };
-        }
-    }).catch(e => console.error("Erreur de chargement config baies :", e));
+        if (doc.exists) state.berryConfig = { ...state.berryConfig, ...doc.data() };
+    }).catch(e => console.error(e));
 
     fetch('data.json')
         .then(r => r.json())
         .then(data => { state.pokemonDataList = data.pokemon; })
         .catch(e => console.error(e));
+
+    // NOUVEAU : Chargement de la mémoire des attaques !
+    fetch('moves.json')
+        .then(r => r.json())
+        .then(data => { state.movesData = data; })
+        .catch(e => console.error("Fichier moves.json introuvable :", e));
 
     if (state.currentUser) {
         db.collection('users').doc(state.currentUser).get().then(doc => {
@@ -51,16 +42,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     state.currentUserData.boostersLeft = CONSTS.MAX_BOOSTERS;
                     state.currentUserData.lastBoosterTime = Date.now();
                 }
-                if (state.currentUserData.pokeBerrys === undefined) {
-                    state.currentUserData.pokeBerrys = 0;
-                }
-                updateAuthUI();
-                updateBoosterLogic();
-                startFriendsListener();
+                if (state.currentUserData.pokeBerrys === undefined) state.currentUserData.pokeBerrys = 0;
+                updateAuthUI(); updateBoosterLogic(); startFriendsListener();
             } else {
-                state.currentUser = null;
-                localStorage.removeItem('pokeAppCurrentUser');
-                updateAuthUI();
+                state.currentUser = null; localStorage.removeItem('pokeAppCurrentUser'); updateAuthUI();
             }
         });
     } else {
