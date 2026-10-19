@@ -19,18 +19,11 @@ export function tirerRarete() {
 }
 
 export function formatMegaName(nom, form) {
-    if (form === "mega-x") return `Méga ${nom} X`;
-    if (form === "mega-y") return `Méga ${nom} Y`;
-    if (form === "mega-z") return `Méga ${nom} Z`;
-    if (form === "mega-em") return `Méga ${nom} F.É.`; 
-    if (form === "mega-pam") return `Méga ${nom} Parfait`; 
+    if (form && form !== "mega") {
+        return `Méga ${nom} ${form.replace('mega-', '').toUpperCase()}`;
+    }
     return `Méga ${nom}`;
 }
-
-const DITTOBASE_IDS = {
-    701: 10300, 
-    801: 10318  
-};
 
 export function getCardImageUrl(carte, format = 'normal') {
     if (!carte || !carte.data || !carte.data.en) return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/0.png";
@@ -108,8 +101,10 @@ export function generateTypeBadgesHTML(types) {
     
     let html = '';
     types.forEach(t => {
-        const displayName = state.currentLang === 'fr' ? (TYPE_TRANSLATIONS[t] || t) : t;
-        html += `<span class="type-badge type-${t}">${displayName}</span>`;
+        const enName = t.charAt(0).toUpperCase() + t.slice(1); 
+        const frName = TYPE_TRANSLATIONS[t] || enName;
+        const displayName = state.currentLang === 'fr' ? frName : enName;
+        html += `<span class="type-badge type-${t}" data-en="${enName}" data-fr="${frName}">${displayName}</span>`;
     });
     return html;
 }
@@ -184,20 +179,28 @@ export const TOUTES_LES_BAIES = [
     { id: "colbur", fr: "Baie Colbur", en: "Colbur Berry" },
     { id: "babiri", fr: "Baie Babiri", en: "Babiri Berry" },
     { id: "chilan", fr: "Baie Chilan", en: "Chilan Berry" },
-    { id: "liechi", fr: "Baie Liechi", en: "Liechi Berry" },
-    { id: "ganlon", fr: "Baie Ganlon", en: "Ganlon Berry" },
-    { id: "salac", fr: "Baie Salac", en: "Salac Berry" },
-    { id: "petaya", fr: "Baie Petaya", en: "Petaya Berry" },
-    { id: "apicot", fr: "Baie Apicot", en: "Apicot Berry" },
+    { id: "litchii", fr: "Baie Litchii", en: "Liechi Berry" },
+    { id: "lingan", fr: "Baie Lingan", en: "Ganlon Berry" },
+    { id: "sailak", fr: "Baie Sailak", en: "Salac Berry" },
+    { id: "pitaye", fr: "Baie Pitaye", en: "Petaya Berry" },
+    { id: "abriko", fr: "Baie Abriko", en: "Apicot Berry" },
     { id: "lansat", fr: "Baie Lansat", en: "Lansat Berry" },
-    { id: "frena", fr: "Baie Frena", en: "Starf Berry" },
+    { id: "frista", fr: "Baie Frista", en: "Starf Berry" },
     { id: "enigma", fr: "Baie Enigma", en: "Enigma Berry" },
     { id: "micle", fr: "Baie Micle", en: "Micle Berry" },
-    { id: "custap", fr: "Baie Custap", en: "Custap Berry" },
+    { id: "cherim", fr: "Baie Chérim", en: "Custap Berry" },
     { id: "jaboca", fr: "Baie Jaboca", en: "Jaboca Berry" },
-    { id: "rowap", fr: "Baie Rowap", en: "Rowap Berry" },
-    { id: "roseli", fr: "Baie Roseli", en: "Roseli Berry" },
-    { id: "maranga", fr: "Baie Maranga", en: "Maranga Berry" }
+    { id: "pommo", fr: "Baie Pommo", en: "Rowap Berry" },
+    { id: "selro", fr: "Baie Selro", en: "Roseli Berry" },
+    { id: "rangma", fr: "Baie Rangma", en: "Maranga Berry" }
+];
+
+export const BAIES_BOOSTERS = [
+    { id: "ceriz", fr: "Baie Ceriz", en: "Cheri Berry" },
+    { id: "pecha", fr: "Baie Pêcha", en: "Pecha Berry" },
+    { id: "oran", fr: "Baie Oran", en: "Oran Berry" },
+    { id: "sitrus", fr: "Baie Sitrus", en: "Sitrus Berry" },
+    { id: "nanana", fr: "Baie Nanana", en: "Pinap Berry" }
 ];
 
 export const BAIES_BOOSTERS = [

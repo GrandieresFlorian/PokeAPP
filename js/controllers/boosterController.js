@@ -103,6 +103,7 @@ export function initBooster() {
     const resetButton = document.getElementById('reset-button');
     const autoOpenBtn = document.getElementById('auto-open-btn');
     const cardsContainer = document.getElementById('cards-container');
+    const sectionBoosters = document.getElementById('section-boosters');
 
     boosterElement.addEventListener('click', () => ouvrirBooster(false));
     specialBoosterElement.addEventListener('click', () => ouvrirBooster(true));
@@ -124,13 +125,21 @@ export function initBooster() {
             
             if (unflippedCard) {
                 unflippedCard.click(); 
-                setTimeout(flipNextAutomatically, 800); 
+                setTimeout(flipNextAutomatically, 200); 
             } else if (state.cartesRetournees < state.currentPulls.length) {
                 setTimeout(flipNextAutomatically, 100);
             }
         }
         
         flipNextAutomatically();
+    });
+
+    sectionBoosters.addEventListener('click', (e) => {
+        if (e.target.closest('.btn') || e.target.closest('.booster') || e.target.closest('.card')) return;
+        if (!cardsContainer.classList.contains('hidden')) {
+            const unflippedCard = cardsContainer.querySelector('.card:not(.flipped)');
+            if (unflippedCard) unflippedCard.click();
+        }
     });
 }
 
@@ -218,7 +227,7 @@ function creerCarte(pokemonData, numeroPokedex, index) {
                     const nextItem = state.currentPulls[state.currentPullIndex];
                     if (nextItem.isBaie) creerCarteBaie(nextItem.data, state.currentPullIndex);
                     else creerCarte(nextItem.data, nextItem.pokedexNumber, state.currentPullIndex);
-                }, 400); 
+                }, 150); 
             }
 
             if (state.cartesRetournees === state.currentPulls.length) {
@@ -228,7 +237,7 @@ function creerCarte(pokemonData, numeroPokedex, index) {
                     resetButton.classList.remove('hidden');
                     resetButton.disabled = false;
                     autoOpenBtn.classList.add('hidden'); 
-                }, 600);
+                }, 200);
             }
         }
     });
@@ -287,6 +296,7 @@ function ouvrirBooster(isSpecial = false) {
     const activeBooster = isSpecial ? specialBoosterElement : normalBoosterElement;
     
     const cardsContainer = document.getElementById('cards-container');
+    const sectionBoosters = document.getElementById('section-boosters');
     const autoOpenBtn = document.getElementById('auto-open-btn');
     const resetButton = document.getElementById('reset-button');
 
@@ -334,7 +344,7 @@ function ouvrirBooster(isSpecial = false) {
         else creerCarte(firstItem.data, firstItem.pokedexNumber, 0);
 
         state.isOpening = false; 
-    }, 1200); 
+    }, 600); 
 }
 
 export function creerCarteBaie(baieData, index) {

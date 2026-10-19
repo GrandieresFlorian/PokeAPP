@@ -224,17 +224,17 @@ export function renderBattleUI() {
                 const borderColor = isDraw ? '#f1c40f' : (rWin ? '#2ecc71' : '#e74c3c');
                 
                 roundsHtml += `
-                <div style="background:#242424; padding:8px; border-radius:5px; border:2px solid ${borderColor}; text-align:center; flex:1; min-width: 120px;">
-                    <span style="font-size:0.8rem; color:#aaa; font-weight:bold;">Manche ${r.round}</span><br>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-                        <div style="text-align:center;" title="${myC.data.fr || myC.data.en}">
+                <div style="background:#242424; padding:8px; border-radius:5px; border:2px solid ${borderColor}; text-align:center; flex:1; min-width: 140px; box-sizing: border-box;">
+                    <span style="font-size:0.8rem; color:#aaa; font-weight:bold;">Manche ${r.round}</span>
+                    <div style="display:flex; justify-content:center; align-items:center; gap: 8px; margin-top:8px;">
+                        <div style="display: flex; flex-direction: column; align-items: center; width: 45%;" title="${myC.data.fr || myC.data.en}">
                             <img src="${getCardImageUrl(myC)}" style="width:40px; height:40px; object-fit:cover; border-radius:5px; background:#444;">
-                            <div style="font-size:0.75rem; color:#fceea7; margin-top:4px; font-weight:bold;">POW ${myC.pow}</div>
+                            <div style="font-size:0.75rem; color:#fceea7; margin-top:4px; font-weight:bold; white-space: nowrap;">POW ${myC.pow}</div>
                         </div>
-                        <span style="font-size:0.8rem; color:#777; font-weight:bold; margin: 0 5px;">vs</span>
-                        <div style="text-align:center;" title="${thC.data.fr || thC.data.en}">
+                        <span style="font-size:0.8rem; color:#777; font-weight:bold;">vs</span>
+                        <div style="display: flex; flex-direction: column; align-items: center; width: 45%;" title="${thC.data.fr || thC.data.en}">
                             <img src="${getCardImageUrl(thC)}" style="width:40px; height:40px; object-fit:cover; border-radius:5px; background:#444;">
-                            <div style="font-size:0.75rem; color:#fceea7; margin-top:4px; font-weight:bold;">POW ${thC.pow}</div>
+                            <div style="font-size:0.75rem; color:#fceea7; margin-top:4px; font-weight:bold; white-space: nowrap;">POW ${thC.pow}</div>
                         </div>
                     </div>
                 </div>`;
