@@ -9,6 +9,7 @@ import { initTrade } from './controllers/tradeController.js';
 import { initCheats } from './controllers/cheatController.js';
 import { initProfile } from './controllers/profileController.js';
 import { initGarden } from './controllers/gardenController.js';
+import { initCampagne } from './controllers/campagneController.js'; // <-- NOUVEAU
 
 document.addEventListener("DOMContentLoaded", () => {
     initNav();
@@ -19,21 +20,21 @@ document.addEventListener("DOMContentLoaded", () => {
     initTrade();
     initCheats();
     initProfile();
-    initGarden(); // <-- Initialisation du Jardin
+    initGarden();
+    initCampagne(); // <-- NOUVEAU
 
-    // Chargement des probabilités
     db.collection('settings').doc('probabilities').get().then(doc => {
         if (doc.exists) {
             state.probabilities = { ...state.probabilities, ...doc.data() };
             console.log("Probabilités synchronisées avec Firebase :", state.probabilities);
+        } else {
+            console.log("Paramètres introuvables sur Firebase, utilisation des valeurs par défaut.");
         }
     }).catch(e => console.error("Erreur de chargement des probabilités :", e));
 
-    // Chargement de la configuration des baies (Pour régler leur temps de pousse sur Firebase)
     db.collection('settings').doc('berries').get().then(doc => {
         if (doc.exists) {
             state.berryConfig = { ...state.berryConfig, ...doc.data() };
-            console.log("Configurations des baies synchronisées.");
         }
     }).catch(e => console.error("Erreur de chargement config baies :", e));
 

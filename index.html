@@ -25,12 +25,14 @@
                 <li data-target="section-amis" id="nav-amis">Amis 🤝</li>
                 <li data-target="section-combats" id="nav-combats">Combats ⚔️</li>
                 <li data-target="section-jardin" id="nav-jardin">Jardin 🌱</li>
+                <li data-target="section-campagne" id="nav-campagne">Campagne 🗺️</li>
                 <li data-target="section-profil" id="nav-profil">Profil 👤</li>
                 <li data-target="section-settings">Paramètres</li>
             </ul>
         </nav>
 
         <main class="main-content">
+            <!-- SECTION AUTH -->
             <section id="section-auth" class="view-section hidden">
                 <div class="auth-container glass-panel">
                     <h2>Connexion / Inscription</h2>
@@ -45,6 +47,7 @@
                 </div>
             </section>
 
+            <!-- SECTION BOOSTERS -->
             <section id="section-boosters" class="view-section">
                 <div id="booster-status" class="booster-status glass-panel hidden">
                     <p>Boosters disponibles : <span id="booster-count-display" class="highlight">10</span> / 10</p>
@@ -68,6 +71,7 @@
                 <button id="reset-button" class="btn btn-danger hidden">Fermer et retourner aux boosters</button>
             </section>
 
+            <!-- SECTION COLLECTION -->
             <section id="section-collection" class="view-section hidden">
                 <h2 class="section-title">Votre Collection (<span id="collection-count" class="highlight">0 / 1025</span>)</h2>
                 <div class="collection-tabs glass-panel">
@@ -95,6 +99,7 @@
                 <div id="collection-container" class="cards-container"></div>
             </section>
 
+            <!-- SECTION AMIS -->
             <section id="section-amis" class="view-section hidden">
                 <h2 class="section-title">Vos Amis</h2>
                 <div class="friend-actions glass-panel" style="margin-bottom: 30px; text-align: center;">
@@ -118,6 +123,7 @@
                 </div>
             </section>
 
+            <!-- SECTION COMBATS -->
             <section id="section-combats" class="view-section hidden">
                 <h2 class="section-title">Arène de Combat</h2>
                 <p class="section-subtitle">Défiez vos amis pour gagner des <b>Boosters Spéciaux (Shiny x3 ✨)</b> !<br>Chaque combat se joue automatiquement en 3 manches (la carte avec le plus grand POW l'emporte). Limite de 3 défis envoyés par jour.</p>
@@ -133,6 +139,7 @@
                 </div>
             </section>
 
+            <!-- SECTION TRADE -->
             <section id="section-trade" class="view-section hidden">
                 <h2 class="section-title">Proposition d'échange avec <span id="trade-target-name" class="text-primary"></span></h2>
                 <div class="trade-layout">
@@ -154,6 +161,7 @@
                 <div id="trade-message" style="margin-top: 15px; font-weight: bold; text-align: center;"></div>
             </section>
 
+            <!-- SECTION JARDIN -->
             <section id="section-jardin" class="view-section hidden">
                 <h2 class="section-title">Serre à Baies</h2>
                 <div class="jardin-top-bar glass-panel" style="padding:15px 25px; border-radius:16px;">
@@ -171,6 +179,62 @@
                 </div>
             </section>
 
+            <!-- SECTION CAMPAGNE -->
+            <section id="section-campagne" class="view-section hidden">
+                <h2 class="section-title">Mode Campagne Kanto 🗺️</h2>
+                
+                <!-- Vue 1: Sélection du Pokémon -->
+                <div id="campagne-select-pokemon" class="campagne-view glass-panel">
+                    <h3 class="panel-heading text-accent">1. Choisissez votre Combattant</h3>
+                    <p style="color:var(--text-muted); margin-bottom: 20px;">Cliquez sur un de vos Pokémon pour partir à l'aventure ! Les stats dépendent de son niveau.</p>
+                    <div id="campagne-team-grid" class="trade-collection-grid" style="max-height: 400px; justify-content:center;"></div>
+                </div>
+
+                <!-- Vue 2: Sélection de la Zone -->
+                <div id="campagne-select-zone" class="campagne-view glass-panel hidden">
+                    <h3 class="panel-heading text-primary">2. Choisissez une Zone d'exploration</h3>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                        <div id="campagne-active-pokemon" class="active-fighter-badge"></div>
+                        <button id="btn-change-fighter" class="btn-small-action" style="background:var(--bg-dark); border:1px solid #555;">Changer de Pokémon</button>
+                    </div>
+                    <div id="campagne-zones-list" class="zones-grid"></div>
+                </div>
+
+                <!-- Vue 3: Le Combat -->
+                <div id="campagne-battle-arena" class="campagne-view glass-panel hidden" style="width: 100%; max-width: 900px; padding:0; overflow:hidden;">
+                    <div class="battle-scene">
+                        <!-- Ennemi -->
+                        <div class="battle-entity enemy">
+                            <div class="hp-bar-container">
+                                <div class="entity-info"><span id="enemy-name" style="font-weight:bold;">???</span> <span id="enemy-lvl">Niv. ?</span></div>
+                                <div class="hp-bar-bg"><div id="enemy-hp-fill" class="hp-bar-fill"></div></div>
+                                <div class="hp-text"><span id="enemy-hp-text">? / ?</span></div>
+                            </div>
+                            <img id="enemy-sprite" src="" class="battle-sprite">
+                        </div>
+                        
+                        <!-- Joueur -->
+                        <div class="battle-entity player">
+                            <img id="player-sprite" src="" class="battle-sprite player-sprite">
+                            <div class="hp-bar-container">
+                                <div class="entity-info"><span id="player-name" style="font-weight:bold;">???</span> <span id="player-lvl">Niv. ?</span></div>
+                                <div class="hp-bar-bg"><div id="player-hp-fill" class="hp-bar-fill"></div></div>
+                                <div class="hp-text"><span id="player-hp-text">? / ?</span> <span id="player-xp-text" style="color:var(--accent); font-size:0.8rem; margin-left:10px;">XP: ?</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="battle-ui">
+                        <div id="battle-log" class="battle-log">Un Pokémon sauvage apparaît !</div>
+                        <div class="battle-actions">
+                            <button id="btn-battle-attack" class="btn btn-secondary" style="width:100%;">Attaquer ⚔️</button>
+                            <button id="btn-battle-flee" class="btn btn-danger" style="width:100%; margin-top:10px;">Fuir 🏃</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION PROFIL -->
             <section id="section-profil" class="view-section hidden">
                 <div id="profil-view-mode" class="profile-container glass-panel">
                     <div class="profile-header">
@@ -218,6 +282,7 @@
                 </div>
             </section>
 
+            <!-- SECTION SETTINGS -->
             <section id="section-settings" class="view-section hidden">
                 <h2 class="section-title">Paramètres Administrateur</h2>
                 <div id="debug-denied" class="glass-panel" style="padding:40px; text-align:center;">

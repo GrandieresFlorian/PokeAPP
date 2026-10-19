@@ -44,16 +44,46 @@ export function getCardImageUrl(carte, format = 'normal') {
         : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${carte.pokedexNumber}.png`;
 }
 
-// Map pour stocker les types récupérés depuis PokeAPI
 export const pokemonTypeCache = {};
 
-// Dictionnaire de traduction des types (PokeAPI renvoie en anglais)
 const TYPE_TRANSLATIONS = {
     "normal": "Normal", "fire": "Feu", "water": "Eau", "electric": "Électrik", "grass": "Plante",
     "ice": "Glace", "fighting": "Combat", "poison": "Poison", "ground": "Sol", "flying": "Vol",
     "psychic": "Psy", "bug": "Insecte", "rock": "Roche", "ghost": "Spectre", "dragon": "Dragon",
     "dark": "Ténèbres", "steel": "Acier", "fairy": "Fée"
 };
+
+// MULTIPLICATEURS DE DEGATS (Matrice simplifiée standard)
+export const TYPE_EFFECTIVENESS = {
+    normal: { rock: 0.5, ghost: 0, steel: 0.5 },
+    fire: { fire: 0.5, water: 0.5, grass: 2, ice: 2, bug: 2, rock: 0.5, dragon: 0.5, steel: 2 },
+    water: { fire: 2, water: 0.5, grass: 0.5, ground: 2, rock: 2, dragon: 0.5 },
+    electric: { water: 2, electric: 0.5, grass: 0.5, ground: 0, flying: 2, dragon: 0.5 },
+    grass: { fire: 0.5, water: 2, grass: 0.5, poison: 0.5, ground: 2, flying: 0.5, bug: 0.5, rock: 2, dragon: 0.5, steel: 0.5 },
+    ice: { fire: 0.5, water: 0.5, grass: 2, ice: 0.5, ground: 2, flying: 2, dragon: 2, steel: 0.5 },
+    fighting: { normal: 2, ice: 2, poison: 0.5, flying: 0.5, psychic: 0.5, bug: 0.5, rock: 2, ghost: 0, dark: 2, steel: 2, fairy: 0.5 },
+    poison: { grass: 2, poison: 0.5, ground: 0.5, rock: 0.5, ghost: 0.5, steel: 0, fairy: 2 },
+    ground: { fire: 2, water: 1, electric: 2, grass: 0.5, ice: 1, poison: 2, flying: 0, bug: 0.5, rock: 2, steel: 2 },
+    flying: { electric: 0.5, grass: 2, fighting: 2, bug: 2, rock: 0.5, steel: 0.5 },
+    psychic: { fighting: 2, poison: 2, psychic: 0.5, dark: 0, steel: 0.5 },
+    bug: { fire: 0.5, grass: 2, fighting: 0.5, poison: 0.5, flying: 0.5, psychic: 2, ghost: 0.5, dark: 2, steel: 0.5, fairy: 0.5 },
+    rock: { fire: 2, ice: 2, fighting: 0.5, ground: 0.5, flying: 2, bug: 2, steel: 0.5 },
+    ghost: { normal: 0, psychic: 2, ghost: 2, dark: 0.5 },
+    dragon: { dragon: 2, steel: 0.5, fairy: 0 },
+    dark: { fighting: 0.5, psychic: 2, ghost: 2, dark: 0.5, fairy: 0.5 },
+    steel: { fire: 0.5, water: 0.5, electric: 0.5, ice: 2, rock: 2, steel: 0.5, fairy: 2 },
+    fairy: { fire: 0.5, fighting: 2, poison: 0.5, dragon: 2, dark: 2, steel: 0.5 }
+};
+
+export function getEffectiveness(atkType, defTypes) {
+    let mult = 1;
+    const matchups = TYPE_EFFECTIVENESS[atkType];
+    if (!matchups) return 1;
+    defTypes.forEach(t => {
+        if (matchups[t] !== undefined) mult *= matchups[t];
+    });
+    return mult;
+}
 
 export async function getPokemonDetails(carte) {
     const id = carte.pokedexNumber;
@@ -122,74 +152,40 @@ export function sauvegarderCarte(pokemonData, numeroPokedex, isShiny, isMega, me
     });
 }
 
-// IDs mis à jour avec les NOMS EXACTS de Pokékalos en français !
 export const TOUTES_LES_BAIES = [
-    { id: "ceriz", fr: "Baie Ceriz", en: "Cheri Berry" },
-    { id: "maron", fr: "Baie Maron", en: "Chesto Berry" },
-    { id: "pecha", fr: "Baie Pêcha", en: "Pecha Berry" },
-    { id: "fraive", fr: "Baie Fraive", en: "Rawst Berry" },
-    { id: "willia", fr: "Baie Willia", en: "Aspear Berry" },
-    { id: "mepo", fr: "Baie Mepo", en: "Leppa Berry" },
-    { id: "oran", fr: "Baie Oran", en: "Oran Berry" },
-    { id: "kika", fr: "Baie Kika", en: "Persim Berry" },
-    { id: "prine", fr: "Baie Prine", en: "Lum Berry" },
-    { id: "sitrus", fr: "Baie Sitrus", en: "Sitrus Berry" },
-    { id: "figuy", fr: "Baie Figuy", en: "Figy Berry" },
-    { id: "wiki", fr: "Baie Wiki", en: "Wiki Berry" },
-    { id: "mago", fr: "Baie Mago", en: "Mago Berry" },
-    { id: "gowav", fr: "Baie Gowav", en: "Aguav Berry" },
-    { id: "papaya", fr: "Baie Papaya", en: "Iapapa Berry" },
-    { id: "framby", fr: "Baie Framby", en: "Razz Berry" },
-    { id: "remu", fr: "Baie Remu", en: "Bluk Berry" },
-    { id: "nanab", fr: "Baie Nanab", en: "Nanab Berry" },
-    { id: "repoi", fr: "Baie Repoi", en: "Wepear Berry" },
-    { id: "nanana", fr: "Baie Nanana", en: "Pinap Berry" },
-    { id: "grena", fr: "Baie Grena", en: "Pomeg Berry" },
-    { id: "alga", fr: "Baie Alga", en: "Kelpsy Berry" },
-    { id: "qualot", fr: "Baie Qualot", en: "Qualot Berry" },
-    { id: "lonme", fr: "Baie Lonme", en: "Hondew Berry" },
-    { id: "resin", fr: "Baie Resin", en: "Grepa Berry" },
-    { id: "tamato", fr: "Baie Tamato", en: "Tamato Berry" },
-    { id: "siam", fr: "Baie Siam", en: "Cornn Berry" },
-    { id: "mangou", fr: "Baie Mangou", en: "Magost Berry" },
-    { id: "rabuta", fr: "Baie Rabuta", en: "Rabuta Berry" },
-    { id: "tronci", fr: "Baie Tronci", en: "Nomel Berry" },
-    { id: "kiwan", fr: "Baie Kiwan", en: "Spelon Berry" },
-    { id: "palma", fr: "Baie Palma", en: "Pamtre Berry" },
-    { id: "stekpa", fr: "Baie Stekpa", en: "Watmel Berry" },
-    { id: "durin", fr: "Baie Durin", en: "Durin Berry" },
-    { id: "myrte", fr: "Baie Myrte", en: "Belue Berry" },
-    { id: "chocco", fr: "Baie Chocco", en: "Occa Berry" },
-    { id: "pocpoc", fr: "Baie Pocpoc", en: "Passho Berry" },
-    { id: "parma", fr: "Baie Parma", en: "Wacan Berry" },
-    { id: "ratam", fr: "Baie Ratam", en: "Rindo Berry" },
-    { id: "nanone", fr: "Baie Nanone", en: "Yache Berry" },
-    { id: "pomroz", fr: "Baie Pomroz", en: "Chople Berry" },
-    { id: "kebia", fr: "Baie Kébia", en: "Kebia Berry" },
-    { id: "jouca", fr: "Baie Jouca", en: "Shuca Berry" },
-    { id: "cobaba", fr: "Baie Cobaba", en: "Coba Berry" },
-    { id: "payapa", fr: "Baie Payapa", en: "Payapa Berry" },
-    { id: "tanga", fr: "Baie Tanga", en: "Tanga Berry" },
-    { id: "charti", fr: "Baie Charti", en: "Charti Berry" },
-    { id: "sedra", fr: "Baie Sédra", en: "Kasib Berry" },
-    { id: "fraigo", fr: "Baie Fraigo", en: "Haban Berry" },
-    { id: "lampou", fr: "Baie Lampou", en: "Colbur Berry" },
-    { id: "babiri", fr: "Baie Babiri", en: "Babiri Berry" },
-    { id: "zalis", fr: "Baie Zalis", en: "Chilan Berry" },
-    { id: "litchii", fr: "Baie Litchii", en: "Liechi Berry" },
-    { id: "lingan", fr: "Baie Lingan", en: "Ganlon Berry" },
-    { id: "sailak", fr: "Baie Sailak", en: "Salac Berry" },
-    { id: "pitaye", fr: "Baie Pitaye", en: "Petaya Berry" },
-    { id: "abriko", fr: "Baie Abriko", en: "Apicot Berry" },
-    { id: "lansat", fr: "Baie Lansat", en: "Lansat Berry" },
-    { id: "frista", fr: "Baie Frista", en: "Starf Berry" },
-    { id: "enigma", fr: "Baie Enigma", en: "Enigma Berry" },
-    { id: "micle", fr: "Baie Micle", en: "Micle Berry" },
-    { id: "cherim", fr: "Baie Chérim", en: "Custap Berry" },
-    { id: "jaboca", fr: "Baie Jaboca", en: "Jaboca Berry" },
-    { id: "pommo", fr: "Baie Pommo", en: "Rowap Berry" },
-    { id: "selro", fr: "Baie Selro", en: "Roseli Berry" },
-    { id: "rangma", fr: "Baie Rangma", en: "Maranga Berry" }
+    { id: "ceriz", fr: "Baie Ceriz", en: "Cheri Berry" }, { id: "maron", fr: "Baie Maron", en: "Chesto Berry" },
+    { id: "pecha", fr: "Baie Pêcha", en: "Pecha Berry" }, { id: "fraive", fr: "Baie Fraive", en: "Rawst Berry" },
+    { id: "willia", fr: "Baie Willia", en: "Aspear Berry" }, { id: "mepo", fr: "Baie Mepo", en: "Leppa Berry" },
+    { id: "oran", fr: "Baie Oran", en: "Oran Berry" }, { id: "kika", fr: "Baie Kika", en: "Persim Berry" },
+    { id: "prine", fr: "Baie Prine", en: "Lum Berry" }, { id: "sitrus", fr: "Baie Sitrus", en: "Sitrus Berry" },
+    { id: "figuy", fr: "Baie Figuy", en: "Figy Berry" }, { id: "wiki", fr: "Baie Wiki", en: "Wiki Berry" },
+    { id: "mago", fr: "Baie Mago", en: "Mago Berry" }, { id: "gowav", fr: "Baie Gowav", en: "Aguav Berry" },
+    { id: "papaya", fr: "Baie Papaya", en: "Iapapa Berry" }, { id: "framby", fr: "Baie Framby", en: "Razz Berry" },
+    { id: "remu", fr: "Baie Remu", en: "Bluk Berry" }, { id: "nanab", fr: "Baie Nanab", en: "Nanab Berry" },
+    { id: "repoi", fr: "Baie Repoi", en: "Wepear Berry" }, { id: "nanana", fr: "Baie Nanana", en: "Pinap Berry" },
+    { id: "grena", fr: "Baie Grena", en: "Pomeg Berry" }, { id: "alga", fr: "Baie Alga", en: "Kelpsy Berry" },
+    { id: "qualot", fr: "Baie Qualot", en: "Qualot Berry" }, { id: "lonme", fr: "Baie Lonme", en: "Hondew Berry" },
+    { id: "resin", fr: "Baie Resin", en: "Grepa Berry" }, { id: "tamato", fr: "Baie Tamato", en: "Tamato Berry" },
+    { id: "siam", fr: "Baie Siam", en: "Cornn Berry" }, { id: "mangou", fr: "Baie Mangou", en: "Magost Berry" },
+    { id: "rabuta", fr: "Baie Rabuta", en: "Rabuta Berry" }, { id: "tronci", fr: "Baie Tronci", en: "Nomel Berry" },
+    { id: "kiwan", fr: "Baie Kiwan", en: "Spelon Berry" }, { id: "palma", fr: "Baie Palma", en: "Pamtre Berry" },
+    { id: "stekpa", fr: "Baie Stekpa", en: "Watmel Berry" }, { id: "durin", fr: "Baie Durin", en: "Durin Berry" },
+    { id: "myrte", fr: "Baie Myrte", en: "Belue Berry" }, { id: "chocco", fr: "Baie Chocco", en: "Occa Berry" },
+    { id: "pocpoc", fr: "Baie Pocpoc", en: "Passho Berry" }, { id: "parma", fr: "Baie Parma", en: "Wacan Berry" },
+    { id: "ratam", fr: "Baie Ratam", en: "Rindo Berry" }, { id: "nanone", fr: "Baie Nanone", en: "Yache Berry" },
+    { id: "pomroz", fr: "Baie Pomroz", en: "Chople Berry" }, { id: "kebia", fr: "Baie Kébia", en: "Kebia Berry" },
+    { id: "jouca", fr: "Baie Jouca", en: "Shuca Berry" }, { id: "cobaba", fr: "Baie Cobaba", en: "Coba Berry" },
+    { id: "payapa", fr: "Baie Payapa", en: "Payapa Berry" }, { id: "tanga", fr: "Baie Tanga", en: "Tanga Berry" },
+    { id: "charti", fr: "Baie Charti", en: "Charti Berry" }, { id: "sedra", fr: "Baie Sédra", en: "Kasib Berry" },
+    { id: "fraigo", fr: "Baie Fraigo", en: "Haban Berry" }, { id: "lampou", fr: "Baie Lampou", en: "Colbur Berry" },
+    { id: "babiri", fr: "Baie Babiri", en: "Babiri Berry" }, { id: "zalis", fr: "Baie Zalis", en: "Chilan Berry" },
+    { id: "litchii", fr: "Baie Litchii", en: "Liechi Berry" }, { id: "lingan", fr: "Baie Lingan", en: "Ganlon Berry" },
+    { id: "sailak", fr: "Baie Sailak", en: "Salac Berry" }, { id: "pitaye", fr: "Baie Pitaye", en: "Petaya Berry" },
+    { id: "abriko", fr: "Baie Abriko", en: "Apicot Berry" }, { id: "lansat", fr: "Baie Lansat", en: "Lansat Berry" },
+    { id: "frista", fr: "Baie Frista", en: "Starf Berry" }, { id: "enigma", fr: "Baie Enigma", en: "Enigma Berry" },
+    { id: "micle", fr: "Baie Micle", en: "Micle Berry" }, { id: "cherim", fr: "Baie Chérim", en: "Custap Berry" },
+    { id: "jaboca", fr: "Baie Jaboca", en: "Jaboca Berry" }, { id: "pommo", fr: "Baie Pommo", en: "Rowap Berry" },
+    { id: "selro", fr: "Baie Selro", en: "Roseli Berry" }, { id: "rangma", fr: "Baie Rangma", en: "Maranga Berry" }
 ];
 
 export const BAIES_BOOSTERS = [
@@ -201,34 +197,20 @@ export const BAIES_BOOSTERS = [
 ];
 
 export const MUTATION_RECIPES = [
-    // Mutations Basiques (Création du Tier 2)
-    { p1: "nanana", p2: "nanana", result: "maron", chance: 0.05 },
-    { p1: "ceriz", p2: "pecha", result: "fraive", chance: 0.05 },
-    { p1: "oran", p2: "sitrus", result: "willia", chance: 0.05 },
-    { p1: "pecha", p2: "oran", result: "mepo", chance: 0.05 },
-    { p1: "sitrus", p2: "nanana", result: "kika", chance: 0.05 },
-    { p1: "ceriz", p2: "oran", result: "prine", chance: 0.05 },
-
-    // Mutations Avancées (Création du Tier 3)
-    { p1: "maron", p2: "fraive", result: "figuy", chance: 0.02 },
-    { p1: "willia", p2: "mepo", result: "wiki", chance: 0.02 },
-    { p1: "kika", p2: "prine", result: "mago", chance: 0.02 },
-    { p1: "maron", p2: "willia", result: "gowav", chance: 0.02 },
-    { p1: "fraive", p2: "mepo", result: "papaya", chance: 0.02 },
-
-    // Mutations Expertes (Création du Tier 4)
-    { p1: "figuy", p2: "wiki", result: "framby", chance: 0.01 },
-    { p1: "mago", p2: "gowav", result: "remu", chance: 0.01 },
-    { p1: "papaya", p2: "figuy", result: "nanab", chance: 0.01 }
+    { p1: "nanana", p2: "nanana", result: "maron", chance: 0.05 }, { p1: "ceriz", p2: "pecha", result: "fraive", chance: 0.05 },
+    { p1: "oran", p2: "sitrus", result: "willia", chance: 0.05 }, { p1: "pecha", p2: "oran", result: "mepo", chance: 0.05 },
+    { p1: "sitrus", p2: "nanana", result: "kika", chance: 0.05 }, { p1: "ceriz", p2: "oran", result: "prine", chance: 0.05 },
+    { p1: "maron", p2: "fraive", result: "figuy", chance: 0.02 }, { p1: "willia", p2: "mepo", result: "wiki", chance: 0.02 },
+    { p1: "kika", p2: "prine", result: "mago", chance: 0.02 }, { p1: "maron", p2: "willia", result: "gowav", chance: 0.02 },
+    { p1: "fraive", p2: "mepo", result: "papaya", chance: 0.02 }, { p1: "figuy", p2: "wiki", result: "framby", chance: 0.01 },
+    { p1: "mago", p2: "gowav", result: "remu", chance: 0.01 }, { p1: "papaya", p2: "figuy", result: "nanab", chance: 0.01 }
 ];
 
 export function sauvegarderBaie(baieData) {
     import('./firebase-config.js').then(({db}) => {
         if (!state.currentUser) return;
         if (!state.currentUserData.berries) state.currentUserData.berries = [];
-        state.currentUserData.berries.push({
-            data: baieData, id: baieData.id, date: new Date().getTime()
-        });
+        state.currentUserData.berries.push({ data: baieData, id: baieData.id, date: new Date().getTime() });
         db.collection('users').doc(state.currentUser).update({ berries: state.currentUserData.berries })
             .catch(err => console.error("Erreur de sauvegarde baie:", err));
     });

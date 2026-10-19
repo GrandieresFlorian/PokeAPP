@@ -10,29 +10,27 @@
 @import url('components/trade.css');
 @import url('components/combat.css');
 @import url('components/jardin.css');
+@import url('components/campagne.css');
 
 :root {
-    /* Nouvelle Palette de Couleurs Modernes */
-    --bg-dark: #0f111a;          /* Bleu nuit très profond pour le fond */
-    --bg-panel: rgba(26, 29, 45, 0.7); /* Panneaux translucides (Glassmorphism) */
-    --bg-panel-solid: #1a1d2d;   /* Alternative solide pour certains éléments */
+    --bg-dark: #0f111a;
+    --bg-panel: rgba(26, 29, 45, 0.7);
+    --bg-panel-solid: #1a1d2d;
     
-    --primary: #6c5ce7;          /* Violet/Bleu dynamique */
+    --primary: #6c5ce7;
     --primary-hover: #5b4bc4;
-    --secondary: #00cec9;        /* Turquoise menthe (Succès/Action) */
+    --secondary: #00cec9;
     --secondary-hover: #00b894;
-    --danger: #ff7675;           /* Rouge doux */
+    --danger: #ff7675;
     --danger-hover: #d63031;
-    --accent: #fdcb6e;           /* Jaune/Or éclatant */
+    --accent: #fdcb6e;
     
     --text-light: #f1f2f6;
     --text-muted: #a4b0be;
     
-    /* Typographie */
     --font-main: 'Nunito', sans-serif;
     --font-heading: 'Poppins', sans-serif;
 
-    /* Bordures & Ombres */
     --radius-lg: 24px;
     --radius-md: 16px;
     --radius-sm: 8px;
@@ -40,7 +38,6 @@
     --border-glass: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Classes utilitaires de texte */
 .text-primary { color: var(--primary) !important; }
 .text-accent { color: var(--accent) !important; }
 .text-danger { color: var(--danger) !important; }
