@@ -3,17 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Application Pokémon</title>
+    <title>PokéApp - Collection & Jardin</title>
+    <!-- Nouvelles polices modernes -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/main.css">
-    <link rel="icon" type="image/jpg" href="C:\Users\i2401028\Documents\Projet\PokeAPP\ball.jpg" />
 </head>
 <body>
     <div class="app-container">
         <nav class="sidebar">
             <div class="logo">PokéApp</div>
             <div id="user-info" class="user-info">
-                <div style="display:flex; flex-direction:column; align-items:center; gap:10px;"><img id="sidebar-avatar" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/0.png" style="width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid #f1c40f; display:none;">
-                <span id="user-name-display">Non connecté</span></div>
+                <div class="avatar-container">
+                    <img id="sidebar-avatar" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/0.png" style="display:none;">
+                </div>
+                <span id="user-name-display">Non connecté</span>
                 <button id="auth-nav-btn" class="auth-btn-small" data-target="section-auth">Se connecter</button>
             </div>
             <ul class="nav-links">
@@ -29,9 +32,9 @@
 
         <main class="main-content">
             <section id="section-auth" class="view-section hidden">
-                <div class="auth-container">
+                <div class="auth-container glass-panel">
                     <h2>Connexion / Inscription</h2>
-                    <p>Connectez-vous pour ouvrir des boosters et sauvegarder votre collection !</p>
+                    <p style="color: var(--text-muted); margin-bottom: 25px;">Connectez-vous pour ouvrir des boosters et sauvegarder votre collection !</p>
                     <input type="text" id="username-input" placeholder="Nom d'utilisateur" class="auth-input">
                     <input type="password" id="password-input" placeholder="Mot de passe" class="auth-input">
                     <div class="auth-buttons">
@@ -43,11 +46,11 @@
             </section>
 
             <section id="section-boosters" class="view-section">
-                <div id="booster-status" class="booster-status hidden">
-                    <p>Boosters disponibles : <span id="booster-count-display">10</span> / 10</p>
-                    <p id="booster-timer-text">Prochain booster dans : <span id="booster-timer-display">00:00</span></p>
+                <div id="booster-status" class="booster-status glass-panel hidden">
+                    <p>Boosters disponibles : <span id="booster-count-display" class="highlight">10</span> / 10</p>
+                    <p id="booster-timer-text" class="timer-text">Prochain booster dans : <span id="booster-timer-display">00:00</span></p>
                 </div>
-                <div style="display:flex; justify-content:center; align-items:center; gap:40px; flex-wrap:wrap; margin-top:10px; margin-bottom: 40px;">
+                <div style="display:flex; justify-content:center; align-items:center; gap:40px; flex-wrap:wrap; margin-top:20px; margin-bottom: 40px;">
                     <div id="booster-pack" class="booster">
                         <h2>Pokémon</h2>
                         <p>Édition Complète</p>
@@ -61,20 +64,20 @@
                     </div>
                 </div>
                 <div id="cards-container" class="cards-container hidden"></div>
-                <button id="auto-open-btn" class="btn hidden" style="background-color: #9b59b6; margin-bottom: 10px;">Tout révéler ✨</button>
-                <button id="reset-button" class="btn hidden">Fermer et retourner aux boosters</button>
+                <button id="auto-open-btn" class="btn hidden" style="background: linear-gradient(135deg, #a29bfe, #6c5ce7); margin-bottom: 10px;">Tout révéler ✨</button>
+                <button id="reset-button" class="btn btn-danger hidden">Fermer et retourner aux boosters</button>
             </section>
 
             <section id="section-collection" class="view-section hidden">
-                <h2>Votre Collection (<span id="collection-count">0 / 1025</span>)</h2>
-                <div class="collection-tabs">
+                <h2 class="section-title">Votre Collection (<span id="collection-count" class="highlight">0 / 1025</span>)</h2>
+                <div class="collection-tabs glass-panel">
                     <button id="tab-normal" class="tab-btn active">Classique</button>
                     <button id="tab-shiny" class="tab-btn">Shiny ✨</button>
                     <button id="tab-mega" class="tab-btn">Méga 🧬</button>
                     <button id="tab-mega-shiny" class="tab-btn">Méga Shiny ✨🧬</button>
                     <button id="tab-baies" class="tab-btn">Baies 🍒</button>
                 </div>
-                <div class="collection-filters">
+                <div class="collection-filters glass-panel">
                     <label for="filter-rarity">Rareté :</label>
                     <select id="filter-rarity" class="filter-select">
                         <option value="all">Toutes</option>
@@ -93,138 +96,146 @@
             </section>
 
             <section id="section-amis" class="view-section hidden">
-                <h2>Vos Amis</h2>
-                <div class="friend-actions" style="margin-bottom: 30px; text-align: center;">
-                    <input type="text" id="friend-id-input" class="auth-input" placeholder="Pseudo du joueur à ajouter" style="width: 250px; display: inline-block;">
-                    <button id="add-friend-btn" class="btn btn-secondary" style="padding: 10px 20px; font-size: 1rem; margin-top: 0;">Envoyer la demande</button>
-                    <div id="friend-message" style="margin-top: 10px; font-family: sans-serif; font-weight: bold;"></div>
+                <h2 class="section-title">Vos Amis</h2>
+                <div class="friend-actions glass-panel" style="margin-bottom: 30px; text-align: center;">
+                    <input type="text" id="friend-id-input" class="auth-input" placeholder="Pseudo du joueur à ajouter" style="width: 300px; display: inline-block;">
+                    <button id="add-friend-btn" class="btn btn-secondary" style="padding: 12px 20px; font-size: 1rem; margin-top: 0; transform: translateY(-2px);">Ajouter</button>
+                    <div id="friend-message" style="margin-top: 10px; font-weight: bold;"></div>
                 </div>
                 <div class="friends-layout">
-                    <div class="friends-list-container">
-                        <h3 style="margin-top: 0; color: #3498db;">Mes Amis</h3>
+                    <div class="friends-list-container glass-panel">
+                        <h3 class="panel-heading text-primary">Mes Amis</h3>
                         <ul id="friends-list" class="friend-ul"></ul>
                     </div>
-                    <div class="friend-requests-container" style="margin-top: 20px; width: 100%;">
-                        <h3 style="margin-top: 0; color: #f1c40f;">Propositions d'échange reçues</h3>
+                    <div class="friend-requests-container glass-panel" style="width: 100%;">
+                        <h3 class="panel-heading text-accent">Propositions d'échange</h3>
                         <ul id="trade-requests-list" class="friend-ul"></ul>
                     </div>
-                    <div class="friend-requests-container">
-                        <h3 style="margin-top: 0; color: #e74c3c;">Demandes en attente</h3>
+                    <div class="friend-requests-container glass-panel">
+                        <h3 class="panel-heading text-danger">Demandes en attente</h3>
                         <ul id="friend-requests-list" class="friend-ul"></ul>
                     </div>
                 </div>
             </section>
 
             <section id="section-combats" class="view-section hidden">
-                <h2>Arène de Combat</h2>
-                <p style="text-align:center; color:#ccc; max-width:700px; margin-bottom:30px; line-height: 1.5;">Défiez vos amis pour gagner des <b>Boosters Spéciaux (Shiny x3 ✨)</b> !<br>Chaque combat se joue automatiquement en 3 manches (la carte avec le plus grand POW l'emporte). Limite de 3 défis envoyés par jour.</p>
+                <h2 class="section-title">Arène de Combat</h2>
+                <p class="section-subtitle">Défiez vos amis pour gagner des <b>Boosters Spéciaux (Shiny x3 ✨)</b> !<br>Chaque combat se joue automatiquement en 3 manches (la carte avec le plus grand POW l'emporte). Limite de 3 défis envoyés par jour.</p>
                 <div class="combat-layout">
-                    <div class="combat-panel">
-                        <h3 style="color: #e74c3c; border-bottom: 1px solid #444; padding-bottom: 10px;">Défis reçus</h3>
+                    <div class="combat-panel glass-panel">
+                        <h3 class="panel-heading text-danger">Défis reçus</h3>
                         <ul id="combat-requests-list" class="friend-ul"></ul>
                     </div>
-                    <div class="combat-panel" style="flex: 2;">
-                        <h3 style="color: #f1c40f; border-bottom: 1px solid #444; padding-bottom: 10px;">Historique des combats</h3>
+                    <div class="combat-panel glass-panel" style="flex: 2;">
+                        <h3 class="panel-heading text-accent">Historique des combats</h3>
                         <ul id="combat-history-list" class="friend-ul"></ul>
                     </div>
                 </div>
             </section>
 
             <section id="section-trade" class="view-section hidden">
-                <h2>Proposition d'échange avec <span id="trade-target-name" style="color: #3498db;"></span></h2>
+                <h2 class="section-title">Proposition d'échange avec <span id="trade-target-name" class="text-primary"></span></h2>
                 <div class="trade-layout">
-                    <div class="trade-panel">
-                        <h3>Je propose</h3>
+                    <div class="trade-panel glass-panel">
+                        <h3 class="panel-heading">Je propose</h3>
                         <div id="my-trade-selection" class="trade-selection-box"></div>
                         <div id="my-trade-collection" class="trade-collection-grid"></div>
                     </div>
-                    <div class="trade-panel">
-                        <h3>Je demande</h3>
+                    <div class="trade-panel glass-panel">
+                        <h3 class="panel-heading">Je demande</h3>
                         <div id="their-trade-selection" class="trade-selection-box"></div>
                         <div id="their-trade-collection" class="trade-collection-grid"></div>
                     </div>
                 </div>
-                <div style="text-align: center; margin-top: 20px;">
-                    <button id="send-trade-btn" class="btn" style="background-color: #2ecc71;">Envoyer la proposition</button>
-                    <button id="cancel-trade-btn" class="btn btn-secondary" style="background-color: #e74c3c;">Annuler</button>
-                    <div id="trade-message" style="margin-top: 10px; font-weight: bold;"></div>
+                <div style="text-align: center; margin-top: 30px; display:flex; gap:20px; justify-content:center;">
+                    <button id="send-trade-btn" class="btn btn-secondary">Envoyer la proposition</button>
+                    <button id="cancel-trade-btn" class="btn btn-danger">Annuler</button>
                 </div>
+                <div id="trade-message" style="margin-top: 15px; font-weight: bold; text-align: center;"></div>
             </section>
-            
+
             <section id="section-jardin" class="view-section hidden">
-                <h2>Serre à Baies</h2>
-                <div class="jardin-top-bar">
-                    <div class="pokeberry-count">PokeBerrys : <span id="pokeberry-display">0</span> 💰</div>
-                    <button id="btn-sell-berries" class="btn btn-secondary" style="margin-top: 0;">Boutique & Vente</button>
+                <h2 class="section-title">Serre à Baies</h2>
+                <div class="jardin-top-bar glass-panel" style="padding:15px 25px; border-radius:16px;">
+                    <div class="pokeberry-count">PokeBerrys : <span id="pokeberry-display" class="text-accent">0</span> 💰</div>
+                    <button id="btn-sell-berries" class="btn btn-secondary" style="margin-top: 0; padding:10px 20px;">Boutique & Vente</button>
                 </div>
                 <div class="jardin-layout">
-                    <div class="garden-grid-container">
+                    <div class="garden-grid-container glass-panel">
                         <div id="garden-grid" class="garden-grid"></div>
                     </div>
-                    <div id="garden-action-panel" class="garden-action-panel">
-                        <h3 id="garden-action-title" style="color: #fceea7; border-bottom: 1px solid #444; padding-bottom: 10px; margin-top: 0;">Jardin</h3>
+                    <div id="garden-action-panel" class="garden-action-panel glass-panel">
+                        <h3 id="garden-action-title" class="panel-heading text-accent">Jardin</h3>
                         <div id="garden-action-content">Sélectionnez un terrain pour commencer.</div>
                     </div>
                 </div>
             </section>
 
             <section id="section-profil" class="view-section hidden">
-                <div id="profil-view-mode" class="profile-container">
+                <div id="profil-view-mode" class="profile-container glass-panel">
                     <div class="profile-header">
                         <img id="profil-avatar" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/0.png" alt="Avatar">
                         <div class="profile-info">
                             <h2 id="profil-name">Chargement...</h2>
-                            <p id="profil-id-text" style="color: #aaa; font-size: 0.9rem; margin-top: -10px;">@id</p>
+                            <p id="profil-id-text" style="color: var(--text-muted); font-size: 0.9rem; margin-top: -5px;">@id</p>
                             <p id="profil-desc" class="profile-desc">Aucune description.</p>
                         </div>
                         <button id="btn-edit-profil" class="btn btn-secondary hidden" style="margin-left: auto;">Modifier</button>
                     </div>
                     
-                    <h3 style="margin-top: 30px; border-bottom: 2px solid #444; padding-bottom: 10px; color: #f1c40f;">Vitrine</h3>
+                    <h3 class="panel-heading text-accent" style="margin-top: 30px;">Vitrine</h3>
                     <div id="profil-vitrine" class="cards-container" style="margin-top: 20px;"></div>
                 </div>
 
-                <div id="profil-edit-mode" class="profile-container hidden">
-                    <h2>Modifier mon Profil</h2>
-                    <label>Pseudo affiché :</label>
-                    <input type="text" id="edit-pseudo" class="auth-input" placeholder="Votre pseudo" maxlength="20">
+                <div id="profil-edit-mode" class="profile-container glass-panel hidden">
+                    <h2 class="section-title" style="font-size:1.8rem;">Modifier mon Profil</h2>
                     
-                    <label>Photo de profil (URL ou numéro Pokédex) :</label>
-                    <input type="text" id="edit-avatar" class="auth-input" placeholder="Ex: 25 (pour Pikachu) ou https://...">
+                    <div class="form-group">
+                        <label>Pseudo affiché :</label>
+                        <input type="text" id="edit-pseudo" class="auth-input" placeholder="Votre pseudo" maxlength="20">
+                    </div>
                     
-                    <label>Description :</label>
-                    <textarea id="edit-desc" class="auth-input" placeholder="Décrivez-vous..." rows="3" maxlength="150" style="resize: vertical;"></textarea>
+                    <div class="form-group">
+                        <label>Photo de profil (URL ou numéro Pokédex) :</label>
+                        <input type="text" id="edit-avatar" class="auth-input" placeholder="Ex: 25 (pour Pikachu) ou https://...">
+                    </div>
                     
-                    <h3 style="margin-top: 20px;">Ma Vitrine (Sélectionnez jusqu'à 4 cartes parmi vos cartes uniques)</h3>
-                    <p id="vitrine-count" style="color: #f1c40f; font-weight: bold;">0 / 4</p>
+                    <div class="form-group">
+                        <label>Description :</label>
+                        <textarea id="edit-desc" class="auth-input" placeholder="Décrivez-vous..." rows="3" maxlength="150" style="resize: vertical;"></textarea>
+                    </div>
+                    
+                    <h3 class="panel-heading" style="margin-top: 30px;">Ma Vitrine (Sélectionnez jusqu'à 4 cartes)</h3>
+                    <p style="color: var(--text-muted); margin-top:-10px; margin-bottom:10px;">Cartes sélectionnées : <span id="vitrine-count" class="text-accent font-bold">0 / 4</span></p>
+                    
                     <div id="edit-vitrine-selection" class="trade-selection-box"></div>
                     <div id="edit-vitrine-collection" class="trade-collection-grid" style="max-height: 300px;"></div>
 
-                    <div style="margin-top: 20px; display: flex; gap: 15px; justify-content: center;">
-                        <button id="btn-save-profil" class="btn">Enregistrer</button>
-                        <button id="btn-cancel-profil" class="btn btn-secondary" style="background-color: #e74c3c;">Annuler</button>
+                    <div style="margin-top: 30px; display: flex; gap: 15px; justify-content: center;">
+                        <button id="btn-save-profil" class="btn">Enregistrer les modifications</button>
+                        <button id="btn-cancel-profil" class="btn btn-danger">Annuler</button>
                     </div>
                 </div>
             </section>
 
             <section id="section-settings" class="view-section hidden">
-                <h2>Paramètres</h2>
-                <div id="debug-denied">
-                    <p style="color: #e74c3c; text-align: center; margin-top: 20px;">L'accès aux outils de développement est restreint.</p>
+                <h2 class="section-title">Paramètres Administrateur</h2>
+                <div id="debug-denied" class="glass-panel" style="padding:40px; text-align:center;">
+                    <p class="text-danger" style="font-size:1.2rem; font-weight:bold;">L'accès aux outils de développement est restreint.</p>
                 </div>
-                <div id="debug-tools" class="hidden">
-                    <p>Utilisez ces boutons pour tester l'affichage du Pokédex.</p>
-                    <div style="display: flex; gap: 15px; margin-top: 20px;">
-                        <button id="cheat-unlock-all" class="btn btn-secondary">Tout débloquer</button>
-                        <button id="cheat-refill-boosters" class="btn" style="background-color: #f39c12;">Recharger mes boosters</button>
-                        <button id="cheat-clear-all" class="btn" style="background-color: #e74c3c;">Vider ma collection</button>
+                <div id="debug-tools" class="hidden glass-panel" style="padding:40px; max-width:800px;">
+                    <p style="color:var(--text-muted); margin-bottom:20px;">Utilisez ces boutons pour tester l'affichage du Pokédex.</p>
+                    <div style="display: flex; gap: 15px; justify-content:center; flex-wrap:wrap;">
+                        <button id="cheat-unlock-all" class="btn">Tout débloquer</button>
+                        <button id="cheat-refill-boosters" class="btn" style="background: linear-gradient(135deg, #f39c12, #e67e22);">Recharger mes boosters</button>
+                        <button id="cheat-clear-all" class="btn btn-danger">Vider ma collection</button>
                     </div>
                 </div>
             </section>
         </main>
     </div>
 
-    <button id="lang-toggle" class="lang-btn">🇬🇧 EN</button>
+    <button id="lang-toggle" class="lang-btn glass-panel">🇬🇧 EN</button>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>

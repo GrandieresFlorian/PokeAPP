@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@500;700;900&display=swap');
+
 @import url('components/profile.css');
 @import url('layout.css');
 @import url('components/auth.css');
@@ -10,8 +12,36 @@
 @import url('components/jardin.css');
 
 :root {
-    --bg-dark: #1a1a1a;
-    --bg-panel: #242424;
-    --primary: #3498db;
-    --text-light: white;
+    /* Nouvelle Palette de Couleurs Modernes */
+    --bg-dark: #0f111a;          /* Bleu nuit très profond pour le fond */
+    --bg-panel: rgba(26, 29, 45, 0.7); /* Panneaux translucides (Glassmorphism) */
+    --bg-panel-solid: #1a1d2d;   /* Alternative solide pour certains éléments */
+    
+    --primary: #6c5ce7;          /* Violet/Bleu dynamique */
+    --primary-hover: #5b4bc4;
+    --secondary: #00cec9;        /* Turquoise menthe (Succès/Action) */
+    --secondary-hover: #00b894;
+    --danger: #ff7675;           /* Rouge doux */
+    --danger-hover: #d63031;
+    --accent: #fdcb6e;           /* Jaune/Or éclatant */
+    
+    --text-light: #f1f2f6;
+    --text-muted: #a4b0be;
+    
+    /* Typographie */
+    --font-main: 'Nunito', sans-serif;
+    --font-heading: 'Poppins', sans-serif;
+
+    /* Bordures & Ombres */
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 8px;
+    --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --border-glass: 1px solid rgba(255, 255, 255, 0.05);
 }
+
+/* Classes utilitaires de texte */
+.text-primary { color: var(--primary) !important; }
+.text-accent { color: var(--accent) !important; }
+.text-danger { color: var(--danger) !important; }
+.font-bold { font-weight: bold; }
