@@ -31,6 +31,64 @@ export function initCollection() {
     filterRarity.addEventListener('change', afficherCollection);
     filterOwned.addEventListener('change', afficherCollection);
     document.getElementById('nav-collection').addEventListener('click', afficherCollection);
+
+    // Écoute globale pour les boutons d'amélioration (sans bloquer le reste de l'interface)
+    document.getElementById('collection-container').addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn-upgrade');
+        if (btn) {
+            e.stopPropagation(); // Évite un double-clic parasite
+            upgradeCard(Number(btn.dataset.date));
+        }
+    });
+}
+
+// Fonction d'amélioration de la carte !
+export function upgradeCard(cardDate) {
+    const collection = state.currentUserData.collection;
+    const mainCardIndex = collection.findIndex(c => c.date === cardDate);
+    if (mainCardIndex === -1) return;
+    
+    const mainCard = collection[mainCardIndex];
+    let maxLevel = mainCard.maxLevel || 20;
+    
+    // Détermination du coût en doublons selon le niveau max actuel
+    let cost = 0;
+    if (maxLevel === 20) cost = 1;
+    else if (maxLevel === 40) cost = 2;
+    else if (maxLevel === 60) cost = 3;
+    else if (maxLevel === 80) cost = 4;
+    else return; 
+    
+    // On rassemble tous les doublons exacts (qui ne sont pas la carte principale)
+    const duplicates = collection.filter(c => 
+        c.date !== mainCard.date && 
+        c.pokedexNumber === mainCard.pokedexNumber &&
+        c.shiny === mainCard.shiny &&
+        c.mega === mainCard.mega &&
+        c.megaForm === mainCard.megaForm
+    );
+    
+    if (duplicates.length < cost) {
+        alert("Vous n'avez pas assez de doublons pour cette amélioration !");
+        return;
+    }
+    
+    // On sacrifie le bon nombre de doublons
+    const datesToRemove = duplicates.slice(0, cost).map(c => c.date);
+    state.currentUserData.collection = collection.filter(c => !datesToRemove.includes(c.date));
+    
+    // On met à jour la carte principale (elle prend +20 niveaux max)
+    const updatedMainCard = state.currentUserData.collection.find(c => c.date === cardDate);
+    updatedMainCard.maxLevel = maxLevel + 20;
+    
+    // Sauvegarde en ligne
+    import('../firebase-config.js').then(({db}) => {
+        db.collection('users').doc(state.currentUser).update({ collection: state.currentUserData.collection })
+            .then(() => {
+                afficherCollection(); 
+            })
+            .catch(err => console.error("Erreur d'amélioration:", err));
+    });
 }
 
 export function afficherCollection() {
@@ -59,14 +117,15 @@ export function afficherCollection() {
     const rarityVal = filterRarity.value;
     const ownedOnlyVal = filterOwned.checked;
     
+    // Stocker les tableaux d'objets complets au lieu d'un simple compteur
     maCollection.forEach(carte => {
-        if (!cartesPossedeesMap[carte.pokedexNumber]) cartesPossedeesMap[carte.pokedexNumber] = { normal: 0, shiny: 0, megas: {} };
+        if (!cartesPossedeesMap[carte.pokedexNumber]) cartesPossedeesMap[carte.pokedexNumber] = { normal: [], shiny: [], megas: {} };
         if (carte.mega) {
             const form = carte.megaForm || "mega";
-            if (!cartesPossedeesMap[carte.pokedexNumber].megas[form]) cartesPossedeesMap[carte.pokedexNumber].megas[form] = { normal: 0, shiny: 0 };
-            carte.shiny ? cartesPossedeesMap[carte.pokedexNumber].megas[form].shiny++ : cartesPossedeesMap[carte.pokedexNumber].megas[form].normal++;
+            if (!cartesPossedeesMap[carte.pokedexNumber].megas[form]) cartesPossedeesMap[carte.pokedexNumber].megas[form] = { normal: [], shiny: [] };
+            carte.shiny ? cartesPossedeesMap[carte.pokedexNumber].megas[form].shiny.push(carte) : cartesPossedeesMap[carte.pokedexNumber].megas[form].normal.push(carte);
         } else {
-            carte.shiny ? cartesPossedeesMap[carte.pokedexNumber].shiny++ : cartesPossedeesMap[carte.pokedexNumber].normal++;
+            carte.shiny ? cartesPossedeesMap[carte.pokedexNumber].shiny.push(carte) : cartesPossedeesMap[carte.pokedexNumber].normal.push(carte);
         }
     });
 
@@ -79,23 +138,17 @@ export function afficherCollection() {
         if (!dataOrigine) return;
 
         let pokemonRarity = (state.collectionMode === 'mega' || state.collectionMode === 'mega-shiny') ? "MG" : dataOrigine.rarity;
-        let possedeLaCarte = false; let quantite = 0; let afficheHolo = false;
         
-        if (state.collectionMode === 'normal') { 
-            quantite = (cartesPossedeesMap[i] && cartesPossedeesMap[i].normal) ? cartesPossedeesMap[i].normal : 0;
-            possedeLaCarte = quantite > 0;
-        } else if (state.collectionMode === 'shiny') { 
-            quantite = (cartesPossedeesMap[i] && cartesPossedeesMap[i].shiny) ? cartesPossedeesMap[i].shiny : 0;
-            possedeLaCarte = quantite > 0; 
-            afficheHolo = true; 
-        } else if (state.collectionMode === 'mega') {
-            quantite = (cartesPossedeesMap[i] && cartesPossedeesMap[i].megas && cartesPossedeesMap[i].megas[form] && cartesPossedeesMap[i].megas[form].normal) ? cartesPossedeesMap[i].megas[form].normal : 0;
-            possedeLaCarte = quantite > 0;
-        } else if (state.collectionMode === 'mega-shiny') {
-            quantite = (cartesPossedeesMap[i] && cartesPossedeesMap[i].megas && cartesPossedeesMap[i].megas[form] && cartesPossedeesMap[i].megas[form].shiny) ? cartesPossedeesMap[i].megas[form].shiny : 0;
-            possedeLaCarte = quantite > 0; 
-            afficheHolo = true;
-        }
+        // On récupère le bon tableau de cartes selon le filtre
+        let list = [];
+        if (state.collectionMode === 'normal') list = cartesPossedeesMap[i]?.normal || [];
+        else if (state.collectionMode === 'shiny') list = cartesPossedeesMap[i]?.shiny || [];
+        else if (state.collectionMode === 'mega') list = cartesPossedeesMap[i]?.megas?.[form]?.normal || [];
+        else if (state.collectionMode === 'mega-shiny') list = cartesPossedeesMap[i]?.megas?.[form]?.shiny || [];
+
+        let quantite = list.length;
+        let possedeLaCarte = quantite > 0;
+        let afficheHolo = state.collectionMode === 'shiny' || state.collectionMode === 'mega-shiny';
 
         if (rarityVal !== 'all' && pokemonRarity !== rarityVal) return; 
         if (ownedOnlyVal && !possedeLaCarte) return; 
@@ -123,6 +176,20 @@ export function afficherCollection() {
         const cachedTypes = pokemonTypeCache[i] ? generateTypeBadgesHTML(pokemonTypeCache[i]) : 'Pokémon';
 
         if (possedeLaCarte) {
+            // Récupération de la carte principale et de ses stats de niveau
+            const mainCard = list.reduce((prev, curr) => (curr.maxLevel || 20) > (prev.maxLevel || 20) ? curr : prev);
+            let currentLevel = mainCard.level || 1;
+            let maxLevel = mainCard.maxLevel || 20;
+            let doublons = quantite - 1;
+            
+            let cost = 0;
+            if (maxLevel === 20) cost = 1;
+            else if (maxLevel === 40) cost = 2;
+            else if (maxLevel === 60) cost = 3;
+            else if (maxLevel === 80) cost = 4;
+
+            let canUpgrade = maxLevel < 100 && doublons >= cost;
+
             const bgColor = CONSTS.couleursRarete[pokemonRarity];
             let classFond = "card-front"; let styleFond = "";
             if (form && afficheHolo) classFond += " mega-shiny-bg";
@@ -132,10 +199,25 @@ export function afficherCollection() {
 
             let badgeQuantite = quantite > 1 ? `<div class="badge-quantite">X${quantite}</div>` : ""; 
 
+            // Menu Superposé qui apparaît au survol
+            let overlayHtml = `
+                <div class="card-upgrade-overlay">
+                    <div class="upgrade-level">Niv. ${currentLevel} / <span class="text-accent">${maxLevel}</span></div>
+                    ${maxLevel < 100 ? 
+                        (canUpgrade ? 
+                            `<button class="btn-upgrade" data-date="${mainCard.date}">Améliorer le Rang<br><span style="font-size:0.8rem; font-weight:normal;">(-${cost} doublon${cost>1?'s':''})</span></button>` : 
+                            `<div class="upgrade-hint">Manque ${cost - doublons} doublon(s)<br>pour le rang${maxLevel + 20}</div>`
+                        ) : 
+                        `<div class="upgrade-max">✨ RANG MAX ✨</div>`
+                    }
+                </div>
+            `;
+
             htmlContent += `
                 <div class="card flipped" style="cursor: default;">
                     <div class="card-inner">
                         <div class="${classFond}" ${styleFond}>
+                            ${overlayHtml}
                             ${badgeQuantite}
                             <div class="card-header"><h1 class="pokemon-name" data-en="${form ? formatMegaName(nomEn, form) : nomEn}" data-fr="${form ? formatMegaName(nomFr, form) : nomFr}" data-count="${quantite}">${nomAffiche}</h1><div class="icon">${pokemonRarity}</div></div>
                             <div class="image-wrapper"><img class="pokemon-image" src="${finalImageUrl}" alt="Image" loading="lazy"><span class="image-id">#${numeroFormate}</span></div>
