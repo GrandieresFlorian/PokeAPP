@@ -20,9 +20,14 @@ export async function openCardDetails(carte) {
         nameFr = formatMegaName(nameFr, carte.megaForm);
     }
 
-    document.getElementById('details-name').textContent = state.currentLang === 'en' ? nameEn : nameFr;
+    const isEn = state.currentLang === 'en';
+
+    document.getElementById('details-name').textContent = isEn ? nameEn : nameFr;
     let rarityStr = carte.mega ? "MG" : (d.rarity || "C");
-    document.getElementById('details-level-rarity').textContent = `Niv. ${carte.level || 1} - Rareté : ${rarityStr}`;
+    
+    const lvlText = isEn ? "Lvl" : "Niv.";
+    const rarityText = isEn ? "Rarity" : "Rareté";
+    document.getElementById('details-level-rarity').textContent = `${lvlText} ${carte.level || 1} - ${rarityText} : ${rarityStr}`;
 
     const imgDiv = document.getElementById('details-card-image');
     if (imgDiv) {
@@ -34,21 +39,40 @@ export async function openCardDetails(carte) {
     const details = await getPokemonDetails(carte); 
     document.getElementById('details-types').innerHTML = details.types.map(t => `<span class="type-badge type-${t}">${t.toUpperCase()}</span>`).join('');
 
-    // Lecture de la description (Gère les deux formats : string simple ou objet .fr/.en)
-    let descText = "Aucune description disponible.";
-    if (d.description) {
-        if (typeof d.description === 'object') {
-            descText = state.currentLang === 'en' ? d.description.en : d.description.fr;
+    // Lecture robuste de la description
+    let descText = isEn ? "No description available." : "Aucune description disponible.";
+    const rawData = state.pokemonDataList[carte.pokedexNumber - 1];
+    const descriptionObj = (carte.data && carte.data.description) ? carte.data.description : (rawData ? rawData.description : null);
+
+    if (descriptionObj) {
+        if (typeof descriptionObj === 'object') {
+            descText = isEn ? (descriptionObj.en || descriptionObj.fr) : (descriptionObj.fr || descriptionObj.en);
         } else {
-            descText = d.description;
+            descText = descriptionObj;
         }
     }
     document.getElementById('details-description').textContent = descText;
     
+    // Titres traduits dans la modale
+    const descHeading = modal.querySelector('h3:nth-of-type(1)');
+    if (descHeading) descHeading.textContent = isEn ? "Description" : "Description";
+
+    const talentHeading = modal.querySelector('h3:nth-of-type(2)');
+    if (talentHeading) {
+        talentHeading.innerHTML = `${isEn ? "Ability (Special Trait)" : "Talent (Capacité Spéciale)"} <button id="btn-use-figy" class="btn btn-secondary" style="padding: 3px 10px; font-size: 0.75rem; margin:0;">🍒 ${isEn ? "Figy Berry" : "Baie Figy"}</button>`;
+    }
+
+    const statsHeading = modal.querySelector('h3:nth-of-type(3)');
+    if (statsHeading) statsHeading.innerHTML = `${isEn ? "Statistics" : "Statistiques"} (${lvlText} <span id="details-stat-lvl">${carte.level || 1}</span>)`;
+
+    const evHeading = modal.querySelector('h3:nth-of-type(4)');
+    let totalEvs = Object.values(carte.evs || {}).reduce((a, b) => a + b, 0);
+    if (evHeading) evHeading.innerHTML = `${isEn ? "Effort (EVs - Total" : "Effort (EVs - Total"} : <span id="details-ev-total" class="text-accent">${totalEvs}</span> / 510)`;
+
     // Affichage du Talent actuel
     let currentTalentFr = carte.talent ? carte.talent.fr : "Aucun";
     let currentTalentEn = carte.talent ? carte.talent.en : "None";
-    document.getElementById('details-talent').textContent = state.currentLang === 'en' ? currentTalentEn : currentTalentFr;
+    document.getElementById('details-talent').textContent = isEn ? currentTalentEn : currentTalentFr;
 
     // --- GESTION DE LA BAIE FIGY ---
     const btnFigy = document.getElementById('btn-use-figy');
@@ -61,20 +85,20 @@ export async function openCardDetails(carte) {
             const berryIndex = state.currentUserData.berries.findIndex(b => b.id === 'figy-berry');
             
             if (berryIndex === -1) {
-                alert(state.currentLang === 'en' ? "You don't have a Figy Berry in your inventory!" : "Vous n'avez pas de Baie Figy dans votre inventaire !");
+                alert(isEn ? "You don't have a Figy Berry in your inventory!" : "Vous n'avez pas de Baie Figy dans votre inventaire !");
                 return;
             }
 
             newBtnFigy.disabled = true;
-            newBtnFigy.textContent = "Éveil...";
+            newBtnFigy.textContent = isEn ? "Awakening..." : "Éveil...";
 
             let possibleAbilities = d.abilities || [{en: "Overgrow", fr: "Engrais"}, {en: "Chlorophyll", fr: "Chlorophylle"}]; 
             const filteredAbilities = possibleAbilities.filter(ab => !carte.talent || ab.en !== carte.talent.en);
 
             if (filteredAbilities.length === 0) {
-                alert(state.currentLang === 'en' ? "This Pokémon has no other possible abilities!" : "Ce Pokémon n'a pas d'autres talents possibles !");
+                alert(isEn ? "This Pokémon has no other possible abilities!" : "Ce Pokémon n'a pas d'autres talents possibles !");
                 newBtnFigy.disabled = false;
-                newBtnFigy.textContent = "🍒 Baie Figy";
+                newBtnFigy.textContent = `🍒 ${isEn ? "Figy Berry" : "Baie Figy"}`;
                 return;
             }
 
@@ -90,21 +114,20 @@ export async function openCardDetails(carte) {
                     berries: state.currentUserData.berries
                 });
                 
-                document.getElementById('details-talent').textContent = state.currentLang === 'en' ? randomTalent.en : randomTalent.fr;
-                alert(state.currentLang === 'en' ? `Success! New ability: ${randomTalent.en}` : `Succès ! Le Pokémon a éveillé le talent : ${randomTalent.fr} !`);
+                document.getElementById('details-talent').textContent = isEn ? randomTalent.en : randomTalent.fr;
+                alert(isEn ? `Success! New ability: ${randomTalent.en}` : `Succès ! Le Pokémon a éveillé le talent : ${randomTalent.fr} !`);
             } catch(e) {
                 console.error(e);
-                alert("Erreur de sauvegarde.");
+                alert(isEn ? "Save error." : "Erreur de sauvegarde.");
             }
 
             newBtnFigy.disabled = false;
-            newBtnFigy.textContent = "🍒 Baie Figy";
+            newBtnFigy.textContent = `🍒 ${isEn ? "Figy Berry" : "Baie Figy"}`;
         };
     }
 
     // Calcul des Stats au niveau actuel
     let lvl = carte.level || 1;
-    document.getElementById('details-stat-lvl').textContent = lvl;
     let maxHp = Math.floor(((2 * details.baseStats.hp) * lvl) / 100) + lvl + 10;
     let atk = Math.floor(((2 * details.baseStats.baseStats?.atk || details.baseStats.atk) * lvl) / 100) + 5;
     let def = Math.floor(((2 * details.baseStats.def) * lvl) / 100) + 5;
@@ -113,26 +136,24 @@ export async function openCardDetails(carte) {
     let speed = Math.floor(((2 * details.baseStats.speed) * lvl) / 100) + 5;
 
     document.getElementById('details-stats-grid').innerHTML = `
-        <div>❤️ PV : <b style="color:#2ecc71">${maxHp}</b></div>
-        <div>💨 Vitesse : <b style="color:#f39c12">${speed}</b></div>
-        <div>⚔️ Attaque : <b>${atk}</b></div>
-        <div>🛡️ Défense : <b>${def}</b></div>
-        <div>🔥 Atk Spé : <b>${spatk}</b></div>
-        <div>✨ Déf Spé : <b>${spdef}</b></div>
+        <div>❤️ HP/PV : <b style="color:#2ecc71">${maxHp}</b></div>
+        <div>💨 ${isEn ? "Speed" : "Vitesse"} : <b style="color:#f39c12">${speed}</b></div>
+        <div>⚔️ ${isEn ? "Attack" : "Attaque"} : <b>${atk}</b></div>
+        <div>🛡️ ${isEn ? "Defense" : "Défense"} : <b>${def}</b></div>
+        <div>🔥 ${isEn ? "Sp. Atk" : "Atk Spé"} : <b>${spatk}</b></div>
+        <div>✨ ${isEn ? "Sp. Def" : "Déf Spé"} : <b>${spdef}</b></div>
     `;
 
     // Affichage des EVs du Pokémon
     if (!carte.evs) carte.evs = { hp: 0, atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0 };
-    let totalEvs = Object.values(carte.evs).reduce((a, b) => a + b, 0);
-    document.getElementById('details-ev-total').textContent = totalEvs;
 
     document.getElementById('details-evs-grid').innerHTML = `
-        <div>PV : <b>${carte.evs.hp}/252</b></div>
+        <div>HP/PV : <b>${carte.evs.hp}/252</b></div>
         <div>Atk : <b>${carte.evs.atk}/252</b></div>
-        <div>Déf : <b>${carte.evs.def}/252</b></div>
-        <div>Atk Spé : <b>${carte.evs.spatk}/252</b></div>
-        <div>Déf Spé : <b>${carte.evs.spdef}/252</b></div>
-        <div>Vit : <b>${carte.evs.speed}/252</b></div>
+        <div>${isEn ? "Def" : "Déf"} : <b>${carte.evs.def}/252</b></div>
+        <div>${isEn ? "Sp. Atk" : "Atk Spé"} : <b>${carte.evs.spatk}/252</b></div>
+        <div>${isEn ? "Sp. Def" : "Déf Spé"} : <b>${carte.evs.spdef}/252</b></div>
+        <div>${isEn ? "Spe" : "Vit"} : <b>${carte.evs.speed}/252</b></div>
     `;
 }
 
