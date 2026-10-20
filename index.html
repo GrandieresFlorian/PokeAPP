@@ -124,10 +124,12 @@
             </section>
 
             <!-- SECTION COMBATS -->
+            <!-- SECTION COMBATS (PVP 4V4) -->
             <section id="section-combats" class="view-section hidden">
-                <h2 class="section-title translatable" data-fr="Arène de Combat" data-en="Battle Arena">Arène de Combat</h2>
-                <p class="section-subtitle translatable" data-fr="Défiez vos amis pour gagner des <b>Boosters Spéciaux (Shiny x3 ✨)</b> !<br>Chaque combat se joue automatiquement en 3 manches. Limite de 3 défis envoyés par jour." data-en="Challenge your friends to earn <b>Special Packs (Shiny x3 ✨)</b> !<br>Each battle runs automatically in 3 rounds. Limit of 3 challenges per day.">Défiez vos amis pour gagner des <b>Boosters Spéciaux (Shiny x3 ✨)</b> !<br>Chaque combat se joue automatiquement en 3 manches. Limite de 3 défis envoyés par jour.</p>
-                <div class="combat-layout">
+                <h2 class="section-title translatable" data-fr="Arène Multijoueur" data-en="Multiplayer Arena">Arène Multijoueur</h2>
+                
+                <!-- Menus des Défis (caché pendant le combat) -->
+                <div id="pvp-menus" class="combat-layout">
                     <div class="combat-panel glass-panel">
                         <h3 class="panel-heading text-danger translatable" data-fr="Défis reçus" data-en="Received Challenges">Défis reçus</h3>
                         <ul id="combat-requests-list" class="friend-ul"></ul>
@@ -137,7 +139,66 @@
                         <ul id="combat-history-list" class="friend-ul"></ul>
                     </div>
                 </div>
+
+                <!-- Arène de Combat 4v4 -->
+                <div id="pvp-battle-arena" class="campagne-view glass-panel hidden" style="width: 100%; max-width: 900px; padding:0; overflow:hidden;">
+                    <div class="battle-scene">
+                        <div class="battle-entity enemy">
+                            <div id="pvp-enemy-team-ui" class="team-balls"></div>
+                            <div class="hp-bar-container">
+                                <div class="entity-info"><span id="pvp-enemy-name">???</span> <span id="pvp-enemy-lvl">Niv. ?</span></div>
+                                <div class="hp-bar-bg"><div id="pvp-enemy-hp-fill" class="hp-bar-fill"></div></div>
+                                <div class="hp-text"><span id="pvp-enemy-hp-text">? / ?</span></div>
+                                <div id="pvp-enemy-modifiers" class="stat-modifiers-container"></div>
+                            </div>
+                            <img id="pvp-enemy-sprite" src="" class="battle-sprite">
+                        </div>
+                        
+                        <div class="battle-entity player">
+                            <img id="pvp-player-sprite" src="" class="battle-sprite player-sprite">
+                            <div class="hp-bar-container">
+                                <div id="pvp-player-team-ui" class="team-balls"></div>
+                                <div class="entity-info"><span id="pvp-player-name">???</span> <span id="pvp-player-lvl">Niv. ?</span></div>
+                                <div class="hp-bar-bg"><div id="pvp-player-hp-fill" class="hp-bar-fill"></div></div>
+                                <div class="hp-text"><span id="pvp-player-hp-text">? / ?</span></div>
+                                <div id="pvp-player-modifiers" class="stat-modifiers-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="battle-ui">
+                        <div id="pvp-battle-log" class="battle-log">Combat 4v4 !</div>
+                        <div class="battle-actions-wrapper">
+                            <div id="pvp-moves-container" class="battle-moves-grid"></div>
+                            <button id="btn-pvp-switch" class="btn btn-secondary" style="width:100%;">🔄 Changer de Pokémon</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sélection d'Équipe (Amical & Switch) -->
+                <div id="pvp-team-selection" class="glass-panel hidden" style="margin-top:20px; text-align:center;">
+                    <h3 id="pvp-selection-title" class="panel-heading text-accent">Choisissez votre Pokémon</h3>
+                    <p id="pvp-selection-counter" class="hidden">Sélectionnés : <span id="pvp-team-count" class="highlight">0</span> / 4</p>
+                    <div id="pvp-selection-grid" class="trade-collection-grid" style="max-height: 400px; justify-content:center; margin-top:20px;"></div>
+                    <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
+                        <button id="btn-confirm-pvp-team" class="btn hidden">Valider</button>
+                        <button id="btn-cancel-pvp-team" class="btn btn-danger">Annuler</button>
+                    </div>
+                </div>
             </section>
+
+            <!-- MODAL DE CHOIX DE DEFI -->
+            <div id="pvp-challenge-modal" class="modal-overlay hidden">
+                <div class="modal-content glass-panel" style="max-width: 400px;">
+                    <h3 class="text-accent" style="margin-top:0;">Défier un ami</h3>
+                    <p style="margin-bottom:20px;">Quel type de combat souhaitez-vous lancer ?</p>
+                    <div style="display:flex; flex-direction:column; gap:15px;">
+                        <button id="btn-pvp-ranked" class="btn" style="background:linear-gradient(135deg, #f39c12, #e67e22);">🏆 Combat Classé (Équipes 4v4 Aléatoires)<br><span style="font-size:0.8rem; font-weight:normal;">Récompense: Booster Rare x3 Shiny</span></button>
+                        <button id="btn-pvp-friendly" class="btn btn-secondary">🤝 Combat Amical (Choix Manuel)<br><span style="font-size:0.8rem; font-weight:normal;">Aucune récompense (Juste pour le fun)</span></button>
+                        <button id="btn-cancel-challenge" class="btn btn-danger" style="margin-top:10px;">Annuler</button>
+                    </div>
+                </div>
+            </div>
 
             <!-- SECTION TRADE -->
             <section id="section-trade" class="view-section hidden">

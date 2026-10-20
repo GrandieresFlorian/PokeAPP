@@ -42,3 +42,10 @@
 .text-accent { color: var(--accent) !important; }
 .text-danger { color: var(--danger) !important; }
 .font-bold { font-weight: bold; }
+
+/* Pokéballs du système PVP 4v4 */
+.team-balls { display: flex; gap: 5px; margin-bottom: 5px; justify-content: flex-end; }
+.player .team-balls { justify-content: flex-start; }
+.ball { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #fff; background: #2ecc71; box-shadow: inset -2px -2px 4px rgba(0,0,0,0.4); transition: all 0.3s;}
+.ball.fainted { background: #555; border-color: #333; opacity: 0.6; }
+.ball.active { background: #f1c40f; border-color: #e67e22; box-shadow: 0 0 8px #f1c40f; transform: scale(1.2); }
