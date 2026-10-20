@@ -383,6 +383,41 @@
         </main>
     </div>
 
+    <!-- MODAL DÉTAILS DU POKÉMON -->
+    <div id="card-details-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel" style="max-width: 700px; width: 90%; display: flex; flex-wrap: wrap; gap: 20px; text-align: left; position: relative;">
+            <button id="close-card-details" class="btn btn-danger" style="position: absolute; top: 10px; right: 10px; padding: 5px 15px;">X</button>
+
+            <!-- Colonne Gauche : Image et Infos de base -->
+            <div style="flex: 1; min-width: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid rgba(255,255,255,0.1); padding-right: 20px;">
+                <div id="details-card-image" class="mini-card" style="width: 180px; height: 250px; transform: scale(1); margin-bottom: 15px; cursor: default;"></div>
+                <h2 id="details-name" style="margin: 0; color: var(--accent); text-align: center;">Nom</h2>
+                <p id="details-level-rarity" style="margin: 5px 0; color: var(--text-muted); font-weight: bold;">Niv. X - Rareté</p>
+                <div id="details-types" style="display: flex; gap: 10px; margin-top: 10px;"></div>
+            </div>
+
+            <!-- Colonne Droite : Stats, Talent, Description -->
+            <div style="flex: 2; min-width: 250px; display: flex; flex-direction: column; gap: 15px;">
+                <div>
+                    <h3 style="border-bottom: 1px solid #555; padding-bottom: 5px; margin-top:0; color:#fff;">Description</h3>
+                    <p id="details-description" style="font-size: 0.95rem; font-style: italic; color:#ddd; min-height: 60px;">Recherche de la description dans le Pokédex...</p>
+                </div>
+
+                <div>
+                    <h3 style="border-bottom: 1px solid #555; padding-bottom: 5px; color:#fff;">Talent (Capacité Spéciale)</h3>
+                    <p id="details-talent" style="font-size: 0.95rem; color:#f1c40f; font-weight: bold;">Recherche...</p>
+                </div>
+
+                <div>
+                    <h3 style="border-bottom: 1px solid #555; padding-bottom: 5px; color:#fff;">Statistiques (Niv. <span id="details-stat-lvl"></span>)</h3>
+                    <div id="details-stats-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 0.9rem; color:#eee;">
+                        <!-- Les stats s'injecteront ici -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL APPRENTISSAGE CAPACITÉ (CACHÉ) -->
     <div id="move-learn-modal" class="modal-overlay hidden">
         <div class="modal-content glass-panel">

@@ -9,6 +9,10 @@ import {
     STATUS_CONDITIONS, SECONDARY_STATUS
 } from '../data/campagneData.js';
 
+// Sécurités au cas où les listes n'ont pas été ajoutées dans campagneData
+const PROTECT_MOVES_LIST = ["protect", "detect"];
+const SEED_MOVES_LIST = ["leech-seed"];
+
 let activeFighter = null;
 let currentEnemy = null;
 let isAnimating = false;
@@ -34,7 +38,6 @@ export function getEffectiveStat(entity, statName) {
     let multiplier = Math.max(2, 2 + stage) / Math.max(2, 2 - stage);
     let finalStat = Math.floor(base * multiplier);
     
-    // Impact de la Paralysie sur la Vitesse
     if (statName === 'speed' && entity.status === 'PAR') finalStat = Math.floor(finalStat / 2);
     return finalStat;
 }
@@ -43,6 +46,14 @@ export async function startBattle(zone, fighter, onEnd) {
     activeFighter = fighter;
     onBattleEndCallback = onEnd;
     isAnimating = false;
+
+    // CORRECTION : On retire "translatable" pour éviter que le log ne s'efface à la fin !
+    const logEl = document.getElementById('battle-log');
+    if (logEl) {
+        logEl.classList.remove('translatable');
+        logEl.removeAttribute('data-fr');
+        logEl.removeAttribute('data-en');
+    }
 
     document.getElementById('enemy-name').textContent = "Recherche...";
     document.getElementById('enemy-sprite').src = "";
@@ -84,6 +95,7 @@ export async function startBattle(zone, fighter, onEnd) {
         battleStats: calcStats(wDetails.baseStats, wLevel),
         modifiers: { atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0 },
         status: null, statusTurns: 0, confusion: 0, toxCount: 0,
+        turnsActive: 0, isProtected: false, protectCount: 0, isSeeded: false, flinched: false,
         sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${wId}.png`
     };
     currentEnemy.battleStats.types = wDetails.types;
@@ -94,12 +106,20 @@ export async function startBattle(zone, fighter, onEnd) {
     activeFighter.battleStats.types = pDetails.types;
     activeFighter.modifiers = { atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0 };
     activeFighter.status = null; activeFighter.statusTurns = 0; activeFighter.confusion = 0; activeFighter.toxCount = 0;
+    activeFighter.turnsActive = 0; activeFighter.isProtected = false; activeFighter.protectCount = 0; activeFighter.isSeeded = false; activeFighter.flinched = false;
+
+    // Réinitialisation de Morphing
+    activeFighter.transformedImage = null;
 
     currentEnemy.moves = await getMovesForLevel(wId, wLevel);
+    currentEnemy.battleMoves = JSON.parse(JSON.stringify(currentEnemy.moves));
+
     if (!activeFighter.moves || activeFighter.moves.length === 0) {
         activeFighter.moves = await getMovesForLevel(activeFighter.pokedexNumber, activeFighter.level || 1);
         db.collection('users').doc(state.currentUser).update({ collection: state.currentUserData.collection });
     }
+    // On copie les attaques pour le combat (pour ne pas sauvegarder le Morphing)
+    activeFighter.battleMoves = JSON.parse(JSON.stringify(activeFighter.moves));
     
     updateBattleUI();
     renderMovesUI();
@@ -122,12 +142,14 @@ function renderMovesUI() {
     const container = document.getElementById('moves-container');
     container.innerHTML = "";
     
-    activeFighter.moves.forEach(move => {
+    let movesList = activeFighter.battleMoves || activeFighter.moves;
+
+    movesList.forEach(move => {
         const btn = document.createElement('button');
         btn.className = `move-btn type-${move.type}`;
         const moveName = state.currentLang === 'en' ? move.nameEn : move.nameFr;
         
-        let displayPower = (move.damageClass === "status" || USELESS_MOVES.includes(move.nameEn) || FORCE_FLEE_MOVES.includes(move.nameEn) || STAT_CLEAR_MOVES.includes(move.nameEn) || OHKO_MOVES.includes(move.nameEn)) ? "-" : move.power;
+        let displayPower = (move.damageClass === "status" || move.nameEn === "transform" || USELESS_MOVES.includes(move.nameEn) || FORCE_FLEE_MOVES.includes(move.nameEn) || STAT_CLEAR_MOVES.includes(move.nameEn) || OHKO_MOVES.includes(move.nameEn) || PROTECT_MOVES_LIST.includes(move.nameEn) || SEED_MOVES_LIST.includes(move.nameEn)) ? "-" : move.power;
         if(FIXED_DAMAGE_MOVES[move.nameEn]) displayPower = "FIX";
 
         btn.innerHTML = `<span class="move-name" data-en="${move.nameEn}" data-fr="${move.nameFr}">${moveName}</span><span style="font-size:0.7rem; opacity:0.8; font-weight:normal;">POW ${displayPower}</span>`;
@@ -167,6 +189,13 @@ function renderModifiersUI(entity, containerId) {
         container.appendChild(confBadge);
     }
 
+    if (entity.isSeeded) {
+        let seedBadge = document.createElement('span');
+        seedBadge.style.cssText = `background:#2ecc71; color:#fff; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-left:4px;`;
+        seedBadge.textContent = "GRAINE";
+        container.appendChild(seedBadge);
+    }
+
     const langDict = state.currentLang === 'en' ? STAT_NAMES.en : STAT_NAMES.fr;
     for (let stat in entity.modifiers) {
         let stage = entity.modifiers[stat];
@@ -188,7 +217,7 @@ function updateBattleUI() {
     document.getElementById('enemy-lvl').textContent = `Niv. ${currentEnemy.level}`;
     document.getElementById('enemy-hp-text').textContent = `${Math.max(0, currentEnemy.battleStats.hp)} / ${currentEnemy.battleStats.maxHp}`;
     document.getElementById('enemy-hp-fill').style.width = `${(Math.max(0, currentEnemy.battleStats.hp) / currentEnemy.battleStats.maxHp) * 100}%`;
-    document.getElementById('enemy-sprite').src = currentEnemy.sprite;
+    document.getElementById('enemy-sprite').src = currentEnemy.transformedImage || currentEnemy.sprite;
     updateBarColor('enemy-hp-fill', currentEnemy.battleStats.hp, currentEnemy.battleStats.maxHp);
     renderModifiersUI(currentEnemy, 'enemy-modifiers');
 
@@ -206,7 +235,7 @@ function updateBattleUI() {
     document.getElementById('player-lvl').textContent = `Niv. ${activeFighter.level || 1}`;
     document.getElementById('player-hp-text').textContent = `${Math.max(0, activeFighter.battleStats.hp)} / ${activeFighter.battleStats.maxHp}`;
     document.getElementById('player-hp-fill').style.width = `${(Math.max(0, activeFighter.battleStats.hp) / activeFighter.battleStats.maxHp) * 100}%`;
-    document.getElementById('player-sprite').src = getCardImageUrl(activeFighter);
+    document.getElementById('player-sprite').src = activeFighter.transformedImage || getCardImageUrl(activeFighter);
     updateBarColor('player-hp-fill', activeFighter.battleStats.hp, activeFighter.battleStats.maxHp);
     renderModifiersUI(activeFighter, 'player-modifiers');
     
@@ -235,7 +264,6 @@ function playAnimation(id, animClass) {
     setTimeout(() => el.classList.remove(animClass), 500);
 }
 
-// Fonction pour appliquer un statut (Principal ou Secondaire)
 function applyStatus(target, statusObj, targetName) {
     if (statusObj.status === 'CNF') {
         if (target.confusion === 0) {
@@ -261,7 +289,6 @@ function applyStatus(target, statusObj, targetName) {
     }
 }
 
-// Vérifications avant l'attaque (Sommeil, Paralysie, Confusion, Gel)
 async function preMoveCheck(entity, isPlayer) {
     let name = isPlayer ? (state.currentLang === 'en' ? entity.data.en : entity.data.fr) : (state.currentLang === 'en' ? entity.nameEn : entity.nameFr);
     
@@ -317,11 +344,19 @@ async function preMoveCheck(entity, isPlayer) {
     return true;
 }
 
-// Dégâts de fin de tour (Brûlure, Poison)
-async function applyEndTurnStatus(entity, isPlayer) {
+async function applyEndTurnStatus(entity, opponent, isPlayer) {
     if (entity.battleStats.hp <= 0) return;
     let name = isPlayer ? (state.currentLang === 'en' ? entity.data.en : entity.data.fr) : (state.currentLang === 'en' ? entity.nameEn : entity.nameFr);
     
+    if (entity.isSeeded && entity.battleStats.hp > 0) {
+        let drain = Math.max(1, Math.floor(entity.battleStats.maxHp / 8));
+        entity.battleStats.hp -= drain;
+        opponent.battleStats.hp = Math.min(opponent.battleStats.maxHp, opponent.battleStats.hp + drain);
+        logMessage(`<span style="color:#2ecc71">Vampigraine draine l'énergie de ${name} !</span>`);
+        updateBattleUI();
+        await new Promise(r => setTimeout(r, 600));
+    }
+
     if (entity.status === 'BRN') {
         let dmg = Math.max(1, Math.floor(entity.battleStats.maxHp / 16));
         entity.battleStats.hp -= dmg;
@@ -342,6 +377,8 @@ async function applyEndTurnStatus(entity, isPlayer) {
         updateBattleUI();
         await new Promise(r => setTimeout(r, 600));
     }
+
+    entity.turnsActive = (entity.turnsActive || 0) + 1;
 }
 
 async function executeMove(attacker, defender, move, isPlayer) {
@@ -350,6 +387,12 @@ async function executeMove(attacker, defender, move, isPlayer) {
     let canAttack = await preMoveCheck(attacker, isPlayer);
     if(!canAttack) return { flinched: false };
 
+    if (attacker.flinched) {
+        logMessage(`<span style="color:#f39c12">${state.currentLang === 'en' ? 'It flinched and couldn\'t move!' : 'La peur l\'empêche d\'attaquer !'}</span>`);
+        await new Promise(r => setTimeout(r, 800));
+        return { flinched: false };
+    }
+
     let aName = isPlayer ? (state.currentLang === 'en' ? attacker.data.en : attacker.data.fr) : (state.currentLang === 'en' ? attacker.nameEn : attacker.nameFr);
     if (isPlayer && attacker.mega) aName = formatMegaName(aName, attacker.megaForm);
     let defName = isPlayer ? (state.currentLang === 'en' ? defender.nameEn : defender.nameFr) : (state.currentLang === 'en' ? defender.data.en : defender.data.fr);
@@ -357,6 +400,80 @@ async function executeMove(attacker, defender, move, isPlayer) {
     let colorClass = isPlayer ? "var(--accent)" : "var(--danger)";
     
     logMessage(`<b>${aName}</b> ${state.currentLang === 'en'?'uses':'utilise'} <b style="color:${colorClass};">${mName}</b> !`);
+
+    // MÉCANIQUE : MORPHING (Transform)
+    if (move.nameEn === "transform") {
+        playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
+        await new Promise(r => setTimeout(r, 600));
+
+        attacker.battleStats.types = [...defender.battleStats.types];
+        attacker.battleStats.atk = defender.battleStats.atk;
+        attacker.battleStats.def = defender.battleStats.def;
+        attacker.battleStats.spatk = defender.battleStats.spatk;
+        attacker.battleStats.spdef = defender.battleStats.spdef;
+        attacker.battleStats.speed = defender.battleStats.speed;
+        
+        attacker.modifiers = JSON.parse(JSON.stringify(defender.modifiers || {}));
+        attacker.battleMoves = JSON.parse(JSON.stringify(defender.battleMoves || defender.moves));
+        
+        if (isPlayer) {
+            attacker.transformedImage = defender.transformedImage || defender.sprite;
+        } else {
+            attacker.transformedImage = defender.transformedImage || getCardImageUrl(defender);
+        }
+
+        logMessage(`<span style="color:#9b59b6">${aName} se transforme en ${defName} !</span>`);
+        updateBattleUI();
+        if (isPlayer) renderMovesUI(); 
+        
+        await new Promise(r => setTimeout(r, 800));
+        return { flinched: false, forceFlee: false };
+    }
+
+    // MÉCANIQUE : BLUFF (Fake Out)
+    if (move.nameEn === "fake-out") {
+        if ((attacker.turnsActive || 0) > 0) {
+            logMessage(`Mais cela échoue !`);
+            return { flinched: false };
+        }
+    }
+
+    // MÉCANIQUE : ABRI / DÉTECTION (Protect)
+    if (PROTECT_MOVES_LIST.includes(move.nameEn)) {
+        let chance = Math.pow(0.5, attacker.protectCount || 0);
+        if (Math.random() < chance) {
+            attacker.isProtected = true;
+            attacker.protectCount = (attacker.protectCount || 0) + 1;
+            logMessage(`<span style="color:#2ecc71">${aName} se protège !</span>`);
+        } else {
+            attacker.protectCount = 0;
+            logMessage(`Mais cela échoue !`);
+        }
+        await new Promise(r => setTimeout(r, 600));
+        return { flinched: false };
+    } else {
+        attacker.protectCount = 0;
+    }
+
+    if (defender.isProtected) {
+        logMessage(`<span style="color:#bdc3c7">${defName} s'est protégé contre l'attaque !</span>`);
+        await new Promise(r => setTimeout(r, 600));
+        return { flinched: false };
+    }
+
+    // MÉCANIQUE : VAMPIGRAINE
+    if (SEED_MOVES_LIST.includes(move.nameEn)) {
+        if (defender.battleStats.types.includes('grass')) {
+            logMessage(`Ça n'affecte pas les Pokémon Plante !`);
+        } else if (defender.isSeeded) {
+            logMessage(`${defName} est déjà infecté !`);
+        } else {
+            defender.isSeeded = true;
+            logMessage(`<span style="color:#2ecc71">${defName} est infecté par Vampigraine !</span>`);
+        }
+        await new Promise(r => setTimeout(r, 600));
+        return { flinched: false };
+    }
     
     if (FORCE_FLEE_MOVES.includes(move.nameEn)) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
@@ -432,7 +549,7 @@ async function executeMove(attacker, defender, move, isPlayer) {
         return { flinched: false };
     }
 
-    if (move.damageClass === "status") {
+    if (move.damageClass === "status" || STATUS_MOVES[move.nameEn]) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
         await new Promise(r => setTimeout(r, 600));
         const statusData = STATUS_MOVES[move.nameEn];
@@ -480,7 +597,6 @@ async function executeMove(attacker, defender, move, isPlayer) {
             let A = move.damageClass === 'special' ? getEffectiveStat(attacker, 'spatk') : getEffectiveStat(attacker, 'atk');
             let D = move.damageClass === 'special' ? getEffectiveStat(defender, 'spdef') : getEffectiveStat(defender, 'def');
             
-            // Impact de la Brûlure sur les dégâts physiques
             if (attacker.status === 'BRN' && move.damageClass === 'physical') A = Math.floor(A / 2);
             if (KAMIKAZE_MOVES.includes(move.nameEn)) A *= 1.5;
 
@@ -503,7 +619,7 @@ async function executeMove(attacker, defender, move, isPlayer) {
         if (i === hitCount - 1) { 
             if (mult > 1) logMessage(state.currentLang === 'en' ? `It's super effective!` : `C'est super efficace !`);
             else if (mult > 0 && mult < 1) logMessage(state.currentLang === 'en' ? `It's not very effective.` : `Ce n'est pas très efficace.`);
-            else if (mult === 0) logMessage(state.currentLang === 'en' ? `It has no effect...` : `Ça n'a aucun effet...`);
+            else if (mult === 0 && move.power > 0) logMessage(state.currentLang === 'en' ? `It has no effect...` : `Ça n'a aucun effet...`);
         }
         updateBattleUI();
         await new Promise(r => setTimeout(r, 400));
@@ -516,6 +632,10 @@ async function executeMove(attacker, defender, move, isPlayer) {
         attacker.battleStats.hp = 0;
         logMessage(`<span style="color:#e74c3c">${aName} ${state.currentLang === 'en' ? 'sacrificed itself!' : 'se sacrifie !'}</span>`);
         updateBattleUI();
+    }
+
+    if (move.nameEn === "fake-out" && defender.battleStats.hp > 0 && totalDamage > 0) {
+        defender.flinched = true;
     }
 
     if (totalDamage > 0 && defender.battleStats.hp > 0) {
@@ -531,7 +651,6 @@ async function executeMove(attacker, defender, move, isPlayer) {
             logMessage(`<span style="color:#e74c3c">${state.currentLang === 'en' ? `${aName} is hit with recoil!` : `${aName} est blessé par le contrecoup !`}</span>`);
         }
 
-        // Effets secondaires (Stats)
         const secEffect = SECONDARY_EFFECTS[move.nameEn];
         if (secEffect && Math.random() <= secEffect.chance) {
             let targetEntity = secEffect.target === "enemy" ? defender : attacker;
@@ -545,7 +664,6 @@ async function executeMove(attacker, defender, move, isPlayer) {
             }
         }
 
-        // Effets secondaires (Statuts type Gel, Brûlure via Lance-Flammes...)
         const secStatus = SECONDARY_STATUS[move.nameEn];
         if (secStatus && Math.random() * 100 <= secStatus.chance) {
             applyStatus(defender, secStatus, defName);
@@ -556,7 +674,7 @@ async function executeMove(attacker, defender, move, isPlayer) {
     
     let flinched = false;
     if (FLINCH_MOVES.includes(move.nameEn) && totalDamage > 0 && Math.random() < 0.3) {
-        flinched = true;
+        defender.flinched = true;
     }
 
     await new Promise(r => setTimeout(r, 600));
@@ -568,11 +686,18 @@ export async function processTurn(playerMove) {
     isAnimating = true;
     toggleMoves(true);
 
+    activeFighter.isProtected = false; currentEnemy.isProtected = false;
+    activeFighter.flinched = false; currentEnemy.flinched = false;
+
     let pPriority = PRIORITY_MOVES.includes(playerMove.nameEn) ? 1 : 0;
-    let bestEnemyMove = currentEnemy.moves[0];
+    if (playerMove.nameEn === "fake-out") pPriority = 3;
+    if (PROTECT_MOVES_LIST.includes(playerMove.nameEn)) pPriority = 4;
+
+    let eMoves = currentEnemy.battleMoves || currentEnemy.moves;
+    let bestEnemyMove = eMoves[0];
     let maxExpectedDamage = -1;
     
-    currentEnemy.moves.forEach(m => {
+    eMoves.forEach(m => {
         let expected = 0;
         if (USELESS_MOVES.includes(m.nameEn) || FORCE_FLEE_MOVES.includes(m.nameEn) || STAT_CLEAR_MOVES.includes(m.nameEn)) {
             expected = -1;
@@ -581,6 +706,8 @@ export async function processTurn(playerMove) {
             else expected = -1;
         } else if (m.damageClass === "status" || STATUS_CONDITIONS[m.nameEn]) {
             if (Math.random() < 0.1 && maxExpectedDamage < 10) expected = 10;
+        } else if (m.nameEn === "transform") {
+            expected = 20; 
         } else {
             let mMult = getEffectiveness(m.type, activeFighter.battleStats.types);
             let stab = currentEnemy.battleStats.types.includes(m.type) ? 1.5 : 1;
@@ -596,6 +723,8 @@ export async function processTurn(playerMove) {
     });
 
     let ePriority = PRIORITY_MOVES.includes(bestEnemyMove.nameEn) ? 1 : 0;
+    if (bestEnemyMove.nameEn === "fake-out") ePriority = 3;
+    if (PROTECT_MOVES_LIST.includes(bestEnemyMove.nameEn)) ePriority = 4;
     
     let playerGoesFirst;
     if (pPriority > ePriority) playerGoesFirst = true;
@@ -612,35 +741,19 @@ export async function processTurn(playerMove) {
         if (pResult && pResult.forceFlee) { fleeBattle(true); return; }
 
         if (currentEnemy.battleStats.hp > 0 && activeFighter.battleStats.hp > 0) {
-            if (pResult.flinched) {
-                let eName = state.currentLang === 'en' ? currentEnemy.nameEn : currentEnemy.nameFr;
-                logMessage(`<span style="color:#f39c12">${state.currentLang === 'en' ? `${eName} flinched and couldn't move!` : `${eName} a la trouille, il passe son tour !`}</span>`);
-                await new Promise(r => setTimeout(r, 1000));
-            } else {
-                let eResult = await executeMove(currentEnemy, activeFighter, bestEnemyMove, false);
-                if (eResult && eResult.forceFlee) { fleeBattle(true); return; }
-            }
+            await executeMove(currentEnemy, activeFighter, bestEnemyMove, false);
         }
     } else {
         let eResult = await executeMove(currentEnemy, activeFighter, bestEnemyMove, false);
         if (eResult && eResult.forceFlee) { fleeBattle(true); return; }
 
         if (activeFighter.battleStats.hp > 0 && currentEnemy.battleStats.hp > 0) {
-            if (eResult.flinched) {
-                let pName = state.currentLang === 'en' ? activeFighter.data.en : activeFighter.data.fr;
-                if (activeFighter.mega) pName = formatMegaName(pName, activeFighter.megaForm);
-                logMessage(`<span style="color:#f39c12">${state.currentLang === 'en' ? `${pName} flinched and couldn't move!` : `${pName} a la trouille, il passe son tour !`}</span>`);
-                await new Promise(r => setTimeout(r, 1000));
-            } else {
-                let pResult = await executeMove(activeFighter, currentEnemy, playerMove, true);
-                if (pResult && pResult.forceFlee) { fleeBattle(true); return; }
-            }
+            await executeMove(activeFighter, currentEnemy, playerMove, true);
         }
     }
 
-    // Gestion des altérations de fin de tour (Brûlure, Poison)
-    if (activeFighter.battleStats.hp > 0) await applyEndTurnStatus(activeFighter, true);
-    if (currentEnemy.battleStats.hp > 0) await applyEndTurnStatus(currentEnemy, false);
+    if (activeFighter.battleStats.hp > 0) await applyEndTurnStatus(activeFighter, currentEnemy, true);
+    if (currentEnemy.battleStats.hp > 0) await applyEndTurnStatus(currentEnemy, activeFighter, false);
 
     if (currentEnemy.battleStats.hp <= 0) {
         await winBattle();
@@ -803,7 +916,6 @@ async function winBattle() {
     
     updateBattleUI();
     renderMovesUI(); 
-    applyTranslation();
     
     try {
         await db.collection('users').doc(state.currentUser).update({

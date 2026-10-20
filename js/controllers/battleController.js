@@ -9,6 +9,9 @@ import {
     STATUS_CONDITIONS, SECONDARY_STATUS
 } from '../data/campagneData.js';
 
+const PROTECT_MOVES_LIST = ["protect", "detect"];
+const SEED_MOVES_LIST = ["leech-seed"];
+
 let currentBattleId = null;
 let myRole = null; 
 let unsubscribeBattle = null;
@@ -179,21 +182,31 @@ async function formatTeam(rawTeam) {
     return await Promise.all(rawTeam.map(async pkmn => {
         const d = await getPokemonDetails(pkmn);
         let maxHp = Math.floor(((2 * d.baseStats.hp) * (pkmn.level || 1)) / 100) + (pkmn.level || 1) + 10;
+        let baseStatsObj = { 
+            atk: Math.floor(((2 * d.baseStats.atk) * (pkmn.level||1)) / 100) + 5,
+            def: Math.floor(((2 * d.baseStats.def) * (pkmn.level||1)) / 100) + 5,
+            spatk: Math.floor(((2 * d.baseStats.spatk) * (pkmn.level||1)) / 100) + 5,
+            spdef: Math.floor(((2 * d.baseStats.spdef) * (pkmn.level||1)) / 100) + 5,
+            speed: Math.floor(((2 * d.baseStats.speed) * (pkmn.level||1)) / 100) + 5
+        };
+        let initialMoves = await getMovesForLevel(pkmn.pokedexNumber, pkmn.level || 1);
+
         return {
             ...pkmn,
             data: pkmn.data || state.pokemonDataList[pkmn.pokedexNumber - 1],
-            moves: await getMovesForLevel(pkmn.pokedexNumber, pkmn.level || 1),
+            moves: JSON.parse(JSON.stringify(initialMoves)),
             maxHp: maxHp, currentHp: maxHp,
-            stats: { 
-                atk: Math.floor(((2 * d.baseStats.atk) * (pkmn.level||1)) / 100) + 5,
-                def: Math.floor(((2 * d.baseStats.def) * (pkmn.level||1)) / 100) + 5,
-                spatk: Math.floor(((2 * d.baseStats.spatk) * (pkmn.level||1)) / 100) + 5,
-                spdef: Math.floor(((2 * d.baseStats.spdef) * (pkmn.level||1)) / 100) + 5,
-                speed: Math.floor(((2 * d.baseStats.speed) * (pkmn.level||1)) / 100) + 5
-            },
-            modifiers: { atk:0, def:0, spatk:0, spdef:0, speed:0 }, // Oubli Corrigé !
+            stats: JSON.parse(JSON.stringify(baseStatsObj)),
+            modifiers: { atk:0, def:0, spatk:0, spdef:0, speed:0 },
             status: null, statusTurns: 0, confusion: 0, toxCount: 0,
-            types: d.types
+            turnsActive: 0, isProtected: false, protectCount: 0, isSeeded: false, flinched: false,
+            types: [...d.types],
+            // Sauvegarde de l'original pour annuler Morphing au changement de Pokémon
+            original: {
+                types: [...d.types],
+                stats: JSON.parse(JSON.stringify(baseStatsObj)),
+                moves: JSON.parse(JSON.stringify(initialMoves))
+            }
         };
     }));
 }
@@ -313,25 +326,22 @@ function renderSynchronousUI(data) {
     let pActive = myTeam[myActiveIdx];
     let eActive = enemyTeam[enemyActiveIdx];
 
-    // Joueur
     document.getElementById('pvp-player-name').textContent = pActive.data.fr;
     document.getElementById('pvp-player-lvl').textContent = `Niv. ${pActive.level || 1}`;
     document.getElementById('pvp-player-hp-text').textContent = `${Math.max(0, pActive.currentHp)} / ${pActive.maxHp}`;
     document.getElementById('pvp-player-hp-fill').style.width = `${(Math.max(0, pActive.currentHp) / pActive.maxHp) * 100}%`;
-    document.getElementById('pvp-player-sprite').src = getCardImageUrl(pActive);
+    document.getElementById('pvp-player-sprite').src = pActive.transformedImage || getCardImageUrl(pActive);
     updateBarColor('pvp-player-hp-fill', pActive.currentHp, pActive.maxHp);
     document.getElementById('pvp-player-team-ui').innerHTML = myTeam.map((p, i) => `<div class="ball ${p.currentHp <= 0 ? 'fainted' : (i === myActiveIdx ? 'active' : 'alive')}"></div>`).join('');
 
-    // Adversaire
     document.getElementById('pvp-enemy-name').textContent = eActive.data.fr;
     document.getElementById('pvp-enemy-lvl').textContent = `Niv. ${eActive.level || 1}`;
     document.getElementById('pvp-enemy-hp-text').textContent = `${Math.max(0, eActive.currentHp)} / ${eActive.maxHp}`;
     document.getElementById('pvp-enemy-hp-fill').style.width = `${(Math.max(0, eActive.currentHp) / eActive.maxHp) * 100}%`;
-    document.getElementById('pvp-enemy-sprite').src = getCardImageUrl(eActive);
+    document.getElementById('pvp-enemy-sprite').src = eActive.transformedImage || getCardImageUrl(eActive);
     updateBarColor('pvp-enemy-hp-fill', eActive.currentHp, eActive.maxHp);
     document.getElementById('pvp-enemy-team-ui').innerHTML = enemyTeam.map((p, i) => `<div class="ball ${p.currentHp <= 0 ? 'fainted' : (i === enemyActiveIdx ? 'active' : 'alive')}"></div>`).join('');
 
-    // Badges de Status (BRN, PAR...)
     renderModifiersUI(pActive, 'pvp-player-modifiers');
     renderModifiersUI(eActive, 'pvp-enemy-modifiers');
 
@@ -364,8 +374,7 @@ function renderSynchronousUI(data) {
                     const btn = document.createElement('button');
                     btn.className = `move-btn type-${move.type}`;
                     
-                    // CORRECTION POW : Masquer la puissance des attaques de statut
-                    let displayPower = (move.damageClass === "status" || USELESS_MOVES.includes(move.nameEn) || FORCE_FLEE_MOVES.includes(move.nameEn) || STAT_CLEAR_MOVES.includes(move.nameEn) || OHKO_MOVES.includes(move.nameEn)) ? "-" : move.power;
+                    let displayPower = (move.damageClass === "status" || USELESS_MOVES.includes(move.nameEn) || FORCE_FLEE_MOVES.includes(move.nameEn) || STAT_CLEAR_MOVES.includes(move.nameEn) || OHKO_MOVES.includes(move.nameEn) || PROTECT_MOVES_LIST.includes(move.nameEn) || SEED_MOVES_LIST.includes(move.nameEn) || move.nameEn === "transform") ? "-" : move.power;
                     if(FIXED_DAMAGE_MOVES[move.nameEn]) displayPower = "FIX";
 
                     btn.innerHTML = `<span class="move-name">${move.nameFr}</span><span style="font-size:0.7rem; font-weight:normal;">POW ${displayPower}</span>`;
@@ -394,6 +403,12 @@ function renderModifiersUI(entity, containerId) {
         badge.style.cssText = `background:#e67e22; color:#fff; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-right:4px;`;
         badge.textContent = "CNF";
         container.appendChild(badge);
+    }
+    if (entity.isSeeded) {
+        let seedBadge = document.createElement('span');
+        seedBadge.style.cssText = `background:#2ecc71; color:#fff; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-left:4px;`;
+        seedBadge.textContent = "GRAINE";
+        container.appendChild(seedBadge);
     }
     for (let stat in entity.modifiers) {
         let stage = entity.modifiers[stat];
@@ -482,8 +497,9 @@ function surrenderBattle() {
 // =========================================================================
 
 function getEffectiveStat(entity, statName) {
-    let base = entity.stats[statName];
-    let stage = entity.modifiers[statName] || 0;
+    let statsObj = entity.battleStats || entity.stats || {};
+    let base = statsObj[statName] || 10;
+    let stage = entity.modifiers ? (entity.modifiers[statName] || 0) : 0;
     let multiplier = Math.max(2, 2 + stage) / Math.max(2, 2 - stage);
     let finalStat = Math.floor(base * multiplier);
     if (statName === 'speed' && entity.status === 'PAR') finalStat = Math.floor(finalStat / 2);
@@ -537,9 +553,17 @@ function applyStatusSync(target, statusObj, targetName, logs) {
     }
 }
 
-function applyEndTurnStatusSync(entity, logs) {
+function applyEndTurnStatusSync(entity, opponent, logs) {
     if (entity.currentHp <= 0) return;
     let name = entity.data.fr;
+
+    if (entity.isSeeded && entity.currentHp > 0) {
+        let drain = Math.max(1, Math.floor(entity.maxHp / 8));
+        entity.currentHp -= drain;
+        opponent.currentHp = Math.min(opponent.maxHp, opponent.currentHp + drain);
+        logs.push(`<span style="color:#2ecc71">Vampigraine draine l'énergie de ${name} !</span>`);
+    }
+
     if (entity.status === 'BRN') {
         entity.currentHp -= Math.max(1, Math.floor(entity.maxHp / 16)); logs.push(`<span style="color:#e67e22">${name} souffre de sa brûlure !</span>`);
     } else if (entity.status === 'PSN') {
@@ -547,7 +571,19 @@ function applyEndTurnStatusSync(entity, logs) {
     } else if (entity.status === 'TOX') {
         entity.toxCount++; entity.currentHp -= Math.max(1, Math.floor((entity.maxHp * entity.toxCount) / 16)); logs.push(`<span style="color:#8e44ad">${name} souffre du poison grave !</span>`);
     }
+
+    entity.turnsActive = (entity.turnsActive || 0) + 1;
+
     if (entity.currentHp <= 0) logs.push(`<b style="color:#e74c3c">${name} est K.O. !</b>`);
+}
+
+function revertTransformation(pkmn) {
+    if (pkmn.transformedImage) {
+        pkmn.types = [...pkmn.original.types];
+        pkmn.stats = JSON.parse(JSON.stringify(pkmn.original.stats));
+        pkmn.moves = JSON.parse(JSON.stringify(pkmn.original.moves));
+        pkmn.transformedImage = null;
+    }
 }
 
 async function resolveSynchronousTurn(data, battleRef) {
@@ -561,19 +597,46 @@ async function resolveSynchronousTurn(data, battleRef) {
     let isReplacementTurn = (a1.type === 'force_switch' || a2.type === 'force_switch' || a1.type === 'wait' || a2.type === 'wait');
 
     if (isReplacementTurn) {
-        if (a1.type === 'force_switch') { active1 = a1.index; turnLogs.push(`Le Joueur 1 envoie <b>${t1[active1].data.fr}</b> !`); }
-        if (a2.type === 'force_switch') { active2 = a2.index; turnLogs.push(`Le Joueur 2 envoie <b>${t2[active2].data.fr}</b> !`); }
+        if (a1.type === 'force_switch') { 
+            active1 = a1.index; p1 = t1[active1]; 
+            p1.turnsActive = 0; p1.isSeeded = false; 
+            turnLogs.push(`Le Joueur 1 envoie <b>${p1.data.fr}</b> !`); 
+        }
+        if (a2.type === 'force_switch') { 
+            active2 = a2.index; p2 = t2[active2]; 
+            p2.turnsActive = 0; p2.isSeeded = false; 
+            turnLogs.push(`Le Joueur 2 envoie <b>${p2.data.fr}</b> !`); 
+        }
     } else {
-        if (a1.type === 'switch') { active1 = a1.index; p1 = t1[active1]; turnLogs.push(`Joueur 1 envoie <b>${p1.data.fr}</b> !`); }
-        if (a2.type === 'switch') { active2 = a2.index; p2 = t2[active2]; turnLogs.push(`Joueur 2 envoie <b>${p2.data.fr}</b> !`); }
+        if (a1.type === 'switch') { 
+            revertTransformation(p1); 
+            active1 = a1.index; p1 = t1[active1]; 
+            p1.turnsActive = 0; p1.isSeeded = false; 
+            turnLogs.push(`Joueur 1 envoie <b>${p1.data.fr}</b> !`); 
+        }
+        if (a2.type === 'switch') { 
+            revertTransformation(p2); 
+            active2 = a2.index; p2 = t2[active2]; 
+            p2.turnsActive = 0; p2.isSeeded = false; 
+            turnLogs.push(`Joueur 2 envoie <b>${p2.data.fr}</b> !`); 
+        }
+
+        p1.isProtected = false; p2.isProtected = false;
+        p1.flinched = false; p2.flinched = false;
 
         let move1 = a1.type === 'move' ? a1.move : null;
         let move2 = a2.type === 'move' ? a2.move : null;
 
         if (move1 && move2) {
             let p1Speed = getEffectiveStat(p1, 'speed'); let p2Speed = getEffectiveStat(p2, 'speed');
+            
             let p1Priority = PRIORITY_MOVES.includes(move1.nameEn) ? 1 : 0;
+            if (move1.nameEn === "fake-out") p1Priority = 3;
+            if (PROTECT_MOVES_LIST.includes(move1.nameEn)) p1Priority = 4;
+
             let p2Priority = PRIORITY_MOVES.includes(move2.nameEn) ? 1 : 0;
+            if (move2.nameEn === "fake-out") p2Priority = 3;
+            if (PROTECT_MOVES_LIST.includes(move2.nameEn)) p2Priority = 4;
 
             let p1GoesFirst = p1Priority > p2Priority || (p1Priority === p2Priority && p1Speed >= p2Speed);
             if (p1Speed === p2Speed && p1Priority === p2Priority) p1GoesFirst = Math.random() > 0.5;
@@ -589,8 +652,8 @@ async function resolveSynchronousTurn(data, battleRef) {
         else if (move1 && p1.currentHp > 0) { if(preMoveCheckSync(p1, turnLogs)) evalMove(p1, p2, move1, turnLogs); }
         else if (move2 && p2.currentHp > 0) { if(preMoveCheckSync(p2, turnLogs)) evalMove(p2, p1, move2, turnLogs); }
 
-        applyEndTurnStatusSync(p1, turnLogs);
-        applyEndTurnStatusSync(p2, turnLogs);
+        applyEndTurnStatusSync(p1, p2, turnLogs);
+        applyEndTurnStatusSync(p2, p1, turnLogs);
     }
 
     let p1Alive = t1.some(p => p.currentHp > 0);
@@ -611,10 +674,68 @@ async function resolveSynchronousTurn(data, battleRef) {
     });
 }
 
-// CORRECTION : Moteur d'évaluation prenant en compte les STATUS
 function evalMove(atk, def, move, logs) {
+    if (atk.flinched) {
+        logs.push(`<span style="color:#f39c12">${atk.data.fr} a la trouille et ne peut pas attaquer !</span>`);
+        return;
+    }
+
     logs.push(`<b>${atk.data.fr}</b> utilise <span style="color:#3498db">${move.nameFr}</span> !`);
     
+    // MÉCANIQUE : BLUFF
+    if (move.nameEn === "fake-out") {
+        if ((atk.turnsActive || 0) > 0) {
+            logs.push(`Mais cela échoue !`);
+            return;
+        }
+    }
+
+    // MÉCANIQUE : MORPHING
+    if (move.nameEn === "transform") {
+        atk.types = [...(def.types || [])];
+        atk.stats = JSON.parse(JSON.stringify(def.stats));
+        atk.modifiers = JSON.parse(JSON.stringify(def.modifiers || {}));
+        atk.moves = JSON.parse(JSON.stringify(def.moves));
+        atk.transformedImage = def.transformedImage || getCardImageUrl(def);
+        logs.push(`<span style="color:#9b59b6">${atk.data.fr} se transforme en ${def.data.fr} !</span>`);
+        return;
+    }
+
+    // MÉCANIQUE : ABRI
+    if (PROTECT_MOVES_LIST.includes(move.nameEn)) {
+        let chance = Math.pow(0.5, atk.protectCount || 0);
+        if (Math.random() < chance) {
+            atk.isProtected = true;
+            atk.protectCount = (atk.protectCount || 0) + 1;
+            logs.push(`<span style="color:#2ecc71">${atk.data.fr} se protège !</span>`);
+        } else {
+            atk.protectCount = 0;
+            logs.push(`Mais cela échoue !`);
+        }
+        return;
+    } else {
+        atk.protectCount = 0;
+    }
+
+    if (def.isProtected) {
+        logs.push(`<span style="color:#bdc3c7">${def.data.fr} s'est protégé contre l'attaque !</span>`);
+        return;
+    }
+
+    // MÉCANIQUE : VAMPIGRAINE
+    if (SEED_MOVES_LIST.includes(move.nameEn)) {
+        let defTypes = def.types || (def.battleStats ? def.battleStats.types : []);
+        if (defTypes.includes('grass')) {
+            logs.push(`Ça n'affecte pas les Pokémon Plante !`);
+        } else if (def.isSeeded) {
+            logs.push(`${def.data.fr} est déjà infecté !`);
+        } else {
+            def.isSeeded = true;
+            logs.push(`<span style="color:#2ecc71">${def.data.fr} est infecté par Vampigraine !</span>`);
+        }
+        return;
+    }
+
     if (USELESS_MOVES.includes(move.nameEn)) { logs.push(`Mais il ne se passe rien...`); return; }
     if (HEAL_MOVES.includes(move.nameEn)) {
         atk.currentHp = Math.min(atk.maxHp, atk.currentHp + Math.floor(atk.maxHp / 2));
@@ -636,7 +757,7 @@ function evalMove(atk, def, move, logs) {
             let targetEntity = (statObj.status === 'CNF' && move.nameEn === 'swagger') ? def : def; 
             applyStatusSync(targetEntity, statObj, def.data.fr, logs);
             if(statObj.stat) {
-                targetEntity.modifiers[statObj.stat] = Math.max(-6, Math.min(6, targetEntity.modifiers[statObj.stat] + statObj.stage));
+                targetEntity.modifiers[statObj.stat] = Math.max(-6, Math.min(6, (targetEntity.modifiers[statObj.stat]||0) + statObj.stage));
                 if (statObj.stage > 0) logs.push(`<span style="color:#3498db">${STAT_NAMES.fr[statObj.stat]} de ${def.data.fr} augmente !</span>`);
                 else logs.push(`<span style="color:#e74c3c">${STAT_NAMES.fr[statObj.stat]} de ${def.data.fr} diminue !</span>`);
             }
@@ -650,7 +771,7 @@ function evalMove(atk, def, move, logs) {
             let targetEntity = statusData.target === "enemy" ? def : atk;
             let targetName = statusData.target === "enemy" ? def.data.fr : atk.data.fr;
             for (let effect of statusData.effects) {
-                targetEntity.modifiers[effect.stat] = Math.max(-6, Math.min(6, targetEntity.modifiers[effect.stat] + effect.stage));
+                targetEntity.modifiers[effect.stat] = Math.max(-6, Math.min(6, (targetEntity.modifiers[effect.stat]||0) + effect.stage));
                 if (effect.stage > 0) logs.push(`<span style="color:#3498db">${STAT_NAMES.fr[effect.stat]} de ${targetName} augmente !</span>`);
                 else logs.push(`<span style="color:#e74c3c">${STAT_NAMES.fr[effect.stat]} de ${targetName} diminue !</span>`);
             }
@@ -665,8 +786,12 @@ function evalMove(atk, def, move, logs) {
     if (KAMIKAZE_MOVES.includes(move.nameEn)) A *= 1.5;
 
     let baseDmg = Math.floor(Math.floor(Math.floor(2 * (atk.level||1) / 5 + 2) * move.power * A / D) / 50) + 2;
-    let stab = atk.types.includes(move.type) ? 1.5 : 1;
-    let mult = getEffectiveness(move.type, def.types);
+    
+    let atkTypes = atk.types || (atk.battleStats ? atk.battleStats.types : []);
+    let defTypes = def.types || (def.battleStats ? def.battleStats.types : []);
+
+    let stab = atkTypes.includes(move.type) ? 1.5 : 1;
+    let mult = getEffectiveness(move.type, defTypes);
     
     let isCrit = Math.random() < (HIGH_CRIT_MOVES.includes(move.nameEn) ? 0.125 : 0.0625);
     let dmg = Math.floor(baseDmg * stab * mult * (Math.random() * (1 - 0.85) + 0.85) * (isCrit ? 1.5 : 1));
@@ -701,6 +826,10 @@ function evalMove(atk, def, move, logs) {
         atk.currentHp = 0; logs.push(`<span style="color:#e74c3c">${atk.data.fr} se sacrifie !</span>`);
     }
 
+    if (move.nameEn === "fake-out" && def.currentHp > 0 && totalDmg > 0) {
+        def.flinched = true;
+    }
+
     if (totalDmg > 0 && def.currentHp > 0) {
         if (DRAIN_MOVES.includes(move.nameEn)) {
             atk.currentHp = Math.min(atk.maxHp, atk.currentHp + Math.max(1, Math.floor(totalDmg / 2)));
@@ -714,7 +843,7 @@ function evalMove(atk, def, move, logs) {
         if (secEffect && Math.random() <= secEffect.chance) {
             let tEnt = secEffect.target === "enemy" ? def : atk;
             for (let effect of secEffect.effects) {
-                tEnt.modifiers[effect.stat] = Math.max(-6, Math.min(6, tEnt.modifiers[effect.stat] + effect.stage));
+                tEnt.modifiers[effect.stat] = Math.max(-6, Math.min(6, (tEnt.modifiers[effect.stat]||0) + effect.stage));
                 if (effect.stage > 0) logs.push(`<span style="color:#3498db">${STAT_NAMES.fr[effect.stat]} de ${secEffect.target==="enemy"?def.data.fr:atk.data.fr} augmente !</span>`);
                 else logs.push(`<span style="color:#e74c3c">${STAT_NAMES.fr[effect.stat]} de ${secEffect.target==="enemy"?def.data.fr:atk.data.fr} diminue !</span>`);
             }

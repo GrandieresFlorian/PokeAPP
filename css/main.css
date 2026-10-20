@@ -49,3 +49,47 @@
 .ball { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #fff; background: #2ecc71; box-shadow: inset -2px -2px 4px rgba(0,0,0,0.4); transition: all 0.3s;}
 .ball.fainted { background: #555; border-color: #333; opacity: 0.6; }
 .ball.active { background: #f1c40f; border-color: #e67e22; box-shadow: 0 0 8px #f1c40f; transform: scale(1.2); }
+
+/* Effet de survol sur les cartes de la collection */
+.card-hover-actions {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    border-radius: inherit;
+}
+
+.mini-card:hover .card-hover-actions {
+    opacity: 1;
+}
+
+.btn-card-action {
+    background: #2c3e50;
+    border: 1px solid #3498db;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: inherit;
+    transition: all 0.2s;
+    width: 80%;
+}
+
+.btn-card-action:hover {
+    background: #3498db;
+    transform: scale(1.05);
+}
+
+.btn-card-upgrade {
+    border-color: #2ecc71;
+}
+.btn-card-upgrade:hover {
+    background: #2ecc71;
+}

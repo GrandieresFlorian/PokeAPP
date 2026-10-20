@@ -135,3 +135,6 @@ export const STAT_NAMES = {
     fr: { atk: "Atk", def: "Déf", spatk: "AtkS", spdef: "DéfS", speed: "Vit" },
     en: { atk: "Atk", def: "Def", spatk: "SpA", spdef: "SpD", speed: "Spe" }
 };
+
+export const PROTECT_MOVES = ["protect", "detect"];
+export const SEED_MOVES = ["leech-seed"];

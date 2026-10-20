@@ -1,5 +1,78 @@
 import { state, CONSTS } from '../state.js';
-import { formatMegaName, getCardImageUrl, generateTypeBadgesHTML, TOUTES_LES_BAIES, BAIES_BOOSTERS, MUTATION_RECIPES } from '../utils.js';
+import { getPokemonDetails, formatMegaName, getCardImageUrl, generateTypeBadgesHTML, TOUTES_LES_BAIES, BAIES_BOOSTERS, MUTATION_RECIPES } from '../utils.js';
+
+export async function openCardDetails(carte) {
+    const modal = document.getElementById('card-details-modal');
+    modal.classList.remove('hidden');
+
+    document.getElementById('close-card-details').onclick = () => modal.classList.add('hidden');
+
+    let d = carte.data || state.pokemonDataList[carte.pokedexNumber - 1];
+    let nameEn = d.en || "Unknown";
+    let nameFr = d.fr || "Inconnu";
+
+    if (carte.mega) {
+        nameEn = formatMegaName(nameEn, carte.megaForm);
+        nameFr = formatMegaName(nameFr, carte.megaForm);
+    }
+
+    document.getElementById('details-name').textContent = state.currentLang === 'en' ? nameEn : nameFr;
+    let rarityStr = carte.mega ? "MG" : (d.rarity || "C");
+    document.getElementById('details-level-rarity').textContent = `Niv. ${carte.level || 1} - Rareté : ${rarityStr}`;
+
+    // L'image de la carte
+    const imgDiv = document.getElementById('details-card-image');
+    imgDiv.style.backgroundImage = `url('${getCardImageUrl(carte)}')`;
+    imgDiv.style.backgroundColor = CONSTS.couleursRarete[rarityStr] || "#333";
+    imgDiv.innerHTML = carte.shiny || (carte.mega && carte.shiny) ? '<div class="mini-card-holo"></div>' : '';
+
+    // Récupération des stats de base et types
+    const details = await getPokemonDetails(carte); 
+    document.getElementById('details-types').innerHTML = details.types.map(t => `<span class="type-badge type-${t}">${t.toUpperCase()}</span>`).join('');
+
+    // Récupération du Talent et de la Description via PokeAPI
+    try {
+        const resPkmn = await fetch(`https://pokeapi.co/api/v2/pokemon/${carte.pokedexNumber}`);
+        const dataPkmn = await resPkmn.json();
+        
+        let abilityUrl = dataPkmn.abilities[0]?.ability.url;
+        let talentName = "Inconnu";
+        if(abilityUrl) {
+            let resAb = await fetch(abilityUrl);
+            let dataAb = await resAb.json();
+            let nameObj = dataAb.names.find(n => n.language.name === (state.currentLang === 'en' ? 'en' : 'fr'));
+            talentName = nameObj ? nameObj.name : dataPkmn.abilities[0].ability.name;
+        }
+        document.getElementById('details-talent').textContent = talentName;
+
+        const resSpecies = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${carte.pokedexNumber}`);
+        const dataSpecies = await resSpecies.json();
+        const entry = dataSpecies.flavor_text_entries.find(e => e.language.name === (state.currentLang === 'en' ? 'en' : 'fr'));
+        document.getElementById('details-description').textContent = entry ? entry.flavor_text.replace(/\f/g, ' ') : "Aucune description disponible.";
+    } catch(e) {
+        document.getElementById('details-description').textContent = "Description indisponible (Hors ligne).";
+        document.getElementById('details-talent').textContent = "???";
+    }
+
+    // Calcul des statistiques au niveau actuel
+    let lvl = carte.level || 1;
+    document.getElementById('details-stat-lvl').textContent = lvl;
+    let maxHp = Math.floor(((2 * details.baseStats.hp) * lvl) / 100) + lvl + 10;
+    let atk = Math.floor(((2 * details.baseStats.atk) * lvl) / 100) + 5;
+    let def = Math.floor(((2 * details.baseStats.def) * lvl) / 100) + 5;
+    let spatk = Math.floor(((2 * details.baseStats.spatk) * lvl) / 100) + 5;
+    let spdef = Math.floor(((2 * details.baseStats.spdef) * lvl) / 100) + 5;
+    let speed = Math.floor(((2 * details.baseStats.speed) * lvl) / 100) + 5;
+
+    document.getElementById('details-stats-grid').innerHTML = `
+        <div>❤️ PV : <b style="color:#2ecc71">${maxHp}</b></div>
+        <div>💨 Vitesse : <b style="color:#f39c12">${speed}</b></div>
+        <div>⚔️ Attaque : <b>${atk}</b></div>
+        <div>🛡️ Défense : <b>${def}</b></div>
+        <div>🔥 Atk Spé : <b>${spatk}</b></div>
+        <div>✨ Déf Spé : <b>${spdef}</b></div>
+    `;
+}
 
 export function initCollection() {
     const tabNormal = document.getElementById('tab-normal'); 
@@ -28,9 +101,21 @@ export function initCollection() {
     filterOwned.addEventListener('change', afficherCollection);
     document.getElementById('nav-collection').addEventListener('click', afficherCollection);
 
+    // L'écouteur global qui va capter nos clics sur les boutons du menu de survol
     document.getElementById('collection-container').addEventListener('click', (e) => {
-        const btn = e.target.closest('.btn-upgrade');
-        if (btn) { e.stopPropagation(); upgradeCard(Number(btn.dataset.date)); }
+        const btnUpgrade = e.target.closest('.btn-card-upgrade');
+        const btnInfo = e.target.closest('.btn-card-info');
+
+        if (btnUpgrade) {
+            e.stopPropagation();
+            upgradeCard(Number(btnUpgrade.dataset.date));
+        } else if (btnInfo) {
+            e.stopPropagation();
+            // On récupère la carte dans la collection via sa date
+            const cardDate = Number(btnInfo.dataset.date);
+            const carteTrouvee = state.currentUserData.collection.find(c => c.date === cardDate);
+            if(carteTrouvee) openCardDetails(carteTrouvee);
+        }
     });
 }
 
@@ -123,7 +208,6 @@ export function afficherCollection() {
         let finalImageUrl = getCardImageUrl(carteTemp);
         let imageUrlNormale = getCardImageUrl({ ...carteTemp, shiny: false, mega: false, megaForm: null });
         
-        // RECUPERATION SYNCHRONE (0 latence)
         let pow = dataOrigine.pow || 300; if (form) pow += 100;
         const cachedTypes = dataOrigine.types ? generateTypeBadgesHTML(dataOrigine.types) : 'Pokémon';
 
@@ -141,11 +225,12 @@ export function afficherCollection() {
 
             let badgeQuantite = quantite > 1 ? `<div class="badge-quantite">X${quantite}</div>` : ""; 
 
+            // C'EST ICI QU'ON AJOUTE LE MENU HOVER AVEC LES DEUX BOUTONS
             let overlayHtml = `
-                <div class="card-upgrade-overlay">
-                    <div class="upgrade-level">Niv. ${currentLevel} / <span class="text-accent">${maxLevel}</span></div>
+                <div class="card-hover-actions">
+                    <button class="btn-card-action btn-card-info" data-date="${mainCard.date}">👁️ Voir la Fiche</button>
                     ${maxLevel < 100 ? 
-                        (canUpgrade ? `<button class="btn-upgrade" data-date="${mainCard.date}"><span class="translatable" data-fr="Améliorer le Rang" data-en="Upgrade Rank">Améliorer le Rang</span><br><span style="font-size:0.8rem; font-weight:normal;">(-${cost} doublon${cost>1?'s':''})</span></button>` : `<div class="upgrade-hint"><span class="translatable" data-fr="Manque ${cost - doublons} doublon(s)<br>pour le rang${maxLevel + 20}" data-en="Need ${cost - doublons} duplicate(s)<br>for rank${maxLevel + 20}">Manque ${cost - doublons} doublon(s)<br>pour le rang${maxLevel + 20}</span></div>`) 
+                        (canUpgrade ? `<button class="btn-card-action btn-card-upgrade" data-date="${mainCard.date}">⭐ Améliorer <br><span style="font-size:0.7rem; font-weight:normal;">(-${cost} doublon${cost>1?'s':''})</span></button>` : `<div class="upgrade-hint"><span class="translatable" data-fr="Manque ${cost - doublons} doublon(s)<br>pour le rang${maxLevel + 20}" data-en="Need ${cost - doublons} duplicate(s)<br>for rank${maxLevel + 20}">Manque ${cost - doublons} doublon(s)<br>pour le rang${maxLevel + 20}</span></div>`) 
                         : `<div class="upgrade-max">✨ RANG MAX ✨</div>`
                     }
                 </div>`;
