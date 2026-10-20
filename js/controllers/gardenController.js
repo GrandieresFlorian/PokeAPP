@@ -459,7 +459,15 @@ function harvestPlot(index) {
     let nameEn = baieDef.en;
     let nameFr = baieDef.fr;
     let currentName = state.currentLang === 'en' ? nameEn : nameFr;
-    document.getElementById('garden-action-content').innerHTML = `<p style="color:#2ecc71;">Vous avez récolté ${yieldAmount} <span class="pokemon-name" data-en="${nameEn}" data-fr="${nameFr}">${currentName}</span> !</p>`;
+    let enNameImg = baieDef.en.toLowerCase().replace(/\s+/g, '-');
+    let imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${enNameImg}.png`;
+
+    document.getElementById('garden-action-content').innerHTML = `
+        <p style="color:#2ecc71; display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap;">
+            Vous avez récolté ${yieldAmount} 
+            <img src="${imgUrl}" style="width:24px; height:24px; vertical-align:middle; image-rendering:pixelated;">
+            <span class="pokemon-name" data-en="${nameEn}" data-fr="${nameFr}" style="font-size:inherit; font-weight:bold; color:white; text-transform:none;">${currentName}</span> !
+        </p>`;
 }
 
 function clearPlot(index) {
