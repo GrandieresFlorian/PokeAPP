@@ -122,7 +122,7 @@ export async function startBattle(zone, fighter, onEnd) {
     let eName = state.currentLang === 'en' ? currentEnemy.nameEn : currentEnemy.nameFr;
     logMessage(state.currentLang === 'en' ? `A wild <b>${eName}</b> appears! (Lvl ${currentEnemy.level})` : `Un <b>${eName}</b> sauvage apparaît ! (Niv. ${currentEnemy.level})`);
 
-    // Appliquer les Pièges d'entrée
+    // Appliquer les Pièges d'entréej
     applyHazards(activeFighter, p1State);
     applyHazards(currentEnemy, p2State);
 }
