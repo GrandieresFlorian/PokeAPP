@@ -1,15 +1,17 @@
 import { db } from '../firebase-config.js';
 import { state } from '../state.js';
-import { getCardImageUrl, getPokemonDetails, getEffectiveness, formatMegaName, getMovesForLevel, getMoveDetails } from '../utils.js';
+import { getCardImageUrl, getPokemonDetails, formatMegaName, getMovesForLevel, getMoveDetails } from '../utils.js';
 import { applyTranslation } from './navController.js';
 import { 
     USELESS_MOVES, PRIORITY_MOVES, HEAL_MOVES, DRAIN_MOVES, RECOIL_MOVES, MULTI_HIT_2_5, MULTI_HIT_2, 
     FLINCH_MOVES, SECONDARY_EFFECTS, STATUS_MOVES, STAT_NAMES, 
-    OHKO_MOVES, KAMIKAZE_MOVES, FORCE_FLEE_MOVES, HIGH_CRIT_MOVES, STAT_CLEAR_MOVES, FIXED_DAMAGE_MOVES,
-    STATUS_CONDITIONS, SECONDARY_STATUS
+    OHKO_MOVES, KAMIKAZE_MOVES, FORCE_FLEE_MOVES, STAT_CLEAR_MOVES, FIXED_DAMAGE_MOVES,
+    STATUS_CONDITIONS, SECONDARY_STATUS, ABILITIES_DB
 } from '../data/campagneData.js';
 
-// Nouvelles mécaniques
+// --- IMPORT DU NOUVEAU MOTEUR ---
+import { calcStats, getEffectiveStat, checkMoveHit, calculateDamage } from '../battleEngine.js';
+
 const PROTECT_MOVES_LIST = ["protect", "detect"];
 const SEED_MOVES_LIST = ["leech-seed"];
 const ACCURACY_DROPS = ["smokescreen", "sand-attack", "flash", "kinesis", "mud-slap"];
@@ -27,33 +29,10 @@ let currentEnemy = null;
 let isAnimating = false;
 let onBattleEndCallback = null;
 
-// Météo locale
 let currentWeather = 'none';
 let weatherTurns = 0;
 
 const STATUS_COLORS = { "BRN": "#e67e22", "PSN": "#9b59b6", "TOX": "#8e44ad", "PAR": "#f1c40f", "FRZ": "#3498db", "SLP": "#2c3e50" };
-
-export function calcStats(baseStats, level, evs = { hp: 0, atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0 }) {
-    return {
-        maxHp: Math.floor(((2 * baseStats.hp + Math.floor(evs.hp / 4)) * level) / 100) + level + 10,
-        hp: Math.floor(((2 * baseStats.hp + Math.floor(evs.hp / 4)) * level) / 100) + level + 10,
-        atk: Math.floor(((2 * baseStats.atk + Math.floor(evs.atk / 4)) * level) / 100) + 5,
-        def: Math.floor(((2 * baseStats.def + Math.floor(evs.def / 4)) * level) / 100) + 5,
-        spatk: Math.floor(((2 * baseStats.spatk + Math.floor(evs.spatk / 4)) * level) / 100) + 5,
-        spdef: Math.floor(((2 * baseStats.spdef + Math.floor(evs.spdef / 4)) * level) / 100) + 5,
-        speed: Math.floor(((2 * baseStats.speed + Math.floor(evs.speed / 4)) * level) / 100) + 5,
-    };
-}
-
-export function getEffectiveStat(entity, statName) {
-    let base = entity.battleStats[statName];
-    let stage = entity.modifiers[statName];
-    let multiplier = Math.max(2, 2 + stage) / Math.max(2, 2 - stage);
-    let finalStat = Math.floor(base * multiplier);
-    
-    if (statName === 'speed' && entity.status === 'PAR') finalStat = Math.floor(finalStat / 2);
-    return finalStat;
-}
 
 export async function startBattle(zone, fighter, onEnd) {
     activeFighter = fighter;
@@ -96,13 +75,16 @@ export async function startBattle(zone, fighter, onEnd) {
     currentEnemy = {
         nameEn: wData.en,
         nameFr: wData.fr,
+        data: wData,
         level: wLevel,
         baseStats: wDetails.baseStats, 
         battleStats: calcStats(wDetails.baseStats, wLevel),
         modifiers: { atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0, accuracy: 0, evasion: 0 },
         status: null, statusTurns: 0, confusion: 0, toxCount: 0,
         turnsActive: 0, isProtected: false, protectCount: 0, isSeeded: false, flinched: false,
-        sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${wId}.png`
+        sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${wId}.png`,
+        // Talent sauvage aléatoire
+        talent: wData.abilities ? wData.abilities[Math.floor(Math.random() * wData.abilities.length)] : null
     };
     currentEnemy.battleStats.types = wDetails.types;
 
@@ -130,6 +112,25 @@ export async function startBattle(zone, fighter, onEnd) {
 
     let eName = state.currentLang === 'en' ? currentEnemy.nameEn : currentEnemy.nameFr;
     logMessage(state.currentLang === 'en' ? `A wild <b>${eName}</b> appears! (Lvl ${currentEnemy.level})` : `Un <b>${eName}</b> sauvage apparaît ! (Niv. ${currentEnemy.level})`);
+
+    // DÉCLENCHEMENT DES TALENTS D'ENTRÉE (Joueur puis Ennemi)
+    triggerEntryAbility(activeFighter, currentEnemy);
+    triggerEntryAbility(currentEnemy, activeFighter);
+}
+
+function triggerEntryAbility(entity, opponent) {
+    if (entity.talent && ABILITIES_DB[entity.talent.en]) {
+        let ab = ABILITIES_DB[entity.talent.en];
+        if (ab.type === "on_entry_weather") {
+            currentWeather = ab.weather; weatherTurns = 5;
+            logMessage(`<span style="color:#f39c12"><b>${ab.msg}</b></span>`);
+            updateWeatherUI();
+        } else if (ab.type === "on_entry_stat") {
+            opponent.modifiers[ab.stat] = Math.max(-6, (opponent.modifiers[ab.stat] || 0) + ab.stage);
+            logMessage(`<span style="color:#e74c3c">${ab.msg}</span>`);
+            renderModifiersUI(opponent, opponent === activeFighter ? 'player-modifiers' : 'enemy-modifiers');
+        }
+    }
 }
 
 export function fleeBattle(forced = false) {
@@ -414,27 +415,27 @@ async function applyWeatherDamage(entity, weather, isPlayer) {
     }
 }
 
-async function executeMove(attacker, defender, move, isPlayer) {
-    if(attacker.battleStats.hp <= 0 || defender.battleStats.hp <= 0) return { flinched: false };
+async function executeMove(atk, def, move, isPlayer) {
+    if(atk.battleStats.hp <= 0 || def.battleStats.hp <= 0) return { flinched: false };
 
-    let canAttack = await preMoveCheck(attacker, isPlayer);
+    let canAttack = await preMoveCheck(atk, isPlayer);
     if(!canAttack) return { flinched: false };
 
-    if (attacker.flinched) {
+    if (atk.flinched) {
         logMessage(`<span style="color:#f39c12">${state.currentLang === 'en' ? 'It flinched and couldn\'t move!' : 'La peur l\'empêche d\'attaquer !'}</span>`);
         await new Promise(r => setTimeout(r, 800));
         return { flinched: false };
     }
 
-    let aName = isPlayer ? (state.currentLang === 'en' ? attacker.data.en : attacker.data.fr) : (state.currentLang === 'en' ? attacker.nameEn : attacker.nameFr);
-    if (isPlayer && attacker.mega) aName = formatMegaName(aName, attacker.megaForm);
-    let defName = isPlayer ? (state.currentLang === 'en' ? defender.nameEn : defender.nameFr) : (state.currentLang === 'en' ? defender.data.en : defender.data.fr);
+    let aName = isPlayer ? (state.currentLang === 'en' ? atk.data.en : atk.data.fr) : (state.currentLang === 'en' ? atk.nameEn : atk.nameFr);
+    if (isPlayer && atk.mega) aName = formatMegaName(aName, atk.megaForm);
+    let defName = isPlayer ? (state.currentLang === 'en' ? def.nameEn : def.nameFr) : (state.currentLang === 'en' ? def.data.en : def.data.fr);
     let mName = state.currentLang === 'en' ? move.nameEn : move.nameFr;
     let colorClass = isPlayer ? "var(--accent)" : "var(--danger)";
     
     logMessage(`<b>${aName}</b> ${state.currentLang === 'en'?'uses':'utilise'} <b style="color:${colorClass};">${mName}</b> !`);
 
-    // MÉCANIQUE : MÉTÉO
+    // MÉTÉO
     if (WEATHER_MOVES_DICT[move.nameEn]) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
         await new Promise(r => setTimeout(r, 600));
@@ -446,11 +447,11 @@ async function executeMove(attacker, defender, move, isPlayer) {
         return { flinched: false };
     }
 
-    // MÉCANIQUE : PRÉCISION / ESQUIVE (Jet de sable, Brouillard, Reflet)
+    // PRÉCISION / ESQUIVE
     if (ACCURACY_DROPS.includes(move.nameEn)) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
         await new Promise(r => setTimeout(r, 600));
-        defender.modifiers.accuracy = Math.max(-6, (defender.modifiers.accuracy || 0) - 1);
+        def.modifiers.accuracy = Math.max(-6, (def.modifiers.accuracy || 0) - 1);
         logMessage(`<span style="color:#e74c3c">La précision de ${defName} diminue !</span>`);
         updateBattleUI();
         await new Promise(r => setTimeout(r, 800));
@@ -459,76 +460,69 @@ async function executeMove(attacker, defender, move, isPlayer) {
     if (EVASION_UPS.includes(move.nameEn)) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
         await new Promise(r => setTimeout(r, 600));
-        attacker.modifiers.evasion = Math.min(6, (attacker.modifiers.evasion || 0) + 1);
+        atk.modifiers.evasion = Math.min(6, (atk.modifiers.evasion || 0) + 1);
         logMessage(`<span style="color:#3498db">L'esquive de ${aName} augmente !</span>`);
         updateBattleUI();
         await new Promise(r => setTimeout(r, 800));
         return { flinched: false };
     }
 
-    // MÉCANIQUE : CALCUL DE L'ESQUIVE GLOBALE
+    // MOTEUR: CALCUL DE L'ESQUIVE GLOBALE
     let isStatusOnSelf = move.damageClass === "status" && (EVASION_UPS.includes(move.nameEn) || HEAL_MOVES.includes(move.nameEn) || PROTECT_MOVES_LIST.includes(move.nameEn));
     if (!isStatusOnSelf && move.nameEn !== "transform") {
-        let accStage = Math.max(-6, Math.min(6, (attacker.modifiers.accuracy || 0) - (defender.modifiers.evasion || 0)));
-        let accMult = accStage >= 0 ? (3 + accStage) / 3 : 3 / (3 - accStage);
-        let moveAcc = move.accuracy || 100;
-        
-        if (Math.random() * 100 > moveAcc * accMult) {
+        if (!checkMoveHit(move, atk.modifiers, def.modifiers)) {
             logMessage(`<b>L'attaque a raté !</b>`);
             await new Promise(r => setTimeout(r, 600));
             return { flinched: false };
         }
     }
 
-    // MÉCANIQUE : MORPHING (Transform)
+    // MORPHING
     if (move.nameEn === "transform") {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
         await new Promise(r => setTimeout(r, 600));
-        attacker.battleStats.types = [...defender.battleStats.types];
-        attacker.battleStats.atk = defender.battleStats.atk;
-        attacker.battleStats.def = defender.battleStats.def;
-        attacker.battleStats.spatk = defender.battleStats.spatk;
-        attacker.battleStats.spdef = defender.battleStats.spdef;
-        attacker.battleStats.speed = defender.battleStats.speed;
-        attacker.modifiers = JSON.parse(JSON.stringify(defender.modifiers || {}));
-        attacker.battleMoves = JSON.parse(JSON.stringify(defender.battleMoves || defender.moves));
-        attacker.transformedImage = isPlayer ? (defender.transformedImage || defender.sprite) : (defender.transformedImage || getCardImageUrl(defender));
+        atk.battleStats.types = [...def.battleStats.types];
+        atk.battleStats.atk = def.battleStats.atk; atk.battleStats.def = def.battleStats.def;
+        atk.battleStats.spatk = def.battleStats.spatk; atk.battleStats.spdef = def.battleStats.spdef;
+        atk.battleStats.speed = def.battleStats.speed;
+        atk.modifiers = JSON.parse(JSON.stringify(def.modifiers || {}));
+        atk.battleMoves = JSON.parse(JSON.stringify(def.battleMoves || def.moves));
+        atk.transformedImage = isPlayer ? (def.transformedImage || def.sprite) : (def.transformedImage || getCardImageUrl(def));
         logMessage(`<span style="color:#9b59b6">${aName} se transforme en ${defName} !</span>`);
-        updateBattleUI();
-        if (isPlayer) renderMovesUI(); 
+        updateBattleUI(); if (isPlayer) renderMovesUI(); 
         await new Promise(r => setTimeout(r, 800));
         return { flinched: false };
     }
 
-    // MÉCANIQUE : BLUFF (Fake Out)
+    // BLUFF
     if (move.nameEn === "fake-out") {
-        if ((attacker.turnsActive || 0) > 0) { logMessage(`Mais cela échoue !`); return { flinched: false }; }
+        if ((atk.turnsActive || 0) > 0) { logMessage(`Mais cela échoue !`); return { flinched: false }; }
     }
 
-    // MÉCANIQUE : ABRI / DÉTECTION (Protect)
+    // ABRI
     if (PROTECT_MOVES_LIST.includes(move.nameEn)) {
-        let chance = Math.pow(0.5, attacker.protectCount || 0);
+        let chance = Math.pow(0.5, atk.protectCount || 0);
         if (Math.random() < chance) {
-            attacker.isProtected = true; attacker.protectCount = (attacker.protectCount || 0) + 1;
+            atk.isProtected = true; atk.protectCount = (atk.protectCount || 0) + 1;
             logMessage(`<span style="color:#2ecc71">${aName} se protège !</span>`);
         } else {
-            attacker.protectCount = 0; logMessage(`Mais cela échoue !`);
+            atk.protectCount = 0; logMessage(`Mais cela échoue !`);
         }
         await new Promise(r => setTimeout(r, 600)); return { flinched: false };
     } else {
-        attacker.protectCount = 0;
+        atk.protectCount = 0;
     }
 
-    if (defender.isProtected) {
+    if (def.isProtected) {
         logMessage(`<span style="color:#bdc3c7">${defName} s'est protégé contre l'attaque !</span>`);
         await new Promise(r => setTimeout(r, 600)); return { flinched: false };
     }
 
-    // MÉCANIQUE : VAMPIGRAINE
+    // VAMPIGRAINE
     if (SEED_MOVES_LIST.includes(move.nameEn)) {
-        if (defender.battleStats.types.includes('grass')) logMessage(`Ça n'affecte pas les Pokémon Plante !`);
-        else if (defender.isSeeded) logMessage(`${defName} est déjà infecté !`);
-        else { defender.isSeeded = true; logMessage(`<span style="color:#2ecc71">${defName} est infecté par Vampigraine !</span>`); }
+        if (def.battleStats.types.includes('grass')) logMessage(`Ça n'affecte pas les Pokémon Plante !`);
+        else if (def.isSeeded) logMessage(`${defName} est déjà infecté !`);
+        else { def.isSeeded = true; logMessage(`<span style="color:#2ecc71">${defName} est infecté par Vampigraine !</span>`); }
         await new Promise(r => setTimeout(r, 600)); return { flinched: false };
     }
     
@@ -542,18 +536,17 @@ async function executeMove(attacker, defender, move, isPlayer) {
     if (STAT_CLEAR_MOVES.includes(move.nameEn)) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
         await new Promise(r => setTimeout(r, 600));
-        for(let s in attacker.modifiers) attacker.modifiers[s] = 0;
-        for(let s in defender.modifiers) defender.modifiers[s] = 0;
+        for(let s in atk.modifiers) atk.modifiers[s] = 0;
+        for(let s in def.modifiers) def.modifiers[s] = 0;
         logMessage(`<span style="color:#3498db">Tous les changements de stats sont annulés !</span>`);
-        updateBattleUI();
-        await new Promise(r => setTimeout(r, 800)); return { flinched: false };
+        updateBattleUI(); await new Promise(r => setTimeout(r, 800)); return { flinched: false };
     }
 
     if (OHKO_MOVES.includes(move.nameEn)) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
         await new Promise(r => setTimeout(r, 600));
         if (Math.random() < 0.30) {
-            defender.battleStats.hp = 0;
+            def.battleStats.hp = 0;
             logMessage(`<span style="color:#f39c12">K.O. en un coup !</span>`);
             playAnimation(isPlayer ? 'enemy-sprite' : 'player-sprite', 'anim-damage');
             updateBattleUI(); await new Promise(r => setTimeout(r, 1000));
@@ -571,8 +564,8 @@ async function executeMove(attacker, defender, move, isPlayer) {
     if (HEAL_MOVES.includes(move.nameEn)) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
         await new Promise(r => setTimeout(r, 600));
-        let healAmount = Math.floor(attacker.battleStats.maxHp / 2);
-        attacker.battleStats.hp = Math.min(attacker.battleStats.maxHp, attacker.battleStats.hp + healAmount);
+        let healAmount = Math.floor(atk.battleStats.maxHp / 2);
+        atk.battleStats.hp = Math.min(atk.battleStats.maxHp, atk.battleStats.hp + healAmount);
         logMessage(`<span style="color:#2ecc71">${aName} regagne des PV !</span>`);
         updateBattleUI(); await new Promise(r => setTimeout(r, 800)); return { flinched: false };
     }
@@ -583,7 +576,7 @@ async function executeMove(attacker, defender, move, isPlayer) {
         let statObj = STATUS_CONDITIONS[move.nameEn];
         
         if (Math.random() * 100 <= statObj.chance) {
-            let targetEntity = (statObj.status === 'CNF' && move.nameEn === 'swagger') ? defender : defender; 
+            let targetEntity = (statObj.status === 'CNF' && move.nameEn === 'swagger') ? def : def; 
             applyStatus(targetEntity, statObj, defName);
             if(statObj.stat) {
                 targetEntity.modifiers[statObj.stat] = Math.max(-6, Math.min(6, targetEntity.modifiers[statObj.stat] + statObj.stage));
@@ -599,10 +592,10 @@ async function executeMove(attacker, defender, move, isPlayer) {
         await new Promise(r => setTimeout(r, 600));
         const statusData = STATUS_MOVES[move.nameEn];
         if (statusData) {
-            let targetEntity = statusData.target === "enemy" ? defender : attacker;
+            let targetEntity = statusData.target === "enemy" ? def : atk;
             let targetName = statusData.target === "enemy" ? defName : aName;
             for (let effect of statusData.effects) {
-                targetEntity.modifiers[effect.stat] = Math.max(-6, Math.min(6, targetEntity.modifiers[effect.stat] + effect.stage));
+                targetEntity.modifiers[effect.stat] = Math.max(-6, Math.min(6, (targetEntity.modifiers[effect.stat]||0) + effect.stage));
                 let statName = EXTENDED_STAT_NAMES[effect.stat];
                 if (effect.stage > 0) logMessage(`<span style="color:#3498db">${statName} de ${targetName} augmente !</span>`);
                 else logMessage(`<span style="color:#e74c3c">${statName} de ${targetName} diminue !</span>`);
@@ -619,44 +612,18 @@ async function executeMove(attacker, defender, move, isPlayer) {
 
     let totalDamage = 0;
     for (let i = 0; i < hitCount; i++) {
-        if (defender.battleStats.hp <= 0) break;
+        if (def.battleStats.hp <= 0) break;
 
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
         await new Promise(r => setTimeout(r, 400)); 
 
-        let damage = 0; let isCrit = false; let mult = 1;
+        // MOTEUR: CALCUL DES DÉGÂTS PURS
+        let dmgInfo = calculateDamage(atk, def, move, currentWeather);
+        let damage = dmgInfo.damage;
+        let isCrit = dmgInfo.isCrit;
+        let mult = dmgInfo.mult;
 
-        if (FIXED_DAMAGE_MOVES[move.nameEn] !== undefined) {
-            let val = FIXED_DAMAGE_MOVES[move.nameEn];
-            damage = val === "level" ? (attacker.level || 1) : val;
-            mult = getEffectiveness(move.type, defender.battleStats.types);
-            if (mult === 0) damage = 0; 
-        } else {
-            let critChance = HIGH_CRIT_MOVES.includes(move.nameEn) ? 0.125 : 0.0625;
-            isCrit = Math.random() < critChance; 
-            let level = attacker.level || 1;
-            let A = move.damageClass === 'special' ? getEffectiveStat(attacker, 'spatk') : getEffectiveStat(attacker, 'atk');
-            let D = move.damageClass === 'special' ? getEffectiveStat(defender, 'spdef') : getEffectiveStat(defender, 'def');
-            
-            if (attacker.status === 'BRN' && move.damageClass === 'physical') A = Math.floor(A / 2);
-            if (KAMIKAZE_MOVES.includes(move.nameEn)) A *= 1.5;
-
-            // BONUS/MALUS DE MÉTÉO SUR LES DÉGÂTS
-            let weatherMult = 1;
-            if (currentWeather === 'sun') { if (move.type === 'fire') weatherMult = 1.5; if (move.type === 'water') weatherMult = 0.5; }
-            if (currentWeather === 'rain') { if (move.type === 'water') weatherMult = 1.5; if (move.type === 'fire') weatherMult = 0.5; }
-
-            let baseDmg = Math.floor(Math.floor(Math.floor(2 * level / 5 + 2) * move.power * A / D) / 50) + 2;
-            let stab = attacker.battleStats.types.includes(move.type) ? 1.5 : 1;
-            mult = getEffectiveness(move.type, defender.battleStats.types);
-            let random = (Math.random() * (1 - 0.85) + 0.85);
-            let critMult = isCrit ? 1.5 : 1;
-
-            damage = Math.floor(baseDmg * stab * mult * weatherMult * random * critMult);
-            if (mult === 0) damage = 0; else damage = Math.max(1, damage);
-        }
-
-        defender.battleStats.hp -= damage;
+        def.battleStats.hp -= damage;
         totalDamage += damage;
         playAnimation(isPlayer ? 'enemy-sprite' : 'player-sprite', 'anim-damage');
 
@@ -674,31 +641,44 @@ async function executeMove(attacker, defender, move, isPlayer) {
     if (hitCount > 1 && totalDamage > 0) logMessage(`Touché ${hitCount} fois !`);
     if (totalDamage > 0) logMessage(`(${totalDamage} dégâts)`);
 
-    if (KAMIKAZE_MOVES.includes(move.nameEn)) {
-        attacker.battleStats.hp = 0; logMessage(`<span style="color:#e74c3c">${aName} se sacrifie !</span>`); updateBattleUI();
+    // TALENTS DE CONTACT (Au moment de prendre les dégâts)
+    if (totalDamage > 0 && def.talent && ABILITIES_DB[def.talent.en] && move.damageClass === "physical") {
+        let abDef = ABILITIES_DB[def.talent.en];
+        if (abDef.type === "on_hit_status" && Math.random() * 100 <= abDef.statusObj.chance) {
+            applyStatus(atk, abDef.statusObj, aName);
+            logMessage(`<span style="color:#8e44ad">${abDef.msg}</span>`);
+            updateBattleUI();
+        } else if (abDef.type === "on_hit_damage") {
+            let recoil = Math.max(1, Math.floor(atk.battleStats.maxHp / (100 / abDef.percent)));
+            atk.battleStats.hp -= recoil;
+            logMessage(`<span style="color:#e74c3c">${abDef.msg}</span>`);
+            updateBattleUI();
+        }
     }
 
-    if (move.nameEn === "fake-out" && defender.battleStats.hp > 0 && totalDamage > 0) defender.flinched = true;
+    if (KAMIKAZE_MOVES.includes(move.nameEn)) {
+        atk.battleStats.hp = 0; logMessage(`<span style="color:#e74c3c">${aName} se sacrifie !</span>`); updateBattleUI();
+    }
 
-    if (totalDamage > 0 && defender.battleStats.hp > 0) {
+    if (move.nameEn === "fake-out" && def.battleStats.hp > 0 && totalDamage > 0) def.flinched = true;
+
+    if (totalDamage > 0 && def.battleStats.hp > 0) {
         if (DRAIN_MOVES.includes(move.nameEn)) {
             let drainHeal = Math.max(1, Math.floor(totalDamage / 2));
-            attacker.battleStats.hp = Math.min(attacker.battleStats.maxHp, attacker.battleStats.hp + drainHeal);
+            atk.battleStats.hp = Math.min(atk.battleStats.maxHp, atk.battleStats.hp + drainHeal);
             logMessage(`<span style="color:#2ecc71">${defName} voit son énergie aspirée !</span>`);
         }
-        
         if (RECOIL_MOVES.includes(move.nameEn)) {
             let recoilDmg = Math.max(1, Math.floor(totalDamage / 3));
-            attacker.battleStats.hp -= recoilDmg;
+            atk.battleStats.hp -= recoilDmg;
             logMessage(`<span style="color:#e74c3c">${aName} est blessé par le contrecoup !</span>`);
         }
-
         const secEffect = SECONDARY_EFFECTS[move.nameEn];
         if (secEffect && Math.random() <= secEffect.chance) {
-            let targetEntity = secEffect.target === "enemy" ? defender : attacker;
+            let targetEntity = secEffect.target === "enemy" ? def : atk;
             let targetName = secEffect.target === "enemy" ? defName : aName;
             for (let effect of secEffect.effects) {
-                targetEntity.modifiers[effect.stat] = Math.max(-6, Math.min(6, targetEntity.modifiers[effect.stat] + effect.stage));
+                targetEntity.modifiers[effect.stat] = Math.max(-6, Math.min(6, (targetEntity.modifiers[effect.stat]||0) + effect.stage));
                 let statName = EXTENDED_STAT_NAMES[effect.stat];
                 if (effect.stage > 0) logMessage(`<span style="color:#3498db">${statName} de ${targetName} augmente !</span>`);
                 else logMessage(`<span style="color:#e74c3c">${statName} de ${targetName} diminue !</span>`);
@@ -706,12 +686,12 @@ async function executeMove(attacker, defender, move, isPlayer) {
         }
 
         const secStatus = SECONDARY_STATUS[move.nameEn];
-        if (secStatus && Math.random() * 100 <= secStatus.chance) applyStatus(defender, secStatus, defName);
+        if (secStatus && Math.random() * 100 <= secStatus.chance) applyStatus(def, secStatus, defName);
     }
 
     updateBattleUI();
     let flinched = false;
-    if (FLINCH_MOVES.includes(move.nameEn) && totalDamage > 0 && Math.random() < 0.3) defender.flinched = true;
+    if (FLINCH_MOVES.includes(move.nameEn) && totalDamage > 0 && Math.random() < 0.3) def.flinched = true;
 
     await new Promise(r => setTimeout(r, 600));
     return { flinched, forceFlee: false };
@@ -745,11 +725,9 @@ export async function processTurn(playerMove) {
         } else if (m.nameEn === "transform") {
             expected = 20; 
         } else {
-            let mMult = getEffectiveness(m.type, activeFighter.battleStats.types);
-            let stab = currentEnemy.battleStats.types.includes(m.type) ? 1.5 : 1;
-            let A = m.damageClass === 'special' ? getEffectiveStat(currentEnemy, 'spatk') : getEffectiveStat(currentEnemy, 'atk');
-            let D = m.damageClass === 'special' ? getEffectiveStat(activeFighter, 'spdef') : getEffectiveStat(activeFighter, 'def');
-            expected = m.power * mMult * stab * (A / D);
+            // MOTEUR: Utilisation de l'Engine pour estimer l'IA
+            let estDmgInfo = calculateDamage(currentEnemy, activeFighter, m, currentWeather);
+            expected = estDmgInfo.damage;
         }
         
         if (expected > maxExpectedDamage) {
@@ -766,8 +744,8 @@ export async function processTurn(playerMove) {
     if (pPriority > ePriority) playerGoesFirst = true;
     else if (ePriority > pPriority) playerGoesFirst = false;
     else {
-        let playerSpeed = getEffectiveStat(activeFighter, 'speed');
-        let enemySpeed = getEffectiveStat(currentEnemy, 'speed');
+        let playerSpeed = getEffectiveStat(activeFighter, 'speed', currentWeather);
+        let enemySpeed = getEffectiveStat(currentEnemy, 'speed', currentWeather);
         playerGoesFirst = playerSpeed >= enemySpeed;
         if (playerSpeed === enemySpeed) playerGoesFirst = Math.random() > 0.5;
     }
@@ -782,7 +760,6 @@ export async function processTurn(playerMove) {
         if (activeFighter.battleStats.hp > 0 && currentEnemy.battleStats.hp > 0) await executeMove(activeFighter, currentEnemy, playerMove, true);
     }
 
-    // ÉVALUATION DES DÉGÂTS DE FIN DE TOUR (Statuts + Météo)
     if (activeFighter.battleStats.hp > 0) await applyEndTurnStatus(activeFighter, currentEnemy, true);
     if (currentEnemy.battleStats.hp > 0) await applyEndTurnStatus(currentEnemy, activeFighter, false);
 

@@ -1,13 +1,16 @@
 import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
-import { getPokemonPow, getPokemonDetails, getCardImageUrl, getEffectiveness, getMovesForLevel } from '../utils.js';
+import { getPokemonPow, getPokemonDetails, getCardImageUrl, getMovesForLevel } from '../utils.js';
 import { allerASection } from './navController.js';
 import { 
     USELESS_MOVES, PRIORITY_MOVES, HEAL_MOVES, DRAIN_MOVES, RECOIL_MOVES, MULTI_HIT_2_5, MULTI_HIT_2, 
     FLINCH_MOVES, SECONDARY_EFFECTS, STATUS_MOVES, STAT_NAMES, 
-    OHKO_MOVES, KAMIKAZE_MOVES, FORCE_FLEE_MOVES, HIGH_CRIT_MOVES, STAT_CLEAR_MOVES, FIXED_DAMAGE_MOVES,
-    STATUS_CONDITIONS, SECONDARY_STATUS
+    OHKO_MOVES, KAMIKAZE_MOVES, FORCE_FLEE_MOVES, STAT_CLEAR_MOVES, FIXED_DAMAGE_MOVES,
+    STATUS_CONDITIONS, SECONDARY_STATUS, ABILITIES_DB
 } from '../data/campagneData.js';
+
+// --- IMPORT DU NOUVEAU MOTEUR ---
+import { getEffectiveStat, checkMoveHit, calculateDamage } from '../battleEngine.js';
 
 const PROTECT_MOVES_LIST = ["protect", "detect"];
 const SEED_MOVES_LIST = ["leech-seed"];
@@ -27,10 +30,6 @@ let unsubscribeBattle = null;
 
 const STATUS_COLORS = { "BRN": "#e67e22", "PSN": "#9b59b6", "TOX": "#8e44ad", "PAR": "#f1c40f", "FRZ": "#3498db", "SLP": "#2c3e50" };
 
-// =========================================================================
-// OUTILS D'AFFICHAGE
-// =========================================================================
-
 function logMessage(msg) {
     const logBox = document.getElementById('pvp-battle-log');
     if(!logBox) return;
@@ -46,10 +45,6 @@ function updateBarColor(id, hp, maxHp) {
     else if (ratio > 0.2) el.style.backgroundColor = "#f39c12";
     else el.style.backgroundColor = "#e74c3c";
 }
-
-// =========================================================================
-// 1. SALON ET INVITATIONS
-// =========================================================================
 
 export function initPvPListener() {
     if(!state.currentUser) return;
@@ -176,7 +171,7 @@ async function createBattleRoom(req, team1, team2) {
         team2: await formatTeam(team2),
         active1: 0, active2: 0,
         action1: null, action2: null,
-        weather: 'none', weatherTurns: 0, // Sauvegarde globale de la météo
+        weather: 'none', weatherTurns: 0,
         log: [`<b style="color:#f39c12;">Le combat ${req.type === 'ranked' ? 'Classé' : 'Amical'} commence !</b>`],
         status: 'playing', mode: req.type, winner: null
     });
@@ -220,8 +215,6 @@ async function formatTeam(rawTeam) {
         };
     }));
 }
-
-// ---------- SÉLECTION AMICALE ----------
 
 function openFriendlyTeamSelector(friendId) {
     document.getElementById('pvp-challenge-modal').classList.add('hidden');
@@ -297,10 +290,6 @@ function renderTeamSelectionGrid(selectedArray, onSelectCallback) {
     });
     onSelectCallback();
 }
-
-// =========================================================================
-// 2. MOTEUR SYNCHRONE (EN COMBAT)
-// =========================================================================
 
 function joinRealTimeBattle(battleId) {
     currentBattleId = battleId;
@@ -537,20 +526,6 @@ function surrenderBattle() {
     }
 }
 
-// =========================================================================
-// 3. RÉSOLUTION DES DÉGÂTS (Exécuté uniquement par l'Hôte / P1)
-// =========================================================================
-
-function getEffectiveStat(entity, statName) {
-    let statsObj = entity.battleStats || entity.stats || {};
-    let base = statsObj[statName] || 10;
-    let stage = entity.modifiers ? (entity.modifiers[statName] || 0) : 0;
-    let multiplier = Math.max(2, 2 + stage) / Math.max(2, 2 - stage);
-    let finalStat = Math.floor(base * multiplier);
-    if (statName === 'speed' && entity.status === 'PAR') finalStat = Math.floor(finalStat / 2);
-    return finalStat;
-}
-
 function preMoveCheckSync(entity, logs) {
     let name = entity.data.fr;
     if (entity.status === 'FRZ') {
@@ -645,6 +620,19 @@ function revertTransformation(pkmn) {
     }
 }
 
+function triggerEntryAbilitySync(entity, opponent, data, logs) {
+    if (entity.talent && ABILITIES_DB[entity.talent.en]) {
+        let ab = ABILITIES_DB[entity.talent.en];
+        if (ab.type === "on_entry_weather") {
+            data.weather = ab.weather; data.weatherTurns = 5;
+            logs.push(`<span style="color:#f39c12"><b>${ab.msg}</b></span>`);
+        } else if (ab.type === "on_entry_stat") {
+            opponent.modifiers[ab.stat] = Math.max(-6, (opponent.modifiers[ab.stat] || 0) + ab.stage);
+            logs.push(`<span style="color:#e74c3c">${ab.msg}</span>`);
+        }
+    }
+}
+
 async function resolveSynchronousTurn(data, battleRef) {
     let t1 = data.team1; let t2 = data.team2;
     let a1 = data.action1; let a2 = data.action2;
@@ -660,11 +648,13 @@ async function resolveSynchronousTurn(data, battleRef) {
             active1 = a1.index; p1 = t1[active1]; 
             p1.turnsActive = 0; p1.isSeeded = false; 
             turnLogs.push(`Le Joueur 1 envoie <b>${p1.data.fr}</b> !`); 
+            triggerEntryAbilitySync(p1, p2, data, turnLogs);
         }
         if (a2.type === 'force_switch') { 
             active2 = a2.index; p2 = t2[active2]; 
             p2.turnsActive = 0; p2.isSeeded = false; 
             turnLogs.push(`Le Joueur 2 envoie <b>${p2.data.fr}</b> !`); 
+            triggerEntryAbilitySync(p2, p1, data, turnLogs);
         }
     } else {
         if (a1.type === 'switch') { 
@@ -673,6 +663,7 @@ async function resolveSynchronousTurn(data, battleRef) {
             p1.turnsActive = 0; p1.isSeeded = false; 
             for(let s in p1.modifiers) p1.modifiers[s] = 0;
             turnLogs.push(`Joueur 1 envoie <b>${p1.data.fr}</b> !`); 
+            triggerEntryAbilitySync(p1, p2, data, turnLogs);
         }
         if (a2.type === 'switch') { 
             revertTransformation(p2); 
@@ -680,6 +671,7 @@ async function resolveSynchronousTurn(data, battleRef) {
             p2.turnsActive = 0; p2.isSeeded = false; 
             for(let s in p2.modifiers) p2.modifiers[s] = 0;
             turnLogs.push(`Joueur 2 envoie <b>${p2.data.fr}</b> !`); 
+            triggerEntryAbilitySync(p2, p1, data, turnLogs);
         }
 
         p1.isProtected = false; p2.isProtected = false;
@@ -689,7 +681,7 @@ async function resolveSynchronousTurn(data, battleRef) {
         let move2 = a2.type === 'move' ? a2.move : null;
 
         if (move1 && move2) {
-            let p1Speed = getEffectiveStat(p1, 'speed'); let p2Speed = getEffectiveStat(p2, 'speed');
+            let p1Speed = getEffectiveStat(p1, 'speed', data.weather); let p2Speed = getEffectiveStat(p2, 'speed', data.weather);
             
             let p1Priority = PRIORITY_MOVES.includes(move1.nameEn) ? 1 : 0;
             if (move1.nameEn === "fake-out") p1Priority = 3;
@@ -755,7 +747,7 @@ function evalMove(atk, def, move, logs, battleData) {
 
     logs.push(`<b>${atk.data.fr}</b> utilise <span style="color:#3498db">${move.nameFr}</span> !`);
 
-    // MÉCANIQUE : MÉTÉO
+    // MÉTÉO
     if (WEATHER_MOVES_DICT[move.nameEn]) {
         let wInfo = WEATHER_MOVES_DICT[move.nameEn];
         battleData.weather = wInfo.weather;
@@ -764,7 +756,7 @@ function evalMove(atk, def, move, logs, battleData) {
         return;
     }
 
-    // MÉCANIQUE : PRÉCISION / ESQUIVE
+    // PRÉCISION / ESQUIVE
     if (ACCURACY_DROPS.includes(move.nameEn)) {
         def.modifiers.accuracy = Math.max(-6, (def.modifiers.accuracy || 0) - 1);
         logs.push(`<span style="color:#e74c3c">La précision de ${def.data.fr} diminue !</span>`);
@@ -776,24 +768,21 @@ function evalMove(atk, def, move, logs, battleData) {
         return;
     }
 
+    // MOTEUR: CALCUL DE L'ESQUIVE
     let isStatusOnSelf = move.damageClass === "status" && (EVASION_UPS.includes(move.nameEn) || HEAL_MOVES.includes(move.nameEn) || PROTECT_MOVES_LIST.includes(move.nameEn));
     if (!isStatusOnSelf && move.nameEn !== "transform") {
-        let accStage = Math.max(-6, Math.min(6, (atk.modifiers.accuracy || 0) - (def.modifiers.evasion || 0)));
-        let accMult = accStage >= 0 ? (3 + accStage) / 3 : 3 / (3 - accStage);
-        let moveAcc = move.accuracy || 100;
-        
-        if (Math.random() * 100 > moveAcc * accMult) {
+        if (!checkMoveHit(move, atk.modifiers, def.modifiers)) {
             logs.push(`<b>Mais l'attaque a raté !</b>`);
             return;
         }
     }
     
-    // MÉCANIQUE : BLUFF
+    // BLUFF
     if (move.nameEn === "fake-out") {
         if ((atk.turnsActive || 0) > 0) { logs.push(`Mais cela échoue !`); return; }
     }
 
-    // MÉCANIQUE : MORPHING
+    // MORPHING
     if (move.nameEn === "transform") {
         atk.types = [...(def.types || [])];
         atk.stats = JSON.parse(JSON.stringify(def.stats));
@@ -804,7 +793,7 @@ function evalMove(atk, def, move, logs, battleData) {
         return;
     }
 
-    // MÉCANIQUE : ABRI
+    // ABRI
     if (PROTECT_MOVES_LIST.includes(move.nameEn)) {
         let chance = Math.pow(0.5, atk.protectCount || 0);
         if (Math.random() < chance) {
@@ -823,7 +812,7 @@ function evalMove(atk, def, move, logs, battleData) {
         return;
     }
 
-    // MÉCANIQUE : VAMPIGRAINE
+    // VAMPIGRAINE
     if (SEED_MOVES_LIST.includes(move.nameEn)) {
         let defTypes = def.types || (def.battleStats ? def.battleStats.types : []);
         if (defTypes.includes('grass')) { logs.push(`Ça n'affecte pas les Pokémon Plante !`); } 
@@ -876,37 +865,6 @@ function evalMove(atk, def, move, logs, battleData) {
         return; 
     }
 
-    let A = move.damageClass === 'special' ? getEffectiveStat(atk, 'spatk') : getEffectiveStat(atk, 'atk');
-    let D = move.damageClass === 'special' ? getEffectiveStat(def, 'spdef') : getEffectiveStat(def, 'def');
-    
-    if (atk.status === 'BRN' && move.damageClass === 'physical') A = Math.floor(A / 2);
-    if (KAMIKAZE_MOVES.includes(move.nameEn)) A *= 1.5;
-
-    // MÉCANIQUE : DÉGÂTS INFLUENCÉS PAR LA MÉTÉO
-    let weatherMult = 1;
-    if (battleData.weather === 'sun') { if (move.type === 'fire') weatherMult = 1.5; if (move.type === 'water') weatherMult = 0.5; }
-    if (battleData.weather === 'rain') { if (move.type === 'water') weatherMult = 1.5; if (move.type === 'fire') weatherMult = 0.5; }
-
-    let baseDmg = Math.floor(Math.floor(Math.floor(2 * (atk.level||1) / 5 + 2) * move.power * A / D) / 50) + 2;
-    
-    let atkTypes = atk.types || [];
-    let defTypes = def.types || [];
-
-    let stab = atkTypes.includes(move.type) ? 1.5 : 1;
-    let mult = getEffectiveness(move.type, defTypes);
-    
-    let isCrit = Math.random() < (HIGH_CRIT_MOVES.includes(move.nameEn) ? 0.125 : 0.0625);
-    let dmg = Math.floor(baseDmg * stab * mult * weatherMult * (Math.random() * (1 - 0.85) + 0.85) * (isCrit ? 1.5 : 1));
-    
-    if (FIXED_DAMAGE_MOVES[move.nameEn] !== undefined) {
-        let val = FIXED_DAMAGE_MOVES[move.nameEn];
-        dmg = val === "level" ? (atk.level || 1) : val;
-        if (mult === 0) dmg = 0; 
-    }
-
-    if (move.power == 0 || !move.power) dmg = 0; 
-    if (mult === 0) dmg = 0; else dmg = Math.max(1, dmg);
-
     let hitCount = 1;
     if (MULTI_HIT_2_5.includes(move.nameEn)) hitCount = (Math.random() < 0.35) ? 2 : (Math.random() < 0.7 ? 3 : (Math.random() < 0.85 ? 4 : 5));
     else if (MULTI_HIT_2.includes(move.nameEn)) hitCount = 2;
@@ -914,15 +872,39 @@ function evalMove(atk, def, move, logs, battleData) {
     let totalDmg = 0;
     for(let i=0; i<hitCount; i++) {
         if(def.currentHp <= 0) break;
+        
+        // MOTEUR: CALCUL DES DÉGÂTS PURS
+        let dmgInfo = calculateDamage(atk, def, move, battleData.weather);
+        let dmg = dmgInfo.damage;
+        let isCrit = dmgInfo.isCrit;
+        let mult = dmgInfo.mult;
+
         def.currentHp -= dmg;
         totalDmg += dmg;
+
+        if (dmg > 0 && isCrit && hitCount === 1) logs.push(`<span style="color:#f39c12">Coup Critique !</span>`);
+        
+        if (i === hitCount - 1) { 
+            if (mult > 1) logs.push(`C'est super efficace !`);
+            else if (mult > 0 && mult < 1) logs.push(`Ce n'est pas très efficace...`);
+            else if (mult === 0 && move.power > 0) logs.push(`Ça n'a aucun effet.`);
+        }
     }
 
-    if (dmg > 0 && isCrit) logs.push(`<span style="color:#f39c12">Coup Critique !</span>`);
     if (hitCount > 1 && totalDmg > 0) logs.push(`Touché ${hitCount} fois !`);
-    if (mult > 1) logs.push(`C'est super efficace !`);
-    if (mult < 1 && mult > 0) logs.push(`Ce n'est pas très efficace...`);
-    if (mult === 0 && move.power > 0) logs.push(`Ça n'a aucun effet.`);
+
+    // TALENTS DE CONTACT (Au moment de prendre les dégâts)
+    if (totalDmg > 0 && def.talent && ABILITIES_DB[def.talent.en] && move.damageClass === "physical") {
+        let abDef = ABILITIES_DB[def.talent.en];
+        if (abDef.type === "on_hit_status" && Math.random() * 100 <= abDef.statusObj.chance) {
+            applyStatusSync(atk, abDef.statusObj, atk.data.fr, logs);
+            logs.push(`<span style="color:#8e44ad">${abDef.msg}</span>`);
+        } else if (abDef.type === "on_hit_damage") {
+            let recoil = Math.max(1, Math.floor(atk.maxHp / (100 / abDef.percent)));
+            atk.currentHp -= recoil;
+            logs.push(`<span style="color:#e74c3c">${abDef.msg}</span>`);
+        }
+    }
 
     if (KAMIKAZE_MOVES.includes(move.nameEn)) {
         atk.currentHp = 0; logs.push(`<span style="color:#e74c3c">${atk.data.fr} se sacrifie !</span>`);
@@ -942,10 +924,11 @@ function evalMove(atk, def, move, logs, battleData) {
         const secEffect = SECONDARY_EFFECTS[move.nameEn];
         if (secEffect && Math.random() <= secEffect.chance) {
             let tEnt = secEffect.target === "enemy" ? def : atk;
+            let targetName = secEffect.target === "enemy" ? def.data.fr : atk.data.fr;
             for (let effect of secEffect.effects) {
                 tEnt.modifiers[effect.stat] = Math.max(-6, Math.min(6, (tEnt.modifiers[effect.stat]||0) + effect.stage));
-                if (effect.stage > 0) logs.push(`<span style="color:#3498db">${EXTENDED_STAT_NAMES[effect.stat]} de ${secEffect.target==="enemy"?def.data.fr:atk.data.fr} augmente !</span>`);
-                else logs.push(`<span style="color:#e74c3c">${EXTENDED_STAT_NAMES[effect.stat]} de ${secEffect.target==="enemy"?def.data.fr:atk.data.fr} diminue !</span>`);
+                if (effect.stage > 0) logs.push(`<span style="color:#3498db">${EXTENDED_STAT_NAMES[effect.stat]} de ${targetName} augmente !</span>`);
+                else logs.push(`<span style="color:#e74c3c">${EXTENDED_STAT_NAMES[effect.stat]} de ${targetName} diminue !</span>`);
             }
         }
         const secStatus = SECONDARY_STATUS[move.nameEn];

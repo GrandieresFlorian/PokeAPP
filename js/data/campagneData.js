@@ -138,3 +138,31 @@ export const STAT_NAMES = {
 
 export const PROTECT_MOVES = ["protect", "detect"];
 export const SEED_MOVES = ["leech-seed"];
+
+// Dictionnaire des talents (à exporter en bas du fichier)
+export const ABILITIES_DB = {
+    // Boosts quand PV < 30%
+    "overgrow": { type: "low_hp_boost", element: "grass" }, // Engrais
+    "blaze": { type: "low_hp_boost", element: "fire" }, // Brasier
+    "torrent": { type: "low_hp_boost", element: "water" }, // Torrent
+    "swarm": { type: "low_hp_boost", element: "bug" }, // Essaim
+
+    // Vitesse doublée sous la météo
+    "chlorophyll": { type: "weather_speed", weather: "sun" }, // Chlorophylle
+    "swift-swim": { type: "weather_speed", weather: "rain" }, // Glissade
+    "sand-rush": { type: "weather_speed", weather: "sandstorm" }, // Baigne Sable
+
+    // Météo invoquée à l'entrée
+    "drizzle": { type: "on_entry_weather", weather: "rain", msg: "Le Crachin commence à tomber 🌧️ !" },
+    "drought": { type: "on_entry_weather", weather: "sun", msg: "La Sécheresse intensifie les rayons du soleil ☀️ !" },
+    "sand-stream": { type: "on_entry_weather", weather: "sandstorm", msg: "Sable Volant déclenche une Tempête de Sable 🌪️ !" },
+    "snow-warning": { type: "on_entry_weather", weather: "hail", msg: "Alerte Neige fait tomber la Grêle ❄️ !" },
+
+    // Malus à l'entrée
+    "intimidate": { type: "on_entry_stat", stat: "atk", stage: -1, msg: "Intimidation baisse l'Attaque adverse !" },
+
+    // Effets au contact (Quand on se fait taper)
+    "static": { type: "on_hit_status", statusObj: {status: "PAR", chance: 30}, msg: "Statik paralyse l'attaquant !" },
+    "flame-body": { type: "on_hit_status", statusObj: {status: "BRN", chance: 30}, msg: "Corps Ardent brûle l'attaquant !" },
+    "rough-skin": { type: "on_hit_damage", percent: 8, msg: "Peau Dure blesse l'attaquant !" }
+};
