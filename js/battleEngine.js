@@ -64,6 +64,31 @@ export function calculateDamage(atkEntity, defEntity, move, currentWeather = 'no
     let mult = getEffectiveness(move.type, defTypes);
     if (mult === 0) return { damage: 0, isCrit: false, mult: 0 };
 
+    // -- 8. DÉGÂTS VARIABLES (Poids et Vitesse) --
+    let movePower = move.power;
+    if (WEIGHT_MOVES.includes(move.nameEn) && defEntity.data) {
+        let weight = (defEntity.data.weight || 100) / 10; // PokeAPI stocke en hectogrammes
+        if (weight < 10) movePower = 20;
+        else if (weight < 25) movePower = 40;
+        else if (weight < 50) movePower = 60;
+        else if (weight < 100) movePower = 80;
+        else if (weight < 200) movePower = 100;
+        else movePower = 120;
+    } else if (GYRO_BALL_MOVES.includes(move.nameEn)) {
+        let atkSpd = getEffectiveStat(atkEntity, 'speed', currentWeather);
+        let defSpd = getEffectiveStat(defEntity, 'speed', currentWeather);
+        movePower = Math.min(150, Math.floor((25 * defSpd) / Math.max(1, atkSpd)) + 1);
+    } else if (ELECTRO_BALL_MOVES.includes(move.nameEn)) {
+        let atkSpd = getEffectiveStat(atkEntity, 'speed', currentWeather);
+        let defSpd = getEffectiveStat(defEntity, 'speed', currentWeather);
+        let ratio = atkSpd / Math.max(1, defSpd);
+        if (ratio >= 4) movePower = 150;
+        else if (ratio >= 3) movePower = 120;
+        else if (ratio >= 2) movePower = 80;
+        else if (ratio >= 1) movePower = 60;
+        else movePower = 40;
+    }
+
     if (FIXED_DAMAGE_MOVES[move.nameEn] !== undefined) {
         let val = FIXED_DAMAGE_MOVES[move.nameEn];
         return { 
@@ -91,7 +116,7 @@ export function calculateDamage(atkEntity, defEntity, move, currentWeather = 'no
     if (currentWeather === 'sun') { if (move.type === 'fire') weatherMult = 1.5; if (move.type === 'water') weatherMult = 0.5; }
     if (currentWeather === 'rain') { if (move.type === 'water') weatherMult = 1.5; if (move.type === 'fire') weatherMult = 0.5; }
 
-    let baseDmg = Math.floor(Math.floor(Math.floor(2 * level / 5 + 2) * move.power * A / D) / 50) + 2;
+    let baseDmg = Math.floor(Math.floor(Math.floor(2 * level / 5 + 2) * movePower * A / D) / 50) + 2;
     let stab = atkTypes.includes(move.type) ? 1.5 : 1;
     let random = (Math.random() * (1 - 0.85) + 0.85);
     let critMult = isCrit ? 1.5 : 1;

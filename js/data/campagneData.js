@@ -3,6 +3,24 @@ export const TWO_TURN_CHARGE_MOVES = ["solar-beam", "sky-attack", "razor-wind", 
 export const DELAYED_MOVES = ["future-sight", "doom-desire"];
 export const HAZARD_MOVES = ["stealth-rock", "spikes", "toxic-spikes", "sticky-web"];
 export const HAZARD_CLEAR_MOVES = ["defog", "rapid-spin"];
+export const COUNTER_MOVES = ["counter"];
+export const MIRROR_COAT_MOVES = ["mirror-coat"];
+export const BIDE_MOVES = ["bide"];
+export const TAUNT_MOVES = ["taunt"];
+export const ENCORE_MOVES = ["encore"];
+export const DISABLE_MOVES = ["disable"];
+export const PERISH_SONG_MOVES = ["perish-song"];
+export const DESTINY_BOND_MOVES = ["destiny-bond"];
+export const REST_MOVES = ["rest"];
+export const PAIN_SPLIT_MOVES = ["pain-split"];
+export const WEIGHT_MOVES = ["grass-knot", "low-kick"];
+export const GYRO_BALL_MOVES = ["gyro-ball"];
+export const ELECTRO_BALL_MOVES = ["electro-ball"];
+export const RAMPAGE_MOVES = ["outrage", "thrash", "petal-dance"];
+export const ROLLOUT_MOVES = ["rollout", "ice-ball"];
+
+export const POWDER_MOVES = ["spore", "stun-spore", "poison-powder", "sleep-powder", "cotton-spore", "magic-powder"];
+
 // --- CARTE ET ZONES ---
 export const ZONES = [
     { id: "route1", name: "Route 1", minLvl: 2, maxLvl: 5, encounters: [{id: 16, chance: 50}, {id: 19, chance: 50}] },

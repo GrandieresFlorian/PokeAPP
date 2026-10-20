@@ -3,7 +3,7 @@ import { state } from '../state.js';
 import { getCardImageUrl, getPokemonDetails, formatMegaName, getMovesForLevel, getMoveDetails } from '../utils.js';
 import { applyTranslation } from './navController.js';
 import { 
-    USELESS_MOVES, PRIORITY_MOVES, HEAL_MOVES, DRAIN_MOVES, RECOIL_MOVES, MULTI_HIT_2_5, MULTI_HIT_2, 
+    USELESS_MOVES, POWDER_MOVES, PRIORITY_MOVES, HEAL_MOVES, DRAIN_MOVES, RECOIL_MOVES, MULTI_HIT_2_5, MULTI_HIT_2, 
     FLINCH_MOVES, SECONDARY_EFFECTS, STATUS_MOVES, STAT_NAMES, 
     OHKO_MOVES, KAMIKAZE_MOVES, FORCE_FLEE_MOVES, STAT_CLEAR_MOVES, FIXED_DAMAGE_MOVES,
     STATUS_CONDITIONS, SECONDARY_STATUS, ABILITIES_DB
@@ -186,7 +186,13 @@ function renderMovesUI() {
         if(FIXED_DAMAGE_MOVES[move.nameEn]) displayPower = "FIX";
 
         btn.innerHTML = `<span class="move-name" data-en="${move.nameEn}" data-fr="${move.nameFr}">${moveName}</span><span style="font-size:0.7rem; opacity:0.8; font-weight:normal;">POW ${displayPower}</span>`;
-        btn.onclick = () => processTurn(move);
+        if (activeFighter.taunted && move.damageClass === 'status') {
+            btn.disabled = true;
+            btn.style.opacity = "0.4";
+            btn.title = "Interdit sous l'effet de Provoc !";
+        } else {
+            btn.onclick = () => processTurn(move);
+        }
         container.appendChild(btn);
     });
 }
@@ -338,6 +344,14 @@ function playAnimation(id, animClass) {
 }
 
 function applyStatus(target, statusObj, targetName) {
+    let types = target.battleStats ? target.battleStats.types : (target.types || []);
+
+    // IMMUNITÉS LIÉES AUX TYPES (Acier, Poison, Feu, Electrik, Glace)
+    if ((statusObj.status === 'PSN' || statusObj.status === 'TOX') && (types.includes('poison') || types.includes('steel'))) return;
+    if (statusObj.status === 'BRN' && types.includes('fire')) return;
+    if (statusObj.status === 'PAR' && types.includes('electric')) return;
+    if (statusObj.status === 'FRZ' && types.includes('ice')) return;
+
     if (statusObj.status === 'CNF') {
         if (target.confusion === 0) {
             target.confusion = Math.floor(Math.random() * 4) + 2;
@@ -352,7 +366,6 @@ function applyStatus(target, statusObj, targetName) {
         }
     }
 }
-
 async function preMoveCheck(entity, isPlayer) {
     let name = isPlayer ? entity.data.fr : entity.nameFr;
     
@@ -420,6 +433,26 @@ async function applyEndTurnEffects(entity, opponent, isPlayer) {
         updateBattleUI(); await new Promise(r => setTimeout(r, 600));
     }
 
+    // REQUIEM
+    if (entity.perishCount > 0) {
+        entity.perishCount--;
+        if (entity.perishCount === 0) {
+            entity.currentHp = 0; // ou .battleStats.hp en PvE
+            logs.push(`<b style="color:#34495e">Le compte à rebours de Requiem tombe à zéro pour ${name} !</b>`);
+        } else {
+            logs.push(`<span style="color:#7f8c8d">Le compte à rebours de Requiem de ${name} est à ${entity.perishCount}.</span>`);
+        }
+    }
+
+    // DIMINUTION PROVOC
+    if (entity.taunted && entity.taunted > 0) {
+        entity.taunted--;
+        if (entity.taunted === 0) logs.push(`<b>${name} n'est plus provoqué.</b>`);
+    }
+
+    // RÉINITIALISATION LIEN DU DESTIN
+    entity.destinyBond = false;
+
     if (entity.status === 'BRN') {
         entity.battleStats.hp -= Math.max(1, Math.floor(entity.battleStats.maxHp / 16));
         logMessage(`<span style="color:#e67e22">${name} souffre de sa brûlure !</span>`);
@@ -482,6 +515,15 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
     if (defender.invulnerable) {
         logMessage(`Mais <b>${defName}</b> est introuvable ! L'attaque échoue.`);
         await new Promise(r => setTimeout(r, 600)); return { forceFlee: false };
+    }
+
+    if (POWDER_MOVES.includes(move.nameEn)) {
+        let defTypes = defender.battleStats ? defender.battleStats.types : (defender.types || []);
+        if (defTypes.includes('grass')) {
+            logMessage(`Ça n'affecte pas les Pokémon Plante !`);
+            await new Promise(r => setTimeout(r, 600)); 
+            return { forceFlee: false };
+        }
     }
 
     // TERRAINS / MÉTÉO / VENTS / ÉCRANS
@@ -669,6 +711,40 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
         updateBattleUI(); await new Promise(r => setTimeout(r, 800)); return { forceFlee: false };
     }
 
+    // -- 6. MANIPULATION MENTALE --
+    if (TAUNT_MOVES.includes(move.nameEn)) {
+        def.taunted = 3; 
+        logs.push(`<span style="color:#e74c3c">${defName} est provoqué ! Il ne peut utiliser que des attaques offensives !</span>`);
+        return; // ou return { forceFlee: false } en PvE
+    }
+
+    // -- 7. SOINS ET K.O. SPÉCIAUX --
+    if (REST_MOVES.includes(move.nameEn)) {
+        atk.currentHp = atk.maxHp; // atk.battleStats.hp en PvE
+        atk.status = 'SLP';
+        atk.statusTurns = 2;
+        logs.push(`<span style="color:#2ecc71">${aName} s'endort pour restaurer ses PV !</span>`);
+        return;
+    }
+    if (PAIN_SPLIT_MOVES.includes(move.nameEn)) {
+        let avgHp = Math.floor((atk.currentHp + def.currentHp) / 2); // .battleStats.hp en PvE
+        atk.currentHp = Math.min(atk.maxHp, avgHp);
+        def.currentHp = Math.min(def.maxHp, avgHp);
+        logs.push(`<span style="color:#9b59b6">Les PV des deux Pokémon sont mis en commun et divisés !</span>`);
+        return;
+    }
+    if (PERISH_SONG_MOVES.includes(move.nameEn)) {
+        if (!atk.perishCount) atk.perishCount = 4;
+        if (!def.perishCount) def.perishCount = 4;
+        logs.push(`<span style="color:#34495e">Tous les Pokémon entendent le Requiem... K.O. dans 3 tours !</span>`);
+        return;
+    }
+    if (DESTINY_BOND_MOVES.includes(move.nameEn)) {
+        atk.destinyBond = true;
+        logs.push(`<span style="color:#8e44ad">${aName} lie son destin à son adversaire !</span>`);
+        return;
+    }
+
     if (move.damageClass === "status" || STATUS_MOVES[move.nameEn]) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack'); await new Promise(r => setTimeout(r, 600));
         const statusData = STATUS_MOVES[move.nameEn];
@@ -775,6 +851,9 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
     if (FLINCH_MOVES.includes(move.nameEn) && totalDamage > 0 && Math.random() < 0.3) defender.flinched = true;
 
     await new Promise(r => setTimeout(r, 600));
+    if (FLINCH_MOVES.includes(move.nameEn) && totalDamage > 0 && Math.random() < 0.3) {
+        defender.flinched = true;
+    }
     return { flinched, forceFlee: false };
 }
 

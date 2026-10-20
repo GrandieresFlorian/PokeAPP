@@ -3,7 +3,7 @@ import { state, CONSTS } from '../state.js';
 import { getPokemonPow, getPokemonDetails, getCardImageUrl, getMovesForLevel } from '../utils.js';
 import { allerASection } from './navController.js';
 import { 
-    USELESS_MOVES, PRIORITY_MOVES, HEAL_MOVES, DRAIN_MOVES, RECOIL_MOVES, MULTI_HIT_2_5, MULTI_HIT_2, 
+    USELESS_MOVES, POWDER_MOVES, PRIORITY_MOVES, HEAL_MOVES, DRAIN_MOVES, RECOIL_MOVES, MULTI_HIT_2_5, MULTI_HIT_2, 
     FLINCH_MOVES, SECONDARY_EFFECTS, STATUS_MOVES, STAT_NAMES, 
     OHKO_MOVES, KAMIKAZE_MOVES, FORCE_FLEE_MOVES, STAT_CLEAR_MOVES, FIXED_DAMAGE_MOVES,
     STATUS_CONDITIONS, SECONDARY_STATUS, ABILITIES_DB
@@ -587,6 +587,14 @@ function preMoveCheckSync(entity, logs) {
 }
 
 function applyStatusSync(target, statusObj, targetName, logs) {
+    let types = target.types || (target.battleStats ? target.battleStats.types : []);
+
+    // IMMUNITÉS LIÉES AUX TYPES (Acier, Poison, Feu, Electrik, Glace)
+    if ((statusObj.status === 'PSN' || statusObj.status === 'TOX') && (types.includes('poison') || types.includes('steel'))) return;
+    if (statusObj.status === 'BRN' && types.includes('fire')) return;
+    if (statusObj.status === 'PAR' && types.includes('electric')) return;
+    if (statusObj.status === 'FRZ' && types.includes('ice')) return;
+
     if (statusObj.status === 'CNF') {
         if (target.confusion === 0) { 
             target.confusion = Math.floor(Math.random() * 4) + 2; 
@@ -623,6 +631,26 @@ function applyEndTurnStatusSync(entity, opponent, logs) {
             logs.push(`<b>${name} est libéré de ${entity.bound.name} !</b>`);
         }
     }
+
+    // REQUIEM
+    if (entity.perishCount > 0) {
+        entity.perishCount--;
+        if (entity.perishCount === 0) {
+            entity.currentHp = 0; // ou .battleStats.hp en PvE
+            logs.push(`<b style="color:#34495e">Le compte à rebours de Requiem tombe à zéro pour ${name} !</b>`);
+        } else {
+            logs.push(`<span style="color:#7f8c8d">Le compte à rebours de Requiem de ${name} est à ${entity.perishCount}.</span>`);
+        }
+    }
+
+    // DIMINUTION PROVOC
+    if (entity.taunted && entity.taunted > 0) {
+        entity.taunted--;
+        if (entity.taunted === 0) logs.push(`<b>${name} n'est plus provoqué.</b>`);
+    }
+
+    // RÉINITIALISATION LIEN DU DESTIN
+    entity.destinyBond = false;
 
     if (entity.status === 'BRN') {
         entity.currentHp -= Math.max(1, Math.floor(entity.maxHp / 16)); logs.push(`<span style="color:#e67e22">${name} souffre de sa brûlure !</span>`);
@@ -699,14 +727,16 @@ async function resolveSynchronousTurn(data, battleRef) {
     if (isReplacementTurn) {
         if (a1.type === 'force_switch') { 
             active1 = a1.index; p1 = t1[active1]; 
-            p1.turnsActive = 0; p1.isSeeded = false; 
+            p1.turnsActive = 0; p1.isSeeded = false; p1.confusion = 0; p1.toxCount = 0;
+            for(let s in p1.modifiers) p1.modifiers[s] = 0;
             turnLogs.push(`Le Joueur 1 envoie <b>${p1.data.fr}</b> !`); 
             applyHazardsSync(p1, data.hazards1, turnLogs);
             triggerEntryAbilitySync(p1, p2, data, turnLogs);
         }
         if (a2.type === 'force_switch') { 
             active2 = a2.index; p2 = t2[active2]; 
-            p2.turnsActive = 0; p2.isSeeded = false; 
+            p2.turnsActive = 0; p2.isSeeded = false; p2.confusion = 0; p2.toxCount = 0;
+            for(let s in p2.modifiers) p2.modifiers[s] = 0;
             turnLogs.push(`Le Joueur 2 envoie <b>${p2.data.fr}</b> !`); 
             applyHazardsSync(p2, data.hazards2, turnLogs);
             triggerEntryAbilitySync(p2, p1, data, turnLogs);
@@ -714,18 +744,32 @@ async function resolveSynchronousTurn(data, battleRef) {
     } else {
         if (a1.type === 'switch') { 
             revertTransformation(p1); 
-            active1 = a1.index; p1 = t1[active1]; 
-            p1.turnsActive = 0; p1.isSeeded = false; 
+            // 🧹 NETTOYAGE DU POKÉMON SORTANT (P1)
             for(let s in p1.modifiers) p1.modifiers[s] = 0;
+            p1.isSeeded = false; p1.confusion = 0; p1.toxCount = 0;
+            
+            active1 = a1.index; p1 = t1[active1]; 
+            
+            // 🧹 NETTOYAGE DU POKÉMON ENTRANT (P1)
+            p1.turnsActive = 0; p1.isSeeded = false; p1.confusion = 0; p1.toxCount = 0;
+            for(let s in p1.modifiers) p1.modifiers[s] = 0;
+            
             turnLogs.push(`Joueur 1 envoie <b>${p1.data.fr}</b> !`); 
             applyHazardsSync(p1, data.hazards1, turnLogs);
             triggerEntryAbilitySync(p1, p2, data, turnLogs);
         }
         if (a2.type === 'switch') { 
             revertTransformation(p2); 
-            active2 = a2.index; p2 = t2[active2]; 
-            p2.turnsActive = 0; p2.isSeeded = false; 
+            // 🧹 NETTOYAGE DU POKÉMON SORTANT (P2)
             for(let s in p2.modifiers) p2.modifiers[s] = 0;
+            p2.isSeeded = false; p2.confusion = 0; p2.toxCount = 0;
+            
+            active2 = a2.index; p2 = t2[active2]; 
+            
+            // 🧹 NETTOYAGE DU POKÉMON ENTRANT (P2)
+            p2.turnsActive = 0; p2.isSeeded = false; p2.confusion = 0; p2.toxCount = 0;
+            for(let s in p2.modifiers) p2.modifiers[s] = 0;
+            
             turnLogs.push(`Joueur 2 envoie <b>${p2.data.fr}</b> !`); 
             applyHazardsSync(p2, data.hazards2, turnLogs);
             triggerEntryAbilitySync(p2, p1, data, turnLogs);
@@ -877,6 +921,14 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
 
     if (def.invulnerable) { logs.push(`Mais <b>${defName}</b> est introuvable ! L'attaque échoue.`); return; }
 
+    // -- IMMUNITÉ POUDRE POUR LES TYPES PLANTE --
+    if (POWDER_MOVES.includes(move.nameEn)) {
+        let defTypes = def.types || (def.battleStats ? def.battleStats.types : []);
+        if (defTypes.includes('grass')) {
+            logs.push(`Ça n'affecte pas les Pokémon Plante !`);
+            return;
+        }
+    }
     let myTeamState = isP1 ? battleData.screens1 : battleData.screens2;
     let opTeamState = isP1 ? battleData.screens2 : battleData.screens1;
     let opHazards = isP1 ? battleData.hazards2 : battleData.hazards1;
@@ -935,6 +987,40 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
     if (EVASION_UPS.includes(move.nameEn)) {
         atk.modifiers.evasion = Math.min(6, (atk.modifiers.evasion || 0) + 1);
         logs.push(`<span style="color:#3498db">L'esquive de ${atk.data.fr} augmente !</span>`);
+        return;
+    }
+
+    // -- 6. MANIPULATION MENTALE --
+    if (TAUNT_MOVES.includes(move.nameEn)) {
+        def.taunted = 3; 
+        logs.push(`<span style="color:#e74c3c">${defName} est provoqué ! Il ne peut utiliser que des attaques offensives !</span>`);
+        return; // ou return { forceFlee: false } en PvE
+    }
+
+    // -- 7. SOINS ET K.O. SPÉCIAUX --
+    if (REST_MOVES.includes(move.nameEn)) {
+        atk.currentHp = atk.maxHp; // atk.battleStats.hp en PvE
+        atk.status = 'SLP';
+        atk.statusTurns = 2;
+        logs.push(`<span style="color:#2ecc71">${aName} s'endort pour restaurer ses PV !</span>`);
+        return;
+    }
+    if (PAIN_SPLIT_MOVES.includes(move.nameEn)) {
+        let avgHp = Math.floor((atk.currentHp + def.currentHp) / 2); // .battleStats.hp en PvE
+        atk.currentHp = Math.min(atk.maxHp, avgHp);
+        def.currentHp = Math.min(def.maxHp, avgHp);
+        logs.push(`<span style="color:#9b59b6">Les PV des deux Pokémon sont mis en commun et divisés !</span>`);
+        return;
+    }
+    if (PERISH_SONG_MOVES.includes(move.nameEn)) {
+        if (!atk.perishCount) atk.perishCount = 4;
+        if (!def.perishCount) def.perishCount = 4;
+        logs.push(`<span style="color:#34495e">Tous les Pokémon entendent le Requiem... K.O. dans 3 tours !</span>`);
+        return;
+    }
+    if (DESTINY_BOND_MOVES.includes(move.nameEn)) {
+        atk.destinyBond = true;
+        logs.push(`<span style="color:#8e44ad">${aName} lie son destin à son adversaire !</span>`);
         return;
     }
 
@@ -1033,6 +1119,11 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
     let totalDmg = 0;
     for(let i=0; i<hitCount; i++) {
         if(def.currentHp <= 0) break;
+
+        if (def.currentHp <= 0 && def.destinyBond) {
+            atk.currentHp = 0;
+            logs.push(`<span style="color:#8e44ad">${defName} emporte ${aName} avec lui à cause du Lien du Destin !</span>`);
+        }
         
         let dmgInfo = calculateDamage(atk, def, move, battleData.weather);
         let dmg = dmgInfo.damage;
@@ -1095,6 +1186,9 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
         if (secStatus && Math.random() * 100 <= secStatus.chance) applyStatusSync(def, secStatus, def.data.fr, logs);
     }
 
+    if (FLINCH_MOVES.includes(move.nameEn) && totalDmg > 0 && Math.random() < 0.3) {
+        def.flinched = true;
+    }
     if (def.currentHp <= 0) logs.push(`<b style="color:#e74c3c">${def.data.fr} est K.O. !</b>`);
 }
 
