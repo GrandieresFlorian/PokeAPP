@@ -5,13 +5,16 @@ import { applyTranslation } from './navController.js';
 import { 
     USELESS_MOVES, PRIORITY_MOVES, HEAL_MOVES, DRAIN_MOVES, RECOIL_MOVES, MULTI_HIT_2_5, MULTI_HIT_2, 
     FLINCH_MOVES, SECONDARY_EFFECTS, STATUS_MOVES, STAT_NAMES, 
-    OHKO_MOVES, KAMIKAZE_MOVES, FORCE_FLEE_MOVES, HIGH_CRIT_MOVES, STAT_CLEAR_MOVES, FIXED_DAMAGE_MOVES 
+    OHKO_MOVES, KAMIKAZE_MOVES, FORCE_FLEE_MOVES, HIGH_CRIT_MOVES, STAT_CLEAR_MOVES, FIXED_DAMAGE_MOVES,
+    STATUS_CONDITIONS, SECONDARY_STATUS
 } from '../data/campagneData.js';
 
 let activeFighter = null;
 let currentEnemy = null;
 let isAnimating = false;
 let onBattleEndCallback = null;
+
+const STATUS_COLORS = { "BRN": "#e67e22", "PSN": "#9b59b6", "TOX": "#8e44ad", "PAR": "#f1c40f", "FRZ": "#3498db", "SLP": "#2c3e50" };
 
 export function calcStats(baseStats, level, evs = { hp: 0, atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0 }) {
     return {
@@ -29,7 +32,11 @@ export function getEffectiveStat(entity, statName) {
     let base = entity.battleStats[statName];
     let stage = entity.modifiers[statName];
     let multiplier = Math.max(2, 2 + stage) / Math.max(2, 2 - stage);
-    return Math.floor(base * multiplier);
+    let finalStat = Math.floor(base * multiplier);
+    
+    // Impact de la Paralysie sur la Vitesse
+    if (statName === 'speed' && entity.status === 'PAR') finalStat = Math.floor(finalStat / 2);
+    return finalStat;
 }
 
 export async function startBattle(zone, fighter, onEnd) {
@@ -76,6 +83,7 @@ export async function startBattle(zone, fighter, onEnd) {
         baseStats: wDetails.baseStats, 
         battleStats: calcStats(wDetails.baseStats, wLevel),
         modifiers: { atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0 },
+        status: null, statusTurns: 0, confusion: 0, toxCount: 0,
         sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${wId}.png`
     };
     currentEnemy.battleStats.types = wDetails.types;
@@ -85,9 +93,9 @@ export async function startBattle(zone, fighter, onEnd) {
     activeFighter.battleStats = calcStats(pDetails.baseStats, activeFighter.level || 1, activeFighter.evs);
     activeFighter.battleStats.types = pDetails.types;
     activeFighter.modifiers = { atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0 };
+    activeFighter.status = null; activeFighter.statusTurns = 0; activeFighter.confusion = 0; activeFighter.toxCount = 0;
 
     currentEnemy.moves = await getMovesForLevel(wId, wLevel);
-    
     if (!activeFighter.moves || activeFighter.moves.length === 0) {
         activeFighter.moves = await getMovesForLevel(activeFighter.pokedexNumber, activeFighter.level || 1);
         db.collection('users').doc(state.currentUser).update({ collection: state.currentUserData.collection });
@@ -145,6 +153,20 @@ function renderModifiersUI(entity, containerId) {
     }
     container.innerHTML = "";
     
+    if (entity.status) {
+        let statusBadge = document.createElement('span');
+        statusBadge.style.cssText = `background:${STATUS_COLORS[entity.status]}; color:#fff; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;`;
+        statusBadge.textContent = entity.status;
+        container.appendChild(statusBadge);
+    }
+
+    if (entity.confusion > 0) {
+        let confBadge = document.createElement('span');
+        confBadge.style.cssText = `background:#e67e22; color:#fff; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;`;
+        confBadge.textContent = "CNF";
+        container.appendChild(confBadge);
+    }
+
     const langDict = state.currentLang === 'en' ? STAT_NAMES.en : STAT_NAMES.fr;
     for (let stat in entity.modifiers) {
         let stage = entity.modifiers[stat];
@@ -213,9 +235,120 @@ function playAnimation(id, animClass) {
     setTimeout(() => el.classList.remove(animClass), 500);
 }
 
-// Fonction centrale d'attaque
+// Fonction pour appliquer un statut (Principal ou Secondaire)
+function applyStatus(target, statusObj, targetName) {
+    if (statusObj.status === 'CNF') {
+        if (target.confusion === 0) {
+            target.confusion = Math.floor(Math.random() * 4) + 2;
+            logMessage(`<span style="color:#e67e22">${state.currentLang === 'en' ? `${targetName} became confused!` : `${targetName} devient confus !`}</span>`);
+        }
+    } else {
+        if (!target.status) {
+            target.status = statusObj.status;
+            target.toxCount = 0;
+            if (statusObj.status === 'SLP') target.statusTurns = Math.floor(Math.random() * 3) + 1;
+            
+            let msgs = {
+                "BRN": { en: "was burned!", fr: "est brûlé !" },
+                "PSN": { en: "was poisoned!", fr: "est empoisonné !" },
+                "TOX": { en: "was badly poisoned!", fr: "est gravement empoisonné !" },
+                "PAR": { en: "is paralyzed!", fr: "est paralysé !" },
+                "FRZ": { en: "was frozen solid!", fr: "est gelé !" },
+                "SLP": { en: "fell asleep!", fr: "s'endort !" }
+            };
+            logMessage(`<span style="color:${STATUS_COLORS[statusObj.status]}">${targetName} ${state.currentLang === 'en' ? msgs[statusObj.status].en : msgs[statusObj.status].fr}</span>`);
+        }
+    }
+}
+
+// Vérifications avant l'attaque (Sommeil, Paralysie, Confusion, Gel)
+async function preMoveCheck(entity, isPlayer) {
+    let name = isPlayer ? (state.currentLang === 'en' ? entity.data.en : entity.data.fr) : (state.currentLang === 'en' ? entity.nameEn : entity.nameFr);
+    
+    if (entity.status === 'FRZ') {
+        if (Math.random() < 0.2) {
+            entity.status = null;
+            logMessage(`<span style="color:#3498db">${name} ${state.currentLang === 'en' ? 'thawed out!' : 'est dégelé !'}</span>`);
+            updateBattleUI();
+        } else {
+            logMessage(`<span style="color:#3498db">${name} ${state.currentLang === 'en' ? 'is frozen solid!' : 'est complètement gelé !'}</span>`);
+            return false;
+        }
+    }
+
+    if (entity.status === 'SLP') {
+        entity.statusTurns--;
+        if (entity.statusTurns <= 0) {
+            entity.status = null;
+            logMessage(`<span style="color:#2c3e50">${name} ${state.currentLang === 'en' ? 'woke up!' : 'se réveille !'}</span>`);
+            updateBattleUI();
+        } else {
+            logMessage(`<span style="color:#2c3e50">${name} ${state.currentLang === 'en' ? 'is fast asleep.' : 'dort profondément.'}</span>`);
+            return false;
+        }
+    }
+
+    if (entity.status === 'PAR') {
+        if (Math.random() < 0.25) {
+            logMessage(`<span style="color:#f1c40f">${name} ${state.currentLang === 'en' ? 'is paralyzed! It can\'t move!' : 'est paralysé ! Il ne peut pas attaquer !'}</span>`);
+            return false;
+        }
+    }
+
+    if (entity.confusion > 0) {
+        entity.confusion--;
+        if (entity.confusion === 0) {
+            logMessage(`<span style="color:#e67e22">${name} ${state.currentLang === 'en' ? 'snapped out of confusion!' : 'n\'est plus confus !'}</span>`);
+        } else {
+            logMessage(`<span style="color:#e67e22">${name} ${state.currentLang === 'en' ? 'is confused!' : 'est confus !'}</span>`);
+            if (Math.random() < 0.33) {
+                playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
+                await new Promise(r => setTimeout(r, 400));
+                let dmg = Math.max(1, Math.floor(entity.battleStats.maxHp / 8)); 
+                entity.battleStats.hp -= dmg;
+                logMessage(`<span style="color:#e74c3c">${state.currentLang === 'en' ? 'It hurt itself in its confusion!' : 'Il se blesse dans sa confusion !'}</span>`);
+                playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-damage');
+                updateBattleUI();
+                await new Promise(r => setTimeout(r, 600));
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+// Dégâts de fin de tour (Brûlure, Poison)
+async function applyEndTurnStatus(entity, isPlayer) {
+    if (entity.battleStats.hp <= 0) return;
+    let name = isPlayer ? (state.currentLang === 'en' ? entity.data.en : entity.data.fr) : (state.currentLang === 'en' ? entity.nameEn : entity.nameFr);
+    
+    if (entity.status === 'BRN') {
+        let dmg = Math.max(1, Math.floor(entity.battleStats.maxHp / 16));
+        entity.battleStats.hp -= dmg;
+        logMessage(`<span style="color:#e67e22">${name} ${state.currentLang === 'en' ? 'is hurt by its burn!' : 'souffre de sa brûlure !'}</span>`);
+        updateBattleUI();
+        await new Promise(r => setTimeout(r, 600));
+    } else if (entity.status === 'PSN') {
+        let dmg = Math.max(1, Math.floor(entity.battleStats.maxHp / 8));
+        entity.battleStats.hp -= dmg;
+        logMessage(`<span style="color:#9b59b6">${name} ${state.currentLang === 'en' ? 'is hurt by poison!' : 'souffre du poison !'}</span>`);
+        updateBattleUI();
+        await new Promise(r => setTimeout(r, 600));
+    } else if (entity.status === 'TOX') {
+        entity.toxCount++;
+        let dmg = Math.max(1, Math.floor((entity.battleStats.maxHp * entity.toxCount) / 16));
+        entity.battleStats.hp -= dmg;
+        logMessage(`<span style="color:#8e44ad">${name} ${state.currentLang === 'en' ? 'is hurt by toxic poison!' : 'souffre du poison grave !'}</span>`);
+        updateBattleUI();
+        await new Promise(r => setTimeout(r, 600));
+    }
+}
+
 async function executeMove(attacker, defender, move, isPlayer) {
     if(attacker.battleStats.hp <= 0 || defender.battleStats.hp <= 0) return { flinched: false };
+
+    let canAttack = await preMoveCheck(attacker, isPlayer);
+    if(!canAttack) return { flinched: false };
 
     let aName = isPlayer ? (state.currentLang === 'en' ? attacker.data.en : attacker.data.fr) : (state.currentLang === 'en' ? attacker.nameEn : attacker.nameFr);
     if (isPlayer && attacker.mega) aName = formatMegaName(aName, attacker.megaForm);
@@ -225,7 +358,6 @@ async function executeMove(attacker, defender, move, isPlayer) {
     
     logMessage(`<b>${aName}</b> ${state.currentLang === 'en'?'uses':'utilise'} <b style="color:${colorClass};">${mName}</b> !`);
     
-    // MÉCANIQUE : FUITE FORCÉE (Cyclone, Hurlement)
     if (FORCE_FLEE_MOVES.includes(move.nameEn)) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
         await new Promise(r => setTimeout(r, 600));
@@ -233,7 +365,6 @@ async function executeMove(attacker, defender, move, isPlayer) {
         return { forceFlee: true };
     }
 
-    // MÉCANIQUE : PURGE DES STATS (Buée Noire)
     if (STAT_CLEAR_MOVES.includes(move.nameEn)) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
         await new Promise(r => setTimeout(r, 600));
@@ -245,7 +376,6 @@ async function executeMove(attacker, defender, move, isPlayer) {
         return { flinched: false };
     }
 
-    // MÉCANIQUE : OHKO (K.O. en un coup)
     if (OHKO_MOVES.includes(move.nameEn)) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
         await new Promise(r => setTimeout(r, 600));
@@ -261,7 +391,6 @@ async function executeMove(attacker, defender, move, isPlayer) {
         return { flinched: false };
     }
 
-    // MÉCANIQUE : TREMPETTE
     if (USELESS_MOVES.includes(move.nameEn)) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
         await new Promise(r => setTimeout(r, 600));
@@ -270,13 +399,34 @@ async function executeMove(attacker, defender, move, isPlayer) {
         return { flinched: false };
     }
 
-    // MÉCANIQUE : SOIN
     if (HEAL_MOVES.includes(move.nameEn)) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
         await new Promise(r => setTimeout(r, 600));
         let healAmount = Math.floor(attacker.battleStats.maxHp / 2);
         attacker.battleStats.hp = Math.min(attacker.battleStats.maxHp, attacker.battleStats.hp + healAmount);
         logMessage(`<span style="color:#2ecc71">${state.currentLang === 'en' ? `${aName} recovered HP!` : `${aName} regagne des PV !`}</span>`);
+        updateBattleUI();
+        await new Promise(r => setTimeout(r, 800));
+        return { flinched: false };
+    }
+
+    if (STATUS_CONDITIONS[move.nameEn]) {
+        playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
+        await new Promise(r => setTimeout(r, 600));
+        let statObj = STATUS_CONDITIONS[move.nameEn];
+        
+        if (Math.random() * 100 <= statObj.chance) {
+            let targetEntity = (statObj.status === 'CNF' && move.nameEn === 'swagger') ? defender : defender; 
+            applyStatus(targetEntity, statObj, defName);
+            
+            if(statObj.stat) {
+                targetEntity.modifiers[statObj.stat] = Math.max(-6, Math.min(6, targetEntity.modifiers[statObj.stat] + statObj.stage));
+                let statName = state.currentLang === 'en' ? STAT_NAMES.en[statObj.stat] : STAT_NAMES.fr[statObj.stat];
+                if (statObj.stage > 0) logMessage(`<span style="color:#3498db">${state.currentLang === 'en' ? `${defName}'s${statName} rose!` : `${statName} de${defName} augmente !`}</span>`);
+            }
+        } else {
+            logMessage(state.currentLang === 'en' ? `But it failed...` : `Mais l'attaque a raté...`);
+        }
         updateBattleUI();
         await new Promise(r => setTimeout(r, 800));
         return { flinched: false };
@@ -295,8 +445,6 @@ async function executeMove(attacker, defender, move, isPlayer) {
                 if (effect.stage > 0) logMessage(`<span style="color:#3498db">${state.currentLang === 'en' ? `${targetName}'s${statName} rose!` : `${statName} de${targetName} augmente !`}</span>`);
                 else logMessage(`<span style="color:#e74c3c">${state.currentLang === 'en' ? `${targetName}'s${statName} fell!` : `${statName} de${targetName} diminue !`}</span>`);
             }
-        } else {
-            logMessage(state.currentLang === 'en' ? `It has a mysterious effect...` : `Cela produit un effet mystérieux...`);
         }
         updateBattleUI();
         await new Promise(r => setTimeout(r, 800));
@@ -320,22 +468,21 @@ async function executeMove(attacker, defender, move, isPlayer) {
         let isCrit = false;
         let mult = 1;
 
-        // MÉCANIQUE : DÉGÂTS FIXES
         if (FIXED_DAMAGE_MOVES[move.nameEn] !== undefined) {
             let val = FIXED_DAMAGE_MOVES[move.nameEn];
             damage = val === "level" ? (attacker.level || 1) : val;
             mult = getEffectiveness(move.type, defender.battleStats.types);
-            if (mult === 0) damage = 0; // Les immunités fonctionnent toujours (ex: Frappe Atlas sur Spectre)
+            if (mult === 0) damage = 0; 
         } else {
-            // MÉCANIQUE : HAUTS CRITIQUES (12.5% au lieu de 6.25%)
             let critChance = HIGH_CRIT_MOVES.includes(move.nameEn) ? 0.125 : 0.0625;
             isCrit = Math.random() < critChance; 
             let level = attacker.level || 1;
             let A = move.damageClass === 'special' ? getEffectiveStat(attacker, 'spatk') : getEffectiveStat(attacker, 'atk');
             let D = move.damageClass === 'special' ? getEffectiveStat(defender, 'spdef') : getEffectiveStat(defender, 'def');
             
-            // Les attaques Kamikaze ont un bonus caché
-            if(KAMIKAZE_MOVES.includes(move.nameEn)) A *= 1.5;
+            // Impact de la Brûlure sur les dégâts physiques
+            if (attacker.status === 'BRN' && move.damageClass === 'physical') A = Math.floor(A / 2);
+            if (KAMIKAZE_MOVES.includes(move.nameEn)) A *= 1.5;
 
             let baseDmg = Math.floor(Math.floor(Math.floor(2 * level / 5 + 2) * move.power * A / D) / 50) + 2;
             let stab = attacker.battleStats.types.includes(move.type) ? 1.5 : 1;
@@ -365,14 +512,13 @@ async function executeMove(attacker, defender, move, isPlayer) {
     if (hitCount > 1 && totalDamage > 0) logMessage(state.currentLang === 'en' ? `Hit ${hitCount} times!` : `Touché ${hitCount} fois !`);
     if (totalDamage > 0) logMessage(`(${totalDamage} ${state.currentLang === 'en' ? 'dmg' : 'dégâts'})`);
 
-    // MÉCANIQUE : KAMIKAZE
     if (KAMIKAZE_MOVES.includes(move.nameEn)) {
         attacker.battleStats.hp = 0;
         logMessage(`<span style="color:#e74c3c">${aName} ${state.currentLang === 'en' ? 'sacrificed itself!' : 'se sacrifie !'}</span>`);
         updateBattleUI();
     }
 
-    if (totalDamage > 0) {
+    if (totalDamage > 0 && defender.battleStats.hp > 0) {
         if (DRAIN_MOVES.includes(move.nameEn)) {
             let drainHeal = Math.max(1, Math.floor(totalDamage / 2));
             attacker.battleStats.hp = Math.min(attacker.battleStats.maxHp, attacker.battleStats.hp + drainHeal);
@@ -385,11 +531,11 @@ async function executeMove(attacker, defender, move, isPlayer) {
             logMessage(`<span style="color:#e74c3c">${state.currentLang === 'en' ? `${aName} is hit with recoil!` : `${aName} est blessé par le contrecoup !`}</span>`);
         }
 
+        // Effets secondaires (Stats)
         const secEffect = SECONDARY_EFFECTS[move.nameEn];
         if (secEffect && Math.random() <= secEffect.chance) {
             let targetEntity = secEffect.target === "enemy" ? defender : attacker;
             let targetName = secEffect.target === "enemy" ? defName : aName;
-            
             for (let effect of secEffect.effects) {
                 targetEntity.modifiers[effect.stat] = Math.max(-6, Math.min(6, targetEntity.modifiers[effect.stat] + effect.stage));
                 const langDict = state.currentLang === 'en' ? STAT_NAMES.en : STAT_NAMES.fr;
@@ -397,6 +543,12 @@ async function executeMove(attacker, defender, move, isPlayer) {
                 if (effect.stage > 0) logMessage(`<span style="color:#3498db">${state.currentLang === 'en' ? `${targetName}'s${statName} rose!` : `${statName} de${targetName} augmente !`}</span>`);
                 else logMessage(`<span style="color:#e74c3c">${state.currentLang === 'en' ? `${targetName}'s${statName} fell!` : `${statName} de${targetName} diminue !`}</span>`);
             }
+        }
+
+        // Effets secondaires (Statuts type Gel, Brûlure via Lance-Flammes...)
+        const secStatus = SECONDARY_STATUS[move.nameEn];
+        if (secStatus && Math.random() * 100 <= secStatus.chance) {
+            applyStatus(defender, secStatus, defName);
         }
     }
 
@@ -427,7 +579,7 @@ export async function processTurn(playerMove) {
         } else if (HEAL_MOVES.includes(m.nameEn)) {
             if (currentEnemy.battleStats.hp < currentEnemy.battleStats.maxHp / 2) expected = 1000;
             else expected = -1;
-        } else if (m.damageClass === "status") {
+        } else if (m.damageClass === "status" || STATUS_CONDITIONS[m.nameEn]) {
             if (Math.random() < 0.1 && maxExpectedDamage < 10) expected = 10;
         } else {
             let mMult = getEffectiveness(m.type, activeFighter.battleStats.types);
@@ -486,6 +638,10 @@ export async function processTurn(playerMove) {
         }
     }
 
+    // Gestion des altérations de fin de tour (Brûlure, Poison)
+    if (activeFighter.battleStats.hp > 0) await applyEndTurnStatus(activeFighter, true);
+    if (currentEnemy.battleStats.hp > 0) await applyEndTurnStatus(currentEnemy, false);
+
     if (currentEnemy.battleStats.hp <= 0) {
         await winBattle();
     } else if (activeFighter.battleStats.hp <= 0) {
@@ -512,7 +668,7 @@ function promptLearnMove(newMove) {
         
         let pName = state.currentLang === 'en' ? activeFighter.data.en : activeFighter.data.fr;
         let mName = state.currentLang === 'en' ? newMove.nameEn : newMove.nameFr;
-        let displayPower = (newMove.damageClass === "status" || USELESS_MOVES.includes(newMove.nameEn)) ? "-" : newMove.power;
+        let displayPower = (newMove.damageClass === "status" || USELESS_MOVES.includes(newMove.nameEn) || FORCE_FLEE_MOVES.includes(newMove.nameEn) || STAT_CLEAR_MOVES.includes(newMove.nameEn) || OHKO_MOVES.includes(newMove.nameEn)) ? "-" : newMove.power;
         if(FIXED_DAMAGE_MOVES[newMove.nameEn]) displayPower = "FIX";
         
         let promptText = state.currentLang === 'en' 
@@ -526,7 +682,7 @@ function promptLearnMove(newMove) {
             const btn = document.createElement('button');
             btn.className = `move-btn type-${m.type}`;
             let currentMName = state.currentLang === 'en' ? m.nameEn : m.nameFr;
-            let mPow = (m.damageClass === "status" || USELESS_MOVES.includes(m.nameEn)) ? "-" : m.power;
+            let mPow = (m.damageClass === "status" || USELESS_MOVES.includes(m.nameEn) || FORCE_FLEE_MOVES.includes(m.nameEn) || STAT_CLEAR_MOVES.includes(m.nameEn) || OHKO_MOVES.includes(m.nameEn)) ? "-" : m.power;
             if(FIXED_DAMAGE_MOVES[m.nameEn]) mPow = "FIX";
             btn.innerHTML = `<span class="move-name" data-en="${m.nameEn}" data-fr="${m.nameFr}">${currentMName}</span><span style="font-size:0.7rem; font-weight:normal;">POW ${mPow}</span>`;
             

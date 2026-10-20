@@ -174,6 +174,8 @@ function renderZones() {
             ${tooltipHtml}
         `;
         div.onclick = () => {
+            document.getElementById('campagne-select-zone').classList.add('hidden');
+            document.getElementById('campagne-battle-arena').classList.remove('hidden');
             startBattle(z, activeFighter, () => {
                 document.getElementById('campagne-battle-arena').classList.add('hidden');
                 document.getElementById('campagne-select-zone').classList.remove('hidden');

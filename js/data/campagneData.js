@@ -33,17 +33,58 @@ export const MULTI_HIT_2_5 = ["fury-attack", "fury-swipes", "double-slap", "bull
 export const MULTI_HIT_2 = ["double-kick", "twin-needle", "bonemerang", "gear-grind", "dual-chop"];
 export const FLINCH_MOVES = ["bite", "headbutt", "air-slash", "iron-head", "zen-headbutt", "waterfall", "dark-pulse", "astonish", "fake-out", "rock-slide"];
 
-// NOUVELLES MÉCANIQUES (K.O., Kamikaze, Fuite...)
 export const OHKO_MOVES = ["fissure", "horn-drill", "guillotine", "sheer-cold"];
 export const KAMIKAZE_MOVES = ["self-destruct", "explosion", "memento"];
 export const FORCE_FLEE_MOVES = ["roar", "whirlwind", "teleport", "dragon-tail", "circle-throw"];
 export const HIGH_CRIT_MOVES = ["slash", "night-slash", "psycho-cut", "stone-edge", "leaf-blade", "cross-chop", "razor-leaf", "crabhammer", "shadow-claw", "drill-run", "aeroblast", "spacial-rend", "cross-poison"];
 export const STAT_CLEAR_MOVES = ["haze", "clear-smog"];
-export const FIXED_DAMAGE_MOVES = {
-    "dragon-rage": 40,
-    "sonic-boom": 20,
-    "seismic-toss": "level",
-    "night-shade": "level"
+export const FIXED_DAMAGE_MOVES = { "dragon-rage": 40, "sonic-boom": 20, "seismic-toss": "level", "night-shade": "level" };
+
+// NOUVEAU : ATTAQUES INFLIGEANT DES STATUTS
+export const STATUS_CONDITIONS = {
+    "thunder-wave": { status: "PAR", chance: 100 },
+    "stun-spore": { status: "PAR", chance: 100 },
+    "glare": { status: "PAR", chance: 100 },
+    "toxic": { status: "TOX", chance: 100 },
+    "poison-powder": { status: "PSN", chance: 100 },
+    "poison-gas": { status: "PSN", chance: 100 },
+    "will-o-wisp": { status: "BRN", chance: 100 },
+    "sleep-powder": { status: "SLP", chance: 100 },
+    "spore": { status: "SLP", chance: 100 },
+    "hypnosis": { status: "SLP", chance: 100 },
+    "sing": { status: "SLP", chance: 100 },
+    "grass-whistle": { status: "SLP", chance: 100 },
+    "yawn": { status: "SLP", chance: 100 },
+    "confuse-ray": { status: "CNF", chance: 100 },
+    "supersonic": { status: "CNF", chance: 100 },
+    "sweet-kiss": { status: "CNF", chance: 100 },
+    "teeter-dance": { status: "CNF", chance: 100 },
+    "swagger": { status: "CNF", chance: 100, stat: "atk", stage: 2 },
+    "flatter": { status: "CNF", chance: 100, stat: "spatk", stage: 1 }
+};
+
+export const SECONDARY_STATUS = {
+    "flamethrower": { status: "BRN", chance: 10 },
+    "fire-blast": { status: "BRN", chance: 10 },
+    "ember": { status: "BRN", chance: 10 },
+    "fire-punch": { status: "BRN", chance: 10 },
+    "flare-blitz": { status: "BRN", chance: 10 },
+    "thunderbolt": { status: "PAR", chance: 10 },
+    "thunder": { status: "PAR", chance: 30 },
+    "thunder-punch": { status: "PAR", chance: 10 },
+    "spark": { status: "PAR", chance: 30 },
+    "body-slam": { status: "PAR", chance: 30 },
+    "dragon-breath": { status: "PAR", chance: 30 },
+    "ice-beam": { status: "FRZ", chance: 10 },
+    "blizzard": { status: "FRZ", chance: 10 },
+    "ice-punch": { status: "FRZ", chance: 10 },
+    "powder-snow": { status: "FRZ", chance: 10 },
+    "sludge-bomb": { status: "PSN", chance: 30 },
+    "poison-jab": { status: "PSN", chance: 30 },
+    "sludge": { status: "PSN", chance: 30 },
+    "water-pulse": { status: "CNF", chance: 20 },
+    "hurricane": { status: "CNF", chance: 30 },
+    "confusion": { status: "CNF", chance: 10 }
 };
 
 // --- EFFETS SECONDAIRES DES ATTAQUES ---
@@ -90,7 +131,6 @@ export const STATUS_MOVES = {
     "tail-glow": { effects: [{stat: "spatk", stage: 3}], target: "self", fr: "l'Att. Spé", en: "Sp. Atk" },
 };
 
-// --- NOMS DES STATS TRADUITS ---
 export const STAT_NAMES = {
     fr: { atk: "Atk", def: "Déf", spatk: "AtkS", spdef: "DéfS", speed: "Vit" },
     en: { atk: "Atk", def: "Def", spatk: "SpA", spdef: "SpD", speed: "Spe" }
