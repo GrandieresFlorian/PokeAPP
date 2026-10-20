@@ -57,8 +57,9 @@ export function calculateDamage(atkEntity, defEntity, move, currentWeather = 'no
     if (move.power === 0 || !move.power) return { damage: 0, isCrit: false, mult: 1 };
 
     let isCrit = Math.random() < (HIGH_CRIT_MOVES.includes(move.nameEn) ? 0.125 : 0.0625);
-    let atkTypes = atkEntity.battleStats ? atkEntity.battleStats.types : (atkEntity.types || []);
-    let defTypes = defEntity.battleStats ? defEntity.battleStats.types : (defEntity.types || []);
+    let atkTypes = atkEntity.types || (atkEntity.battleStats ? atkEntity.battleStats.types : []) || [];
+    let defTypes = defEntity.types || (defEntity.battleStats ? defEntity.battleStats.types : []) || [];
+    // ------------------------
     
     let mult = getEffectiveness(move.type, defTypes);
     if (mult === 0) return { damage: 0, isCrit: false, mult: 0 };
