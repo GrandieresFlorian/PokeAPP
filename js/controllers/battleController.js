@@ -8,14 +8,24 @@ import {
     OHKO_MOVES, KAMIKAZE_MOVES, FORCE_FLEE_MOVES, STAT_CLEAR_MOVES, FIXED_DAMAGE_MOVES,
     STATUS_CONDITIONS, SECONDARY_STATUS, ABILITIES_DB
 } from '../data/campagneData.js';
-
-// --- IMPORT DU NOUVEAU MOTEUR ---
 import { getEffectiveStat, checkMoveHit, calculateDamage } from '../battleEngine.js';
 
+// --- NOUVELLES MÉCANIQUES ---
 const PROTECT_MOVES_LIST = ["protect", "detect"];
 const SEED_MOVES_LIST = ["leech-seed"];
 const ACCURACY_DROPS = ["smokescreen", "sand-attack", "flash", "kinesis", "mud-slap"];
 const EVASION_UPS = ["double-team", "minimize"];
+const TWO_TURN_INVUL_MOVES = ["fly", "dig", "dive", "bounce", "phantom-force"];
+const TWO_TURN_CHARGE_MOVES = ["solar-beam", "sky-attack", "razor-wind", "skull-bash"];
+const DELAYED_MOVES = ["future-sight", "doom-desire"];
+const HAZARD_MOVES = ["stealth-rock", "spikes", "toxic-spikes", "sticky-web"];
+const HAZARD_CLEAR_MOVES = ["defog", "rapid-spin"];
+const SCREENS = ["reflect", "light-screen", "aurora-veil"];
+const WINDS = ["tailwind", "trick-room"];
+const TERRAINS = ["electric-terrain", "grassy-terrain", "misty-terrain", "psychic-terrain"];
+const TRAP_MOVES = ["mean-look", "spider-web", "block"];
+const BIND_MOVES = ["fire-spin", "whirlpool", "wrap", "clamp", "sand-tomb"];
+
 const WEATHER_MOVES_DICT = {
     "sunny-day": { weather: "sun", msg: "Le soleil brille intensément ☀️ !" },
     "rain-dance": { weather: "rain", msg: "Il commence à pleuvoir 🌧️ !" },
@@ -32,18 +42,14 @@ const STATUS_COLORS = { "BRN": "#e67e22", "PSN": "#9b59b6", "TOX": "#8e44ad", "P
 
 function logMessage(msg) {
     const logBox = document.getElementById('pvp-battle-log');
-    if(!logBox) return;
-    logBox.innerHTML += `<br>> ${msg}`;
-    logBox.scrollTop = logBox.scrollHeight;
+    if(!logBox) return; logBox.innerHTML += `<br>> ${msg}`; logBox.scrollTop = logBox.scrollHeight;
 }
 
 function updateBarColor(id, hp, maxHp) {
     const el = document.getElementById(id);
     if (!el) return;
     const ratio = hp / maxHp;
-    if (ratio > 0.5) el.style.backgroundColor = "#2ecc71";
-    else if (ratio > 0.2) el.style.backgroundColor = "#f39c12";
-    else el.style.backgroundColor = "#e74c3c";
+    el.style.backgroundColor = ratio > 0.5 ? "#2ecc71" : (ratio > 0.2 ? "#f39c12" : "#e74c3c");
 }
 
 export function initPvPListener() {
@@ -59,7 +65,6 @@ export function initPvPListener() {
 export function proposerCombat(friendId) {
     if (!state.currentUser) return;
     document.getElementById('pvp-challenge-modal').classList.remove('hidden');
-
     document.getElementById('btn-pvp-ranked').onclick = () => sendChallenge(friendId, 'ranked');
     document.getElementById('btn-pvp-friendly').onclick = () => openFriendlyTeamSelector(friendId);
     document.getElementById('btn-cancel-challenge').onclick = () => document.getElementById('pvp-challenge-modal').classList.add('hidden');
@@ -171,7 +176,11 @@ async function createBattleRoom(req, team1, team2) {
         team2: await formatTeam(team2),
         active1: 0, active2: 0,
         action1: null, action2: null,
-        weather: 'none', weatherTurns: 0,
+        weather: 'none', weatherTurns: 0, trickRoom: 0, terrain: 'none', terrainTurns: 0, delayedAttacks: [],
+        screens1: { reflect: 0, lightScreen: 0, auroraVeil: 0, tailwind: 0 },
+        screens2: { reflect: 0, lightScreen: 0, auroraVeil: 0, tailwind: 0 },
+        hazards1: { stealthRock: false, spikes: 0, toxicSpikes: 0, stickyWeb: false },
+        hazards2: { stealthRock: false, spikes: 0, toxicSpikes: 0, stickyWeb: false },
         log: [`<b style="color:#f39c12;">Le combat ${req.type === 'ranked' ? 'Classé' : 'Amical'} commence !</b>`],
         status: 'playing', mode: req.type, winner: null
     });
@@ -206,6 +215,7 @@ async function formatTeam(rawTeam) {
             modifiers: { atk:0, def:0, spatk:0, spdef:0, speed:0, accuracy:0, evasion:0 },
             status: null, statusTurns: 0, confusion: 0, toxCount: 0,
             turnsActive: 0, isProtected: false, protectCount: 0, isSeeded: false, flinched: false,
+            chargingMove: null, invulnerable: false, trapped: false, bound: {name: null, turns: 0},
             types: [...d.types],
             original: {
                 types: [...d.types],
@@ -226,10 +236,8 @@ function openFriendlyTeamSelector(friendId) {
     let selected = [];
     renderTeamSelectionGrid(selected, () => {
         let btn = document.getElementById('btn-confirm-pvp-team');
-        if(selected.length === 4) {
-            btn.classList.remove('hidden');
-            btn.onclick = () => sendChallenge(friendId, 'friendly', selected);
-        } else btn.classList.add('hidden');
+        if(selected.length === 4) { btn.classList.remove('hidden'); btn.onclick = () => sendChallenge(friendId, 'friendly', selected); } 
+        else btn.classList.add('hidden');
     });
 
     document.getElementById('btn-cancel-pvp-team').onclick = () => {
@@ -247,10 +255,8 @@ function openAcceptFriendlyTeamSelector(req, myCol, enemyTeam) {
     let selected = [];
     renderTeamSelectionGrid(selected, () => {
         let btn = document.getElementById('btn-confirm-pvp-team');
-        if(selected.length === 4) {
-            btn.classList.remove('hidden');
-            btn.onclick = () => createBattleRoom(req, enemyTeam, selected);
-        } else btn.classList.add('hidden');
+        if(selected.length === 4) { btn.classList.remove('hidden'); btn.onclick = () => createBattleRoom(req, enemyTeam, selected); } 
+        else btn.classList.add('hidden');
     });
 
     document.getElementById('btn-cancel-pvp-team').onclick = () => {
@@ -300,9 +306,7 @@ function joinRealTimeBattle(battleId) {
 
     unsubscribeBattle = db.collection('active_battles').doc(battleId).onSnapshot(doc => {
         if (!doc.exists) {
-            db.collection('users').doc(state.currentUser).update({
-                activeBattle: firebase.firestore.FieldValue.delete()
-            });
+            db.collection('users').doc(state.currentUser).update({ activeBattle: firebase.firestore.FieldValue.delete() });
             document.getElementById('pvp-battle-arena').classList.add('hidden');
             document.getElementById('pvp-menus').classList.remove('hidden');
             if (unsubscribeBattle) { unsubscribeBattle(); unsubscribeBattle = null; }
@@ -314,10 +318,7 @@ function joinRealTimeBattle(battleId) {
         myRole = (data.p1 === state.currentUser) ? 'p1' : 'p2';
         renderSynchronousUI(data);
 
-        if (myRole === 'p1' && data.action1 && data.action2 && data.status === 'playing') {
-            resolveSynchronousTurn(data, doc.ref);
-        }
-
+        if (myRole === 'p1' && data.action1 && data.action2 && data.status === 'playing') resolveSynchronousTurn(data, doc.ref);
         if (data.status === 'finished') endRealTimeBattle(data);
     });
 
@@ -325,32 +326,41 @@ function joinRealTimeBattle(battleId) {
     document.getElementById('btn-pvp-surrender').onclick = () => surrenderBattle();
 }
 
-function updateWeatherUI(weatherStr) {
-    let weatherBanner = document.getElementById('pvp-weather-banner');
+function updateGlobalFieldsUI(data) {
+    let globalBanner = document.getElementById('pvp-global-banner');
     const logBox = document.getElementById('pvp-battle-log');
     
-    if (!weatherBanner && logBox) {
-        weatherBanner = document.createElement('div');
-        weatherBanner.id = 'pvp-weather-banner';
-        weatherBanner.style.cssText = "text-align:center; font-weight:bold; padding:5px; margin-bottom:5px; border-radius:5px; transition: 0.3s;";
-        logBox.parentNode.insertBefore(weatherBanner, logBox);
+    if (!globalBanner && logBox) {
+        globalBanner = document.createElement('div');
+        globalBanner.id = 'pvp-global-banner';
+        globalBanner.style.cssText = "text-align:center; font-weight:bold; padding:5px; margin-bottom:5px; border-radius:5px; transition: 0.3s; font-size:0.8rem;";
+        logBox.parentNode.insertBefore(globalBanner, logBox);
     }
     
-    if (weatherBanner) {
-        if (weatherStr && weatherStr !== 'none') {
-            weatherBanner.style.display = 'block';
-            if (weatherStr === 'sun') { weatherBanner.textContent = "☀️ Météo : Soleil Intense"; weatherBanner.style.background = "#f1c40f"; weatherBanner.style.color = "#000"; }
-            if (weatherStr === 'rain') { weatherBanner.textContent = "🌧️ Météo : Pluie Battante"; weatherBanner.style.background = "#3498db"; weatherBanner.style.color = "#fff"; }
-            if (weatherStr === 'sandstorm') { weatherBanner.textContent = "🌪️ Météo : Tempête de Sable"; weatherBanner.style.background = "#e67e22"; weatherBanner.style.color = "#fff"; }
-            if (weatherStr === 'hail') { weatherBanner.textContent = "❄️ Météo : Grêle"; weatherBanner.style.background = "#ecf0f1"; weatherBanner.style.color = "#000"; }
+    if (globalBanner) {
+        let texts = [];
+        if (data.weather !== 'none') {
+            if (data.weather === 'sun') texts.push("☀️ Soleil");
+            if (data.weather === 'rain') texts.push("🌧️ Pluie");
+            if (data.weather === 'sandstorm') texts.push("🌪️ Sable");
+            if (data.weather === 'hail') texts.push("❄️ Grêle");
+        }
+        if (data.terrain && data.terrain !== 'none') texts.push(`🌍 Terrain ${data.terrain}`);
+        if (data.trickRoom > 0) texts.push("🌀 Distorsion active");
+        
+        if (texts.length > 0) {
+            globalBanner.style.display = 'block';
+            globalBanner.style.background = "#34495e";
+            globalBanner.style.color = "#ecf0f1";
+            globalBanner.textContent = texts.join(' | ');
         } else {
-            weatherBanner.style.display = 'none';
+            globalBanner.style.display = 'none';
         }
     }
 }
 
 function renderSynchronousUI(data) {
-    updateWeatherUI(data.weather);
+    updateGlobalFieldsUI(data);
 
     let myTeam = myRole === 'p1' ? data.team1 : data.team2;
     let enemyTeam = myRole === 'p1' ? data.team2 : data.team1;
@@ -367,6 +377,7 @@ function renderSynchronousUI(data) {
     document.getElementById('pvp-player-sprite').src = pActive.transformedImage || getCardImageUrl(pActive);
     updateBarColor('pvp-player-hp-fill', pActive.currentHp, pActive.maxHp);
     document.getElementById('pvp-player-team-ui').innerHTML = myTeam.map((p, i) => `<div class="ball ${p.currentHp <= 0 ? 'fainted' : (i === myActiveIdx ? 'active' : 'alive')}"></div>`).join('');
+    document.getElementById('pvp-player-sprite').style.opacity = pActive.invulnerable ? "0.3" : "1";
 
     document.getElementById('pvp-enemy-name').textContent = eActive.data.fr;
     document.getElementById('pvp-enemy-lvl').textContent = `Niv. ${eActive.level || 1}`;
@@ -375,6 +386,7 @@ function renderSynchronousUI(data) {
     document.getElementById('pvp-enemy-sprite').src = eActive.transformedImage || getCardImageUrl(eActive);
     updateBarColor('pvp-enemy-hp-fill', eActive.currentHp, eActive.maxHp);
     document.getElementById('pvp-enemy-team-ui').innerHTML = enemyTeam.map((p, i) => `<div class="ball ${p.currentHp <= 0 ? 'fainted' : (i === enemyActiveIdx ? 'active' : 'alive')}"></div>`).join('');
+    document.getElementById('pvp-enemy-sprite').style.opacity = eActive.invulnerable ? "0.3" : "1";
 
     renderModifiersUI(pActive, 'pvp-player-modifiers');
     renderModifiersUI(eActive, 'pvp-enemy-modifiers');
@@ -404,17 +416,21 @@ function renderSynchronousUI(data) {
                 
                 const container = document.getElementById('pvp-moves-container');
                 container.innerHTML = "";
-                pActive.moves.forEach(move => {
-                    const btn = document.createElement('button');
-                    btn.className = `move-btn type-${move.type}`;
-                    
-                    let displayPower = (move.damageClass === "status" || USELESS_MOVES.includes(move.nameEn) || FORCE_FLEE_MOVES.includes(move.nameEn) || STAT_CLEAR_MOVES.includes(move.nameEn) || OHKO_MOVES.includes(move.nameEn) || PROTECT_MOVES_LIST.includes(move.nameEn) || SEED_MOVES_LIST.includes(move.nameEn) || WEATHER_MOVES_DICT[move.nameEn] || move.nameEn === "transform" || ACCURACY_DROPS.includes(move.nameEn) || EVASION_UPS.includes(move.nameEn)) ? "-" : move.power;
-                    if(FIXED_DAMAGE_MOVES[move.nameEn]) displayPower = "FIX";
+                
+                if (pActive.chargingMove) {
+                    container.innerHTML = `<button class="move-btn type-normal" disabled style="grid-column:span 2;">En attente d'attaque...</button>`;
+                } else {
+                    pActive.moves.forEach(move => {
+                        const btn = document.createElement('button');
+                        btn.className = `move-btn type-${move.type}`;
+                        let displayPower = (move.damageClass === "status" || USELESS_MOVES.includes(move.nameEn) || FORCE_FLEE_MOVES.includes(move.nameEn) || STAT_CLEAR_MOVES.includes(move.nameEn) || OHKO_MOVES.includes(move.nameEn) || PROTECT_MOVES_LIST.includes(move.nameEn) || SEED_MOVES_LIST.includes(move.nameEn) || WEATHER_MOVES_DICT[move.nameEn] || move.nameEn === "transform" || ACCURACY_DROPS.includes(move.nameEn) || EVASION_UPS.includes(move.nameEn) || HAZARD_MOVES.includes(move.nameEn) || HAZARD_CLEAR_MOVES.includes(move.nameEn) || SCREENS.includes(move.nameEn) || WINDS.includes(move.nameEn) || TERRAINS.includes(move.nameEn) || TRAP_MOVES.includes(move.nameEn)) ? "-" : move.power;
+                        if(FIXED_DAMAGE_MOVES[move.nameEn]) displayPower = "FIX";
 
-                    btn.innerHTML = `<span class="move-name">${move.nameFr}</span><span style="font-size:0.7rem; font-weight:normal;">POW ${displayPower}</span>`;
-                    btn.onclick = () => submitAction({ type: 'move', move: move });
-                    container.appendChild(btn);
-                });
+                        btn.innerHTML = `<span class="move-name">${move.nameFr}</span><span style="font-size:0.7rem; font-weight:normal;">POW ${displayPower}</span>`;
+                        btn.onclick = () => submitAction({ type: 'move', move: move });
+                        container.appendChild(btn);
+                    });
+                }
             }
         }
     } else {
@@ -444,12 +460,19 @@ function renderModifiersUI(entity, containerId) {
         seedBadge.textContent = "GRAINE";
         container.appendChild(seedBadge);
     }
+    if (entity.bound && entity.bound.turns > 0) {
+        let bindBadge = document.createElement('span');
+        bindBadge.style.cssText = `background:#c0392b; color:#fff; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-left:4px;`;
+        bindBadge.textContent = "PIÉGÉ";
+        container.appendChild(bindBadge);
+    }
     for (let stat in entity.modifiers) {
         let stage = entity.modifiers[stat];
         if (stage !== 0) {
             let badge = document.createElement('span');
             badge.className = `mod-badge ${stage > 0 ? 'mod-up' : 'mod-down'}`;
-            badge.textContent = `${EXTENDED_STAT_NAMES[stat]} ${stage > 0 ? '+' : ''}${stage}`;
+            let statName = EXTENDED_STAT_NAMES[stat] || stat;
+            badge.textContent = `${statName} ${stage > 0 ? '+' : ''}${stage}`;
             container.appendChild(badge);
         }
     }
@@ -466,29 +489,35 @@ function submitAction(action) {
 }
 
 function openSynchronousSwitchMenu(forced = false) {
-    document.getElementById('pvp-action-wrapper').classList.add('hidden');
-    document.getElementById('pvp-team-selection').classList.remove('hidden');
-    document.getElementById('pvp-selection-title').textContent = "Qui voulez-vous envoyer ?";
-    document.getElementById('pvp-selection-counter').classList.add('hidden');
-    document.getElementById('btn-confirm-pvp-team').classList.add('hidden');
-    
-    let btnCancel = document.getElementById('btn-cancel-pvp-team');
-    btnCancel.textContent = "Retour";
-    
-    if (forced) {
-        btnCancel.classList.add('hidden');
-    } else {
-        btnCancel.classList.remove('hidden');
-        btnCancel.onclick = () => {
-            document.getElementById('pvp-team-selection').classList.add('hidden');
-            document.getElementById('pvp-action-wrapper').classList.remove('hidden');
-        };
-    }
-
     db.collection('active_battles').doc(currentBattleId).get().then(doc => {
         let data = doc.data();
         let myTeam = myRole === 'p1' ? data.team1 : data.team2;
         let myActiveIdx = myRole === 'p1' ? data.active1 : data.active2;
+        let activePkmn = myTeam[myActiveIdx];
+
+        if (!forced && (activePkmn.trapped || (activePkmn.bound && activePkmn.bound.turns > 0))) {
+            logMessage(`<b>${activePkmn.data.fr} est piégé et ne peut pas être retiré !</b>`);
+            return;
+        }
+
+        document.getElementById('pvp-action-wrapper').classList.add('hidden');
+        document.getElementById('pvp-team-selection').classList.remove('hidden');
+        document.getElementById('pvp-selection-title').textContent = "Qui voulez-vous envoyer ?";
+        document.getElementById('pvp-selection-counter').classList.add('hidden');
+        document.getElementById('btn-confirm-pvp-team').classList.add('hidden');
+        
+        let btnCancel = document.getElementById('btn-cancel-pvp-team');
+        btnCancel.textContent = "Retour";
+        
+        if (forced) {
+            btnCancel.classList.add('hidden');
+        } else {
+            btnCancel.classList.remove('hidden');
+            btnCancel.onclick = () => {
+                document.getElementById('pvp-team-selection').classList.add('hidden');
+                document.getElementById('pvp-action-wrapper').classList.remove('hidden');
+            };
+        }
         
         const grid = document.getElementById('pvp-selection-grid');
         grid.innerHTML = "";
@@ -584,6 +613,17 @@ function applyEndTurnStatusSync(entity, opponent, logs) {
         logs.push(`<span style="color:#2ecc71">Vampigraine draine l'énergie de ${name} !</span>`);
     }
 
+    if (entity.bound && entity.bound.turns > 0) {
+        let bindDmg = Math.max(1, Math.floor(entity.maxHp / 8));
+        entity.currentHp -= bindDmg;
+        entity.bound.turns--;
+        logs.push(`<span style="color:#e74c3c">${name} souffre de l'étreinte de ${entity.bound.name} !</span>`);
+        if (entity.bound.turns === 0) {
+            entity.trapped = false;
+            logs.push(`<b>${name} est libéré de ${entity.bound.name} !</b>`);
+        }
+    }
+
     if (entity.status === 'BRN') {
         entity.currentHp -= Math.max(1, Math.floor(entity.maxHp / 16)); logs.push(`<span style="color:#e67e22">${name} souffre de sa brûlure !</span>`);
     } else if (entity.status === 'PSN') {
@@ -596,19 +636,32 @@ function applyEndTurnStatusSync(entity, opponent, logs) {
     if (entity.currentHp <= 0) logs.push(`<b style="color:#e74c3c">${name} est K.O. !</b>`);
 }
 
-function applyWeatherDamageSync(entity, weather, logs) {
-    if (entity.currentHp <= 0) return;
-    let types = entity.types || [];
+function applyHazardsSync(entity, hazards, logs) {
     let name = entity.data.fr;
-    if (weather === 'sandstorm' && !types.includes('rock') && !types.includes('ground') && !types.includes('steel')) {
-        entity.currentHp -= Math.max(1, Math.floor(entity.maxHp / 16));
-        logs.push(`<span style="color:#e67e22">${name} subit la tempête de sable !</span>`);
+    let types = entity.types || [];
+    if (hazards.stealthRock) {
+        let mult = getEffectiveness('rock', types);
+        entity.currentHp -= Math.max(1, Math.floor(entity.maxHp * (0.125 * mult)));
+        logs.push(`<span style="color:#e67e22">Les rochers pointus blessent ${name} !</span>`);
     }
-    if (weather === 'hail' && !types.includes('ice')) {
-        entity.currentHp -= Math.max(1, Math.floor(entity.maxHp / 16));
-        logs.push(`<span style="color:#bdc3c7">${name} subit la grêle !</span>`);
+    if (hazards.spikes > 0 && !types.includes('flying')) {
+        let fraction = hazards.spikes === 1 ? 8 : (hazards.spikes === 2 ? 6 : 4);
+        entity.currentHp -= Math.max(1, Math.floor(entity.maxHp / fraction));
+        logs.push(`<span style="color:#7f8c8d">${name} se blesse sur les Picots !</span>`);
     }
-    if (entity.currentHp <= 0) logs.push(`<b style="color:#e74c3c">${name} est K.O. !</b>`);
+    if (hazards.toxicSpikes > 0 && !types.includes('flying') && !types.includes('steel')) {
+        if (types.includes('poison')) {
+            hazards.toxicSpikes = 0;
+            logs.push(`<span style="color:#9b59b6">${name} dissipe les Pics Toxik en entrant !</span>`);
+        } else if (!entity.status) {
+            entity.status = hazards.toxicSpikes === 1 ? 'PSN' : 'TOX';
+            logs.push(`<span style="color:#8e44ad">${name} est empoisonné par les Pics Toxik !</span>`);
+        }
+    }
+    if (hazards.stickyWeb && !types.includes('flying')) {
+        entity.modifiers.speed = Math.max(-6, (entity.modifiers.speed || 0) - 1);
+        logs.push(`<span style="color:#f1c40f">${name} est ralenti par la Toile Gluante !</span>`);
+    }
 }
 
 function revertTransformation(pkmn) {
@@ -648,12 +701,14 @@ async function resolveSynchronousTurn(data, battleRef) {
             active1 = a1.index; p1 = t1[active1]; 
             p1.turnsActive = 0; p1.isSeeded = false; 
             turnLogs.push(`Le Joueur 1 envoie <b>${p1.data.fr}</b> !`); 
+            applyHazardsSync(p1, data.hazards1, turnLogs);
             triggerEntryAbilitySync(p1, p2, data, turnLogs);
         }
         if (a2.type === 'force_switch') { 
             active2 = a2.index; p2 = t2[active2]; 
             p2.turnsActive = 0; p2.isSeeded = false; 
             turnLogs.push(`Le Joueur 2 envoie <b>${p2.data.fr}</b> !`); 
+            applyHazardsSync(p2, data.hazards2, turnLogs);
             triggerEntryAbilitySync(p2, p1, data, turnLogs);
         }
     } else {
@@ -663,6 +718,7 @@ async function resolveSynchronousTurn(data, battleRef) {
             p1.turnsActive = 0; p1.isSeeded = false; 
             for(let s in p1.modifiers) p1.modifiers[s] = 0;
             turnLogs.push(`Joueur 1 envoie <b>${p1.data.fr}</b> !`); 
+            applyHazardsSync(p1, data.hazards1, turnLogs);
             triggerEntryAbilitySync(p1, p2, data, turnLogs);
         }
         if (a2.type === 'switch') { 
@@ -671,6 +727,7 @@ async function resolveSynchronousTurn(data, battleRef) {
             p2.turnsActive = 0; p2.isSeeded = false; 
             for(let s in p2.modifiers) p2.modifiers[s] = 0;
             turnLogs.push(`Joueur 2 envoie <b>${p2.data.fr}</b> !`); 
+            applyHazardsSync(p2, data.hazards2, turnLogs);
             triggerEntryAbilitySync(p2, p1, data, turnLogs);
         }
 
@@ -681,7 +738,8 @@ async function resolveSynchronousTurn(data, battleRef) {
         let move2 = a2.type === 'move' ? a2.move : null;
 
         if (move1 && move2) {
-            let p1Speed = getEffectiveStat(p1, 'speed', data.weather); let p2Speed = getEffectiveStat(p2, 'speed', data.weather);
+            let p1Speed = getEffectiveStat(p1, 'speed', data.weather) * (data.screens1.tailwind > 0 ? 2 : 1); 
+            let p2Speed = getEffectiveStat(p2, 'speed', data.weather) * (data.screens2.tailwind > 0 ? 2 : 1);
             
             let p1Priority = PRIORITY_MOVES.includes(move1.nameEn) ? 1 : 0;
             if (move1.nameEn === "fake-out") p1Priority = 3;
@@ -691,19 +749,24 @@ async function resolveSynchronousTurn(data, battleRef) {
             if (move2.nameEn === "fake-out") p2Priority = 3;
             if (PROTECT_MOVES_LIST.includes(move2.nameEn)) p2Priority = 4;
 
-            let p1GoesFirst = p1Priority > p2Priority || (p1Priority === p2Priority && p1Speed >= p2Speed);
-            if (p1Speed === p2Speed && p1Priority === p2Priority) p1GoesFirst = Math.random() > 0.5;
+            let p1GoesFirst = false;
+            if (p1Priority > p2Priority) p1GoesFirst = true;
+            else if (p2Priority > p1Priority) p1GoesFirst = false;
+            else {
+                p1GoesFirst = data.trickRoom > 0 ? (p1Speed <= p2Speed) : (p1Speed >= p2Speed);
+                if (p1Speed === p2Speed) p1GoesFirst = Math.random() > 0.5;
+            }
 
             if (p1GoesFirst) {
-                if(preMoveCheckSync(p1, turnLogs)) evalMove(p1, p2, move1, turnLogs, data);
-                if (p2.currentHp > 0 && p1.currentHp > 0) { if(preMoveCheckSync(p2, turnLogs)) evalMove(p2, p1, move2, turnLogs, data); }
+                if(preMoveCheckSync(p1, turnLogs)) evalMove(p1, p2, move1, turnLogs, data, true);
+                if (p2.currentHp > 0 && p1.currentHp > 0) { if(preMoveCheckSync(p2, turnLogs)) evalMove(p2, p1, move2, turnLogs, data, false); }
             } else {
-                if(preMoveCheckSync(p2, turnLogs)) evalMove(p2, p1, move2, turnLogs, data);
-                if (p1.currentHp > 0 && p2.currentHp > 0) { if(preMoveCheckSync(p1, turnLogs)) evalMove(p1, p2, move1, turnLogs, data); }
+                if(preMoveCheckSync(p2, turnLogs)) evalMove(p2, p1, move2, turnLogs, data, false);
+                if (p1.currentHp > 0 && p2.currentHp > 0) { if(preMoveCheckSync(p1, turnLogs)) evalMove(p1, p2, move1, turnLogs, data, true); }
             }
         } 
-        else if (move1 && p1.currentHp > 0) { if(preMoveCheckSync(p1, turnLogs)) evalMove(p1, p2, move1, turnLogs, data); }
-        else if (move2 && p2.currentHp > 0) { if(preMoveCheckSync(p2, turnLogs)) evalMove(p2, p1, move2, turnLogs, data); }
+        else if (move1 && p1.currentHp > 0) { if(preMoveCheckSync(p1, turnLogs)) evalMove(p1, p2, move1, turnLogs, data, true); }
+        else if (move2 && p2.currentHp > 0) { if(preMoveCheckSync(p2, turnLogs)) evalMove(p2, p1, move2, turnLogs, data, false); }
 
         applyEndTurnStatusSync(p1, p2, turnLogs);
         applyEndTurnStatusSync(p2, p1, turnLogs);
@@ -714,9 +777,49 @@ async function resolveSynchronousTurn(data, battleRef) {
                 turnLogs.push(`<b>La météo redevient normale.</b>`);
                 data.weather = 'none';
             } else {
-                if(p1.currentHp > 0) applyWeatherDamageSync(p1, data.weather, turnLogs);
-                if(p2.currentHp > 0) applyWeatherDamageSync(p2, data.weather, turnLogs);
+                let p1Types = p1.types || [];
+                if (data.weather === 'sandstorm' && !p1Types.includes('rock') && !p1Types.includes('ground') && !p1Types.includes('steel') && p1.currentHp > 0) {
+                    p1.currentHp -= Math.max(1, Math.floor(p1.maxHp / 16)); turnLogs.push(`<span style="color:#e67e22">${p1.data.fr} subit la tempête de sable !</span>`);
+                }
+                if (data.weather === 'hail' && !p1Types.includes('ice') && p1.currentHp > 0) {
+                    p1.currentHp -= Math.max(1, Math.floor(p1.maxHp / 16)); turnLogs.push(`<span style="color:#bdc3c7">${p1.data.fr} subit la grêle !</span>`);
+                }
+                
+                let p2Types = p2.types || [];
+                if (data.weather === 'sandstorm' && !p2Types.includes('rock') && !p2Types.includes('ground') && !p2Types.includes('steel') && p2.currentHp > 0) {
+                    p2.currentHp -= Math.max(1, Math.floor(p2.maxHp / 16)); turnLogs.push(`<span style="color:#e67e22">${p2.data.fr} subit la tempête de sable !</span>`);
+                }
+                if (data.weather === 'hail' && !p2Types.includes('ice') && p2.currentHp > 0) {
+                    p2.currentHp -= Math.max(1, Math.floor(p2.maxHp / 16)); turnLogs.push(`<span style="color:#bdc3c7">${p2.data.fr} subit la grêle !</span>`);
+                }
             }
+        }
+
+        // Attaques à retardement
+        for (let i = data.delayedAttacks.length - 1; i >= 0; i--) {
+            let da = data.delayedAttacks[i];
+            da.timer--;
+            if (da.timer <= 0) {
+                let targetEntity = da.target === 'p1' ? p1 : p2;
+                if (targetEntity.currentHp > 0) {
+                    turnLogs.push(`<b>L'attaque ${da.move.nameFr} frappe ${targetEntity.data.fr} depuis le futur !</b>`);
+                    let dmgInfo = calculateDamage({ level: 50, battleStats: {atk:100, spatk:100}, types:[] }, targetEntity, da.move, data.weather);
+                    targetEntity.currentHp -= dmgInfo.damage;
+                    if (targetEntity.currentHp <= 0) turnLogs.push(`<b style="color:#e74c3c">${targetEntity.data.fr} est K.O. !</b>`);
+                }
+                data.delayedAttacks.splice(i, 1);
+            }
+        }
+
+        // Diminution des timers
+        ['reflect', 'lightScreen', 'auroraVeil', 'tailwind'].forEach(screen => {
+            if (data.screens1[screen] > 0) data.screens1[screen]--;
+            if (data.screens2[screen] > 0) data.screens2[screen]--;
+        });
+        if (data.trickRoom > 0) data.trickRoom--;
+        if (data.terrainTurns > 0) {
+            data.terrainTurns--;
+            if (data.terrainTurns === 0) data.terrain = 'none';
         }
     }
 
@@ -734,29 +837,96 @@ async function resolveSynchronousTurn(data, battleRef) {
         active1: active1, active2: active2,
         action1: null, action2: null,
         weather: data.weather, weatherTurns: data.weatherTurns,
+        trickRoom: data.trickRoom, terrain: data.terrain, terrainTurns: data.terrainTurns, delayedAttacks: data.delayedAttacks,
+        screens1: data.screens1, screens2: data.screens2, hazards1: data.hazards1, hazards2: data.hazards2,
         log: data.log.concat(turnLogs),
         status: status, winner: winner
     });
 }
 
-function evalMove(atk, def, move, logs, battleData) {
+function evalMove(atk, def, rawMove, logs, battleData, isP1) {
     if (atk.flinched) {
         logs.push(`<span style="color:#f39c12">${atk.data.fr} a la trouille et ne peut pas attaquer !</span>`);
         return;
     }
 
-    logs.push(`<b>${atk.data.fr}</b> utilise <span style="color:#3498db">${move.nameFr}</span> !`);
+    let aName = atk.data.fr; let defName = def.data.fr;
+    let move = rawMove;
 
-    // MÉTÉO
-    if (WEATHER_MOVES_DICT[move.nameEn]) {
-        let wInfo = WEATHER_MOVES_DICT[move.nameEn];
-        battleData.weather = wInfo.weather;
-        battleData.weatherTurns = 5;
-        logs.push(`<span style="color:#f39c12"><b>${wInfo.msg}</b></span>`);
+    if (atk.chargingMove) {
+        move = atk.chargingMove;
+        atk.chargingMove = null; atk.invulnerable = false;
+    } else if (TWO_TURN_INVUL_MOVES.includes(move.nameEn)) {
+        atk.chargingMove = move; atk.invulnerable = true;
+        logs.push(`<b>${aName}</b> s'envole / disparaît / plonge !`);
+        return;
+    } else if (TWO_TURN_CHARGE_MOVES.includes(move.nameEn)) {
+        if (move.nameEn === "solar-beam" && battleData.weather === "sun") { /* Direct */ }
+        else {
+            atk.chargingMove = move;
+            logs.push(`<b>${aName}</b> se concentre / absorbe la lumière !`);
+            return;
+        }
+    } else if (DELAYED_MOVES.includes(move.nameEn)) {
+        battleData.delayedAttacks.push({ move: move, timer: 2, target: isP1 ? 'p2' : 'p1' });
+        logs.push(`<b>${aName}</b> a prévu une attaque dans le futur !`);
         return;
     }
 
-    // PRÉCISION / ESQUIVE
+    logs.push(`<b>${atk.data.fr}</b> utilise <span style="color:#3498db">${move.nameFr}</span> !`);
+
+    if (def.invulnerable) { logs.push(`Mais <b>${defName}</b> est introuvable ! L'attaque échoue.`); return; }
+
+    let myTeamState = isP1 ? battleData.screens1 : battleData.screens2;
+    let opTeamState = isP1 ? battleData.screens2 : battleData.screens1;
+    let opHazards = isP1 ? battleData.hazards2 : battleData.hazards1;
+    let myHazards = isP1 ? battleData.hazards1 : battleData.hazards2;
+
+    if (WEATHER_MOVES_DICT[move.nameEn]) {
+        battleData.weather = WEATHER_MOVES_DICT[move.nameEn].weather; battleData.weatherTurns = 5;
+        logs.push(`<span style="color:#f39c12"><b>${WEATHER_MOVES_DICT[move.nameEn].msg}</b></span>`);
+        return;
+    }
+    if (TERRAINS.includes(move.nameEn)) {
+        battleData.terrain = move.nameEn; battleData.terrainTurns = 5;
+        logs.push(`<span style="color:#f39c12"><b>Un ${move.nameFr} recouvre le champ de bataille !</b></span>`);
+        return;
+    }
+    if (SCREENS.includes(move.nameEn)) {
+        if (move.nameEn === "reflect") myTeamState.reflect = 5;
+        if (move.nameEn === "light-screen") myTeamState.lightScreen = 5;
+        if (move.nameEn === "aurora-veil" && battleData.weather === "hail") myTeamState.auroraVeil = 5;
+        logs.push(`<span style="color:#3498db">Un mur défensif protège l'équipe de ${aName} !</span>`);
+        return;
+    }
+    if (WINDS.includes(move.nameEn)) {
+        if (move.nameEn === "tailwind") { myTeamState.tailwind = 4; logs.push(`Le vent souffle en faveur de ${aName} !`); }
+        if (move.nameEn === "trick-room") { battleData.trickRoom = 5; logs.push(`<b>L'ordre des vitesses est inversé (Distorsion) !</b>`); }
+        return;
+    }
+    if (HAZARD_MOVES.includes(move.nameEn)) {
+        if (move.nameEn === "stealth-rock" && !opHazards.stealthRock) { opHazards.stealthRock = true; logs.push(`<span style="color:#e67e22">Des pierres pointues lévitent autour de l'équipe adverse !</span>`); }
+        else if (move.nameEn === "spikes" && opHazards.spikes < 3) { opHazards.spikes++; logs.push(`<span style="color:#7f8c8d">Des Picots sont répandus sur le terrain adverse !</span>`); }
+        else if (move.nameEn === "toxic-spikes" && opHazards.toxicSpikes < 2) { opHazards.toxicSpikes++; logs.push(`<span style="color:#8e44ad">Des Pics Toxik sont répandus sur le terrain adverse !</span>`); }
+        else if (move.nameEn === "sticky-web" && !opHazards.stickyWeb) { opHazards.stickyWeb = true; logs.push(`<span style="color:#f1c40f">Une Toile Gluante tisse le terrain adverse !</span>`); }
+        else logs.push(`Mais cela échoue...`);
+        return;
+    }
+    if (HAZARD_CLEAR_MOVES.includes(move.nameEn)) {
+        myHazards.stealthRock = false; myHazards.spikes = 0; myHazards.toxicSpikes = 0; myHazards.stickyWeb = false;
+        logs.push(`<span style="color:#3498db">Les pièges sur le terrain sont balayés !</span>`);
+        if (move.nameEn === "defog") { opHazards.stealthRock = false; opHazards.spikes = 0; opHazards.toxicSpikes = 0; opHazards.stickyWeb = false; def.modifiers.evasion = Math.max(-6, (def.modifiers.evasion || 0) - 1); }
+        return;
+    }
+    if (TRAP_MOVES.includes(move.nameEn)) {
+        def.trapped = true; logs.push(`<b>${defName} ne peut plus s'enfuir !</b>`); return;
+    }
+    if (BIND_MOVES.includes(move.nameEn)) {
+        if (!checkMoveHit(move, atk.modifiers, def.modifiers)) { logs.push(`<b>L'attaque a raté !</b>`); return; }
+        def.trapped = true; def.bound = { name: move.nameFr, turns: Math.floor(Math.random() * 2) + 4 };
+        logs.push(`<span style="color:#e74c3c"><b>${defName} est piégé par ${move.nameFr} !</b></span>`);
+    }
+
     if (ACCURACY_DROPS.includes(move.nameEn)) {
         def.modifiers.accuracy = Math.max(-6, (def.modifiers.accuracy || 0) - 1);
         logs.push(`<span style="color:#e74c3c">La précision de ${def.data.fr} diminue !</span>`);
@@ -768,21 +938,17 @@ function evalMove(atk, def, move, logs, battleData) {
         return;
     }
 
-    // MOTEUR: CALCUL DE L'ESQUIVE
     let isStatusOnSelf = move.damageClass === "status" && (EVASION_UPS.includes(move.nameEn) || HEAL_MOVES.includes(move.nameEn) || PROTECT_MOVES_LIST.includes(move.nameEn));
-    if (!isStatusOnSelf && move.nameEn !== "transform") {
+    if (!isStatusOnSelf && move.nameEn !== "transform" && !BIND_MOVES.includes(move.nameEn)) {
         if (!checkMoveHit(move, atk.modifiers, def.modifiers)) {
-            logs.push(`<b>Mais l'attaque a raté !</b>`);
-            return;
+            logs.push(`<b>Mais l'attaque a raté !</b>`); return;
         }
     }
     
-    // BLUFF
     if (move.nameEn === "fake-out") {
         if ((atk.turnsActive || 0) > 0) { logs.push(`Mais cela échoue !`); return; }
     }
 
-    // MORPHING
     if (move.nameEn === "transform") {
         atk.types = [...(def.types || [])];
         atk.stats = JSON.parse(JSON.stringify(def.stats));
@@ -793,7 +959,6 @@ function evalMove(atk, def, move, logs, battleData) {
         return;
     }
 
-    // ABRI
     if (PROTECT_MOVES_LIST.includes(move.nameEn)) {
         let chance = Math.pow(0.5, atk.protectCount || 0);
         if (Math.random() < chance) {
@@ -807,12 +972,8 @@ function evalMove(atk, def, move, logs, battleData) {
         atk.protectCount = 0;
     }
 
-    if (def.isProtected) {
-        logs.push(`<span style="color:#bdc3c7">${def.data.fr} s'est protégé contre l'attaque !</span>`);
-        return;
-    }
+    if (def.isProtected) { logs.push(`<span style="color:#bdc3c7">${def.data.fr} s'est protégé contre l'attaque !</span>`); return; }
 
-    // VAMPIGRAINE
     if (SEED_MOVES_LIST.includes(move.nameEn)) {
         let defTypes = def.types || (def.battleStats ? def.battleStats.types : []);
         if (defTypes.includes('grass')) { logs.push(`Ça n'affecte pas les Pokémon Plante !`); } 
@@ -873,27 +1034,26 @@ function evalMove(atk, def, move, logs, battleData) {
     for(let i=0; i<hitCount; i++) {
         if(def.currentHp <= 0) break;
         
-        // MOTEUR: CALCUL DES DÉGÂTS PURS
         let dmgInfo = calculateDamage(atk, def, move, battleData.weather);
         let dmg = dmgInfo.damage;
-        let isCrit = dmgInfo.isCrit;
-        let mult = dmgInfo.mult;
+
+        if (move.damageClass === 'physical' && opTeamState.reflect > 0) dmg = Math.floor(dmg / 2);
+        if (move.damageClass === 'special' && opTeamState.lightScreen > 0) dmg = Math.floor(dmg / 2);
+        if (opTeamState.auroraVeil > 0) dmg = Math.floor(dmg / 2);
 
         def.currentHp -= dmg;
         totalDmg += dmg;
 
-        if (dmg > 0 && isCrit && hitCount === 1) logs.push(`<span style="color:#f39c12">Coup Critique !</span>`);
-        
+        if (dmg > 0 && dmgInfo.isCrit && hitCount === 1) logs.push(`<span style="color:#f39c12">Coup Critique !</span>`);
         if (i === hitCount - 1) { 
-            if (mult > 1) logs.push(`C'est super efficace !`);
-            else if (mult > 0 && mult < 1) logs.push(`Ce n'est pas très efficace...`);
-            else if (mult === 0 && move.power > 0) logs.push(`Ça n'a aucun effet.`);
+            if (dmgInfo.mult > 1) logs.push(`C'est super efficace !`);
+            else if (dmgInfo.mult > 0 && dmgInfo.mult < 1) logs.push(`Ce n'est pas très efficace...`);
+            else if (dmgInfo.mult === 0 && move.power > 0) logs.push(`Ça n'a aucun effet.`);
         }
     }
 
     if (hitCount > 1 && totalDmg > 0) logs.push(`Touché ${hitCount} fois !`);
 
-    // TALENTS DE CONTACT (Au moment de prendre les dégâts)
     if (totalDmg > 0 && def.talent && ABILITIES_DB[def.talent.en] && move.damageClass === "physical") {
         let abDef = ABILITIES_DB[def.talent.en];
         if (abDef.type === "on_hit_status" && Math.random() * 100 <= abDef.statusObj.chance) {

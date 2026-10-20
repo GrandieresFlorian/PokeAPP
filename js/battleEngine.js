@@ -6,6 +6,8 @@ import { ABILITIES_DB, HIGH_CRIT_MOVES, FIXED_DAMAGE_MOVES } from './data/campag
 // ==========================================
 
 // 1. Calcul des statistiques complètes selon le niveau et les EVs
+
+
 export function calcStats(baseStats, level, evs = { hp: 0, atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0 }) {
     return {
         maxHp: Math.floor(((2 * baseStats.hp + Math.floor(evs.hp / 4)) * level) / 100) + level + 10,
@@ -96,4 +98,50 @@ export function calculateDamage(atkEntity, defEntity, move, currentWeather = 'no
     let damage = Math.floor(baseDmg * stab * mult * weatherMult * random * critMult);
     
     return { damage: Math.max(1, damage), isCrit, mult };
+}
+
+// ==========================================
+// MOTEUR DE PIÈGES (ENTRY HAZARDS)
+// ==========================================
+export function calculateHazardEffects(entity, hazards) {
+    let logs = [];
+    let types = entity.battleStats ? entity.battleStats.types : (entity.types || []);
+    let name = entity.data.fr;
+
+    // 1. Piège de Roc
+    if (hazards.stealthRock) {
+        let mult = getEffectiveness('rock', types);
+        let dmg = Math.floor(entity.maxHp * (0.125 * mult));
+        if (dmg < 1) dmg = 1;
+        entity.currentHp -= dmg;
+        logs.push(`<span style="color:#e67e22">Les rochers pointus blessent ${name} !</span>`);
+    }
+
+    // 2. Picots (immunité Vol)
+    if (hazards.spikes > 0 && !types.includes('flying')) {
+        let fraction = hazards.spikes === 1 ? 8 : (hazards.spikes === 2 ? 6 : 4);
+        let dmg = Math.floor(entity.maxHp / fraction);
+        entity.currentHp -= Math.max(1, dmg);
+        logs.push(`<span style="color:#7f8c8d">${name} se blesse sur les Picots !</span>`);
+    }
+
+    // 3. Pics Toxik (Immunité Vol/Acier, Absorption par les types Poison)
+    if (hazards.toxicSpikes > 0 && !types.includes('flying') && !types.includes('steel')) {
+        if (types.includes('poison')) {
+            hazards.toxicSpikes = 0; // Un type Poison absorbe les Pics Toxik
+            logs.push(`<span style="color:#9b59b6">${name} dissipe les Pics Toxik !</span>`);
+        } else if (!entity.status) {
+            entity.status = hazards.toxicSpikes === 1 ? 'PSN' : 'TOX';
+            entity.toxCount = 0;
+            logs.push(`<span style="color:#8e44ad">${name} est empoisonné par les Pics Toxik !</span>`);
+        }
+    }
+
+    // 4. Toile Gluante (immunité Vol)
+    if (hazards.stickyWeb && !types.includes('flying')) {
+        entity.modifiers.speed = Math.max(-6, (entity.modifiers.speed || 0) - 1);
+        logs.push(`<span style="color:#f1c40f">${name} est pris dans la Toile Gluante ! Sa Vitesse baisse !</span>`);
+    }
+
+    return logs;
 }
