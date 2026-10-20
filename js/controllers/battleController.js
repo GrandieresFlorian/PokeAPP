@@ -1,6 +1,7 @@
 import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
 import { getPokemonPow, getPokemonDetails, getCardImageUrl, getEffectiveness, getMovesForLevel } from '../utils.js';
+import { allerASection } from './navController.js';
 
 let currentBattleId = null;
 let myRole = null; // 'p1' (Hôte) ou 'p2' (Invité)
@@ -175,6 +176,8 @@ async function formatTeam(rawTeam) {
 
 function openFriendlyTeamSelector(friendId) {
     document.getElementById('pvp-challenge-modal').classList.add('hidden');
+    allerASection('section-combats');
+    document.getElementById('pvp-menus').classList.add('hidden');
     document.getElementById('pvp-team-selection').classList.remove('hidden');
     document.getElementById('pvp-selection-title').textContent = "Sélectionnez 4 Pokémon pour le combat";
     
@@ -251,6 +254,7 @@ function renderTeamSelectionGrid(selectedArray, onSelectCallback) {
 
 function joinRealTimeBattle(battleId) {
     currentBattleId = battleId;
+    allerASection('section-combats');
     document.getElementById('pvp-team-selection').classList.add('hidden');
     document.getElementById('pvp-menus').classList.add('hidden');
     document.getElementById('pvp-battle-arena').classList.remove('hidden');
