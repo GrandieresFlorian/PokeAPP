@@ -1,6 +1,9 @@
 import { state, CONSTS } from '../state.js';
 import { getPokemonDetails, formatMegaName, getCardImageUrl, generateTypeBadgesHTML, TOUTES_LES_BAIES, BAIES_BOOSTERS, MUTATION_RECIPES } from '../utils.js';
 
+// ==========================================
+// FICHE DÉTAILLÉE DU POKÉMON (100% LOCAL)
+// ==========================================
 export async function openCardDetails(carte) {
     const modal = document.getElementById('card-details-modal');
     modal.classList.remove('hidden');
@@ -20,41 +23,82 @@ export async function openCardDetails(carte) {
     let rarityStr = carte.mega ? "MG" : (d.rarity || "C");
     document.getElementById('details-level-rarity').textContent = `Niv. ${carte.level || 1} - Rareté : ${rarityStr}`;
 
-    // L'image de la carte
     const imgDiv = document.getElementById('details-card-image');
     imgDiv.style.backgroundImage = `url('${getCardImageUrl(carte)}')`;
     imgDiv.style.backgroundColor = CONSTS.couleursRarete[rarityStr] || "#333";
     imgDiv.innerHTML = carte.shiny || (carte.mega && carte.shiny) ? '<div class="mini-card-holo"></div>' : '';
 
-    // Récupération des stats de base et types
     const details = await getPokemonDetails(carte); 
     document.getElementById('details-types').innerHTML = details.types.map(t => `<span class="type-badge type-${t}">${t.toUpperCase()}</span>`).join('');
 
-    // Récupération du Talent et de la Description via PokeAPI
-    try {
-        const resPkmn = await fetch(`https://pokeapi.co/api/v2/pokemon/${carte.pokedexNumber}`);
-        const dataPkmn = await resPkmn.json();
+    // LECTURE INSTANTANÉE DEPUIS DATA.JSON !
+    let description = d.description ? (state.currentLang === 'en' ? d.description.en : d.description.fr) : "Aucune description.";
+    document.getElementById('details-description').textContent = description;
+    
+    // Affichage du Talent actuel (Par défaut : Aucun)
+    let currentTalentFr = carte.talent ? carte.talent.fr : "Aucun";
+    let currentTalentEn = carte.talent ? carte.talent.en : "None";
+    document.getElementById('details-talent').textContent = state.currentLang === 'en' ? currentTalentEn : currentTalentFr;
+
+    // --- GESTION DE LA BAIE FIGY ---
+    const btnFigy = document.getElementById('btn-use-figy');
+    const newBtnFigy = btnFigy.cloneNode(true); // Retire les anciens écouteurs de clics
+    btnFigy.parentNode.replaceChild(newBtnFigy, btnFigy);
+
+    newBtnFigy.onclick = async () => {
+        if (!state.currentUserData.berries) state.currentUserData.berries = [];
+        const berryIndex = state.currentUserData.berries.findIndex(b => b.id === 'figy-berry');
         
-        let abilityUrl = dataPkmn.abilities[0]?.ability.url;
-        let talentName = "Inconnu";
-        if(abilityUrl) {
-            let resAb = await fetch(abilityUrl);
-            let dataAb = await resAb.json();
-            let nameObj = dataAb.names.find(n => n.language.name === (state.currentLang === 'en' ? 'en' : 'fr'));
-            talentName = nameObj ? nameObj.name : dataPkmn.abilities[0].ability.name;
+        if (berryIndex === -1) {
+            alert(state.currentLang === 'en' ? "You don't have a Figy Berry in your inventory!" : "Vous n'avez pas de Baie Figy dans votre inventaire !");
+            return;
         }
-        document.getElementById('details-talent').textContent = talentName;
 
-        const resSpecies = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${carte.pokedexNumber}`);
-        const dataSpecies = await resSpecies.json();
-        const entry = dataSpecies.flavor_text_entries.find(e => e.language.name === (state.currentLang === 'en' ? 'en' : 'fr'));
-        document.getElementById('details-description').textContent = entry ? entry.flavor_text.replace(/\f/g, ' ') : "Aucune description disponible.";
-    } catch(e) {
-        document.getElementById('details-description').textContent = "Description indisponible (Hors ligne).";
-        document.getElementById('details-talent').textContent = "???";
-    }
+        newBtnFigy.disabled = true;
+        newBtnFigy.textContent = "Éveil...";
 
-    // Calcul des statistiques au niveau actuel
+        // Liste des talents possibles depuis data.json (on exclut celui qu'il a déjà)
+        let possibleAbilities = d.abilities || [{en: "Overgrow", fr: "Engrais"}, {en: "Chlorophyll", fr: "Chlorophylle"}]; 
+        const filteredAbilities = possibleAbilities.filter(ab => !carte.talent || ab.en !== carte.talent.en);
+
+        if (filteredAbilities.length === 0) {
+            alert(state.currentLang === 'en' ? "This Pokémon has no other possible abilities!" : "Ce Pokémon n'a pas d'autres talents possibles !");
+            newBtnFigy.disabled = false;
+            newBtnFigy.textContent = "🍒 Utiliser Baie Figy";
+            return;
+        }
+
+        // On consomme la baie
+        state.currentUserData.berries.splice(berryIndex, 1);
+        
+        // On tire au sort un nouveau talent
+        const randomTalent = filteredAbilities[Math.floor(Math.random() * filteredAbilities.length)];
+        carte.talent = randomTalent;
+
+        // Sauvegarde Firebase
+        try {
+            const { db } = await import('../firebase-config.js');
+            await db.collection('users').doc(state.currentUser).update({ 
+                collection: state.currentUserData.collection,
+                berries: state.currentUserData.berries
+            });
+            
+            document.getElementById('details-talent').textContent = state.currentLang === 'en' ? randomTalent.en : randomTalent.fr;
+            alert(state.currentLang === 'en' ? `Success! New ability: ${randomTalent.en}` : `Succès ! Le Pokémon a éveillé le talent : ${randomTalent.fr} !`);
+            
+            // Mise à jour visuelle du jardin en arrière plan
+            const ev = new CustomEvent('userDataUpdated');
+            window.dispatchEvent(ev);
+        } catch(e) {
+            console.error(e);
+            alert("Erreur de sauvegarde.");
+        }
+
+        newBtnFigy.disabled = false;
+        newBtnFigy.textContent = "🍒 Utiliser Baie Figy";
+    };
+
+    // Calcul des Stats
     let lvl = carte.level || 1;
     document.getElementById('details-stat-lvl').textContent = lvl;
     let maxHp = Math.floor(((2 * details.baseStats.hp) * lvl) / 100) + lvl + 10;
@@ -74,6 +118,9 @@ export async function openCardDetails(carte) {
     `;
 }
 
+// ==========================================
+// AFFICHAGE ET GESTION DE LA COLLECTION
+// ==========================================
 export function initCollection() {
     const tabNormal = document.getElementById('tab-normal'); 
     const tabShiny = document.getElementById('tab-shiny');   
@@ -101,7 +148,6 @@ export function initCollection() {
     filterOwned.addEventListener('change', afficherCollection);
     document.getElementById('nav-collection').addEventListener('click', afficherCollection);
 
-    // L'écouteur global qui va capter nos clics sur les boutons du menu de survol
     document.getElementById('collection-container').addEventListener('click', (e) => {
         const btnUpgrade = e.target.closest('.btn-card-upgrade');
         const btnInfo = e.target.closest('.btn-card-info');
@@ -111,7 +157,6 @@ export function initCollection() {
             upgradeCard(Number(btnUpgrade.dataset.date));
         } else if (btnInfo) {
             e.stopPropagation();
-            // On récupère la carte dans la collection via sa date
             const cardDate = Number(btnInfo.dataset.date);
             const carteTrouvee = state.currentUserData.collection.find(c => c.date === cardDate);
             if(carteTrouvee) openCardDetails(carteTrouvee);
@@ -225,7 +270,6 @@ export function afficherCollection() {
 
             let badgeQuantite = quantite > 1 ? `<div class="badge-quantite">X${quantite}</div>` : ""; 
 
-            // C'EST ICI QU'ON AJOUTE LE MENU HOVER AVEC LES DEUX BOUTONS
             let overlayHtml = `
                 <div class="card-hover-actions">
                     <button class="btn-card-action btn-card-info" data-date="${mainCard.date}">👁️ Voir la Fiche</button>
