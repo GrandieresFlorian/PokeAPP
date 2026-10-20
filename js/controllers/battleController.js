@@ -292,8 +292,9 @@ function renderSynchronousUI(data) {
     let eActive = enemyTeam[enemyActiveIdx];
 
     // Joueur
+    // Joueur
     document.getElementById('pvp-player-name').textContent = pActive.data.fr;
-    document.getElementById('pvp-player-lvl').textContent = `Niv. ${pActive.level}`;
+    document.getElementById('pvp-player-lvl').textContent = `Niv. ${pActive.level || 1}`;
     document.getElementById('pvp-player-hp-text').textContent = `${Math.max(0, pActive.currentHp)} / ${pActive.maxHp}`;
     document.getElementById('pvp-player-hp-fill').style.width = `${(Math.max(0, pActive.currentHp) / pActive.maxHp) * 100}%`;
     document.getElementById('pvp-player-sprite').src = getCardImageUrl(pActive);
@@ -302,10 +303,10 @@ function renderSynchronousUI(data) {
 
     // Adversaire
     document.getElementById('pvp-enemy-name').textContent = eActive.data.fr;
-    document.getElementById('pvp-enemy-lvl').textContent = `Niv. ${eActive.level}`;
+    document.getElementById('pvp-enemy-lvl').textContent = `Niv. ${eActive.level || 1}`;
     document.getElementById('pvp-enemy-hp-text').textContent = `${Math.max(0, eActive.currentHp)} / ${eActive.maxHp}`;
     document.getElementById('pvp-enemy-hp-fill').style.width = `${(Math.max(0, eActive.currentHp) / eActive.maxHp) * 100}%`;
-    document.getElementById('pvp-enemy-sprite').src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${eActive.pokedexNumber}.png`;
+    document.getElementById('pvp-enemy-sprite').src = getCardImageUrl(eActive);
     updateBarColor('pvp-enemy-hp-fill', eActive.currentHp, eActive.maxHp);
     document.getElementById('pvp-enemy-team-ui').innerHTML = enemyTeam.map((p, i) => `<div class="ball ${p.currentHp <= 0 ? 'fainted' : (i === enemyActiveIdx ? 'active' : 'alive')}"></div>`).join('');
 
@@ -535,4 +536,13 @@ async function endRealTimeBattle(data) {
         document.getElementById('pvp-menus').classList.remove('hidden');
         renderBattleUI();
     }, 5000);
+}
+
+function updateBarColor(id, hp, maxHp) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const ratio = hp / maxHp;
+    if (ratio > 0.5) el.style.backgroundColor = "#2ecc71";
+    else if (ratio > 0.2) el.style.backgroundColor = "#f39c12";
+    else el.style.backgroundColor = "#e74c3c";
 }

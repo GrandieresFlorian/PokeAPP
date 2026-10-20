@@ -38,7 +38,6 @@ export function initFriends() {
     document.getElementById('nav-amis').addEventListener('click', () => {
         if (!state.currentUser) return alert("Connectez-vous d'abord !");
         allerASection('section-amis');
-        renderFriendsList(); // Met à jour la liste quand on ouvre l'onglet
     });
     const friendIdInput = document.getElementById('friend-id-input');
     const addFriendBtn = document.getElementById('add-friend-btn');
