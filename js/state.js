@@ -14,7 +14,7 @@ export const state = {
     probabilities: { "C": 60, "U": 20, "R": 10, "E": 7, "L": 2, "M": 1, "mega": 2, "shiny": 0.4 },
     berryConfig: {
         default: { 
-            growTime: 3 * 60 * 1000, yieldMin: 2, yieldMax: 4, needsWater: true,
+            growTime: 3 * 60 * 1000, yieldMin: 2, yieldMax: 4, needsWater: false,
             waterInterval: 60 * 1000, witherTime: 2 * 60 * 1000, sellPrice: 10
         }
     }

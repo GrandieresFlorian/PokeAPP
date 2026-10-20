@@ -9,14 +9,27 @@ import {
     STATUS_CONDITIONS, SECONDARY_STATUS
 } from '../data/campagneData.js';
 
-// Sécurités au cas où les listes n'ont pas été ajoutées dans campagneData
+// Nouvelles mécaniques
 const PROTECT_MOVES_LIST = ["protect", "detect"];
 const SEED_MOVES_LIST = ["leech-seed"];
+const ACCURACY_DROPS = ["smokescreen", "sand-attack", "flash", "kinesis", "mud-slap"];
+const EVASION_UPS = ["double-team", "minimize"];
+const WEATHER_MOVES_DICT = {
+    "sunny-day": { weather: "sun", msg: "Le soleil brille intensément ☀️ !" },
+    "rain-dance": { weather: "rain", msg: "Il commence à pleuvoir 🌧️ !" },
+    "sandstorm": { weather: "sandstorm", msg: "Une tempête de sable se lève 🌪️ !" },
+    "hail": { weather: "hail", msg: "Il commence à grêler ❄️ !" }
+};
+const EXTENDED_STAT_NAMES = { ...STAT_NAMES.fr, accuracy: "Précision", evasion: "Esquive" };
 
 let activeFighter = null;
 let currentEnemy = null;
 let isAnimating = false;
 let onBattleEndCallback = null;
+
+// Météo locale
+let currentWeather = 'none';
+let weatherTurns = 0;
 
 const STATUS_COLORS = { "BRN": "#e67e22", "PSN": "#9b59b6", "TOX": "#8e44ad", "PAR": "#f1c40f", "FRZ": "#3498db", "SLP": "#2c3e50" };
 
@@ -46,19 +59,15 @@ export async function startBattle(zone, fighter, onEnd) {
     activeFighter = fighter;
     onBattleEndCallback = onEnd;
     isAnimating = false;
+    currentWeather = 'none';
+    weatherTurns = 0;
 
-    // CORRECTION : On retire "translatable" pour éviter que le log ne s'efface à la fin !
     const logEl = document.getElementById('battle-log');
-    if (logEl) {
-        logEl.classList.remove('translatable');
-        logEl.removeAttribute('data-fr');
-        logEl.removeAttribute('data-en');
-    }
+    if (logEl) { logEl.classList.remove('translatable'); logEl.removeAttribute('data-fr'); logEl.removeAttribute('data-en'); }
 
     document.getElementById('enemy-name').textContent = "Recherche...";
     document.getElementById('enemy-sprite').src = "";
-    let msgStart = state.currentLang === 'en' ? `You walk into ${zone.name}...` : `Vous marchez dans la zone : ${zone.name}...`;
-    document.getElementById('battle-log').innerHTML = msgStart;
+    document.getElementById('battle-log').innerHTML = state.currentLang === 'en' ? `You walk into ${zone.name}...` : `Vous marchez dans la zone : ${zone.name}...`;
     document.getElementById('moves-container').innerHTML = `<p style="color:#aaa; text-align:center; grid-column: span 2; margin-top:20px;">Chargement des capacités...</p>`;
 
     const possibleEncounters = zone.encounters;
@@ -67,10 +76,7 @@ export async function startBattle(zone, fighter, onEnd) {
     
     let randomPokedexNumber = possibleEncounters[0].id;
     for (let enc of possibleEncounters) {
-        if (randomVal < enc.chance) {
-            randomPokedexNumber = enc.id;
-            break;
-        }
+        if (randomVal < enc.chance) { randomPokedexNumber = enc.id; break; }
         randomVal -= enc.chance;
     }
 
@@ -93,7 +99,7 @@ export async function startBattle(zone, fighter, onEnd) {
         level: wLevel,
         baseStats: wDetails.baseStats, 
         battleStats: calcStats(wDetails.baseStats, wLevel),
-        modifiers: { atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0 },
+        modifiers: { atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0, accuracy: 0, evasion: 0 },
         status: null, statusTurns: 0, confusion: 0, toxCount: 0,
         turnsActive: 0, isProtected: false, protectCount: 0, isSeeded: false, flinched: false,
         sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${wId}.png`
@@ -104,11 +110,9 @@ export async function startBattle(zone, fighter, onEnd) {
     
     activeFighter.battleStats = calcStats(pDetails.baseStats, activeFighter.level || 1, activeFighter.evs);
     activeFighter.battleStats.types = pDetails.types;
-    activeFighter.modifiers = { atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0 };
+    activeFighter.modifiers = { atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0, accuracy: 0, evasion: 0 };
     activeFighter.status = null; activeFighter.statusTurns = 0; activeFighter.confusion = 0; activeFighter.toxCount = 0;
     activeFighter.turnsActive = 0; activeFighter.isProtected = false; activeFighter.protectCount = 0; activeFighter.isSeeded = false; activeFighter.flinched = false;
-
-    // Réinitialisation de Morphing
     activeFighter.transformedImage = null;
 
     currentEnemy.moves = await getMovesForLevel(wId, wLevel);
@@ -118,7 +122,6 @@ export async function startBattle(zone, fighter, onEnd) {
         activeFighter.moves = await getMovesForLevel(activeFighter.pokedexNumber, activeFighter.level || 1);
         db.collection('users').doc(state.currentUser).update({ collection: state.currentUserData.collection });
     }
-    // On copie les attaques pour le combat (pour ne pas sauvegarder le Morphing)
     activeFighter.battleMoves = JSON.parse(JSON.stringify(activeFighter.moves));
     
     updateBattleUI();
@@ -133,15 +136,12 @@ export function fleeBattle(forced = false) {
     if(isAnimating && !forced) return;
     if(!forced) logMessage(state.currentLang === 'en' ? "You fled... 🏃" : "Vous prenez la fuite... 🏃");
     toggleMoves(true);
-    setTimeout(() => {
-        if(onBattleEndCallback) onBattleEndCallback();
-    }, forced ? 2000 : 1500);
+    setTimeout(() => { if(onBattleEndCallback) onBattleEndCallback(); }, forced ? 2000 : 1500);
 }
 
 function renderMovesUI() {
     const container = document.getElementById('moves-container');
     container.innerHTML = "";
-    
     let movesList = activeFighter.battleMoves || activeFighter.moves;
 
     movesList.forEach(move => {
@@ -149,7 +149,7 @@ function renderMovesUI() {
         btn.className = `move-btn type-${move.type}`;
         const moveName = state.currentLang === 'en' ? move.nameEn : move.nameFr;
         
-        let displayPower = (move.damageClass === "status" || move.nameEn === "transform" || USELESS_MOVES.includes(move.nameEn) || FORCE_FLEE_MOVES.includes(move.nameEn) || STAT_CLEAR_MOVES.includes(move.nameEn) || OHKO_MOVES.includes(move.nameEn) || PROTECT_MOVES_LIST.includes(move.nameEn) || SEED_MOVES_LIST.includes(move.nameEn)) ? "-" : move.power;
+        let displayPower = (move.damageClass === "status" || move.nameEn === "transform" || USELESS_MOVES.includes(move.nameEn) || FORCE_FLEE_MOVES.includes(move.nameEn) || STAT_CLEAR_MOVES.includes(move.nameEn) || OHKO_MOVES.includes(move.nameEn) || PROTECT_MOVES_LIST.includes(move.nameEn) || SEED_MOVES_LIST.includes(move.nameEn) || WEATHER_MOVES_DICT[move.nameEn] || ACCURACY_DROPS.includes(move.nameEn) || EVASION_UPS.includes(move.nameEn)) ? "-" : move.power;
         if(FIXED_DAMAGE_MOVES[move.nameEn]) displayPower = "FIX";
 
         btn.innerHTML = `<span class="move-name" data-en="${move.nameEn}" data-fr="${move.nameFr}">${moveName}</span><span style="font-size:0.7rem; opacity:0.8; font-weight:normal;">POW ${displayPower}</span>`;
@@ -162,6 +162,30 @@ function toggleMoves(disabled) {
     const btns = document.querySelectorAll('.move-btn');
     btns.forEach(b => b.disabled = disabled);
     document.getElementById('btn-battle-flee').disabled = disabled;
+}
+
+function updateWeatherUI() {
+    let weatherBanner = document.getElementById('weather-banner');
+    const logBox = document.getElementById('battle-log');
+    
+    if (!weatherBanner && logBox) {
+        weatherBanner = document.createElement('div');
+        weatherBanner.id = 'weather-banner';
+        weatherBanner.style.cssText = "text-align:center; font-weight:bold; padding:5px; margin-bottom:5px; border-radius:5px; transition: 0.3s;";
+        logBox.parentNode.insertBefore(weatherBanner, logBox);
+    }
+    
+    if (weatherBanner) {
+        if (currentWeather && currentWeather !== 'none') {
+            weatherBanner.style.display = 'block';
+            if (currentWeather === 'sun') { weatherBanner.textContent = "☀️ Météo : Soleil Intense"; weatherBanner.style.background = "#f1c40f"; weatherBanner.style.color = "#000"; }
+            if (currentWeather === 'rain') { weatherBanner.textContent = "🌧️ Météo : Pluie Battante"; weatherBanner.style.background = "#3498db"; weatherBanner.style.color = "#fff"; }
+            if (currentWeather === 'sandstorm') { weatherBanner.textContent = "🌪️ Météo : Tempête de Sable"; weatherBanner.style.background = "#e67e22"; weatherBanner.style.color = "#fff"; }
+            if (currentWeather === 'hail') { weatherBanner.textContent = "❄️ Météo : Grêle"; weatherBanner.style.background = "#ecf0f1"; weatherBanner.style.color = "#000"; }
+        } else {
+            weatherBanner.style.display = 'none';
+        }
+    }
 }
 
 function renderModifiersUI(entity, containerId) {
@@ -181,34 +205,32 @@ function renderModifiersUI(entity, containerId) {
         statusBadge.textContent = entity.status;
         container.appendChild(statusBadge);
     }
-
     if (entity.confusion > 0) {
         let confBadge = document.createElement('span');
         confBadge.style.cssText = `background:#e67e22; color:#fff; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;`;
         confBadge.textContent = "CNF";
         container.appendChild(confBadge);
     }
-
     if (entity.isSeeded) {
         let seedBadge = document.createElement('span');
         seedBadge.style.cssText = `background:#2ecc71; color:#fff; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-left:4px;`;
         seedBadge.textContent = "GRAINE";
         container.appendChild(seedBadge);
     }
-
-    const langDict = state.currentLang === 'en' ? STAT_NAMES.en : STAT_NAMES.fr;
     for (let stat in entity.modifiers) {
         let stage = entity.modifiers[stat];
         if (stage !== 0) {
             let badge = document.createElement('span');
             badge.className = `mod-badge ${stage > 0 ? 'mod-up' : 'mod-down'}`;
-            badge.textContent = `${langDict[stat]} ${stage > 0 ? '+' : ''}${stage}`;
+            badge.textContent = `${EXTENDED_STAT_NAMES[stat]} ${stage > 0 ? '+' : ''}${stage}`;
             container.appendChild(badge);
         }
     }
 }
 
 function updateBattleUI() {
+    updateWeatherUI();
+
     const enemyNameEl = document.getElementById('enemy-name');
     enemyNameEl.setAttribute('data-en', currentEnemy.nameEn);
     enemyNameEl.setAttribute('data-fr', currentEnemy.nameFr);
@@ -272,10 +294,8 @@ function applyStatus(target, statusObj, targetName) {
         }
     } else {
         if (!target.status) {
-            target.status = statusObj.status;
-            target.toxCount = 0;
+            target.status = statusObj.status; target.toxCount = 0;
             if (statusObj.status === 'SLP') target.statusTurns = Math.floor(Math.random() * 3) + 1;
-            
             let msgs = {
                 "BRN": { en: "was burned!", fr: "est brûlé !" },
                 "PSN": { en: "was poisoned!", fr: "est empoisonné !" },
@@ -381,6 +401,19 @@ async function applyEndTurnStatus(entity, opponent, isPlayer) {
     entity.turnsActive = (entity.turnsActive || 0) + 1;
 }
 
+async function applyWeatherDamage(entity, weather, isPlayer) {
+    let types = entity.battleStats.types || [];
+    let name = isPlayer ? entity.data.fr : entity.nameFr;
+    if (weather === 'sandstorm' && !types.includes('rock') && !types.includes('ground') && !types.includes('steel')) {
+        entity.battleStats.hp -= Math.max(1, Math.floor(entity.battleStats.maxHp / 16));
+        logMessage(`<span style="color:#e67e22">${name} subit la tempête de sable !</span>`);
+    }
+    if (weather === 'hail' && !types.includes('ice')) {
+        entity.battleStats.hp -= Math.max(1, Math.floor(entity.battleStats.maxHp / 16));
+        logMessage(`<span style="color:#bdc3c7">${name} subit la grêle !</span>`);
+    }
+}
+
 async function executeMove(attacker, defender, move, isPlayer) {
     if(attacker.battleStats.hp <= 0 || defender.battleStats.hp <= 0) return { flinched: false };
 
@@ -401,78 +434,102 @@ async function executeMove(attacker, defender, move, isPlayer) {
     
     logMessage(`<b>${aName}</b> ${state.currentLang === 'en'?'uses':'utilise'} <b style="color:${colorClass};">${mName}</b> !`);
 
+    // MÉCANIQUE : MÉTÉO
+    if (WEATHER_MOVES_DICT[move.nameEn]) {
+        playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
+        await new Promise(r => setTimeout(r, 600));
+        currentWeather = WEATHER_MOVES_DICT[move.nameEn].weather;
+        weatherTurns = 5;
+        logMessage(`<span style="color:#f39c12"><b>${WEATHER_MOVES_DICT[move.nameEn].msg}</b></span>`);
+        updateBattleUI();
+        await new Promise(r => setTimeout(r, 800));
+        return { flinched: false };
+    }
+
+    // MÉCANIQUE : PRÉCISION / ESQUIVE (Jet de sable, Brouillard, Reflet)
+    if (ACCURACY_DROPS.includes(move.nameEn)) {
+        playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
+        await new Promise(r => setTimeout(r, 600));
+        defender.modifiers.accuracy = Math.max(-6, (defender.modifiers.accuracy || 0) - 1);
+        logMessage(`<span style="color:#e74c3c">La précision de ${defName} diminue !</span>`);
+        updateBattleUI();
+        await new Promise(r => setTimeout(r, 800));
+        return { flinched: false };
+    }
+    if (EVASION_UPS.includes(move.nameEn)) {
+        playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
+        await new Promise(r => setTimeout(r, 600));
+        attacker.modifiers.evasion = Math.min(6, (attacker.modifiers.evasion || 0) + 1);
+        logMessage(`<span style="color:#3498db">L'esquive de ${aName} augmente !</span>`);
+        updateBattleUI();
+        await new Promise(r => setTimeout(r, 800));
+        return { flinched: false };
+    }
+
+    // MÉCANIQUE : CALCUL DE L'ESQUIVE GLOBALE
+    let isStatusOnSelf = move.damageClass === "status" && (EVASION_UPS.includes(move.nameEn) || HEAL_MOVES.includes(move.nameEn) || PROTECT_MOVES_LIST.includes(move.nameEn));
+    if (!isStatusOnSelf && move.nameEn !== "transform") {
+        let accStage = Math.max(-6, Math.min(6, (attacker.modifiers.accuracy || 0) - (defender.modifiers.evasion || 0)));
+        let accMult = accStage >= 0 ? (3 + accStage) / 3 : 3 / (3 - accStage);
+        let moveAcc = move.accuracy || 100;
+        
+        if (Math.random() * 100 > moveAcc * accMult) {
+            logMessage(`<b>L'attaque a raté !</b>`);
+            await new Promise(r => setTimeout(r, 600));
+            return { flinched: false };
+        }
+    }
+
     // MÉCANIQUE : MORPHING (Transform)
     if (move.nameEn === "transform") {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
         await new Promise(r => setTimeout(r, 600));
-
         attacker.battleStats.types = [...defender.battleStats.types];
         attacker.battleStats.atk = defender.battleStats.atk;
         attacker.battleStats.def = defender.battleStats.def;
         attacker.battleStats.spatk = defender.battleStats.spatk;
         attacker.battleStats.spdef = defender.battleStats.spdef;
         attacker.battleStats.speed = defender.battleStats.speed;
-        
         attacker.modifiers = JSON.parse(JSON.stringify(defender.modifiers || {}));
         attacker.battleMoves = JSON.parse(JSON.stringify(defender.battleMoves || defender.moves));
-        
-        if (isPlayer) {
-            attacker.transformedImage = defender.transformedImage || defender.sprite;
-        } else {
-            attacker.transformedImage = defender.transformedImage || getCardImageUrl(defender);
-        }
-
+        attacker.transformedImage = isPlayer ? (defender.transformedImage || defender.sprite) : (defender.transformedImage || getCardImageUrl(defender));
         logMessage(`<span style="color:#9b59b6">${aName} se transforme en ${defName} !</span>`);
         updateBattleUI();
         if (isPlayer) renderMovesUI(); 
-        
         await new Promise(r => setTimeout(r, 800));
-        return { flinched: false, forceFlee: false };
+        return { flinched: false };
     }
 
     // MÉCANIQUE : BLUFF (Fake Out)
     if (move.nameEn === "fake-out") {
-        if ((attacker.turnsActive || 0) > 0) {
-            logMessage(`Mais cela échoue !`);
-            return { flinched: false };
-        }
+        if ((attacker.turnsActive || 0) > 0) { logMessage(`Mais cela échoue !`); return { flinched: false }; }
     }
 
     // MÉCANIQUE : ABRI / DÉTECTION (Protect)
     if (PROTECT_MOVES_LIST.includes(move.nameEn)) {
         let chance = Math.pow(0.5, attacker.protectCount || 0);
         if (Math.random() < chance) {
-            attacker.isProtected = true;
-            attacker.protectCount = (attacker.protectCount || 0) + 1;
+            attacker.isProtected = true; attacker.protectCount = (attacker.protectCount || 0) + 1;
             logMessage(`<span style="color:#2ecc71">${aName} se protège !</span>`);
         } else {
-            attacker.protectCount = 0;
-            logMessage(`Mais cela échoue !`);
+            attacker.protectCount = 0; logMessage(`Mais cela échoue !`);
         }
-        await new Promise(r => setTimeout(r, 600));
-        return { flinched: false };
+        await new Promise(r => setTimeout(r, 600)); return { flinched: false };
     } else {
         attacker.protectCount = 0;
     }
 
     if (defender.isProtected) {
         logMessage(`<span style="color:#bdc3c7">${defName} s'est protégé contre l'attaque !</span>`);
-        await new Promise(r => setTimeout(r, 600));
-        return { flinched: false };
+        await new Promise(r => setTimeout(r, 600)); return { flinched: false };
     }
 
     // MÉCANIQUE : VAMPIGRAINE
     if (SEED_MOVES_LIST.includes(move.nameEn)) {
-        if (defender.battleStats.types.includes('grass')) {
-            logMessage(`Ça n'affecte pas les Pokémon Plante !`);
-        } else if (defender.isSeeded) {
-            logMessage(`${defName} est déjà infecté !`);
-        } else {
-            defender.isSeeded = true;
-            logMessage(`<span style="color:#2ecc71">${defName} est infecté par Vampigraine !</span>`);
-        }
-        await new Promise(r => setTimeout(r, 600));
-        return { flinched: false };
+        if (defender.battleStats.types.includes('grass')) logMessage(`Ça n'affecte pas les Pokémon Plante !`);
+        else if (defender.isSeeded) logMessage(`${defName} est déjà infecté !`);
+        else { defender.isSeeded = true; logMessage(`<span style="color:#2ecc71">${defName} est infecté par Vampigraine !</span>`); }
+        await new Promise(r => setTimeout(r, 600)); return { flinched: false };
     }
     
     if (FORCE_FLEE_MOVES.includes(move.nameEn)) {
@@ -487,10 +544,9 @@ async function executeMove(attacker, defender, move, isPlayer) {
         await new Promise(r => setTimeout(r, 600));
         for(let s in attacker.modifiers) attacker.modifiers[s] = 0;
         for(let s in defender.modifiers) defender.modifiers[s] = 0;
-        logMessage(`<span style="color:#3498db">${state.currentLang === 'en' ? `All stat changes were eliminated!` : `Tous les changements de stats sont annulés !`}</span>`);
+        logMessage(`<span style="color:#3498db">Tous les changements de stats sont annulés !</span>`);
         updateBattleUI();
-        await new Promise(r => setTimeout(r, 800));
-        return { flinched: false };
+        await new Promise(r => setTimeout(r, 800)); return { flinched: false };
     }
 
     if (OHKO_MOVES.includes(move.nameEn)) {
@@ -498,22 +554,18 @@ async function executeMove(attacker, defender, move, isPlayer) {
         await new Promise(r => setTimeout(r, 600));
         if (Math.random() < 0.30) {
             defender.battleStats.hp = 0;
-            logMessage(`<span style="color:#f39c12">${state.currentLang === 'en' ? "It's a One-Hit KO!" : "K.O. en un coup !"}</span>`);
+            logMessage(`<span style="color:#f39c12">K.O. en un coup !</span>`);
             playAnimation(isPlayer ? 'enemy-sprite' : 'player-sprite', 'anim-damage');
-            updateBattleUI();
-            await new Promise(r => setTimeout(r, 1000));
-        } else {
-            logMessage(state.currentLang === 'en' ? `But it failed...` : `Mais l'attaque a raté...`);
-        }
+            updateBattleUI(); await new Promise(r => setTimeout(r, 1000));
+        } else logMessage(`Mais l'attaque a raté...`);
         return { flinched: false };
     }
 
     if (USELESS_MOVES.includes(move.nameEn)) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
         await new Promise(r => setTimeout(r, 600));
-        logMessage(state.currentLang === 'en' ? `But nothing happened...` : `Mais il ne se passe rien...`);
-        await new Promise(r => setTimeout(r, 800));
-        return { flinched: false };
+        logMessage(`Mais il ne se passe rien...`);
+        await new Promise(r => setTimeout(r, 800)); return { flinched: false };
     }
 
     if (HEAL_MOVES.includes(move.nameEn)) {
@@ -521,10 +573,8 @@ async function executeMove(attacker, defender, move, isPlayer) {
         await new Promise(r => setTimeout(r, 600));
         let healAmount = Math.floor(attacker.battleStats.maxHp / 2);
         attacker.battleStats.hp = Math.min(attacker.battleStats.maxHp, attacker.battleStats.hp + healAmount);
-        logMessage(`<span style="color:#2ecc71">${state.currentLang === 'en' ? `${aName} recovered HP!` : `${aName} regagne des PV !`}</span>`);
-        updateBattleUI();
-        await new Promise(r => setTimeout(r, 800));
-        return { flinched: false };
+        logMessage(`<span style="color:#2ecc71">${aName} regagne des PV !</span>`);
+        updateBattleUI(); await new Promise(r => setTimeout(r, 800)); return { flinched: false };
     }
 
     if (STATUS_CONDITIONS[move.nameEn]) {
@@ -535,18 +585,13 @@ async function executeMove(attacker, defender, move, isPlayer) {
         if (Math.random() * 100 <= statObj.chance) {
             let targetEntity = (statObj.status === 'CNF' && move.nameEn === 'swagger') ? defender : defender; 
             applyStatus(targetEntity, statObj, defName);
-            
             if(statObj.stat) {
                 targetEntity.modifiers[statObj.stat] = Math.max(-6, Math.min(6, targetEntity.modifiers[statObj.stat] + statObj.stage));
-                let statName = state.currentLang === 'en' ? STAT_NAMES.en[statObj.stat] : STAT_NAMES.fr[statObj.stat];
-                if (statObj.stage > 0) logMessage(`<span style="color:#3498db">${state.currentLang === 'en' ? `${defName}'s${statName} rose!` : `${statName} de${defName} augmente !`}</span>`);
+                if (statObj.stage > 0) logMessage(`<span style="color:#3498db">${EXTENDED_STAT_NAMES[statObj.stat]} de ${defName} augmente !</span>`);
+                else logMessage(`<span style="color:#e74c3c">${EXTENDED_STAT_NAMES[statObj.stat]} de ${defName} diminue !</span>`);
             }
-        } else {
-            logMessage(state.currentLang === 'en' ? `But it failed...` : `Mais l'attaque a raté...`);
-        }
-        updateBattleUI();
-        await new Promise(r => setTimeout(r, 800));
-        return { flinched: false };
+        } else logMessage(`Mais l'attaque a raté...`);
+        updateBattleUI(); await new Promise(r => setTimeout(r, 800)); return { flinched: false };
     }
 
     if (move.damageClass === "status" || STATUS_MOVES[move.nameEn]) {
@@ -558,14 +603,12 @@ async function executeMove(attacker, defender, move, isPlayer) {
             let targetName = statusData.target === "enemy" ? defName : aName;
             for (let effect of statusData.effects) {
                 targetEntity.modifiers[effect.stat] = Math.max(-6, Math.min(6, targetEntity.modifiers[effect.stat] + effect.stage));
-                let statName = state.currentLang === 'en' ? statusData.en : statusData.fr;
-                if (effect.stage > 0) logMessage(`<span style="color:#3498db">${state.currentLang === 'en' ? `${targetName}'s${statName} rose!` : `${statName} de${targetName} augmente !`}</span>`);
-                else logMessage(`<span style="color:#e74c3c">${state.currentLang === 'en' ? `${targetName}'s${statName} fell!` : `${statName} de${targetName} diminue !`}</span>`);
+                let statName = EXTENDED_STAT_NAMES[effect.stat];
+                if (effect.stage > 0) logMessage(`<span style="color:#3498db">${statName} de ${targetName} augmente !</span>`);
+                else logMessage(`<span style="color:#e74c3c">${statName} de ${targetName} diminue !</span>`);
             }
         }
-        updateBattleUI();
-        await new Promise(r => setTimeout(r, 800));
-        return { flinched: false }; 
+        updateBattleUI(); await new Promise(r => setTimeout(r, 800)); return { flinched: false }; 
     }
 
     let hitCount = 1;
@@ -581,9 +624,7 @@ async function executeMove(attacker, defender, move, isPlayer) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
         await new Promise(r => setTimeout(r, 400)); 
 
-        let damage = 0;
-        let isCrit = false;
-        let mult = 1;
+        let damage = 0; let isCrit = false; let mult = 1;
 
         if (FIXED_DAMAGE_MOVES[move.nameEn] !== undefined) {
             let val = FIXED_DAMAGE_MOVES[move.nameEn];
@@ -600,13 +641,18 @@ async function executeMove(attacker, defender, move, isPlayer) {
             if (attacker.status === 'BRN' && move.damageClass === 'physical') A = Math.floor(A / 2);
             if (KAMIKAZE_MOVES.includes(move.nameEn)) A *= 1.5;
 
+            // BONUS/MALUS DE MÉTÉO SUR LES DÉGÂTS
+            let weatherMult = 1;
+            if (currentWeather === 'sun') { if (move.type === 'fire') weatherMult = 1.5; if (move.type === 'water') weatherMult = 0.5; }
+            if (currentWeather === 'rain') { if (move.type === 'water') weatherMult = 1.5; if (move.type === 'fire') weatherMult = 0.5; }
+
             let baseDmg = Math.floor(Math.floor(Math.floor(2 * level / 5 + 2) * move.power * A / D) / 50) + 2;
             let stab = attacker.battleStats.types.includes(move.type) ? 1.5 : 1;
             mult = getEffectiveness(move.type, defender.battleStats.types);
             let random = (Math.random() * (1 - 0.85) + 0.85);
             let critMult = isCrit ? 1.5 : 1;
 
-            damage = Math.floor(baseDmg * stab * mult * random * critMult);
+            damage = Math.floor(baseDmg * stab * mult * weatherMult * random * critMult);
             if (mult === 0) damage = 0; else damage = Math.max(1, damage);
         }
 
@@ -614,41 +660,37 @@ async function executeMove(attacker, defender, move, isPlayer) {
         totalDamage += damage;
         playAnimation(isPlayer ? 'enemy-sprite' : 'player-sprite', 'anim-damage');
 
-        if (damage > 0 && isCrit && hitCount === 1) logMessage(state.currentLang === 'en' ? `<span style="color:#f39c12">A critical hit!</span>` : `<span style="color:#f39c12">Coup critique !</span>`);
+        if (damage > 0 && isCrit && hitCount === 1) logMessage(`<span style="color:#f39c12">Coup critique !</span>`);
         
         if (i === hitCount - 1) { 
-            if (mult > 1) logMessage(state.currentLang === 'en' ? `It's super effective!` : `C'est super efficace !`);
-            else if (mult > 0 && mult < 1) logMessage(state.currentLang === 'en' ? `It's not very effective.` : `Ce n'est pas très efficace.`);
-            else if (mult === 0 && move.power > 0) logMessage(state.currentLang === 'en' ? `It has no effect...` : `Ça n'a aucun effet...`);
+            if (mult > 1) logMessage(`C'est super efficace !`);
+            else if (mult > 0 && mult < 1) logMessage(`Ce n'est pas très efficace.`);
+            else if (mult === 0 && move.power > 0) logMessage(`Ça n'a aucun effet...`);
         }
         updateBattleUI();
         await new Promise(r => setTimeout(r, 400));
     }
 
-    if (hitCount > 1 && totalDamage > 0) logMessage(state.currentLang === 'en' ? `Hit ${hitCount} times!` : `Touché ${hitCount} fois !`);
-    if (totalDamage > 0) logMessage(`(${totalDamage} ${state.currentLang === 'en' ? 'dmg' : 'dégâts'})`);
+    if (hitCount > 1 && totalDamage > 0) logMessage(`Touché ${hitCount} fois !`);
+    if (totalDamage > 0) logMessage(`(${totalDamage} dégâts)`);
 
     if (KAMIKAZE_MOVES.includes(move.nameEn)) {
-        attacker.battleStats.hp = 0;
-        logMessage(`<span style="color:#e74c3c">${aName} ${state.currentLang === 'en' ? 'sacrificed itself!' : 'se sacrifie !'}</span>`);
-        updateBattleUI();
+        attacker.battleStats.hp = 0; logMessage(`<span style="color:#e74c3c">${aName} se sacrifie !</span>`); updateBattleUI();
     }
 
-    if (move.nameEn === "fake-out" && defender.battleStats.hp > 0 && totalDamage > 0) {
-        defender.flinched = true;
-    }
+    if (move.nameEn === "fake-out" && defender.battleStats.hp > 0 && totalDamage > 0) defender.flinched = true;
 
     if (totalDamage > 0 && defender.battleStats.hp > 0) {
         if (DRAIN_MOVES.includes(move.nameEn)) {
             let drainHeal = Math.max(1, Math.floor(totalDamage / 2));
             attacker.battleStats.hp = Math.min(attacker.battleStats.maxHp, attacker.battleStats.hp + drainHeal);
-            logMessage(`<span style="color:#2ecc71">${state.currentLang === 'en' ? `${defName} had its energy drained!` : `${defName} voit son énergie aspirée !`}</span>`);
+            logMessage(`<span style="color:#2ecc71">${defName} voit son énergie aspirée !</span>`);
         }
         
         if (RECOIL_MOVES.includes(move.nameEn)) {
             let recoilDmg = Math.max(1, Math.floor(totalDamage / 3));
             attacker.battleStats.hp -= recoilDmg;
-            logMessage(`<span style="color:#e74c3c">${state.currentLang === 'en' ? `${aName} is hit with recoil!` : `${aName} est blessé par le contrecoup !`}</span>`);
+            logMessage(`<span style="color:#e74c3c">${aName} est blessé par le contrecoup !</span>`);
         }
 
         const secEffect = SECONDARY_EFFECTS[move.nameEn];
@@ -657,25 +699,19 @@ async function executeMove(attacker, defender, move, isPlayer) {
             let targetName = secEffect.target === "enemy" ? defName : aName;
             for (let effect of secEffect.effects) {
                 targetEntity.modifiers[effect.stat] = Math.max(-6, Math.min(6, targetEntity.modifiers[effect.stat] + effect.stage));
-                const langDict = state.currentLang === 'en' ? STAT_NAMES.en : STAT_NAMES.fr;
-                let statName = langDict[effect.stat];
-                if (effect.stage > 0) logMessage(`<span style="color:#3498db">${state.currentLang === 'en' ? `${targetName}'s${statName} rose!` : `${statName} de${targetName} augmente !`}</span>`);
-                else logMessage(`<span style="color:#e74c3c">${state.currentLang === 'en' ? `${targetName}'s${statName} fell!` : `${statName} de${targetName} diminue !`}</span>`);
+                let statName = EXTENDED_STAT_NAMES[effect.stat];
+                if (effect.stage > 0) logMessage(`<span style="color:#3498db">${statName} de ${targetName} augmente !</span>`);
+                else logMessage(`<span style="color:#e74c3c">${statName} de ${targetName} diminue !</span>`);
             }
         }
 
         const secStatus = SECONDARY_STATUS[move.nameEn];
-        if (secStatus && Math.random() * 100 <= secStatus.chance) {
-            applyStatus(defender, secStatus, defName);
-        }
+        if (secStatus && Math.random() * 100 <= secStatus.chance) applyStatus(defender, secStatus, defName);
     }
 
     updateBattleUI();
-    
     let flinched = false;
-    if (FLINCH_MOVES.includes(move.nameEn) && totalDamage > 0 && Math.random() < 0.3) {
-        defender.flinched = true;
-    }
+    if (FLINCH_MOVES.includes(move.nameEn) && totalDamage > 0 && Math.random() < 0.3) defender.flinched = true;
 
     await new Promise(r => setTimeout(r, 600));
     return { flinched, forceFlee: false };
@@ -704,8 +740,8 @@ export async function processTurn(playerMove) {
         } else if (HEAL_MOVES.includes(m.nameEn)) {
             if (currentEnemy.battleStats.hp < currentEnemy.battleStats.maxHp / 2) expected = 1000;
             else expected = -1;
-        } else if (m.damageClass === "status" || STATUS_CONDITIONS[m.nameEn]) {
-            if (Math.random() < 0.1 && maxExpectedDamage < 10) expected = 10;
+        } else if (m.damageClass === "status" || STATUS_CONDITIONS[m.nameEn] || WEATHER_MOVES_DICT[m.nameEn] || ACCURACY_DROPS.includes(m.nameEn)) {
+            if (Math.random() < 0.2 && maxExpectedDamage < 10) expected = 10;
         } else if (m.nameEn === "transform") {
             expected = 20; 
         } else {
@@ -739,21 +775,29 @@ export async function processTurn(playerMove) {
     if (playerGoesFirst) {
         let pResult = await executeMove(activeFighter, currentEnemy, playerMove, true);
         if (pResult && pResult.forceFlee) { fleeBattle(true); return; }
-
-        if (currentEnemy.battleStats.hp > 0 && activeFighter.battleStats.hp > 0) {
-            await executeMove(currentEnemy, activeFighter, bestEnemyMove, false);
-        }
+        if (currentEnemy.battleStats.hp > 0 && activeFighter.battleStats.hp > 0) await executeMove(currentEnemy, activeFighter, bestEnemyMove, false);
     } else {
         let eResult = await executeMove(currentEnemy, activeFighter, bestEnemyMove, false);
         if (eResult && eResult.forceFlee) { fleeBattle(true); return; }
-
-        if (activeFighter.battleStats.hp > 0 && currentEnemy.battleStats.hp > 0) {
-            await executeMove(activeFighter, currentEnemy, playerMove, true);
-        }
+        if (activeFighter.battleStats.hp > 0 && currentEnemy.battleStats.hp > 0) await executeMove(activeFighter, currentEnemy, playerMove, true);
     }
 
+    // ÉVALUATION DES DÉGÂTS DE FIN DE TOUR (Statuts + Météo)
     if (activeFighter.battleStats.hp > 0) await applyEndTurnStatus(activeFighter, currentEnemy, true);
     if (currentEnemy.battleStats.hp > 0) await applyEndTurnStatus(currentEnemy, activeFighter, false);
+
+    if (currentWeather !== 'none') {
+        weatherTurns--;
+        if (weatherTurns <= 0) {
+            logMessage(`<b>La météo redevient normale.</b>`);
+            currentWeather = 'none';
+        } else {
+            if (activeFighter.battleStats.hp > 0) await applyWeatherDamage(activeFighter, currentWeather, true);
+            if (currentEnemy.battleStats.hp > 0) await applyWeatherDamage(currentEnemy, currentWeather, false);
+        }
+        updateBattleUI();
+        await new Promise(r => setTimeout(r, 600));
+    }
 
     if (currentEnemy.battleStats.hp <= 0) {
         await winBattle();
@@ -762,9 +806,7 @@ export async function processTurn(playerMove) {
         if (activeFighter.mega) pName = formatMegaName(pName, activeFighter.megaForm);
         let msgFaint = state.currentLang === 'en' ? `<span class="text-danger">${pName} fainted! You flee...</span>` : `<span class="text-danger">${pName} est K.O. ! Vous fuyez en urgence...</span>`;
         logMessage(msgFaint);
-        setTimeout(() => {
-            if (onBattleEndCallback) onBattleEndCallback();
-        }, 2500);
+        setTimeout(() => { if (onBattleEndCallback) onBattleEndCallback(); }, 2500);
     } else {
         toggleMoves(false);
     }
@@ -814,13 +856,8 @@ function promptLearnMove(newMove) {
             closeModal();
         };
         
-        function closeModal() {
-            modal.classList.add('hidden');
-            resolve();
-        }
-        
-        modal.classList.remove('hidden');
-        applyTranslation();
+        function closeModal() { modal.classList.add('hidden'); resolve(); }
+        modal.classList.remove('hidden'); applyTranslation();
     });
 }
 
@@ -887,7 +924,6 @@ async function winBattle() {
     let maxLvl = activeFighter.maxLevel || 20;
     
     currentXp += xpGained;
-    
     let xpNeeded = currentLvl * 100;
     let leveledUp = false;
     
@@ -898,10 +934,7 @@ async function winBattle() {
         xpNeeded = currentLvl * 100;
     }
     
-    if (currentLvl >= maxLvl) {
-        currentLvl = maxLvl;
-        currentXp = 0; 
-    }
+    if (currentLvl >= maxLvl) { currentLvl = maxLvl; currentXp = 0; }
     
     activeFighter.level = currentLvl;
     activeFighter.xp = currentXp;
@@ -909,21 +942,13 @@ async function winBattle() {
     if (leveledUp) {
         logMessage(state.currentLang === 'en' ? `<span class="text-accent font-bold">🎉 LEVEL UP! (Level ${currentLvl})</span>` : `<span class="text-accent font-bold">🎉 NIVEAU SUPÉRIEUR ! (Niveau ${currentLvl})</span>`);
         await handleLevelUpMoves(oldLvl, currentLvl);
-        if (currentLvl === maxLvl) {
-            logMessage(state.currentLang === 'en' ? `<span class="text-danger">Max Rank reached! Merge duplicates in Collection to go higher.</span>` : `<span class="text-danger">Rang Max atteint ! Fusionnez des doublons dans la collection pour aller plus haut.</span>`);
-        }
+        if (currentLvl === maxLvl) logMessage(state.currentLang === 'en' ? `<span class="text-danger">Max Rank reached! Merge duplicates in Collection to go higher.</span>` : `<span class="text-danger">Rang Max atteint ! Fusionnez des doublons dans la collection pour aller plus haut.</span>`);
     }
     
     updateBattleUI();
     renderMovesUI(); 
     
-    try {
-        await db.collection('users').doc(state.currentUser).update({
-            collection: state.currentUserData.collection
-        });
-    } catch(e) { console.error("Erreur de sauvegarde XP", e); }
+    try { await db.collection('users').doc(state.currentUser).update({ collection: state.currentUserData.collection }); } catch(e) {}
     
-    setTimeout(() => {
-        if(onBattleEndCallback) onBattleEndCallback();
-    }, 4000);
+    setTimeout(() => { if(onBattleEndCallback) onBattleEndCallback(); }, 4000);
 }

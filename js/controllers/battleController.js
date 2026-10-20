@@ -11,6 +11,15 @@ import {
 
 const PROTECT_MOVES_LIST = ["protect", "detect"];
 const SEED_MOVES_LIST = ["leech-seed"];
+const ACCURACY_DROPS = ["smokescreen", "sand-attack", "flash", "kinesis", "mud-slap"];
+const EVASION_UPS = ["double-team", "minimize"];
+const WEATHER_MOVES_DICT = {
+    "sunny-day": { weather: "sun", msg: "Le soleil brille intensément ☀️ !" },
+    "rain-dance": { weather: "rain", msg: "Il commence à pleuvoir 🌧️ !" },
+    "sandstorm": { weather: "sandstorm", msg: "Une tempête de sable se lève 🌪️ !" },
+    "hail": { weather: "hail", msg: "Il commence à grêler ❄️ !" }
+};
+const EXTENDED_STAT_NAMES = { ...STAT_NAMES.fr, accuracy: "Précision", evasion: "Esquive" };
 
 let currentBattleId = null;
 let myRole = null; 
@@ -167,6 +176,7 @@ async function createBattleRoom(req, team1, team2) {
         team2: await formatTeam(team2),
         active1: 0, active2: 0,
         action1: null, action2: null,
+        weather: 'none', weatherTurns: 0, // Sauvegarde globale de la météo
         log: [`<b style="color:#f39c12;">Le combat ${req.type === 'ranked' ? 'Classé' : 'Amical'} commence !</b>`],
         status: 'playing', mode: req.type, winner: null
     });
@@ -187,7 +197,8 @@ async function formatTeam(rawTeam) {
             def: Math.floor(((2 * d.baseStats.def) * (pkmn.level||1)) / 100) + 5,
             spatk: Math.floor(((2 * d.baseStats.spatk) * (pkmn.level||1)) / 100) + 5,
             spdef: Math.floor(((2 * d.baseStats.spdef) * (pkmn.level||1)) / 100) + 5,
-            speed: Math.floor(((2 * d.baseStats.speed) * (pkmn.level||1)) / 100) + 5
+            speed: Math.floor(((2 * d.baseStats.speed) * (pkmn.level||1)) / 100) + 5,
+            types: d.types
         };
         let initialMoves = await getMovesForLevel(pkmn.pokedexNumber, pkmn.level || 1);
 
@@ -197,11 +208,10 @@ async function formatTeam(rawTeam) {
             moves: JSON.parse(JSON.stringify(initialMoves)),
             maxHp: maxHp, currentHp: maxHp,
             stats: JSON.parse(JSON.stringify(baseStatsObj)),
-            modifiers: { atk:0, def:0, spatk:0, spdef:0, speed:0 },
+            modifiers: { atk:0, def:0, spatk:0, spdef:0, speed:0, accuracy:0, evasion:0 },
             status: null, statusTurns: 0, confusion: 0, toxCount: 0,
             turnsActive: 0, isProtected: false, protectCount: 0, isSeeded: false, flinched: false,
             types: [...d.types],
-            // Sauvegarde de l'original pour annuler Morphing au changement de Pokémon
             original: {
                 types: [...d.types],
                 stats: JSON.parse(JSON.stringify(baseStatsObj)),
@@ -300,7 +310,6 @@ function joinRealTimeBattle(battleId) {
     document.getElementById('pvp-battle-arena').classList.remove('hidden');
 
     unsubscribeBattle = db.collection('active_battles').doc(battleId).onSnapshot(doc => {
-        // CORRECTION : Si le combat a été supprimé de la base de données
         if (!doc.exists) {
             db.collection('users').doc(state.currentUser).update({
                 activeBattle: firebase.firestore.FieldValue.delete()
@@ -311,7 +320,6 @@ function joinRealTimeBattle(battleId) {
             currentBattleId = null;
             return;
         }
-        
         const data = doc.data();
         
         myRole = (data.p1 === state.currentUser) ? 'p1' : 'p2';
@@ -328,7 +336,33 @@ function joinRealTimeBattle(battleId) {
     document.getElementById('btn-pvp-surrender').onclick = () => surrenderBattle();
 }
 
+function updateWeatherUI(weatherStr) {
+    let weatherBanner = document.getElementById('pvp-weather-banner');
+    const logBox = document.getElementById('pvp-battle-log');
+    
+    if (!weatherBanner && logBox) {
+        weatherBanner = document.createElement('div');
+        weatherBanner.id = 'pvp-weather-banner';
+        weatherBanner.style.cssText = "text-align:center; font-weight:bold; padding:5px; margin-bottom:5px; border-radius:5px; transition: 0.3s;";
+        logBox.parentNode.insertBefore(weatherBanner, logBox);
+    }
+    
+    if (weatherBanner) {
+        if (weatherStr && weatherStr !== 'none') {
+            weatherBanner.style.display = 'block';
+            if (weatherStr === 'sun') { weatherBanner.textContent = "☀️ Météo : Soleil Intense"; weatherBanner.style.background = "#f1c40f"; weatherBanner.style.color = "#000"; }
+            if (weatherStr === 'rain') { weatherBanner.textContent = "🌧️ Météo : Pluie Battante"; weatherBanner.style.background = "#3498db"; weatherBanner.style.color = "#fff"; }
+            if (weatherStr === 'sandstorm') { weatherBanner.textContent = "🌪️ Météo : Tempête de Sable"; weatherBanner.style.background = "#e67e22"; weatherBanner.style.color = "#fff"; }
+            if (weatherStr === 'hail') { weatherBanner.textContent = "❄️ Météo : Grêle"; weatherBanner.style.background = "#ecf0f1"; weatherBanner.style.color = "#000"; }
+        } else {
+            weatherBanner.style.display = 'none';
+        }
+    }
+}
+
 function renderSynchronousUI(data) {
+    updateWeatherUI(data.weather);
+
     let myTeam = myRole === 'p1' ? data.team1 : data.team2;
     let enemyTeam = myRole === 'p1' ? data.team2 : data.team1;
     let myActiveIdx = myRole === 'p1' ? data.active1 : data.active2;
@@ -385,7 +419,7 @@ function renderSynchronousUI(data) {
                     const btn = document.createElement('button');
                     btn.className = `move-btn type-${move.type}`;
                     
-                    let displayPower = (move.damageClass === "status" || USELESS_MOVES.includes(move.nameEn) || FORCE_FLEE_MOVES.includes(move.nameEn) || STAT_CLEAR_MOVES.includes(move.nameEn) || OHKO_MOVES.includes(move.nameEn) || PROTECT_MOVES_LIST.includes(move.nameEn) || SEED_MOVES_LIST.includes(move.nameEn) || move.nameEn === "transform") ? "-" : move.power;
+                    let displayPower = (move.damageClass === "status" || USELESS_MOVES.includes(move.nameEn) || FORCE_FLEE_MOVES.includes(move.nameEn) || STAT_CLEAR_MOVES.includes(move.nameEn) || OHKO_MOVES.includes(move.nameEn) || PROTECT_MOVES_LIST.includes(move.nameEn) || SEED_MOVES_LIST.includes(move.nameEn) || WEATHER_MOVES_DICT[move.nameEn] || move.nameEn === "transform" || ACCURACY_DROPS.includes(move.nameEn) || EVASION_UPS.includes(move.nameEn)) ? "-" : move.power;
                     if(FIXED_DAMAGE_MOVES[move.nameEn]) displayPower = "FIX";
 
                     btn.innerHTML = `<span class="move-name">${move.nameFr}</span><span style="font-size:0.7rem; font-weight:normal;">POW ${displayPower}</span>`;
@@ -426,7 +460,7 @@ function renderModifiersUI(entity, containerId) {
         if (stage !== 0) {
             let badge = document.createElement('span');
             badge.className = `mod-badge ${stage > 0 ? 'mod-up' : 'mod-down'}`;
-            badge.textContent = `${STAT_NAMES.fr[stat]} ${stage > 0 ? '+' : ''}${stage}`;
+            badge.textContent = `${EXTENDED_STAT_NAMES[stat]} ${stage > 0 ? '+' : ''}${stage}`;
             container.appendChild(badge);
         }
     }
@@ -584,7 +618,21 @@ function applyEndTurnStatusSync(entity, opponent, logs) {
     }
 
     entity.turnsActive = (entity.turnsActive || 0) + 1;
+    if (entity.currentHp <= 0) logs.push(`<b style="color:#e74c3c">${name} est K.O. !</b>`);
+}
 
+function applyWeatherDamageSync(entity, weather, logs) {
+    if (entity.currentHp <= 0) return;
+    let types = entity.types || [];
+    let name = entity.data.fr;
+    if (weather === 'sandstorm' && !types.includes('rock') && !types.includes('ground') && !types.includes('steel')) {
+        entity.currentHp -= Math.max(1, Math.floor(entity.maxHp / 16));
+        logs.push(`<span style="color:#e67e22">${name} subit la tempête de sable !</span>`);
+    }
+    if (weather === 'hail' && !types.includes('ice')) {
+        entity.currentHp -= Math.max(1, Math.floor(entity.maxHp / 16));
+        logs.push(`<span style="color:#bdc3c7">${name} subit la grêle !</span>`);
+    }
     if (entity.currentHp <= 0) logs.push(`<b style="color:#e74c3c">${name} est K.O. !</b>`);
 }
 
@@ -623,12 +671,14 @@ async function resolveSynchronousTurn(data, battleRef) {
             revertTransformation(p1); 
             active1 = a1.index; p1 = t1[active1]; 
             p1.turnsActive = 0; p1.isSeeded = false; 
+            for(let s in p1.modifiers) p1.modifiers[s] = 0;
             turnLogs.push(`Joueur 1 envoie <b>${p1.data.fr}</b> !`); 
         }
         if (a2.type === 'switch') { 
             revertTransformation(p2); 
             active2 = a2.index; p2 = t2[active2]; 
             p2.turnsActive = 0; p2.isSeeded = false; 
+            for(let s in p2.modifiers) p2.modifiers[s] = 0;
             turnLogs.push(`Joueur 2 envoie <b>${p2.data.fr}</b> !`); 
         }
 
@@ -653,18 +703,29 @@ async function resolveSynchronousTurn(data, battleRef) {
             if (p1Speed === p2Speed && p1Priority === p2Priority) p1GoesFirst = Math.random() > 0.5;
 
             if (p1GoesFirst) {
-                if(preMoveCheckSync(p1, turnLogs)) evalMove(p1, p2, move1, turnLogs);
-                if (p2.currentHp > 0 && p1.currentHp > 0) { if(preMoveCheckSync(p2, turnLogs)) evalMove(p2, p1, move2, turnLogs); }
+                if(preMoveCheckSync(p1, turnLogs)) evalMove(p1, p2, move1, turnLogs, data);
+                if (p2.currentHp > 0 && p1.currentHp > 0) { if(preMoveCheckSync(p2, turnLogs)) evalMove(p2, p1, move2, turnLogs, data); }
             } else {
-                if(preMoveCheckSync(p2, turnLogs)) evalMove(p2, p1, move2, turnLogs);
-                if (p1.currentHp > 0 && p2.currentHp > 0) { if(preMoveCheckSync(p1, turnLogs)) evalMove(p1, p2, move1, turnLogs); }
+                if(preMoveCheckSync(p2, turnLogs)) evalMove(p2, p1, move2, turnLogs, data);
+                if (p1.currentHp > 0 && p2.currentHp > 0) { if(preMoveCheckSync(p1, turnLogs)) evalMove(p1, p2, move1, turnLogs, data); }
             }
         } 
-        else if (move1 && p1.currentHp > 0) { if(preMoveCheckSync(p1, turnLogs)) evalMove(p1, p2, move1, turnLogs); }
-        else if (move2 && p2.currentHp > 0) { if(preMoveCheckSync(p2, turnLogs)) evalMove(p2, p1, move2, turnLogs); }
+        else if (move1 && p1.currentHp > 0) { if(preMoveCheckSync(p1, turnLogs)) evalMove(p1, p2, move1, turnLogs, data); }
+        else if (move2 && p2.currentHp > 0) { if(preMoveCheckSync(p2, turnLogs)) evalMove(p2, p1, move2, turnLogs, data); }
 
         applyEndTurnStatusSync(p1, p2, turnLogs);
         applyEndTurnStatusSync(p2, p1, turnLogs);
+        
+        if (data.weather && data.weather !== 'none') {
+            data.weatherTurns--;
+            if (data.weatherTurns <= 0) {
+                turnLogs.push(`<b>La météo redevient normale.</b>`);
+                data.weather = 'none';
+            } else {
+                if(p1.currentHp > 0) applyWeatherDamageSync(p1, data.weather, turnLogs);
+                if(p2.currentHp > 0) applyWeatherDamageSync(p2, data.weather, turnLogs);
+            }
+        }
     }
 
     let p1Alive = t1.some(p => p.currentHp > 0);
@@ -680,25 +741,56 @@ async function resolveSynchronousTurn(data, battleRef) {
         team1: t1, team2: t2,
         active1: active1, active2: active2,
         action1: null, action2: null,
+        weather: data.weather, weatherTurns: data.weatherTurns,
         log: data.log.concat(turnLogs),
         status: status, winner: winner
     });
 }
 
-function evalMove(atk, def, move, logs) {
+function evalMove(atk, def, move, logs, battleData) {
     if (atk.flinched) {
         logs.push(`<span style="color:#f39c12">${atk.data.fr} a la trouille et ne peut pas attaquer !</span>`);
         return;
     }
 
     logs.push(`<b>${atk.data.fr}</b> utilise <span style="color:#3498db">${move.nameFr}</span> !`);
+
+    // MÉCANIQUE : MÉTÉO
+    if (WEATHER_MOVES_DICT[move.nameEn]) {
+        let wInfo = WEATHER_MOVES_DICT[move.nameEn];
+        battleData.weather = wInfo.weather;
+        battleData.weatherTurns = 5;
+        logs.push(`<span style="color:#f39c12"><b>${wInfo.msg}</b></span>`);
+        return;
+    }
+
+    // MÉCANIQUE : PRÉCISION / ESQUIVE
+    if (ACCURACY_DROPS.includes(move.nameEn)) {
+        def.modifiers.accuracy = Math.max(-6, (def.modifiers.accuracy || 0) - 1);
+        logs.push(`<span style="color:#e74c3c">La précision de ${def.data.fr} diminue !</span>`);
+        return;
+    }
+    if (EVASION_UPS.includes(move.nameEn)) {
+        atk.modifiers.evasion = Math.min(6, (atk.modifiers.evasion || 0) + 1);
+        logs.push(`<span style="color:#3498db">L'esquive de ${atk.data.fr} augmente !</span>`);
+        return;
+    }
+
+    let isStatusOnSelf = move.damageClass === "status" && (EVASION_UPS.includes(move.nameEn) || HEAL_MOVES.includes(move.nameEn) || PROTECT_MOVES_LIST.includes(move.nameEn));
+    if (!isStatusOnSelf && move.nameEn !== "transform") {
+        let accStage = Math.max(-6, Math.min(6, (atk.modifiers.accuracy || 0) - (def.modifiers.evasion || 0)));
+        let accMult = accStage >= 0 ? (3 + accStage) / 3 : 3 / (3 - accStage);
+        let moveAcc = move.accuracy || 100;
+        
+        if (Math.random() * 100 > moveAcc * accMult) {
+            logs.push(`<b>Mais l'attaque a raté !</b>`);
+            return;
+        }
+    }
     
     // MÉCANIQUE : BLUFF
     if (move.nameEn === "fake-out") {
-        if ((atk.turnsActive || 0) > 0) {
-            logs.push(`Mais cela échoue !`);
-            return;
-        }
+        if ((atk.turnsActive || 0) > 0) { logs.push(`Mais cela échoue !`); return; }
     }
 
     // MÉCANIQUE : MORPHING
@@ -716,12 +808,10 @@ function evalMove(atk, def, move, logs) {
     if (PROTECT_MOVES_LIST.includes(move.nameEn)) {
         let chance = Math.pow(0.5, atk.protectCount || 0);
         if (Math.random() < chance) {
-            atk.isProtected = true;
-            atk.protectCount = (atk.protectCount || 0) + 1;
+            atk.isProtected = true; atk.protectCount = (atk.protectCount || 0) + 1;
             logs.push(`<span style="color:#2ecc71">${atk.data.fr} se protège !</span>`);
         } else {
-            atk.protectCount = 0;
-            logs.push(`Mais cela échoue !`);
+            atk.protectCount = 0; logs.push(`Mais cela échoue !`);
         }
         return;
     } else {
@@ -736,14 +826,9 @@ function evalMove(atk, def, move, logs) {
     // MÉCANIQUE : VAMPIGRAINE
     if (SEED_MOVES_LIST.includes(move.nameEn)) {
         let defTypes = def.types || (def.battleStats ? def.battleStats.types : []);
-        if (defTypes.includes('grass')) {
-            logs.push(`Ça n'affecte pas les Pokémon Plante !`);
-        } else if (def.isSeeded) {
-            logs.push(`${def.data.fr} est déjà infecté !`);
-        } else {
-            def.isSeeded = true;
-            logs.push(`<span style="color:#2ecc71">${def.data.fr} est infecté par Vampigraine !</span>`);
-        }
+        if (defTypes.includes('grass')) { logs.push(`Ça n'affecte pas les Pokémon Plante !`); } 
+        else if (def.isSeeded) { logs.push(`${def.data.fr} est déjà infecté !`); } 
+        else { def.isSeeded = true; logs.push(`<span style="color:#2ecc71">${def.data.fr} est infecté par Vampigraine !</span>`); }
         return;
     }
 
@@ -769,8 +854,8 @@ function evalMove(atk, def, move, logs) {
             applyStatusSync(targetEntity, statObj, def.data.fr, logs);
             if(statObj.stat) {
                 targetEntity.modifiers[statObj.stat] = Math.max(-6, Math.min(6, (targetEntity.modifiers[statObj.stat]||0) + statObj.stage));
-                if (statObj.stage > 0) logs.push(`<span style="color:#3498db">${STAT_NAMES.fr[statObj.stat]} de ${def.data.fr} augmente !</span>`);
-                else logs.push(`<span style="color:#e74c3c">${STAT_NAMES.fr[statObj.stat]} de ${def.data.fr} diminue !</span>`);
+                if (statObj.stage > 0) logs.push(`<span style="color:#3498db">${EXTENDED_STAT_NAMES[statObj.stat]} de ${def.data.fr} augmente !</span>`);
+                else logs.push(`<span style="color:#e74c3c">${EXTENDED_STAT_NAMES[statObj.stat]} de ${def.data.fr} diminue !</span>`);
             }
         } else logs.push(`Mais l'attaque a raté...`);
         return;
@@ -783,8 +868,9 @@ function evalMove(atk, def, move, logs) {
             let targetName = statusData.target === "enemy" ? def.data.fr : atk.data.fr;
             for (let effect of statusData.effects) {
                 targetEntity.modifiers[effect.stat] = Math.max(-6, Math.min(6, (targetEntity.modifiers[effect.stat]||0) + effect.stage));
-                if (effect.stage > 0) logs.push(`<span style="color:#3498db">${STAT_NAMES.fr[effect.stat]} de ${targetName} augmente !</span>`);
-                else logs.push(`<span style="color:#e74c3c">${STAT_NAMES.fr[effect.stat]} de ${targetName} diminue !</span>`);
+                let statName = EXTENDED_STAT_NAMES[effect.stat];
+                if (effect.stage > 0) logs.push(`<span style="color:#3498db">${statName} de ${targetName} augmente !</span>`);
+                else logs.push(`<span style="color:#e74c3c">${statName} de ${targetName} diminue !</span>`);
             }
         }
         return; 
@@ -796,16 +882,21 @@ function evalMove(atk, def, move, logs) {
     if (atk.status === 'BRN' && move.damageClass === 'physical') A = Math.floor(A / 2);
     if (KAMIKAZE_MOVES.includes(move.nameEn)) A *= 1.5;
 
+    // MÉCANIQUE : DÉGÂTS INFLUENCÉS PAR LA MÉTÉO
+    let weatherMult = 1;
+    if (battleData.weather === 'sun') { if (move.type === 'fire') weatherMult = 1.5; if (move.type === 'water') weatherMult = 0.5; }
+    if (battleData.weather === 'rain') { if (move.type === 'water') weatherMult = 1.5; if (move.type === 'fire') weatherMult = 0.5; }
+
     let baseDmg = Math.floor(Math.floor(Math.floor(2 * (atk.level||1) / 5 + 2) * move.power * A / D) / 50) + 2;
     
-    let atkTypes = atk.types || (atk.battleStats ? atk.battleStats.types : []);
-    let defTypes = def.types || (def.battleStats ? def.battleStats.types : []);
+    let atkTypes = atk.types || [];
+    let defTypes = def.types || [];
 
     let stab = atkTypes.includes(move.type) ? 1.5 : 1;
     let mult = getEffectiveness(move.type, defTypes);
     
     let isCrit = Math.random() < (HIGH_CRIT_MOVES.includes(move.nameEn) ? 0.125 : 0.0625);
-    let dmg = Math.floor(baseDmg * stab * mult * (Math.random() * (1 - 0.85) + 0.85) * (isCrit ? 1.5 : 1));
+    let dmg = Math.floor(baseDmg * stab * mult * weatherMult * (Math.random() * (1 - 0.85) + 0.85) * (isCrit ? 1.5 : 1));
     
     if (FIXED_DAMAGE_MOVES[move.nameEn] !== undefined) {
         let val = FIXED_DAMAGE_MOVES[move.nameEn];
@@ -837,9 +928,7 @@ function evalMove(atk, def, move, logs) {
         atk.currentHp = 0; logs.push(`<span style="color:#e74c3c">${atk.data.fr} se sacrifie !</span>`);
     }
 
-    if (move.nameEn === "fake-out" && def.currentHp > 0 && totalDmg > 0) {
-        def.flinched = true;
-    }
+    if (move.nameEn === "fake-out" && def.currentHp > 0 && totalDmg > 0) def.flinched = true;
 
     if (totalDmg > 0 && def.currentHp > 0) {
         if (DRAIN_MOVES.includes(move.nameEn)) {
@@ -855,8 +944,8 @@ function evalMove(atk, def, move, logs) {
             let tEnt = secEffect.target === "enemy" ? def : atk;
             for (let effect of secEffect.effects) {
                 tEnt.modifiers[effect.stat] = Math.max(-6, Math.min(6, (tEnt.modifiers[effect.stat]||0) + effect.stage));
-                if (effect.stage > 0) logs.push(`<span style="color:#3498db">${STAT_NAMES.fr[effect.stat]} de ${secEffect.target==="enemy"?def.data.fr:atk.data.fr} augmente !</span>`);
-                else logs.push(`<span style="color:#e74c3c">${STAT_NAMES.fr[effect.stat]} de ${secEffect.target==="enemy"?def.data.fr:atk.data.fr} diminue !</span>`);
+                if (effect.stage > 0) logs.push(`<span style="color:#3498db">${EXTENDED_STAT_NAMES[effect.stat]} de ${secEffect.target==="enemy"?def.data.fr:atk.data.fr} augmente !</span>`);
+                else logs.push(`<span style="color:#e74c3c">${EXTENDED_STAT_NAMES[effect.stat]} de ${secEffect.target==="enemy"?def.data.fr:atk.data.fr} diminue !</span>`);
             }
         }
         const secStatus = SECONDARY_STATUS[move.nameEn];
