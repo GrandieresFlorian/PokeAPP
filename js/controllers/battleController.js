@@ -2,10 +2,18 @@ import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
 import { getPokemonPow, getPokemonDetails, getCardImageUrl, getEffectiveness, getMovesForLevel } from '../utils.js';
 import { allerASection } from './navController.js';
+import { 
+    USELESS_MOVES, PRIORITY_MOVES, HEAL_MOVES, DRAIN_MOVES, RECOIL_MOVES, MULTI_HIT_2_5, MULTI_HIT_2, 
+    FLINCH_MOVES, SECONDARY_EFFECTS, STATUS_MOVES, STAT_NAMES, 
+    OHKO_MOVES, KAMIKAZE_MOVES, FORCE_FLEE_MOVES, HIGH_CRIT_MOVES, STAT_CLEAR_MOVES, FIXED_DAMAGE_MOVES,
+    STATUS_CONDITIONS, SECONDARY_STATUS
+} from '../data/campagneData.js';
 
 let currentBattleId = null;
-let myRole = null; // 'p1' (Hôte) ou 'p2' (Invité)
+let myRole = null; 
 let unsubscribeBattle = null;
+
+const STATUS_COLORS = { "BRN": "#e67e22", "PSN": "#9b59b6", "TOX": "#8e44ad", "PAR": "#f1c40f", "FRZ": "#3498db", "SLP": "#2c3e50" };
 
 // =========================================================================
 // OUTILS D'AFFICHAGE
@@ -183,6 +191,8 @@ async function formatTeam(rawTeam) {
                 spdef: Math.floor(((2 * d.baseStats.spdef) * (pkmn.level||1)) / 100) + 5,
                 speed: Math.floor(((2 * d.baseStats.speed) * (pkmn.level||1)) / 100) + 5
             },
+            modifiers: { atk:0, def:0, spatk:0, spdef:0, speed:0 }, // Oubli Corrigé !
+            status: null, statusTurns: 0, confusion: 0, toxCount: 0,
             types: d.types
         };
     }));
@@ -283,14 +293,11 @@ function joinRealTimeBattle(battleId) {
         myRole = (data.p1 === state.currentUser) ? 'p1' : 'p2';
         renderSynchronousUI(data);
 
-        // Hôte (p1) résout le tour si les deux ont agi
         if (myRole === 'p1' && data.action1 && data.action2 && data.status === 'playing') {
             resolveSynchronousTurn(data, doc.ref);
         }
 
-        if (data.status === 'finished') {
-            endRealTimeBattle(data);
-        }
+        if (data.status === 'finished') endRealTimeBattle(data);
     });
 
     document.getElementById('btn-pvp-switch').onclick = () => openSynchronousSwitchMenu(false);
@@ -324,32 +331,30 @@ function renderSynchronousUI(data) {
     updateBarColor('pvp-enemy-hp-fill', eActive.currentHp, eActive.maxHp);
     document.getElementById('pvp-enemy-team-ui').innerHTML = enemyTeam.map((p, i) => `<div class="ball ${p.currentHp <= 0 ? 'fainted' : (i === enemyActiveIdx ? 'active' : 'alive')}"></div>`).join('');
 
-    // Logs
+    // Badges de Status (BRN, PAR...)
+    renderModifiersUI(pActive, 'pvp-player-modifiers');
+    renderModifiersUI(eActive, 'pvp-enemy-modifiers');
+
     const logBox = document.getElementById('pvp-battle-log');
     logBox.innerHTML = data.log.slice(-10).join('<br>'); 
     logBox.scrollTop = logBox.scrollHeight;
 
-    // Gestion des actions (La correction du Bug "Taper en Boucle" se trouve ici)
     if (data.status === 'playing') {
         let myAction = myRole === 'p1' ? data.action1 : data.action2;
         let iAmDead = pActive.currentHp <= 0;
         let enemyIsDead = eActive.currentHp <= 0;
 
         if (myAction) {
-            // Action déjà choisie
             document.getElementById('pvp-action-wrapper').classList.add('hidden');
             document.getElementById('pvp-waiting-action').classList.remove('hidden');
         } else {
             if (iAmDead) {
-                // Forcer le Remplacement (Ne coute pas un tour à l'adversaire)
                 document.getElementById('pvp-action-wrapper').classList.add('hidden');
                 document.getElementById('pvp-waiting-action').classList.add('hidden');
                 openSynchronousSwitchMenu(true);
             } else if (enemyIsDead) {
-                // Mon adversaire est mort, j'attends qu'il remplace
                 submitAction({ type: 'wait' });
             } else {
-                // Tour normal de combat
                 document.getElementById('pvp-waiting-action').classList.add('hidden');
                 document.getElementById('pvp-action-wrapper').classList.remove('hidden');
                 
@@ -358,7 +363,12 @@ function renderSynchronousUI(data) {
                 pActive.moves.forEach(move => {
                     const btn = document.createElement('button');
                     btn.className = `move-btn type-${move.type}`;
-                    btn.innerHTML = `<span class="move-name">${move.nameFr}</span><span style="font-size:0.7rem; font-weight:normal;">POW ${move.power || "-"}</span>`;
+                    
+                    // CORRECTION POW : Masquer la puissance des attaques de statut
+                    let displayPower = (move.damageClass === "status" || USELESS_MOVES.includes(move.nameEn) || FORCE_FLEE_MOVES.includes(move.nameEn) || STAT_CLEAR_MOVES.includes(move.nameEn) || OHKO_MOVES.includes(move.nameEn)) ? "-" : move.power;
+                    if(FIXED_DAMAGE_MOVES[move.nameEn]) displayPower = "FIX";
+
+                    btn.innerHTML = `<span class="move-name">${move.nameFr}</span><span style="font-size:0.7rem; font-weight:normal;">POW ${displayPower}</span>`;
                     btn.onclick = () => submitAction({ type: 'move', move: move });
                     container.appendChild(btn);
                 });
@@ -367,6 +377,32 @@ function renderSynchronousUI(data) {
     } else {
         document.getElementById('pvp-action-wrapper').classList.add('hidden');
         document.getElementById('pvp-waiting-action').classList.remove('hidden');
+    }
+}
+
+function renderModifiersUI(entity, containerId) {
+    let container = document.getElementById(containerId);
+    container.innerHTML = "";
+    if (entity.status) {
+        let badge = document.createElement('span');
+        badge.style.cssText = `background:${STATUS_COLORS[entity.status]}; color:#fff; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-right:4px;`;
+        badge.textContent = entity.status;
+        container.appendChild(badge);
+    }
+    if (entity.confusion > 0) {
+        let badge = document.createElement('span');
+        badge.style.cssText = `background:#e67e22; color:#fff; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-right:4px;`;
+        badge.textContent = "CNF";
+        container.appendChild(badge);
+    }
+    for (let stat in entity.modifiers) {
+        let stage = entity.modifiers[stat];
+        if (stage !== 0) {
+            let badge = document.createElement('span');
+            badge.className = `mod-badge ${stage > 0 ? 'mod-up' : 'mod-down'}`;
+            badge.textContent = `${STAT_NAMES.fr[stat]} ${stage > 0 ? '+' : ''}${stage}`;
+            container.appendChild(badge);
+        }
     }
 }
 
@@ -391,7 +427,7 @@ function openSynchronousSwitchMenu(forced = false) {
     btnCancel.textContent = "Retour";
     
     if (forced) {
-        btnCancel.classList.add('hidden'); // On force le joueur à choisir
+        btnCancel.classList.add('hidden');
     } else {
         btnCancel.classList.remove('hidden');
         btnCancel.onclick = () => {
@@ -423,7 +459,6 @@ function openSynchronousSwitchMenu(forced = false) {
             } else {
                 div.onclick = () => {
                     document.getElementById('pvp-team-selection').classList.add('hidden');
-                    // Si forced, c'est un Remplacement Gratuit (force_switch)
                     submitAction({ type: forced ? 'force_switch' : 'switch', index: index });
                 };
             }
@@ -446,6 +481,75 @@ function surrenderBattle() {
 // 3. RÉSOLUTION DES DÉGÂTS (Exécuté uniquement par l'Hôte / P1)
 // =========================================================================
 
+function getEffectiveStat(entity, statName) {
+    let base = entity.stats[statName];
+    let stage = entity.modifiers[statName] || 0;
+    let multiplier = Math.max(2, 2 + stage) / Math.max(2, 2 - stage);
+    let finalStat = Math.floor(base * multiplier);
+    if (statName === 'speed' && entity.status === 'PAR') finalStat = Math.floor(finalStat / 2);
+    return finalStat;
+}
+
+function preMoveCheckSync(entity, logs) {
+    let name = entity.data.fr;
+    if (entity.status === 'FRZ') {
+        if (Math.random() < 0.2) { entity.status = null; logs.push(`<span style="color:#3498db">${name} est dégelé !</span>`); } 
+        else { logs.push(`<span style="color:#3498db">${name} est complètement gelé !</span>`); return false; }
+    }
+    if (entity.status === 'SLP') {
+        entity.statusTurns--;
+        if (entity.statusTurns <= 0) { entity.status = null; logs.push(`<span style="color:#2c3e50">${name} se réveille !</span>`); } 
+        else { logs.push(`<span style="color:#2c3e50">${name} dort profondément.</span>`); return false; }
+    }
+    if (entity.status === 'PAR') {
+        if (Math.random() < 0.25) { logs.push(`<span style="color:#f1c40f">${name} est paralysé ! Il ne peut pas attaquer !</span>`); return false; }
+    }
+    if (entity.confusion > 0) {
+        entity.confusion--;
+        if (entity.confusion === 0) logs.push(`<span style="color:#e67e22">${name} n'est plus confus !</span>`);
+        else {
+            logs.push(`<span style="color:#e67e22">${name} est confus !</span>`);
+            if (Math.random() < 0.33) {
+                let dmg = Math.max(1, Math.floor(entity.maxHp / 8));
+                entity.currentHp -= dmg;
+                logs.push(`<span style="color:#e74c3c">Il se blesse dans sa confusion !</span>`);
+                if(entity.currentHp <= 0) logs.push(`<b style="color:#e74c3c">${name} est K.O. !</b>`);
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+function applyStatusSync(target, statusObj, targetName, logs) {
+    if (statusObj.status === 'CNF') {
+        if (target.confusion === 0) { 
+            target.confusion = Math.floor(Math.random() * 4) + 2; 
+            logs.push(`<span style="color:#e67e22">${targetName} devient confus !</span>`); 
+        }
+    } else {
+        if (!target.status) {
+            target.status = statusObj.status; target.toxCount = 0;
+            if (statusObj.status === 'SLP') target.statusTurns = Math.floor(Math.random() * 3) + 1;
+            let msgs = { "BRN":"est brûlé !", "PSN":"est empoisonné !", "TOX":"est gravement empoisonné !", "PAR":"est paralysé !", "FRZ":"est gelé !", "SLP":"s'endort !" };
+            logs.push(`<span style="color:${STATUS_COLORS[statusObj.status]}">${targetName} ${msgs[statusObj.status]}</span>`);
+        }
+    }
+}
+
+function applyEndTurnStatusSync(entity, logs) {
+    if (entity.currentHp <= 0) return;
+    let name = entity.data.fr;
+    if (entity.status === 'BRN') {
+        entity.currentHp -= Math.max(1, Math.floor(entity.maxHp / 16)); logs.push(`<span style="color:#e67e22">${name} souffre de sa brûlure !</span>`);
+    } else if (entity.status === 'PSN') {
+        entity.currentHp -= Math.max(1, Math.floor(entity.maxHp / 8)); logs.push(`<span style="color:#9b59b6">${name} souffre du poison !</span>`);
+    } else if (entity.status === 'TOX') {
+        entity.toxCount++; entity.currentHp -= Math.max(1, Math.floor((entity.maxHp * entity.toxCount) / 16)); logs.push(`<span style="color:#8e44ad">${name} souffre du poison grave !</span>`);
+    }
+    if (entity.currentHp <= 0) logs.push(`<b style="color:#e74c3c">${name} est K.O. !</b>`);
+}
+
 async function resolveSynchronousTurn(data, battleRef) {
     let t1 = data.team1; let t2 = data.team2;
     let a1 = data.action1; let a2 = data.action2;
@@ -454,21 +558,12 @@ async function resolveSynchronousTurn(data, battleRef) {
 
     let p1 = t1[active1]; let p2 = t2[active2];
 
-    // Vérifie s'il s'agit d'un tour de "Remplacement K.O."
     let isReplacementTurn = (a1.type === 'force_switch' || a2.type === 'force_switch' || a1.type === 'wait' || a2.type === 'wait');
 
     if (isReplacementTurn) {
-        if (a1.type === 'force_switch') {
-            active1 = a1.index;
-            turnLogs.push(`Le Joueur 1 envoie <b>${t1[active1].data.fr}</b> !`);
-        }
-        if (a2.type === 'force_switch') {
-            active2 = a2.index;
-            turnLogs.push(`Le Joueur 2 envoie <b>${t2[active2].data.fr}</b> !`);
-        }
-        // PAS d'attaques durant le tour de Remplacement
+        if (a1.type === 'force_switch') { active1 = a1.index; turnLogs.push(`Le Joueur 1 envoie <b>${t1[active1].data.fr}</b> !`); }
+        if (a2.type === 'force_switch') { active2 = a2.index; turnLogs.push(`Le Joueur 2 envoie <b>${t2[active2].data.fr}</b> !`); }
     } else {
-        // Tour Normal
         if (a1.type === 'switch') { active1 = a1.index; p1 = t1[active1]; turnLogs.push(`Joueur 1 envoie <b>${p1.data.fr}</b> !`); }
         if (a2.type === 'switch') { active2 = a2.index; p2 = t2[active2]; turnLogs.push(`Joueur 2 envoie <b>${p2.data.fr}</b> !`); }
 
@@ -476,23 +571,28 @@ async function resolveSynchronousTurn(data, battleRef) {
         let move2 = a2.type === 'move' ? a2.move : null;
 
         if (move1 && move2) {
-            let p1Speed = p1.stats.speed; let p2Speed = p2.stats.speed;
-            let p1GoesFirst = p1Speed >= p2Speed;
-            if (p1Speed === p2Speed) p1GoesFirst = Math.random() > 0.5;
+            let p1Speed = getEffectiveStat(p1, 'speed'); let p2Speed = getEffectiveStat(p2, 'speed');
+            let p1Priority = PRIORITY_MOVES.includes(move1.nameEn) ? 1 : 0;
+            let p2Priority = PRIORITY_MOVES.includes(move2.nameEn) ? 1 : 0;
+
+            let p1GoesFirst = p1Priority > p2Priority || (p1Priority === p2Priority && p1Speed >= p2Speed);
+            if (p1Speed === p2Speed && p1Priority === p2Priority) p1GoesFirst = Math.random() > 0.5;
 
             if (p1GoesFirst) {
-                evalMove(p1, p2, move1, turnLogs);
-                if (p2.currentHp > 0 && p1.currentHp > 0) evalMove(p2, p1, move2, turnLogs);
+                if(preMoveCheckSync(p1, turnLogs)) evalMove(p1, p2, move1, turnLogs);
+                if (p2.currentHp > 0 && p1.currentHp > 0) { if(preMoveCheckSync(p2, turnLogs)) evalMove(p2, p1, move2, turnLogs); }
             } else {
-                evalMove(p2, p1, move2, turnLogs);
-                if (p1.currentHp > 0 && p2.currentHp > 0) evalMove(p1, p2, move1, turnLogs);
+                if(preMoveCheckSync(p2, turnLogs)) evalMove(p2, p1, move2, turnLogs);
+                if (p1.currentHp > 0 && p2.currentHp > 0) { if(preMoveCheckSync(p1, turnLogs)) evalMove(p1, p2, move1, turnLogs); }
             }
         } 
-        else if (move1 && p1.currentHp > 0) evalMove(p1, p2, move1, turnLogs);
-        else if (move2 && p2.currentHp > 0) evalMove(p2, p1, move2, turnLogs);
+        else if (move1 && p1.currentHp > 0) { if(preMoveCheckSync(p1, turnLogs)) evalMove(p1, p2, move1, turnLogs); }
+        else if (move2 && p2.currentHp > 0) { if(preMoveCheckSync(p2, turnLogs)) evalMove(p2, p1, move2, turnLogs); }
+
+        applyEndTurnStatusSync(p1, turnLogs);
+        applyEndTurnStatusSync(p2, turnLogs);
     }
 
-    // Vérification des Morts et de la Fin du Jeu
     let p1Alive = t1.some(p => p.currentHp > 0);
     let p2Alive = t2.some(p => p.currentHp > 0);
     let status = 'playing';
@@ -502,7 +602,6 @@ async function resolveSynchronousTurn(data, battleRef) {
     else if (!p1Alive) { status = 'finished'; winner = 'p2'; turnLogs.push(`<b>Le Joueur 2 gagne le combat !</b>`); }
     else if (!p2Alive) { status = 'finished'; winner = 'p1'; turnLogs.push(`<b>Le Joueur 1 gagne le combat !</b>`); }
 
-    // Enregistrement Firebase (Déclenche instantanément l'UI des 2 joueurs)
     await battleRef.update({
         team1: t1, team2: t2,
         active1: active1, active2: active2,
@@ -512,29 +611,118 @@ async function resolveSynchronousTurn(data, battleRef) {
     });
 }
 
+// CORRECTION : Moteur d'évaluation prenant en compte les STATUS
 function evalMove(atk, def, move, logs) {
     logs.push(`<b>${atk.data.fr}</b> utilise <span style="color:#3498db">${move.nameFr}</span> !`);
     
-    let A = move.damageClass === 'special' ? atk.stats.spatk : atk.stats.atk;
-    let D = move.damageClass === 'special' ? def.stats.spdef : def.stats.def;
+    if (USELESS_MOVES.includes(move.nameEn)) { logs.push(`Mais il ne se passe rien...`); return; }
+    if (HEAL_MOVES.includes(move.nameEn)) {
+        atk.currentHp = Math.min(atk.maxHp, atk.currentHp + Math.floor(atk.maxHp / 2));
+        logs.push(`<span style="color:#2ecc71">${atk.data.fr} regagne des PV !</span>`); return;
+    }
+    if (OHKO_MOVES.includes(move.nameEn)) {
+        if (Math.random() < 0.30) { def.currentHp = 0; logs.push(`<span style="color:#f39c12">K.O. en un coup !</span>`); } 
+        else logs.push(`Mais l'attaque a raté...`);
+        return;
+    }
+    if (STAT_CLEAR_MOVES.includes(move.nameEn)) {
+        for(let s in atk.modifiers) atk.modifiers[s] = 0; for(let s in def.modifiers) def.modifiers[s] = 0;
+        logs.push(`<span style="color:#3498db">Tous les changements de stats sont annulés !</span>`); return;
+    }
+
+    if (STATUS_CONDITIONS[move.nameEn]) {
+        let statObj = STATUS_CONDITIONS[move.nameEn];
+        if (Math.random() * 100 <= statObj.chance) {
+            let targetEntity = (statObj.status === 'CNF' && move.nameEn === 'swagger') ? def : def; 
+            applyStatusSync(targetEntity, statObj, def.data.fr, logs);
+            if(statObj.stat) {
+                targetEntity.modifiers[statObj.stat] = Math.max(-6, Math.min(6, targetEntity.modifiers[statObj.stat] + statObj.stage));
+                if (statObj.stage > 0) logs.push(`<span style="color:#3498db">${STAT_NAMES.fr[statObj.stat]} de ${def.data.fr} augmente !</span>`);
+                else logs.push(`<span style="color:#e74c3c">${STAT_NAMES.fr[statObj.stat]} de ${def.data.fr} diminue !</span>`);
+            }
+        } else logs.push(`Mais l'attaque a raté...`);
+        return;
+    }
+
+    if (move.damageClass === "status" || STATUS_MOVES[move.nameEn]) {
+        const statusData = STATUS_MOVES[move.nameEn];
+        if (statusData) {
+            let targetEntity = statusData.target === "enemy" ? def : atk;
+            let targetName = statusData.target === "enemy" ? def.data.fr : atk.data.fr;
+            for (let effect of statusData.effects) {
+                targetEntity.modifiers[effect.stat] = Math.max(-6, Math.min(6, targetEntity.modifiers[effect.stat] + effect.stage));
+                if (effect.stage > 0) logs.push(`<span style="color:#3498db">${STAT_NAMES.fr[effect.stat]} de ${targetName} augmente !</span>`);
+                else logs.push(`<span style="color:#e74c3c">${STAT_NAMES.fr[effect.stat]} de ${targetName} diminue !</span>`);
+            }
+        }
+        return; 
+    }
+
+    let A = move.damageClass === 'special' ? getEffectiveStat(atk, 'spatk') : getEffectiveStat(atk, 'atk');
+    let D = move.damageClass === 'special' ? getEffectiveStat(def, 'spdef') : getEffectiveStat(def, 'def');
     
+    if (atk.status === 'BRN' && move.damageClass === 'physical') A = Math.floor(A / 2);
+    if (KAMIKAZE_MOVES.includes(move.nameEn)) A *= 1.5;
+
     let baseDmg = Math.floor(Math.floor(Math.floor(2 * (atk.level||1) / 5 + 2) * move.power * A / D) / 50) + 2;
     let stab = atk.types.includes(move.type) ? 1.5 : 1;
     let mult = getEffectiveness(move.type, def.types);
     
-    let isCrit = Math.random() < 0.0625;
+    let isCrit = Math.random() < (HIGH_CRIT_MOVES.includes(move.nameEn) ? 0.125 : 0.0625);
     let dmg = Math.floor(baseDmg * stab * mult * (Math.random() * (1 - 0.85) + 0.85) * (isCrit ? 1.5 : 1));
     
+    if (FIXED_DAMAGE_MOVES[move.nameEn] !== undefined) {
+        let val = FIXED_DAMAGE_MOVES[move.nameEn];
+        dmg = val === "level" ? (atk.level || 1) : val;
+        if (mult === 0) dmg = 0; 
+    }
+
     if (move.power == 0 || !move.power) dmg = 0; 
     if (mult === 0) dmg = 0; else dmg = Math.max(1, dmg);
 
-    def.currentHp -= dmg;
-    
+    let hitCount = 1;
+    if (MULTI_HIT_2_5.includes(move.nameEn)) hitCount = (Math.random() < 0.35) ? 2 : (Math.random() < 0.7 ? 3 : (Math.random() < 0.85 ? 4 : 5));
+    else if (MULTI_HIT_2.includes(move.nameEn)) hitCount = 2;
+
+    let totalDmg = 0;
+    for(let i=0; i<hitCount; i++) {
+        if(def.currentHp <= 0) break;
+        def.currentHp -= dmg;
+        totalDmg += dmg;
+    }
+
     if (dmg > 0 && isCrit) logs.push(`<span style="color:#f39c12">Coup Critique !</span>`);
+    if (hitCount > 1 && totalDmg > 0) logs.push(`Touché ${hitCount} fois !`);
     if (mult > 1) logs.push(`C'est super efficace !`);
     if (mult < 1 && mult > 0) logs.push(`Ce n'est pas très efficace...`);
     if (mult === 0 && move.power > 0) logs.push(`Ça n'a aucun effet.`);
-    
+
+    if (KAMIKAZE_MOVES.includes(move.nameEn)) {
+        atk.currentHp = 0; logs.push(`<span style="color:#e74c3c">${atk.data.fr} se sacrifie !</span>`);
+    }
+
+    if (totalDmg > 0 && def.currentHp > 0) {
+        if (DRAIN_MOVES.includes(move.nameEn)) {
+            atk.currentHp = Math.min(atk.maxHp, atk.currentHp + Math.max(1, Math.floor(totalDmg / 2)));
+            logs.push(`<span style="color:#2ecc71">${def.data.fr} voit son énergie aspirée !</span>`);
+        }
+        if (RECOIL_MOVES.includes(move.nameEn)) {
+            atk.currentHp -= Math.max(1, Math.floor(totalDmg / 3));
+            logs.push(`<span style="color:#e74c3c">${atk.data.fr} est blessé par le contrecoup !</span>`);
+        }
+        const secEffect = SECONDARY_EFFECTS[move.nameEn];
+        if (secEffect && Math.random() <= secEffect.chance) {
+            let tEnt = secEffect.target === "enemy" ? def : atk;
+            for (let effect of secEffect.effects) {
+                tEnt.modifiers[effect.stat] = Math.max(-6, Math.min(6, tEnt.modifiers[effect.stat] + effect.stage));
+                if (effect.stage > 0) logs.push(`<span style="color:#3498db">${STAT_NAMES.fr[effect.stat]} de ${secEffect.target==="enemy"?def.data.fr:atk.data.fr} augmente !</span>`);
+                else logs.push(`<span style="color:#e74c3c">${STAT_NAMES.fr[effect.stat]} de ${secEffect.target==="enemy"?def.data.fr:atk.data.fr} diminue !</span>`);
+            }
+        }
+        const secStatus = SECONDARY_STATUS[move.nameEn];
+        if (secStatus && Math.random() * 100 <= secStatus.chance) applyStatusSync(def, secStatus, def.data.fr, logs);
+    }
+
     if (def.currentHp <= 0) logs.push(`<b style="color:#e74c3c">${def.data.fr} est K.O. !</b>`);
 }
 
