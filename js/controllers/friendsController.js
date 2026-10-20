@@ -4,6 +4,7 @@ import { initierEchange, accepterEchange, refuserEchange } from './tradeControll
 import { proposerCombat, renderBattleUI, initPvPListener } from './battleController.js';
 import { getCardImageUrl } from '../utils.js';
 import { updateSpecialBoosterUI } from './boosterController.js';
+import { allerASection } from './navController.js'; // Ajoutez cet import tout en haut si ce n'est pas déjà fait
 
 let friendsListener = null;
 
@@ -36,7 +37,8 @@ export function initFriends() {
     initPvPListener();
     document.getElementById('nav-amis').addEventListener('click', () => {
         if (!state.currentUser) return alert("Connectez-vous d'abord !");
-        openFriends();
+        allerASection('section-amis');
+        renderFriendsList(); // Met à jour la liste quand on ouvre l'onglet
     });
     const friendIdInput = document.getElementById('friend-id-input');
     const addFriendBtn = document.getElementById('add-friend-btn');
