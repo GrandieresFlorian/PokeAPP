@@ -125,6 +125,7 @@
 
             <!-- SECTION COMBATS -->
             <!-- SECTION COMBATS (PVP 4V4) -->
+            <!-- SECTION COMBATS (PVP TEMPS RÉEL) -->
             <section id="section-combats" class="view-section hidden">
                 <h2 class="section-title translatable" data-fr="Arène Multijoueur" data-en="Multiplayer Arena">Arène Multijoueur</h2>
                 
@@ -167,17 +168,19 @@
                     </div>
                     
                     <div class="battle-ui">
-                        <div id="pvp-battle-log" class="battle-log">Combat 4v4 !</div>
-                        <div class="battle-actions-wrapper">
+                        <div id="pvp-battle-log" class="battle-log">En attente des joueurs...</div>
+                        <div id="pvp-waiting-action" class="hidden" style="flex:1; display:flex; align-items:center; justify-content:center; color:#f39c12; font-weight:bold;">En attente de l'adversaire...</div>
+                        <div class="battle-actions-wrapper" id="pvp-action-wrapper">
                             <div id="pvp-moves-container" class="battle-moves-grid"></div>
-                            <button id="btn-pvp-switch" class="btn btn-secondary" style="width:100%;">🔄 Changer de Pokémon</button>
+                            <button id="btn-pvp-switch" class="btn btn-secondary" style="width:100%; margin-top:5px;">🔄 Changer de Pokémon</button>
+                            <button id="btn-pvp-surrender" class="btn btn-danger" style="width:100%; margin-top:5px;">🏳️ Abandonner</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Sélection d'Équipe (Amical & Switch) -->
+                <!-- Sélection d'Équipe -->
                 <div id="pvp-team-selection" class="glass-panel hidden" style="margin-top:20px; text-align:center;">
-                    <h3 id="pvp-selection-title" class="panel-heading text-accent">Choisissez votre Pokémon</h3>
+                    <h3 id="pvp-selection-title" class="panel-heading text-accent">Choisissez votre équipe</h3>
                     <p id="pvp-selection-counter" class="hidden">Sélectionnés : <span id="pvp-team-count" class="highlight">0</span> / 4</p>
                     <div id="pvp-selection-grid" class="trade-collection-grid" style="max-height: 400px; justify-content:center; margin-top:20px;"></div>
                     <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
@@ -186,6 +189,18 @@
                     </div>
                 </div>
             </section>
+
+            <!-- MODAL DE CHOIX DE DÉFI -->
+            <div id="pvp-challenge-modal" class="modal-overlay hidden">
+                <div class="modal-content glass-panel" style="max-width: 400px;">
+                    <h3 class="text-accent" style="margin-top:0;">Défier un ami en Temps Réel</h3>
+                    <div style="display:flex; flex-direction:column; gap:15px; margin-top:20px;">
+                        <button id="btn-pvp-ranked" class="btn" style="background:linear-gradient(135deg, #f39c12, #e67e22);">🏆 Combat Classé (Équilibrage Automatique)<br><span style="font-size:0.8rem; font-weight:normal;">Récompense: Booster Rare x3 Shiny</span></button>
+                        <button id="btn-pvp-friendly" class="btn btn-secondary">🤝 Combat Amical (Choix Libre)<br><span style="font-size:0.8rem; font-weight:normal;">Aucune récompense (Fun)</span></button>
+                        <button id="btn-cancel-challenge" class="btn btn-danger" style="margin-top:10px;">Annuler</button>
+                    </div>
+                </div>
+            </div>
 
             <!-- MODAL DE CHOIX DE DEFI -->
             <div id="pvp-challenge-modal" class="modal-overlay hidden">

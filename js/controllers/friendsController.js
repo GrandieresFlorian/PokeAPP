@@ -1,7 +1,7 @@
 import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
 import { initierEchange, accepterEchange, refuserEchange } from './tradeController.js';
-import { proposerCombat, renderBattleUI } from './battleController.js';
+import { proposerCombat, renderBattleUI, initPvPListener } from './battleController.js';
 import { getCardImageUrl } from '../utils.js';
 import { updateSpecialBoosterUI } from './boosterController.js';
 
@@ -33,6 +33,11 @@ export function stopFriendsListener() {
 }
 
 export function initFriends() {
+    initPvPListener();
+    document.getElementById('nav-amis').addEventListener('click', () => {
+        if (!state.currentUser) return alert("Connectez-vous d'abord !");
+        openFriends();
+    });
     const friendIdInput = document.getElementById('friend-id-input');
     const addFriendBtn = document.getElementById('add-friend-btn');
     const friendMessage = document.getElementById('friend-message');
