@@ -33,6 +33,7 @@ const WEATHER_MOVES_DICT = {
     "hail": { weather: "hail", msg: "Il commence à grêler ❄️ !" }
 };
 
+const EXTENDED_STAT_NAMES = { ...STAT_NAMES.fr, accuracy: "Précision", evasion: "Esquive" };
 let activeFighter = null;
 let currentEnemy = null;
 let isAnimating = false;
