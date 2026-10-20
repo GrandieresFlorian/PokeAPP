@@ -19,7 +19,7 @@ export function initCampagne() {
 
     document.getElementById('campagne-sort')?.addEventListener('change', renderTeamSelection);
     
-    document.getElementById('btn-battle-flee').addEventListener('click', fleeBattle);
+    document.getElementById('btn-battle-flee').addEventListener('click', () => fleeBattle(false));
 }
 
 function openCampagne() {
@@ -61,23 +61,30 @@ function renderTeamSelection() {
     const sortMode = sortDropdown ? sortDropdown.value : 'pokedex';
 
     uniqueCardsArray.sort((a, b) => {
+        // CORRECTION : On sécurise la lecture des données pour les Pokémon échangés
+        let dataA = a.data || state.pokemonDataList[a.pokedexNumber - 1] || {};
+        let dataB = b.data || state.pokemonDataList[b.pokedexNumber - 1] || {};
+
         if (sortMode === 'level') return ((b.level || 1) - (a.level || 1)) || (a.pokedexNumber - b.pokedexNumber);
         else if (sortMode === 'rarity') {
-            const rarityA = a.mega ? "MG" : (a.data.rarity || "C");
-            const rarityB = b.mega ? "MG" : (b.data.rarity || "C");
+            const rarityA = a.mega ? "MG" : (dataA.rarity || "C");
+            const rarityB = b.mega ? "MG" : (dataB.rarity || "C");
             return (CONSTS.poidsRarete[rarityB] || 0) - (CONSTS.poidsRarete[rarityA] || 0) || (a.pokedexNumber - b.pokedexNumber);
         } else if (sortMode === 'alpha') {
-            const nameA = state.currentLang === 'en' ? a.data.en : a.data.fr;
-            const nameB = state.currentLang === 'en' ? b.data.en : b.data.fr;
+            const nameA = state.currentLang === 'en' ? (dataA.en || "") : (dataA.fr || "");
+            const nameB = state.currentLang === 'en' ? (dataB.en || "") : (dataB.fr || "");
             return nameA.localeCompare(nameB) || (a.pokedexNumber - b.pokedexNumber);
         } else return a.pokedexNumber - b.pokedexNumber;
     });
 
     uniqueCardsArray.forEach(carte => {
+        // CORRECTION : Même sécurisation ici
+        let dataCarte = carte.data || state.pokemonDataList[carte.pokedexNumber - 1] || {};
+        
         const div = document.createElement('div');
         div.className = `mini-card`;
         div.style.backgroundImage = `url('${getCardImageUrl(carte)}')`;
-        const rarete = carte.mega ? "MG" : (carte.data.rarity || "C");
+        const rarete = carte.mega ? "MG" : (dataCarte.rarity || "C");
         div.style.backgroundColor = CONSTS.couleursRarete[rarete] || "#333";
         if (carte.shiny || (carte.mega && carte.shiny)) div.innerHTML = '<div class="mini-card-holo"></div>';
 
@@ -87,6 +94,8 @@ function renderTeamSelection() {
         div.appendChild(lvlBadge);
 
         div.onclick = () => {
+            // On injecte les données dans la carte si elles manquaient pour que le système de combat ne plante pas
+            if (!carte.data) carte.data = dataCarte;
             activeFighter = carte;
             document.getElementById('campagne-select-pokemon').classList.add('hidden');
             document.getElementById('campagne-select-zone').classList.remove('hidden');
@@ -100,12 +109,17 @@ function renderTeamSelection() {
 function updateFighterBadge() {
     if(!activeFighter) return;
     const badge = document.getElementById('campagne-active-pokemon');
-    let nameEn = activeFighter.data.en;
-    let nameFr = activeFighter.data.fr;
+    
+    // CORRECTION : Sécurisation de l'affichage du nom
+    let dataFighter = activeFighter.data || state.pokemonDataList[activeFighter.pokedexNumber - 1] || {};
+    let nameEn = dataFighter.en || "Unknown";
+    let nameFr = dataFighter.fr || "Inconnu";
+    
     if (activeFighter.mega) {
         nameEn = formatMegaName(nameEn, activeFighter.megaForm);
         nameFr = formatMegaName(nameFr, activeFighter.megaForm);
     }
+    
     let currentName = state.currentLang === 'en' ? nameEn : nameFr;
     let lvlStr = activeFighter.level || 1;
     
