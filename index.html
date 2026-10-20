@@ -384,8 +384,9 @@
     </div>
 
     <!-- MODAL DÉTAILS DU POKÉMON -->
+    <!-- MODAL DÉTAILS DU POKÉMON -->
     <div id="card-details-modal" class="modal-overlay hidden">
-        <div class="modal-content glass-panel" style="max-width: 700px; width: 90%; display: flex; flex-wrap: wrap; gap: 20px; text-align: left; position: relative;">
+        <div class="modal-content glass-panel" style="max-width: 750px; width: 90%; display: flex; flex-wrap: wrap; gap: 20px; text-align: left; position: relative; max-height: 90vh; overflow-y: auto;">
             <button id="close-card-details" class="btn btn-danger" style="position: absolute; top: 10px; right: 10px; padding: 5px 15px;">X</button>
 
             <!-- Colonne Gauche : Image et Infos de base -->
@@ -396,23 +397,29 @@
                 <div id="details-types" style="display: flex; gap: 10px; margin-top: 10px;"></div>
             </div>
 
-            <!-- Colonne Droite : Stats, Talent, Description -->
-            <div style="flex: 2; min-width: 250px; display: flex; flex-direction: column; gap: 15px;">
+            <!-- Colonne Droite : Stats, Talent, Description, EVs -->
+            <div style="flex: 2; min-width: 280px; display: flex; flex-direction: column; gap: 15px;">
                 <div>
                     <h3 style="border-bottom: 1px solid #555; padding-bottom: 5px; margin-top:0; color:#fff;">Description</h3>
-                    <p id="details-description" style="font-size: 0.95rem; font-style: italic; color:#ddd; min-height: 60px;">Recherche de la description dans le Pokédex...</p>
+                    <p id="details-description" style="font-size: 0.95rem; font-style: italic; color:#ddd; min-height: 40px;">Chargement...</p>
                 </div>
 
                 <div>
-                    <h3 style="border-bottom: 1px solid #555; padding-bottom: 5px; color:#fff;">Talent (Capacité Spéciale)</h3>
-                    <p id="details-talent" style="font-size: 0.95rem; color:#f1c40f; font-weight: bold;">Recherche...</p>
+                    <h3 style="border-bottom: 1px solid #555; padding-bottom: 5px; color:#fff; display:flex; justify-content:space-between; align-items:center;">
+                        Talent (Capacité Spéciale)
+                        <button id="btn-use-figy" class="btn btn-secondary" style="padding: 3px 10px; font-size: 0.75rem; margin:0;">🍒 Baie Figy</button>
+                    </h3>
+                    <p id="details-talent" style="font-size: 0.95rem; color:#f1c40f; font-weight: bold;">Aucun</p>
                 </div>
 
                 <div>
                     <h3 style="border-bottom: 1px solid #555; padding-bottom: 5px; color:#fff;">Statistiques (Niv. <span id="details-stat-lvl"></span>)</h3>
-                    <div id="details-stats-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 0.9rem; color:#eee;">
-                        <!-- Les stats s'injecteront ici -->
-                    </div>
+                    <div id="details-stats-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9rem; color:#eee;"></div>
+                </div>
+
+                <div>
+                    <h3 style="border-bottom: 1px solid #555; padding-bottom: 5px; color:#fff;">Effort (EVs - Total : <span id="details-ev-total" class="text-accent">0</span> / 510)</h3>
+                    <div id="details-evs-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; font-size: 0.8rem; color:#ccc;"></div>
                 </div>
             </div>
         </div>

@@ -8,9 +8,10 @@ export async function openCardDetails(carte) {
     const modal = document.getElementById('card-details-modal');
     modal.classList.remove('hidden');
 
-    document.getElementById('close-card-details').onclick = () => modal.classList.add('hidden');
+    const closeBtn = document.getElementById('close-card-details');
+    if (closeBtn) closeBtn.onclick = () => modal.classList.add('hidden');
 
-    let d = carte.data || state.pokemonDataList[carte.pokedexNumber - 1];
+    let d = carte.data || state.pokemonDataList[carte.pokedexNumber - 1] || {};
     let nameEn = d.en || "Unknown";
     let nameFr = d.fr || "Inconnu";
 
@@ -24,85 +25,88 @@ export async function openCardDetails(carte) {
     document.getElementById('details-level-rarity').textContent = `Niv. ${carte.level || 1} - Rareté : ${rarityStr}`;
 
     const imgDiv = document.getElementById('details-card-image');
-    imgDiv.style.backgroundImage = `url('${getCardImageUrl(carte)}')`;
-    imgDiv.style.backgroundColor = CONSTS.couleursRarete[rarityStr] || "#333";
-    imgDiv.innerHTML = carte.shiny || (carte.mega && carte.shiny) ? '<div class="mini-card-holo"></div>' : '';
+    if (imgDiv) {
+        imgDiv.style.backgroundImage = `url('${getCardImageUrl(carte)}')`;
+        imgDiv.style.backgroundColor = CONSTS.couleursRarete[rarityStr] || "#333";
+        imgDiv.innerHTML = carte.shiny || (carte.mega && carte.shiny) ? '<div class="mini-card-holo"></div>' : '';
+    }
 
     const details = await getPokemonDetails(carte); 
     document.getElementById('details-types').innerHTML = details.types.map(t => `<span class="type-badge type-${t}">${t.toUpperCase()}</span>`).join('');
 
-    // LECTURE INSTANTANÉE DEPUIS DATA.JSON !
-    let description = d.description ? (state.currentLang === 'en' ? d.description.en : d.description.fr) : "Aucune description.";
-    document.getElementById('details-description').textContent = description;
+    // Lecture de la description (Gère les deux formats : string simple ou objet .fr/.en)
+    let descText = "Aucune description disponible.";
+    if (d.description) {
+        if (typeof d.description === 'object') {
+            descText = state.currentLang === 'en' ? d.description.en : d.description.fr;
+        } else {
+            descText = d.description;
+        }
+    }
+    document.getElementById('details-description').textContent = descText;
     
-    // Affichage du Talent actuel (Par défaut : Aucun)
+    // Affichage du Talent actuel
     let currentTalentFr = carte.talent ? carte.talent.fr : "Aucun";
     let currentTalentEn = carte.talent ? carte.talent.en : "None";
     document.getElementById('details-talent').textContent = state.currentLang === 'en' ? currentTalentEn : currentTalentFr;
 
     // --- GESTION DE LA BAIE FIGY ---
     const btnFigy = document.getElementById('btn-use-figy');
-    const newBtnFigy = btnFigy.cloneNode(true); // Retire les anciens écouteurs de clics
-    btnFigy.parentNode.replaceChild(newBtnFigy, btnFigy);
+    if (btnFigy) {
+        const newBtnFigy = btnFigy.cloneNode(true); 
+        btnFigy.parentNode.replaceChild(newBtnFigy, btnFigy);
 
-    newBtnFigy.onclick = async () => {
-        if (!state.currentUserData.berries) state.currentUserData.berries = [];
-        const berryIndex = state.currentUserData.berries.findIndex(b => b.id === 'figy-berry');
-        
-        if (berryIndex === -1) {
-            alert(state.currentLang === 'en' ? "You don't have a Figy Berry in your inventory!" : "Vous n'avez pas de Baie Figy dans votre inventaire !");
-            return;
-        }
+        newBtnFigy.onclick = async () => {
+            if (!state.currentUserData.berries) state.currentUserData.berries = [];
+            const berryIndex = state.currentUserData.berries.findIndex(b => b.id === 'figy-berry');
+            
+            if (berryIndex === -1) {
+                alert(state.currentLang === 'en' ? "You don't have a Figy Berry in your inventory!" : "Vous n'avez pas de Baie Figy dans votre inventaire !");
+                return;
+            }
 
-        newBtnFigy.disabled = true;
-        newBtnFigy.textContent = "Éveil...";
+            newBtnFigy.disabled = true;
+            newBtnFigy.textContent = "Éveil...";
 
-        // Liste des talents possibles depuis data.json (on exclut celui qu'il a déjà)
-        let possibleAbilities = d.abilities || [{en: "Overgrow", fr: "Engrais"}, {en: "Chlorophyll", fr: "Chlorophylle"}]; 
-        const filteredAbilities = possibleAbilities.filter(ab => !carte.talent || ab.en !== carte.talent.en);
+            let possibleAbilities = d.abilities || [{en: "Overgrow", fr: "Engrais"}, {en: "Chlorophyll", fr: "Chlorophylle"}]; 
+            const filteredAbilities = possibleAbilities.filter(ab => !carte.talent || ab.en !== carte.talent.en);
 
-        if (filteredAbilities.length === 0) {
-            alert(state.currentLang === 'en' ? "This Pokémon has no other possible abilities!" : "Ce Pokémon n'a pas d'autres talents possibles !");
+            if (filteredAbilities.length === 0) {
+                alert(state.currentLang === 'en' ? "This Pokémon has no other possible abilities!" : "Ce Pokémon n'a pas d'autres talents possibles !");
+                newBtnFigy.disabled = false;
+                newBtnFigy.textContent = "🍒 Baie Figy";
+                return;
+            }
+
+            state.currentUserData.berries.splice(berryIndex, 1);
+            
+            const randomTalent = filteredAbilities[Math.floor(Math.random() * filteredAbilities.length)];
+            carte.talent = randomTalent;
+
+            try {
+                const { db } = await import('../firebase-config.js');
+                await db.collection('users').doc(state.currentUser).update({ 
+                    collection: state.currentUserData.collection,
+                    berries: state.currentUserData.berries
+                });
+                
+                document.getElementById('details-talent').textContent = state.currentLang === 'en' ? randomTalent.en : randomTalent.fr;
+                alert(state.currentLang === 'en' ? `Success! New ability: ${randomTalent.en}` : `Succès ! Le Pokémon a éveillé le talent : ${randomTalent.fr} !`);
+            } catch(e) {
+                console.error(e);
+                alert("Erreur de sauvegarde.");
+            }
+
             newBtnFigy.disabled = false;
-            newBtnFigy.textContent = "🍒 Utiliser Baie Figy";
-            return;
-        }
+            newBtnFigy.textContent = "🍒 Baie Figy";
+        };
+    }
 
-        // On consomme la baie
-        state.currentUserData.berries.splice(berryIndex, 1);
-        
-        // On tire au sort un nouveau talent
-        const randomTalent = filteredAbilities[Math.floor(Math.random() * filteredAbilities.length)];
-        carte.talent = randomTalent;
-
-        // Sauvegarde Firebase
-        try {
-            const { db } = await import('../firebase-config.js');
-            await db.collection('users').doc(state.currentUser).update({ 
-                collection: state.currentUserData.collection,
-                berries: state.currentUserData.berries
-            });
-            
-            document.getElementById('details-talent').textContent = state.currentLang === 'en' ? randomTalent.en : randomTalent.fr;
-            alert(state.currentLang === 'en' ? `Success! New ability: ${randomTalent.en}` : `Succès ! Le Pokémon a éveillé le talent : ${randomTalent.fr} !`);
-            
-            // Mise à jour visuelle du jardin en arrière plan
-            const ev = new CustomEvent('userDataUpdated');
-            window.dispatchEvent(ev);
-        } catch(e) {
-            console.error(e);
-            alert("Erreur de sauvegarde.");
-        }
-
-        newBtnFigy.disabled = false;
-        newBtnFigy.textContent = "🍒 Utiliser Baie Figy";
-    };
-
-    // Calcul des Stats
+    // Calcul des Stats au niveau actuel
     let lvl = carte.level || 1;
     document.getElementById('details-stat-lvl').textContent = lvl;
     let maxHp = Math.floor(((2 * details.baseStats.hp) * lvl) / 100) + lvl + 10;
-    let atk = Math.floor(((2 * details.baseStats.atk) * lvl) / 100) + 5;
+    let atk = Math.floor(((2 * details.baseStats.baseStats?.atk || details.baseStats.atk) * lvl) / 100) + 5;
     let def = Math.floor(((2 * details.baseStats.def) * lvl) / 100) + 5;
     let spatk = Math.floor(((2 * details.baseStats.spatk) * lvl) / 100) + 5;
     let spdef = Math.floor(((2 * details.baseStats.spdef) * lvl) / 100) + 5;
@@ -115,6 +119,20 @@ export async function openCardDetails(carte) {
         <div>🛡️ Défense : <b>${def}</b></div>
         <div>🔥 Atk Spé : <b>${spatk}</b></div>
         <div>✨ Déf Spé : <b>${spdef}</b></div>
+    `;
+
+    // Affichage des EVs du Pokémon
+    if (!carte.evs) carte.evs = { hp: 0, atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0 };
+    let totalEvs = Object.values(carte.evs).reduce((a, b) => a + b, 0);
+    document.getElementById('details-ev-total').textContent = totalEvs;
+
+    document.getElementById('details-evs-grid').innerHTML = `
+        <div>PV : <b>${carte.evs.hp}/252</b></div>
+        <div>Atk : <b>${carte.evs.atk}/252</b></div>
+        <div>Déf : <b>${carte.evs.def}/252</b></div>
+        <div>Atk Spé : <b>${carte.evs.spatk}/252</b></div>
+        <div>Déf Spé : <b>${carte.evs.spdef}/252</b></div>
+        <div>Vit : <b>${carte.evs.speed}/252</b></div>
     `;
 }
 
@@ -132,36 +150,40 @@ export function initCollection() {
 
     function setTabActive(activeTab) {
         [tabNormal, tabShiny, tabMega, tabMegaShiny, tabBaies].forEach(tab => { if(tab) tab.classList.remove('active'); });
-        activeTab.classList.add('active');
+        if (activeTab) activeTab.classList.add('active');
         if (activeTab === tabMega || activeTab === tabMegaShiny || activeTab === tabBaies) {
             filterRarity.value = "all"; filterRarity.disabled = true;
         } else filterRarity.disabled = false;
     }
 
-    tabNormal.addEventListener('click', () => { state.collectionMode = 'normal'; setTabActive(tabNormal); afficherCollection(); });
-    tabShiny.addEventListener('click', () => { state.collectionMode = 'shiny'; setTabActive(tabShiny); afficherCollection(); });
-    tabMega.addEventListener('click', () => { state.collectionMode = 'mega'; setTabActive(tabMega); afficherCollection(); });
-    tabMegaShiny.addEventListener('click', () => { state.collectionMode = 'mega-shiny'; setTabActive(tabMegaShiny); afficherCollection(); });
+    if(tabNormal) tabNormal.addEventListener('click', () => { state.collectionMode = 'normal'; setTabActive(tabNormal); afficherCollection(); });
+    if(tabShiny) tabShiny.addEventListener('click', () => { state.collectionMode = 'shiny'; setTabActive(tabShiny); afficherCollection(); });
+    if(tabMega) tabMega.addEventListener('click', () => { state.collectionMode = 'mega'; setTabActive(tabMega); afficherCollection(); });
+    if(tabMegaShiny) tabMegaShiny.addEventListener('click', () => { state.collectionMode = 'mega-shiny'; setTabActive(tabMegaShiny); afficherCollection(); });
     if(tabBaies) tabBaies.addEventListener('click', () => { state.collectionMode = 'baies'; setTabActive(tabBaies); afficherCollection(); });
 
-    filterRarity.addEventListener('change', afficherCollection);
-    filterOwned.addEventListener('change', afficherCollection);
-    document.getElementById('nav-collection').addEventListener('click', afficherCollection);
+    if(filterRarity) filterRarity.addEventListener('change', afficherCollection);
+    if(filterOwned) filterOwned.addEventListener('change', afficherCollection);
+    const navCol = document.getElementById('nav-collection');
+    if(navCol) navCol.addEventListener('click', afficherCollection);
 
-    document.getElementById('collection-container').addEventListener('click', (e) => {
-        const btnUpgrade = e.target.closest('.btn-card-upgrade');
-        const btnInfo = e.target.closest('.btn-card-info');
+    const containerCol = document.getElementById('collection-container');
+    if(containerCol) {
+        containerCol.addEventListener('click', (e) => {
+            const btnUpgrade = e.target.closest('.btn-card-upgrade');
+            const btnInfo = e.target.closest('.btn-card-info');
 
-        if (btnUpgrade) {
-            e.stopPropagation();
-            upgradeCard(Number(btnUpgrade.dataset.date));
-        } else if (btnInfo) {
-            e.stopPropagation();
-            const cardDate = Number(btnInfo.dataset.date);
-            const carteTrouvee = state.currentUserData.collection.find(c => c.date === cardDate);
-            if(carteTrouvee) openCardDetails(carteTrouvee);
-        }
-    });
+            if (btnUpgrade) {
+                e.stopPropagation();
+                upgradeCard(Number(btnUpgrade.dataset.date));
+            } else if (btnInfo) {
+                e.stopPropagation();
+                const cardDate = Number(btnInfo.dataset.date);
+                const carteTrouvee = state.currentUserData.collection.find(c => c.date === cardDate);
+                if(carteTrouvee) openCardDetails(carteTrouvee);
+            }
+        });
+    }
 }
 
 export function upgradeCard(cardDate) {
@@ -205,13 +227,16 @@ export function afficherCollection() {
     const filterRarity = document.getElementById('filter-rarity');
     const filterOwned = document.getElementById('filter-owned');
 
-    if (state.collectionMode === 'baies') { afficherBaies(collectionContainer, collectionCount, filterOwned.checked); return; }
+    if (!collectionContainer || !collectionCount) return;
+
+    if (state.collectionMode === 'baies') { afficherBaies(collectionContainer, collectionCount, filterOwned ? filterOwned.checked : false); return; }
     if (!state.currentUser) { collectionContainer.innerHTML = "<p>Veuillez vous connecter.</p>"; collectionCount.textContent = `0 / ${CONSTS.MAX_POKEMON}`; return; }
     if (state.pokemonDataList.length === 0) { collectionContainer.innerHTML = "<p>Chargement des données...</p>"; return; }
 
     const maCollection = state.currentUserData.collection || [];
     const cartesPossedeesMap = {}; 
-    const rarityVal = filterRarity.value; const ownedOnlyVal = filterOwned.checked;
+    const rarityVal = filterRarity ? filterRarity.value : 'all'; 
+    const ownedOnlyVal = filterOwned ? filterOwned.checked : false;
     
     maCollection.forEach(carte => {
         if (!cartesPossedeesMap[carte.pokedexNumber]) cartesPossedeesMap[carte.pokedexNumber] = { normal: [], shiny: [], megas: {} };
