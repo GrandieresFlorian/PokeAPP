@@ -300,7 +300,18 @@ function joinRealTimeBattle(battleId) {
     document.getElementById('pvp-battle-arena').classList.remove('hidden');
 
     unsubscribeBattle = db.collection('active_battles').doc(battleId).onSnapshot(doc => {
-        if (!doc.exists) return;
+        // CORRECTION : Si le combat a été supprimé de la base de données
+        if (!doc.exists) {
+            db.collection('users').doc(state.currentUser).update({
+                activeBattle: firebase.firestore.FieldValue.delete()
+            });
+            document.getElementById('pvp-battle-arena').classList.add('hidden');
+            document.getElementById('pvp-menus').classList.remove('hidden');
+            if (unsubscribeBattle) { unsubscribeBattle(); unsubscribeBattle = null; }
+            currentBattleId = null;
+            return;
+        }
+        
         const data = doc.data();
         
         myRole = (data.p1 === state.currentUser) ? 'p1' : 'p2';

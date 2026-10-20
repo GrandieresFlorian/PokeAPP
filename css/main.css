@@ -51,10 +51,11 @@
 .ball.active { background: #f1c40f; border-color: #e67e22; box-shadow: 0 0 8px #f1c40f; transform: scale(1.2); }
 
 /* Effet de survol sur les cartes de la collection */
+/* Effet de survol sur les cartes de la collection */
 .card-hover-actions {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.85); /* Fond légèrement assombri */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -63,8 +64,11 @@
     opacity: 0;
     transition: opacity 0.2s ease-in-out;
     border-radius: inherit;
+    z-index: 50; /* TRÈS IMPORTANT : Passe par-dessus l'image et le texte */
 }
 
+/* CORRECTION : On cible bien les .card de la collection principale */
+.card:hover .card-hover-actions,
 .mini-card:hover .card-hover-actions {
     opacity: 1;
 }
@@ -80,6 +84,7 @@
     font-family: inherit;
     transition: all 0.2s;
     width: 80%;
+    pointer-events: auto;
 }
 
 .btn-card-action:hover {
