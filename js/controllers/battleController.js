@@ -8,12 +8,31 @@ let myRole = null; // 'p1' (Hôte) ou 'p2' (Invité)
 let unsubscribeBattle = null;
 
 // =========================================================================
+// OUTILS D'AFFICHAGE
+// =========================================================================
+
+function logMessage(msg) {
+    const logBox = document.getElementById('pvp-battle-log');
+    if(!logBox) return;
+    logBox.innerHTML += `<br>> ${msg}`;
+    logBox.scrollTop = logBox.scrollHeight;
+}
+
+function updateBarColor(id, hp, maxHp) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const ratio = hp / maxHp;
+    if (ratio > 0.5) el.style.backgroundColor = "#2ecc71";
+    else if (ratio > 0.2) el.style.backgroundColor = "#f39c12";
+    else el.style.backgroundColor = "#e74c3c";
+}
+
+// =========================================================================
 // 1. SALON ET INVITATIONS
 // =========================================================================
 
 export function initPvPListener() {
     if(!state.currentUser) return;
-    // On écoute le compte du joueur : si l'ami accepte, 'activeBattle' s'ajoutera ici.
     db.collection('users').doc(state.currentUser).onSnapshot(doc => {
         const data = doc.data();
         if(data && data.activeBattle && data.activeBattle !== currentBattleId) {
@@ -111,7 +130,6 @@ async function accepterCombat(req) {
         let theirCol = (challengerDoc.data().collection || []).filter(c => !c.isBaie);
 
         if (req.type === 'ranked') {
-            // Algorithme d'Équilibrage (Différence < 50 POW)
             let best1 = theirCol.slice(0,4), best2 = myCol.slice(0,4), minDiff = Infinity;
             for(let i=0; i<300; i++) {
                 let t1 = [...theirCol].sort(() => 0.5 - Math.random()).slice(0,4);
@@ -132,8 +150,8 @@ async function accepterCombat(req) {
 async function createBattleRoom(req, team1, team2) {
     const battleRef = db.collection('active_battles').doc();
     await battleRef.set({
-        p1: req.from, // Hôte (Celui qui a lancé le défi)
-        p2: state.currentUser, // Invité
+        p1: req.from, 
+        p2: state.currentUser, 
         team1: await formatTeam(team1), 
         team2: await formatTeam(team2),
         active1: 0, active2: 0,
@@ -142,9 +160,7 @@ async function createBattleRoom(req, team1, team2) {
         status: 'playing', mode: req.type, winner: null
     });
 
-    // On prévient l'Hôte que le combat a commencé
     await db.collection('users').doc(req.from).update({ activeBattle: battleRef.id });
-    // On met à jour l'Invité et on efface la requête
     await db.collection('users').doc(state.currentUser).update({ 
         activeBattle: battleRef.id,
         battleRequests: state.currentUserData.battleRequests.filter(r => r.id !== req.id)
@@ -172,7 +188,7 @@ async function formatTeam(rawTeam) {
     }));
 }
 
-// ---------- SELECTION AMICALE ----------
+// ---------- SÉLECTION AMICALE ----------
 
 function openFriendlyTeamSelector(friendId) {
     document.getElementById('pvp-challenge-modal').classList.add('hidden');
@@ -197,6 +213,8 @@ function openFriendlyTeamSelector(friendId) {
 }
 
 function openAcceptFriendlyTeamSelector(req, myCol, enemyTeam) {
+    allerASection('section-combats');
+    document.getElementById('pvp-menus').classList.add('hidden');
     document.getElementById('pvp-team-selection').classList.remove('hidden');
     document.getElementById('pvp-selection-title').textContent = "Défendez-vous ! Choisissez 4 Pokémon";
     
@@ -247,7 +265,6 @@ function renderTeamSelectionGrid(selectedArray, onSelectCallback) {
     onSelectCallback();
 }
 
-
 // =========================================================================
 // 2. MOTEUR SYNCHRONE (EN COMBAT)
 // =========================================================================
@@ -259,7 +276,6 @@ function joinRealTimeBattle(battleId) {
     document.getElementById('pvp-menus').classList.add('hidden');
     document.getElementById('pvp-battle-arena').classList.remove('hidden');
 
-    // On écoute la "Salle" en temps réel
     unsubscribeBattle = db.collection('active_battles').doc(battleId).onSnapshot(doc => {
         if (!doc.exists) return;
         const data = doc.data();
@@ -267,18 +283,17 @@ function joinRealTimeBattle(battleId) {
         myRole = (data.p1 === state.currentUser) ? 'p1' : 'p2';
         renderSynchronousUI(data);
 
-        // LE CŒUR DU JEU : Si je suis l'Hôte (p1) et que les DEUX joueurs ont choisi, je calcule le tour
+        // Hôte (p1) résout le tour si les deux ont agi
         if (myRole === 'p1' && data.action1 && data.action2 && data.status === 'playing') {
             resolveSynchronousTurn(data, doc.ref);
         }
 
-        // Fin de match
         if (data.status === 'finished') {
             endRealTimeBattle(data);
         }
     });
 
-    document.getElementById('btn-pvp-switch').onclick = () => openSynchronousSwitchMenu();
+    document.getElementById('btn-pvp-switch').onclick = () => openSynchronousSwitchMenu(false);
     document.getElementById('btn-pvp-surrender').onclick = () => surrenderBattle();
 }
 
@@ -291,7 +306,6 @@ function renderSynchronousUI(data) {
     let pActive = myTeam[myActiveIdx];
     let eActive = enemyTeam[enemyActiveIdx];
 
-    // Joueur
     // Joueur
     document.getElementById('pvp-player-name').textContent = pActive.data.fr;
     document.getElementById('pvp-player-lvl').textContent = `Niv. ${pActive.level || 1}`;
@@ -312,34 +326,47 @@ function renderSynchronousUI(data) {
 
     // Logs
     const logBox = document.getElementById('pvp-battle-log');
-    logBox.innerHTML = data.log.slice(-10).join('<br>'); // Affiche les 10 dernières actions
+    logBox.innerHTML = data.log.slice(-10).join('<br>'); 
     logBox.scrollTop = logBox.scrollHeight;
 
-    // Gestion des boutons (On cache si on a déjà joué)
-    let myAction = myRole === 'p1' ? data.action1 : data.action2;
-    
-    if (myAction || data.status !== 'playing') {
+    // Gestion des actions (La correction du Bug "Taper en Boucle" se trouve ici)
+    if (data.status === 'playing') {
+        let myAction = myRole === 'p1' ? data.action1 : data.action2;
+        let iAmDead = pActive.currentHp <= 0;
+        let enemyIsDead = eActive.currentHp <= 0;
+
+        if (myAction) {
+            // Action déjà choisie
+            document.getElementById('pvp-action-wrapper').classList.add('hidden');
+            document.getElementById('pvp-waiting-action').classList.remove('hidden');
+        } else {
+            if (iAmDead) {
+                // Forcer le Remplacement (Ne coute pas un tour à l'adversaire)
+                document.getElementById('pvp-action-wrapper').classList.add('hidden');
+                document.getElementById('pvp-waiting-action').classList.add('hidden');
+                openSynchronousSwitchMenu(true);
+            } else if (enemyIsDead) {
+                // Mon adversaire est mort, j'attends qu'il remplace
+                submitAction({ type: 'wait' });
+            } else {
+                // Tour normal de combat
+                document.getElementById('pvp-waiting-action').classList.add('hidden');
+                document.getElementById('pvp-action-wrapper').classList.remove('hidden');
+                
+                const container = document.getElementById('pvp-moves-container');
+                container.innerHTML = "";
+                pActive.moves.forEach(move => {
+                    const btn = document.createElement('button');
+                    btn.className = `move-btn type-${move.type}`;
+                    btn.innerHTML = `<span class="move-name">${move.nameFr}</span><span style="font-size:0.7rem; font-weight:normal;">POW ${move.power || "-"}</span>`;
+                    btn.onclick = () => submitAction({ type: 'move', move: move });
+                    container.appendChild(btn);
+                });
+            }
+        }
+    } else {
         document.getElementById('pvp-action-wrapper').classList.add('hidden');
         document.getElementById('pvp-waiting-action').classList.remove('hidden');
-    } else {
-        document.getElementById('pvp-waiting-action').classList.add('hidden');
-        document.getElementById('pvp-action-wrapper').classList.remove('hidden');
-        
-        // S'il est mort, on le force à Switch (on cache les attaques)
-        if (pActive.currentHp <= 0) {
-            document.getElementById('pvp-moves-container').classList.add('hidden');
-        } else {
-            document.getElementById('pvp-moves-container').classList.remove('hidden');
-            const container = document.getElementById('pvp-moves-container');
-            container.innerHTML = "";
-            pActive.moves.forEach(move => {
-                const btn = document.createElement('button');
-                btn.className = `move-btn type-${move.type}`;
-                btn.innerHTML = `<span class="move-name">${move.nameFr}</span><span style="font-size:0.7rem; font-weight:normal;">POW ${move.power || "-"}</span>`;
-                btn.onclick = () => submitAction({ type: 'move', move: move });
-                container.appendChild(btn);
-            });
-        }
     }
 }
 
@@ -353,27 +380,31 @@ function submitAction(action) {
     });
 }
 
-function openSynchronousSwitchMenu() {
+function openSynchronousSwitchMenu(forced = false) {
     document.getElementById('pvp-action-wrapper').classList.add('hidden');
     document.getElementById('pvp-team-selection').classList.remove('hidden');
     document.getElementById('pvp-selection-title').textContent = "Qui voulez-vous envoyer ?";
     document.getElementById('pvp-selection-counter').classList.add('hidden');
     document.getElementById('btn-confirm-pvp-team').classList.add('hidden');
     
-    db.collection('active_battles').doc(currentBattleId).get().then(doc => {
-        let data = doc.data();
-        let myTeam = myRole === 'p1' ? data.team1 : data.team2;
-        let myActiveIdx = myRole === 'p1' ? data.active1 : data.active2;
-        let isDead = myTeam[myActiveIdx].currentHp <= 0;
-
-        let btnCancel = document.getElementById('btn-cancel-pvp-team');
-        btnCancel.textContent = "Retour";
-        if(isDead) btnCancel.classList.add('hidden'); else btnCancel.classList.remove('hidden');
+    let btnCancel = document.getElementById('btn-cancel-pvp-team');
+    btnCancel.textContent = "Retour";
+    
+    if (forced) {
+        btnCancel.classList.add('hidden'); // On force le joueur à choisir
+    } else {
+        btnCancel.classList.remove('hidden');
         btnCancel.onclick = () => {
             document.getElementById('pvp-team-selection').classList.add('hidden');
             document.getElementById('pvp-action-wrapper').classList.remove('hidden');
         };
+    }
 
+    db.collection('active_battles').doc(currentBattleId).get().then(doc => {
+        let data = doc.data();
+        let myTeam = myRole === 'p1' ? data.team1 : data.team2;
+        let myActiveIdx = myRole === 'p1' ? data.active1 : data.active2;
+        
         const grid = document.getElementById('pvp-selection-grid');
         grid.innerHTML = "";
         
@@ -382,7 +413,7 @@ function openSynchronousSwitchMenu() {
             div.className = `mini-card`;
             div.style.backgroundImage = `url('${getCardImageUrl(carte)}')`;
             let hpBar = document.createElement('div');
-            hpBar.style.cssText = `position:absolute; bottom:0; left:0; right:0; height:10px; background:#333;`;
+            hpBar.style.cssText = `position:absolute; bottom:0; left:0; right:0; height:10px; background:#333; border-top:1px solid #000;`;
             let ratio = carte.currentHp / carte.maxHp;
             hpBar.innerHTML = `<div style="height:100%; width:${ratio*100}%; background:${ratio > 0.5 ? '#2ecc71' : '#e74c3c'};"></div>`;
             div.appendChild(hpBar);
@@ -392,7 +423,8 @@ function openSynchronousSwitchMenu() {
             } else {
                 div.onclick = () => {
                     document.getElementById('pvp-team-selection').classList.add('hidden');
-                    submitAction({ type: 'switch', index: index });
+                    // Si forced, c'est un Remplacement Gratuit (force_switch)
+                    submitAction({ type: forced ? 'force_switch' : 'switch', index: index });
                 };
             }
             grid.appendChild(div);
@@ -404,7 +436,7 @@ function surrenderBattle() {
     if(confirm("Voulez-vous vraiment abandonner ce combat ?")) {
         db.collection('active_battles').doc(currentBattleId).update({
             status: 'finished',
-            winner: myRole === 'p1' ? 'p2' : 'p1', // L'autre gagne
+            winner: myRole === 'p1' ? 'p2' : 'p1', 
             log: firebase.firestore.FieldValue.arrayUnion(`<b style="color:#e74c3c;">Un joueur a abandonné le combat !</b>`)
         });
     }
@@ -418,35 +450,49 @@ async function resolveSynchronousTurn(data, battleRef) {
     let t1 = data.team1; let t2 = data.team2;
     let a1 = data.action1; let a2 = data.action2;
     let active1 = data.active1; let active2 = data.active2;
-    let turnLogs = ["<hr>"]; // Séparateur visuel de tour
+    let turnLogs = ["<hr>"];
 
     let p1 = t1[active1]; let p2 = t2[active2];
 
-    // 1. GESTION DES SWITCHS PRIORITAIRES
-    if (a1.type === 'switch') { active1 = a1.index; p1 = t1[active1]; turnLogs.push(`Joueur 1 envoie <b>${p1.data.fr}</b> !`); }
-    if (a2.type === 'switch') { active2 = a2.index; p2 = t2[active2]; turnLogs.push(`Joueur 2 envoie <b>${p2.data.fr}</b> !`); }
+    // Vérifie s'il s'agit d'un tour de "Remplacement K.O."
+    let isReplacementTurn = (a1.type === 'force_switch' || a2.type === 'force_switch' || a1.type === 'wait' || a2.type === 'wait');
 
-    // 2. EXÉCUTION DES ATTAQUES
-    let move1 = a1.type === 'move' ? a1.move : null;
-    let move2 = a2.type === 'move' ? a2.move : null;
-
-    if (move1 && move2) {
-        let p1Speed = p1.stats.speed; let p2Speed = p2.stats.speed;
-        let p1GoesFirst = p1Speed >= p2Speed;
-        if (p1Speed === p2Speed) p1GoesFirst = Math.random() > 0.5;
-
-        if (p1GoesFirst) {
-            evalMove(p1, p2, move1, turnLogs);
-            if (p2.currentHp > 0 && p1.currentHp > 0) evalMove(p2, p1, move2, turnLogs);
-        } else {
-            evalMove(p2, p1, move2, turnLogs);
-            if (p1.currentHp > 0 && p2.currentHp > 0) evalMove(p1, p2, move1, turnLogs);
+    if (isReplacementTurn) {
+        if (a1.type === 'force_switch') {
+            active1 = a1.index;
+            turnLogs.push(`Le Joueur 1 envoie <b>${t1[active1].data.fr}</b> !`);
         }
-    } 
-    else if (move1 && p1.currentHp > 0) evalMove(p1, p2, move1, turnLogs);
-    else if (move2 && p2.currentHp > 0) evalMove(p2, p1, move2, turnLogs);
+        if (a2.type === 'force_switch') {
+            active2 = a2.index;
+            turnLogs.push(`Le Joueur 2 envoie <b>${t2[active2].data.fr}</b> !`);
+        }
+        // PAS d'attaques durant le tour de Remplacement
+    } else {
+        // Tour Normal
+        if (a1.type === 'switch') { active1 = a1.index; p1 = t1[active1]; turnLogs.push(`Joueur 1 envoie <b>${p1.data.fr}</b> !`); }
+        if (a2.type === 'switch') { active2 = a2.index; p2 = t2[active2]; turnLogs.push(`Joueur 2 envoie <b>${p2.data.fr}</b> !`); }
 
-    // 3. VÉRIFICATION DES MORTS & FIN DE MATCH
+        let move1 = a1.type === 'move' ? a1.move : null;
+        let move2 = a2.type === 'move' ? a2.move : null;
+
+        if (move1 && move2) {
+            let p1Speed = p1.stats.speed; let p2Speed = p2.stats.speed;
+            let p1GoesFirst = p1Speed >= p2Speed;
+            if (p1Speed === p2Speed) p1GoesFirst = Math.random() > 0.5;
+
+            if (p1GoesFirst) {
+                evalMove(p1, p2, move1, turnLogs);
+                if (p2.currentHp > 0 && p1.currentHp > 0) evalMove(p2, p1, move2, turnLogs);
+            } else {
+                evalMove(p2, p1, move2, turnLogs);
+                if (p1.currentHp > 0 && p2.currentHp > 0) evalMove(p1, p2, move1, turnLogs);
+            }
+        } 
+        else if (move1 && p1.currentHp > 0) evalMove(p1, p2, move1, turnLogs);
+        else if (move2 && p2.currentHp > 0) evalMove(p2, p1, move2, turnLogs);
+    }
+
+    // Vérification des Morts et de la Fin du Jeu
     let p1Alive = t1.some(p => p.currentHp > 0);
     let p2Alive = t2.some(p => p.currentHp > 0);
     let status = 'playing';
@@ -456,7 +502,7 @@ async function resolveSynchronousTurn(data, battleRef) {
     else if (!p1Alive) { status = 'finished'; winner = 'p2'; turnLogs.push(`<b>Le Joueur 2 gagne le combat !</b>`); }
     else if (!p2Alive) { status = 'finished'; winner = 'p1'; turnLogs.push(`<b>Le Joueur 1 gagne le combat !</b>`); }
 
-    // On Sauvegarde le tout sur Firebase (Ce qui déclenchera l'UI des 2 joueurs)
+    // Enregistrement Firebase (Déclenche instantanément l'UI des 2 joueurs)
     await battleRef.update({
         team1: t1, team2: t2,
         active1: active1, active2: active2,
@@ -479,7 +525,7 @@ function evalMove(atk, def, move, logs) {
     let isCrit = Math.random() < 0.0625;
     let dmg = Math.floor(baseDmg * stab * mult * (Math.random() * (1 - 0.85) + 0.85) * (isCrit ? 1.5 : 1));
     
-    if (move.power == 0 || !move.power) dmg = 0; // Attaques de statut
+    if (move.power == 0 || !move.power) dmg = 0; 
     if (mult === 0) dmg = 0; else dmg = Math.max(1, dmg);
 
     def.currentHp -= dmg;
@@ -505,7 +551,6 @@ async function endRealTimeBattle(data) {
         logMessage(`<b style="color:#e74c3c; font-size:1.2rem;">DÉFAITE...</b>`);
     }
 
-    // Récompense si Classé et Gagné
     if (isWin && data.mode === 'ranked') {
         logMessage(`<span style="color:#f1c40f">🎁 Vous remportez un Booster Spécial (Shiny x3) !</span>`);
         await db.collection('users').doc(state.currentUser).update({
@@ -513,7 +558,6 @@ async function endRealTimeBattle(data) {
         });
     }
 
-    // Historique
     let oppId = myRole === 'p1' ? data.p2 : data.p1;
     let record = {
         player1: oppId, player2: state.currentUser,
@@ -536,13 +580,4 @@ async function endRealTimeBattle(data) {
         document.getElementById('pvp-menus').classList.remove('hidden');
         renderBattleUI();
     }, 5000);
-}
-
-function updateBarColor(id, hp, maxHp) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const ratio = hp / maxHp;
-    if (ratio > 0.5) el.style.backgroundColor = "#2ecc71";
-    else if (ratio > 0.2) el.style.backgroundColor = "#f39c12";
-    else el.style.backgroundColor = "#e74c3c";
 }
