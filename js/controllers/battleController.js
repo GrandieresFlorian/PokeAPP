@@ -72,6 +72,52 @@ export function proposerCombat(friendId) {
     document.getElementById('btn-cancel-challenge').onclick = () => document.getElementById('pvp-challenge-modal').classList.add('hidden');
 }
 
+export function renderBattleUI() {
+    const requestsList = document.getElementById('combat-requests-list');
+    const historyList = document.getElementById('combat-history-list');
+    if (!requestsList || !historyList) return;
+
+    requestsList.innerHTML = ""; historyList.innerHTML = "";
+
+    const requests = state.currentUserData.battleRequests || [];
+    if (requests.length === 0) {
+        requestsList.innerHTML = `<li class="friend-item" style="color: #777;">Aucun défi en attente.</li>`;
+    } else {
+        requests.forEach(req => {
+            const li = document.createElement('li');
+            li.className = "friend-item";
+            li.innerHTML = `<span>${req.from} <b style="color:${req.type==='ranked'?'#f39c12':'#3498db'}">(${req.type === 'ranked' ? 'Classé' : 'Amical'})</b></span>
+                <div><button class="btn-small-action btn-accept">✔️</button><button class="btn-small-action btn-reject">❌</button></div>`;
+            
+            li.querySelector('.btn-accept').addEventListener('click', () => accepterCombat(req));
+            li.querySelector('.btn-reject').addEventListener('click', async () => {
+                let r = state.currentUserData.battleRequests.filter(x => x.id !== req.id);
+                await db.collection('users').doc(state.currentUser).update({ battleRequests: r });
+            });
+            requestsList.appendChild(li);
+        });
+    }
+
+    const history = state.currentUserData.battleHistory || [];
+    if (history.length === 0) {
+        historyList.innerHTML = `<li class="friend-item" style="color: #777;">Aucun historique.</li>`;
+    } else {
+        history.slice().reverse().forEach(bat => {
+            const li = document.createElement('li');
+            li.className = "friend-item";
+            let color = bat.winner === state.currentUser ? '#2ecc71' : '#e74c3c';
+            li.innerHTML = `<div style="display:flex; flex-direction:column; gap:5px; width:100%;">
+                    <div style="display:flex; justify-content:space-between;">
+                        <span><b>${bat.player1}</b> vs <b>${bat.player2}</b> <span style="font-size:0.7rem;">(${bat.mode})</span></span>
+                        <span style="color:${color}; font-weight:bold;">${bat.winner === state.currentUser ? 'Victoire 🏆' : 'Défaite 💀'}</span>
+                    </div>
+                    <span style="font-size:0.8rem; color:#aaa;">${new Date(bat.timestamp).toLocaleString()}</span>
+                </div>`;
+            historyList.appendChild(li);
+        });
+    }
+}
+
 async function sendChallenge(friendId, mode, team = null) {
     document.getElementById('pvp-challenge-modal').classList.add('hidden');
     document.getElementById('pvp-team-selection').classList.add('hidden');
