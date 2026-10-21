@@ -13,7 +13,7 @@ import {
 import { calcStats, getEffectiveStat, checkMoveHit, calculateDamage } from '../battleEngine.js';
 
 let skillsDB = {};
-fetch('./data/skill.json').then(r => r.json()).then(d => skillsDB = d).catch(() => console.log("skill.json introuvable"));
+fetch('skill.json').then(r => r.json()).then(d => skillsDB = d).catch(() => console.log("skill.json introuvable"));
 
 // --- NOUVELLES MÉCANIQUES ---
 const PROTECT_MOVES_LIST = ["protect", "detect"];
