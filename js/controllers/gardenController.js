@@ -7,6 +7,7 @@ let mutationTick = 0;
 let activeTool = null; // null, { type: 'seed', id: 'ceriz' }, { type: 'trowel' }
 let isDragging = false;
 let lastProcessedIndex = null;
+let currentFilter = ""; // Sauvegarde la recherche en cours
 
 export function initGarden() {
     document.getElementById('nav-jardin').addEventListener('click', () => {
@@ -79,8 +80,12 @@ export function initGarden() {
         const index = parseInt(target.dataset.index);
         const id = target.dataset.id;
         
-        if(action === 'sell') {
-            const qty = parseInt(target.dataset.qty);
+        // --- NOUVELLE LOGIQUE DE VENTE ---
+        if(action === 'sell_input') {
+            const maxQty = parseInt(target.dataset.max);
+            let qty = parseInt(document.getElementById(`sell-qty-${id}`).value);
+            if (isNaN(qty) || qty < 1) qty = 1;
+            if (qty > maxQty) qty = maxQty;
             sellBerry(id, qty);
         } else if (action === 'unlock') {
             unlockPlot(index);
@@ -124,8 +129,32 @@ function showDefaultTools() {
     document.getElementById('garden-action-title').textContent = "Outils & Graines";
     const content = document.getElementById('garden-action-content');
     
-    let html = '<div style="max-height: 350px; overflow-y: auto; padding-right:5px;">';
+    // Création de l'interface (Recherche + Conteneur Liste) uniquement si elle n'existe pas
+    if (!document.getElementById('garden-search')) {
+        content.innerHTML = `
+            <input type="text" id="garden-search" placeholder="🔍 Rechercher une baie..." style="width:100%; padding:8px; margin-bottom:10px; border-radius:5px; border:1px solid #444; background:#1a1a1a; color:white; box-sizing:border-box;">
+            <div id="tools-list-container" style="max-height: 300px; overflow-y: auto; padding-right:5px;"></div>
+            <div id="tools-footer"></div>
+        `;
+        document.getElementById('garden-search').addEventListener('input', (e) => {
+            currentFilter = e.target.value;
+            renderToolsList();
+        });
+    }
     
+    // Restaurer la valeur du champ de recherche
+    const searchInput = document.getElementById('garden-search');
+    if (searchInput && currentFilter) searchInput.value = currentFilter;
+
+    renderToolsList();
+}
+
+function renderToolsList() {
+    const container = document.getElementById('tools-list-container');
+    const footer = document.getElementById('tools-footer');
+    if (!container) return;
+
+    let html = '';
     const isTrowelActive = activeTool && activeTool.type === 'trowel';
     html += `
         <div style="display:flex; justify-content:space-between; align-items:center; background:#1a1a1a; padding:10px; border-radius:5px; margin-bottom:15px; cursor:pointer; border:2px solid ${isTrowelActive ? '#2ecc71' : '#444'};" data-action="select_trowel">
@@ -141,14 +170,20 @@ function showDefaultTools() {
     const baiesMap = {};
     mesBaies.forEach(b => { baiesMap[b.id] = (baiesMap[b.id] || 0) + 1; });
 
-    if (Object.keys(baiesMap).length === 0) {
-        html += '<p style="color:#777;">Aucune baie en inventaire.</p>';
-    }
-
+    let countVisible = 0;
     Object.keys(baiesMap).forEach(id => {
         const qty = baiesMap[id];
         const baieDef = TOUTES_LES_BAIES.find(b => b.id === id);
         if(!baieDef) return;
+        
+        let nameEn = baieDef.en;
+        let nameFr = baieDef.fr;
+        let currentName = state.currentLang === 'en' ? nameEn : nameFr;
+        
+        // Appliquer la recherche (Filtre)
+        if (currentFilter && !currentName.toLowerCase().includes(currentFilter.toLowerCase())) return;
+        countVisible++;
+
         const conf = state.berryConfig[id] || state.berryConfig.default;
         const enNameImg = baieDef.en.toLowerCase().replace(/\s+/g, '-');
         const imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${enNameImg}.png`;
@@ -156,10 +191,6 @@ function showDefaultTools() {
         let timeStr = conf.growTime >= 3600000 
             ? `${Math.round(conf.growTime / 3600000)}h` 
             : `${Math.round(conf.growTime / 60000)}m`;
-
-        let nameEn = baieDef.en;
-        let nameFr = baieDef.fr;
-        let currentName = state.currentLang === 'en' ? nameEn : nameFr;
 
         const isSeedActive = activeTool && activeTool.type === 'seed' && activeTool.id === id;
 
@@ -175,15 +206,15 @@ function showDefaultTools() {
             </div>
         `;
     });
-    html += '</div>';
+    
+    if (countVisible === 0) html += '<p style="color:#777;">Aucune baie correspondante.</p>';
+    container.innerHTML = html;
     
     if (activeTool) {
-        html += `<button class="btn btn-secondary" style="width:100%; margin-top:15px; background:#e74c3c;" data-action="deselect_tool">Désélectionner (Mode Clic & Inspecter)</button>`;
+        footer.innerHTML = `<button class="btn btn-secondary" style="width:100%; margin-top:15px; background:#e74c3c;" data-action="deselect_tool">Désélectionner (Mode Clic & Inspecter)</button>`;
     } else {
-        html += `<p style="color:#777; font-size:0.85rem; margin-top:15px;">Sélectionnez une graine ou la truelle, puis glissez/maintenez sur la serre.</p>`;
+        footer.innerHTML = `<p style="color:#777; font-size:0.85rem; margin-top:15px;">Sélectionnez une graine ou la truelle, puis glissez/maintenez sur la serre.</p>`;
     }
-    
-    content.innerHTML = html;
 }
 
 function plantSelectedSeed(index, berryId) {
@@ -221,7 +252,7 @@ function openSellMenu() {
     const baiesMap = {};
     mesBaies.forEach(b => { baiesMap[b.id] = (baiesMap[b.id] || 0) + 1; });
 
-    if (mesBaies.length === 0) {
+    if (Object.keys(baiesMap).length === 0) {
         html += '<p style="color:#777;">Vous n\'avez aucune baie à vendre.</p>';
     }
 
@@ -237,12 +268,12 @@ function openSellMenu() {
             <div style="display:flex; justify-content:space-between; align-items:center; background:#1a1a1a; padding:10px; border-radius:5px; margin-bottom:5px; border:1px solid #444;">
                 <div style="display:flex; align-items:center; gap:5px;">
                     <img src="${imgUrl}" style="width:30px; height:30px; image-rendering:pixelated;">
-                    <span style="color:white; font-size:0.9rem;">(x${qty})</span>
+                    <span style="color:white; font-size:0.9rem;">(Max: ${qty})</span>
                 </div>
                 <div style="display:flex; align-items:center;">
-                    <span style="color:#f1c40f; font-weight:bold; margin-right:10px; font-size:0.9rem;">+${conf.sellPrice}💰</span>
-                    <button class="btn-small-action" style="background:#3498db; padding:4px 8px; margin-right:4px;" data-action="sell" data-id="${id}" data-qty="1">1</button>
-                    <button class="btn-small-action" style="background:#e74c3c; padding:4px 8px;" data-action="sell" data-id="${id}" data-qty="${qty}">Max</button>
+                    <span style="color:#f1c40f; font-weight:bold; margin-right:10px; font-size:0.9rem;">+${conf.sellPrice}💰/u</span>
+                    <input type="number" id="sell-qty-${id}" min="1" max="${qty}" value="1" style="width:40px; padding:4px; margin-right:5px; border-radius:3px; border:1px solid #444; background:#333; color:white; text-align:center;">
+                    <button class="btn-small-action" style="background:#2ecc71; padding:4px 8px;" data-action="sell_input" data-id="${id}" data-max="${qty}">Vendre</button>
                 </div>
             </div>
         `;
@@ -547,8 +578,6 @@ function harvestPlot(index) {
     saveGardenData();
     renderGardenGrid();
     
-    // Si on ramasse "manuellement" via l'inspecteur, on affiche un message. 
-    // Sinon, la truelle amasse silencieusement et rafraîchit l'inventaire des Outils.
     if (!activeTool) {
         let nameEn = baieDef.en;
         let nameFr = baieDef.fr;
@@ -600,10 +629,15 @@ function sellBerry(id, qty) {
     openSellMenu();
 }
 
+// --- OPTIMISATION (DEBOUNCE) DE LA SAUVEGARDE SUR FIREBASE ---
+let saveTimeout = null;
 function saveGardenData() {
-    db.collection('users').doc(state.currentUser).update({
-        garden: state.currentUserData.garden,
-        berries: state.currentUserData.berries,
-        pokeBerrys: state.currentUserData.pokeBerrys
-    }).catch(err => console.error(err));
+    if (saveTimeout) clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => {
+        db.collection('users').doc(state.currentUser).update({
+            garden: state.currentUserData.garden,
+            berries: state.currentUserData.berries,
+            pokeBerrys: state.currentUserData.pokeBerrys
+        }).catch(err => console.error(err));
+    }, 1000); // Effectue la requête 1 seconde après la fin de l'interaction (swipe)
 }

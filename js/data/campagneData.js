@@ -19,6 +19,7 @@ export const ELECTRO_BALL_MOVES = ["electro-ball"];
 export const RAMPAGE_MOVES = ["outrage", "thrash", "petal-dance"];
 export const ROLLOUT_MOVES = ["rollout", "ice-ball"];
 export const WISH_MOVES = ["wish"];
+export const SURE_HIT_MOVES = ["swift", "magical-leaf", "aerial-ace", "feint-attack", "shock-wave", "shadow-punch", "vital-throw", "aura-sphere"];
 export const POWDER_MOVES = ["spore", "stun-spore", "poison-powder", "sleep-powder", "cotton-spore", "magic-powder"];
 
 // --- CARTE ET ZONES ---
@@ -86,6 +87,8 @@ export const STATUS_CONDITIONS = {
     "flatter": { status: "CNF", chance: 100, stat: "spatk", stage: 1 }
 };
 
+
+
 export const SECONDARY_STATUS = {
     "flamethrower": { status: "BRN", chance: 10 },
     "fire-blast": { status: "BRN", chance: 10 },
@@ -129,29 +132,49 @@ export const SECONDARY_EFFECTS = {
 
 // --- DICTIONNAIRE MULTI-STATS ---
 export const STATUS_MOVES = {
-    "growl": { effects: [{stat: "atk", stage: -1}], target: "enemy", fr: "l'Attaque", en: "Attack" },
-    "tail-whip": { effects: [{stat: "def", stage: -1}], target: "enemy", fr: "la Défense", en: "Defense" },
-    "leer": { effects: [{stat: "def", stage: -1}], target: "enemy", fr: "la Défense", en: "Defense" },
-    "string-shot": { effects: [{stat: "speed", stage: -1}], target: "enemy", fr: "la Vitesse", en: "Speed" },
-    "sand-attack": { effects: [{stat: "speed", stage: -1}], target: "enemy", fr: "la Précision", en: "Accuracy" },
-    "screech": { effects: [{stat: "def", stage: -2}], target: "enemy", fr: "la Défense", en: "Defense" },
-    "charm": { effects: [{stat: "atk", stage: -2}], target: "enemy", fr: "l'Attaque", en: "Attack" },
-    "scary-face": { effects: [{stat: "speed", stage: -2}], target: "enemy", fr: "la Vitesse", en: "Speed" },
-    "swords-dance": { effects: [{stat: "atk", stage: 2}], target: "self", fr: "l'Attaque", en: "Attack" },
-    "harden": { effects: [{stat: "def", stage: 1}], target: "self", fr: "la Défense", en: "Defense" },
-    "withdraw": { effects: [{stat: "def", stage: 1}], target: "self", fr: "la Défense", en: "Defense" },
-    "defense-curl": { effects: [{stat: "def", stage: 1}], target: "self", fr: "la Défense", en: "Defense" },
-    "amnesia": { effects: [{stat: "spdef", stage: 2}], target: "self", fr: "la Déf. Spé", en: "Sp. Def" },
-    "agility": { effects: [{stat: "speed", stage: 2}], target: "self", fr: "la Vitesse", en: "Speed" },
-    "iron-defense": { effects: [{stat: "def", stage: 2}], target: "self", fr: "la Défense", en: "Defense" },
-    "acid-armor": { effects: [{stat: "def", stage: 2}], target: "self", fr: "la Défense", en: "Defense" },
-    "barrier": { effects: [{stat: "def", stage: 2}], target: "self", fr: "la Défense", en: "Defense" },
-    "howl": { effects: [{stat: "atk", stage: 1}], target: "self", fr: "l'Attaque", en: "Attack" },
-    "bulk-up": { effects: [{stat: "atk", stage: 1}, {stat: "def", stage: 1}], target: "self", fr: "l'Att. et la Déf.", en: "Attack and Defense" },
-    "calm-mind": { effects: [{stat: "spatk", stage: 1}, {stat: "spdef", stage: 1}], target: "self", fr: "l'Att. Spé et Déf. Spé", en: "Sp. Atk and Sp. Def" },
-    "dragon-dance": { effects: [{stat: "atk", stage: 1}, {stat: "speed", stage: 1}], target: "self", fr: "l'Att. et la Vitesse", en: "Attack and Speed" },
-    "nasty-plot": { effects: [{stat: "spatk", stage: 2}], target: "self", fr: "l'Att. Spé", en: "Sp. Atk" },
-    "tail-glow": { effects: [{stat: "spatk", stage: 3}], target: "self", fr: "l'Att. Spé", en: "Sp. Atk" },
+    // --- BAISSES DE STATS ADVERSES (Malus) ---
+    "tickle": { target: "enemy", effects: [{ stat: "atk", stage: -1 }, { stat: "def", stage: -1 }] }, // Chatouille
+    "fake-tears": { target: "enemy", effects: [{ stat: "spdef", stage: -2 }] }, // Croco Larmes
+    "metal-sound": { target: "enemy", effects: [{ stat: "spdef", stage: -2 }] }, // Strido-Son
+    "screech": { target: "enemy", effects: [{ stat: "def", stage: -2 }] }, // Grincement
+    "charm": { target: "enemy", effects: [{ stat: "atk", stage: -2 }] }, // Charme
+    "feather-dance": { target: "enemy", effects: [{ stat: "atk", stage: -2 }] }, // Danse-Plumes
+    "scary-face": { target: "enemy", effects: [{ stat: "speed", stage: -2 }] }, // Grimace
+    "cotton-spore": { target: "enemy", effects: [{ stat: "speed", stage: -2 }] }, // Spore Coton
+    "string-shot": { target: "enemy", effects: [{ stat: "speed", stage: -2 }] }, // Sécrétion
+    "growl": { target: "enemy", effects: [{ stat: "atk", stage: -1 }] }, // Rugissement
+    "tail-whip": { target: "enemy", effects: [{ stat: "def", stage: -1 }] }, // Mimi-Queue
+    "leer": { target: "enemy", effects: [{ stat: "def", stage: -1 }] }, // Groz'Yeux
+    "sweet-scent": { target: "enemy", effects: [{ stat: "evasion", stage: -1 }] }, // Doux Parfum
+    "baby-doll-eyes": { target: "enemy", effects: [{ stat: "atk", stage: -1 }] }, // Regard Touchant
+    "eerie-impulse": { target: "enemy", effects: [{ stat: "spatk", stage: -2 }] }, // Ondes Étranges
+    "captivate": { target: "enemy", effects: [{ stat: "spatk", stage: -2 }] }, // Séduction
+
+    // --- HAUSSES DE STATS LANCEUR (Buffs) ---
+    "swords-dance": { target: "self", effects: [{ stat: "atk", stage: 2 }] }, // Danse Lames
+    "nasty-plot": { target: "self", effects: [{ stat: "spatk", stage: 2 }] }, // Machination
+    "iron-defense": { target: "self", effects: [{ stat: "def", stage: 2 }] }, // Mur de Fer
+    "amnesia": { target: "self", effects: [{ stat: "spdef", stage: 2 }] }, // Amnésie
+    "agility": { target: "self", effects: [{ stat: "speed", stage: 2 }] }, // Hâte
+    "rock-polish": { target: "self", effects: [{ stat: "speed", stage: 2 }] }, // Poliroche
+    "calm-mind": { target: "self", effects: [{ stat: "spatk", stage: 1 }, { stat: "spdef", stage: 1 }] }, // Plénitude
+    "bulk-up": { target: "self", effects: [{ stat: "atk", stage: 1 }, { stat: "def", stage: 1 }] }, // Gonflette
+    "dragon-dance": { target: "self", effects: [{ stat: "atk", stage: 1 }, { stat: "speed", stage: 1 }] }, // Danse Draco
+    "quiver-dance": { target: "self", effects: [{ stat: "spatk", stage: 1 }, { stat: "spdef", stage: 1 }, { stat: "speed", stage: 1 }] }, // Papillodanse
+    "shell-smash": { target: "self", effects: [{ stat: "atk", stage: 2 }, { stat: "spatk", stage: 2 }, { stat: "speed", stage: 2 }, { stat: "def", stage: -1 }, { stat: "spdef", stage: -1 }] }, // Exuviation
+    "work-up": { target: "self", effects: [{ stat: "atk", stage: 1 }, { stat: "spatk", stage: 1 }] }, // Rengorgement
+    "howl": { target: "self", effects: [{ stat: "atk", stage: 1 }] }, // Grondement
+    "tail-glow": { target: "self", effects: [{ stat: "spatk", stage: 3 }] }, // Lumiqueue
+    "cotton-guard": { target: "self", effects: [{ stat: "def", stage: 3 }] }, // Cotogarde
+    "defense-curl": { target: "self", effects: [{ stat: "def", stage: 1 }] }, // Boul'Armure
+    "harden": { target: "self", effects: [{ stat: "def", stage: 1 }] }, // Armure
+    "withdraw": { target: "self", effects: [{ stat: "def", stage: 1 }] }, // Repli
+    "meditate": { target: "self", effects: [{ stat: "atk", stage: 1 }] }, // Méditation
+    "sharpen": { target: "self", effects: [{ stat: "atk", stage: 1 }] }, // Affûtage
+    "acid-armor": { target: "self", effects: [{ stat: "def", stage: 2 }] }, // Acidarmure
+    "barrier": { target: "self", effects: [{ stat: "def", stage: 2 }] }, // Bouclier
+    "cosmic-power": { target: "self", effects: [{ stat: "def", stage: 1 }, { stat: "spdef", stage: 1 }] }, // Force Cosmique
+    "defend-order": { target: "self", effects: [{ stat: "def", stage: 1 }, { stat: "spdef", stage: 1 }] } // Appel Défense
 };
 
 export const STAT_NAMES = {

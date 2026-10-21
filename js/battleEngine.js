@@ -1,5 +1,5 @@
 import { getEffectiveness } from './utils.js';
-import { ABILITIES_DB, HIGH_CRIT_MOVES, FIXED_DAMAGE_MOVES, WEIGHT_MOVES, GYRO_BALL_MOVES, ELECTRO_BALL_MOVES, ROLLOUT_MOVES } from './data/campagneData.js';
+import { ABILITIES_DB, HIGH_CRIT_MOVES, FIXED_DAMAGE_MOVES, WEIGHT_MOVES, GYRO_BALL_MOVES, ELECTRO_BALL_MOVES, ROLLOUT_MOVES, SURE_HIT_MOVES } from './data/campagneData.js';
 
 // ==========================================
 // MOTEUR DE CALCUL UNIVERSEL DES COMBATS
@@ -45,11 +45,22 @@ export function getEffectiveStat(entity, statName, currentWeather = 'none') {
 
 // 3. Calcul de l'esquive et de la précision globale
 export function checkMoveHit(move, atkModifiers, defModifiers) {
-    let accStage = Math.max(-6, Math.min(6, (atkModifiers.accuracy || 0) - (defModifiers.evasion || 0)));
-    let accMult = accStage >= 0 ? (3 + accStage) / 3 : 3 / (3 - accStage);
-    let moveAcc = move.accuracy || 100;
+    // 1. Les attaques qui ne ratent jamais (Météores, Aéropique...)
+    if (SURE_HIT_MOVES && SURE_HIT_MOVES.includes(move.nameEn)) {
+        return true;
+    }
+
+    // 2. Calcul classique
+    let accuracy = move.accuracy;
+    if (!accuracy || accuracy === 100 && move.damageClass === "status") return true; 
     
-    return (Math.random() * 100) <= (moveAcc * accMult);
+    let stage = (atkModifiers.accuracy || 0) - (defModifiers.evasion || 0);
+    stage = Math.max(-6, Math.min(6, stage));
+    
+    let multiplier = stage >= 0 ? (3 + stage) / 3 : 3 / (3 - stage);
+    let finalChance = accuracy * multiplier;
+    
+    return (Math.random() * 100) <= finalChance;
 }
 
 // 4. Calcul des dégâts bruts

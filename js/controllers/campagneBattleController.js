@@ -953,7 +953,6 @@ export async function processTurn(playerMove) {
         }
     });
 
-    // Forcer l'IA à continuer l'attaque à charge
     if (currentEnemy.chargingMove) bestEnemyMove = currentEnemy.chargingMove;
     if (currentEnemy.rolloutCount > 0) {
         let rMove = currentEnemy.moves.find(m => ROLLOUT_MOVES.includes(m.nameEn));
@@ -983,19 +982,21 @@ export async function processTurn(playerMove) {
         let pResult = await executeMove(activeFighter, currentEnemy, playerMove, true);
         if (pResult && pResult.forceFlee) { fleeBattle(true); return; }
         
-        // --- PAUSE DE 400ms ---
         if (currentEnemy.battleStats.hp > 0 && activeFighter.battleStats.hp > 0) {
             await new Promise(r => setTimeout(r, 400));
-            await executeMove(currentEnemy, activeFighter, bestEnemyMove, false);
+            // CORRECTION ICI : On capture bien le résultat du deuxième coup
+            let eResult = await executeMove(currentEnemy, activeFighter, bestEnemyMove, false);
+            if (eResult && eResult.forceFlee) { fleeBattle(true); return; }
         }
     } else {
         let eResult = await executeMove(currentEnemy, activeFighter, bestEnemyMove, false);
         if (eResult && eResult.forceFlee) { fleeBattle(true); return; }
         
-        // --- PAUSE DE 400ms ---
         if (activeFighter.battleStats.hp > 0 && currentEnemy.battleStats.hp > 0) {
             await new Promise(r => setTimeout(r, 400));
-            await executeMove(activeFighter, currentEnemy, playerMove, true);
+            // CORRECTION ICI : On capture bien le résultat du deuxième coup
+            let pResult = await executeMove(activeFighter, currentEnemy, playerMove, true);
+            if (pResult && pResult.forceFlee) { fleeBattle(true); return; }
         }
     }
 
@@ -1039,7 +1040,7 @@ export async function processTurn(playerMove) {
         if (da.timer <= 0) {
             let targetEntity = da.target === 'p1' ? activeFighter : currentEnemy;
             if (targetEntity.battleStats.hp > 0) {
-                logMessage(`<b>L'attaque ${da.move.nameFr} frappe${targetEntity.data.fr} depuis le futur !</b>`);
+                logMessage(`<b>L'attaque ${da.move.nameFr} frappe ${targetEntity.data.fr} depuis le futur !</b>`);
                 let dmgInfo = calculateDamage({ level: 50, battleStats: {atk:100, spatk:100}, types:[] }, targetEntity, da.move, globalState.weather);
                 targetEntity.battleStats.hp -= dmgInfo.damage;
             }
