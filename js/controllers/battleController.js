@@ -351,6 +351,28 @@ async function formatTeam(rawTeam) {
     }));
 }
 
+// --- NOUVELLE FONCTION : Génère le menu déroulant de tri s'il n'existe pas ---
+function setupPvPSortDropdown() {
+    let sortContainer = document.getElementById('pvp-sort-container');
+    if (!sortContainer) {
+        sortContainer = document.createElement('div');
+        sortContainer.id = 'pvp-sort-container';
+        sortContainer.style.cssText = 'text-align: center; margin-bottom: 15px;';
+        sortContainer.innerHTML = `
+            <label style="color: white; margin-right: 10px; font-weight: bold;">Trier par :</label>
+            <select id="pvp-sort-select" style="padding: 5px 10px; border-radius: 5px; background: #2c3e50; color: white; border: 1px solid #34495e; font-size: 1rem; cursor: pointer;">
+                <option value="pokedex">Pokédex</option>
+                <option value="niveau">Niveau</option>
+                <option value="rarete">Rareté</option>
+                <option value="alphabetique">Alphabétique</option>
+            </select>
+        `;
+        // On insère le conteneur juste avant la grille
+        const grid = document.getElementById('pvp-selection-grid');
+        grid.parentNode.insertBefore(sortContainer, grid);
+    }
+}
+
 function openFriendlyTeamSelector(friendId) {
     document.getElementById('pvp-challenge-modal').classList.add('hidden');
     allerASection('section-combats');
@@ -358,12 +380,21 @@ function openFriendlyTeamSelector(friendId) {
     document.getElementById('pvp-team-selection').classList.remove('hidden');
     document.getElementById('pvp-selection-title').textContent = "Sélectionnez 4 Pokémon pour le combat";
     
+    setupPvPSortDropdown();
+
     let selected = [];
-    renderTeamSelectionGrid(selected, () => {
+    const renderCb = () => {
         let btn = document.getElementById('btn-confirm-pvp-team');
         if(selected.length === 4) { btn.classList.remove('hidden'); btn.onclick = () => sendChallenge(friendId, 'friendly', selected); } 
         else btn.classList.add('hidden');
-    });
+    };
+
+    // On écoute les changements du menu déroulant pour retrier en direct
+    document.getElementById('pvp-sort-select').onchange = () => {
+        renderTeamSelectionGrid(selected, renderCb);
+    };
+
+    renderTeamSelectionGrid(selected, renderCb);
 
     document.getElementById('btn-cancel-pvp-team').onclick = () => {
         document.getElementById('pvp-team-selection').classList.add('hidden');
@@ -377,12 +408,21 @@ function openAcceptFriendlyTeamSelector(req, myCol, enemyTeam) {
     document.getElementById('pvp-team-selection').classList.remove('hidden');
     document.getElementById('pvp-selection-title').textContent = "Défendez-vous ! Choisissez 4 Pokémon";
     
+    setupPvPSortDropdown();
+
     let selected = [];
-    renderTeamSelectionGrid(selected, () => {
+    const renderCb = () => {
         let btn = document.getElementById('btn-confirm-pvp-team');
         if(selected.length === 4) { btn.classList.remove('hidden'); btn.onclick = () => createBattleRoom(req, enemyTeam, selected); } 
         else btn.classList.add('hidden');
-    });
+    };
+    
+    // On écoute les changements du menu déroulant pour retrier en direct
+    document.getElementById('pvp-sort-select').onchange = () => {
+        renderTeamSelectionGrid(selected, renderCb);
+    };
+
+    renderTeamSelectionGrid(selected, renderCb);
 
     document.getElementById('btn-cancel-pvp-team').onclick = () => {
         document.getElementById('pvp-team-selection').classList.add('hidden');
@@ -397,16 +437,13 @@ function renderTeamSelectionGrid(selectedArray, onSelectCallback) {
     
     let rawCollection = (state.currentUserData.collection || []).filter(c => !c.isBaie);
     
-    // --- DÉDUPLICATION DES POKÉMON ---
+    // --- 1. DÉDUPLICATION DES POKÉMON (Garder le plus haut niveau) ---
     let uniqueMap = {};
     rawCollection.forEach(c => {
-        // On crée une clé unique pour chaque variante (ex: 25_normal_shiny, ou 6_mega-x_normal)
         let key = `${c.pokedexNumber}_${c.mega ? c.megaForm : 'normal'}_${c.shiny ? 'shiny' : 'normal'}`;
-        
         if (!uniqueMap[key]) {
             uniqueMap[key] = c;
         } else {
-            // S'il y a un doublon, on garde celui avec le rang (maxLevel) le plus élevé par sécurité
             let currentMax = uniqueMap[key].maxLevel || 20;
             let newMax = c.maxLevel || 20;
             if (newMax > currentMax) {
@@ -415,11 +452,36 @@ function renderTeamSelectionGrid(selectedArray, onSelectCallback) {
         }
     });
     
-    // On transforme la map en tableau et on trie par numéro de Pokédex décroissant
-    let valid = Object.values(uniqueMap).sort((a, b) => b.pokedexNumber - a.pokedexNumber);
+    let valid = Object.values(uniqueMap);
     
+    // --- 2. LOGIQUE DE TRI ---
+    const sortMode = document.getElementById('pvp-sort-select') ? document.getElementById('pvp-sort-select').value : 'pokedex';
+    const rarityWeights = { "C": 1, "U": 2, "R": 3, "E": 4, "L": 5, "M": 6, "MG": 7 };
+    
+    valid.sort((a, b) => {
+        let dA = a.data || state.pokemonDataList[a.pokedexNumber - 1] || {};
+        let dB = b.data || state.pokemonDataList[b.pokedexNumber - 1] || {};
+        
+        if (sortMode === 'niveau') {
+            return (b.level || 1) - (a.level || 1); // Décroissant
+        } else if (sortMode === 'rarete') {
+            let rA = a.mega ? "MG" : (dA.rarity || "C");
+            let rB = b.mega ? "MG" : (dB.rarity || "C");
+            let wA = rarityWeights[rA] || 0;
+            let wB = rarityWeights[rB] || 0;
+            if (wB !== wA) return wB - wA; // Rareté décroissante
+            return a.pokedexNumber - b.pokedexNumber; // Fallback sur Pokédex
+        } else if (sortMode === 'alphabetique') {
+            let nameA = state.currentLang === 'en' ? (dA.en || "") : (dA.fr || "");
+            let nameB = state.currentLang === 'en' ? (dB.en || "") : (dB.fr || "");
+            return nameA.localeCompare(nameB); // Alphabétique de A à Z
+        } else {
+            return a.pokedexNumber - b.pokedexNumber; // Pokédex ascendant (Par défaut)
+        }
+    });
+    
+    // --- 3. AFFICHAGE DE LA GRILLE ---
     valid.forEach(carte => {
-        // Sécurité en cas de données manquantes
         let d = carte.data || state.pokemonDataList[carte.pokedexNumber - 1] || {}; 
         
         const div = document.createElement('div');
