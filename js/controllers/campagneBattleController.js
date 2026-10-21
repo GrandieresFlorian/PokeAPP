@@ -3,10 +3,13 @@ import { state } from '../state.js';
 import { getCardImageUrl, getPokemonDetails, formatMegaName, getMovesForLevel, getMoveDetails } from '../utils.js';
 import { applyTranslation } from './navController.js';
 import { 
-    USELESS_MOVES, POWDER_MOVES, PRIORITY_MOVES, HEAL_MOVES, DRAIN_MOVES, RECOIL_MOVES, MULTI_HIT_2_5, MULTI_HIT_2, 
+    USELESS_MOVES, PRIORITY_MOVES, HEAL_MOVES, DRAIN_MOVES, RECOIL_MOVES, MULTI_HIT_2_5, MULTI_HIT_2, 
     FLINCH_MOVES, SECONDARY_EFFECTS, STATUS_MOVES, STAT_NAMES, 
     OHKO_MOVES, KAMIKAZE_MOVES, FORCE_FLEE_MOVES, STAT_CLEAR_MOVES, FIXED_DAMAGE_MOVES,
-    STATUS_CONDITIONS, SECONDARY_STATUS, ABILITIES_DB
+    STATUS_CONDITIONS, SECONDARY_STATUS, ABILITIES_DB, POWDER_MOVES,
+    // --- LES NOUVEAUX IMPORTS MANQUANTS ---
+    TAUNT_MOVES, REST_MOVES, PAIN_SPLIT_MOVES, PERISH_SONG_MOVES, DESTINY_BOND_MOVES,
+    COUNTER_MOVES, MIRROR_COAT_MOVES, BIDE_MOVES, ENCORE_MOVES, DISABLE_MOVES
 } from '../data/campagneData.js';
 import { calcStats, getEffectiveStat, checkMoveHit, calculateDamage } from '../battleEngine.js';
 
@@ -437,17 +440,17 @@ async function applyEndTurnEffects(entity, opponent, isPlayer) {
     if (entity.perishCount > 0) {
         entity.perishCount--;
         if (entity.perishCount === 0) {
-            entity.currentHp = 0; // ou .battleStats.hp en PvE
-            logs.push(`<b style="color:#34495e">Le compte à rebours de Requiem tombe à zéro pour ${name} !</b>`);
+            entity.battleStats.hp = 0; 
+            logMessage(`<b style="color:#34495e">Le compte à rebours de Requiem tombe à zéro pour ${name} !</b>`);
         } else {
-            logs.push(`<span style="color:#7f8c8d">Le compte à rebours de Requiem de ${name} est à ${entity.perishCount}.</span>`);
+            logMessage(`<span style="color:#7f8c8d">Le compte à rebours de Requiem de ${name} est à ${entity.perishCount}.</span>`);
         }
     }
 
     // DIMINUTION PROVOC
     if (entity.taunted && entity.taunted > 0) {
         entity.taunted--;
-        if (entity.taunted === 0) logs.push(`<b>${name} n'est plus provoqué.</b>`);
+        if (entity.taunted === 0) logMessage(`<b>${name} n'est plus provoqué.</b>`);
     }
 
     // RÉINITIALISATION LIEN DU DESTIN
@@ -713,36 +716,60 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
 
     // -- 6. MANIPULATION MENTALE --
     if (TAUNT_MOVES.includes(move.nameEn)) {
-        def.taunted = 3; 
-        logs.push(`<span style="color:#e74c3c">${defName} est provoqué ! Il ne peut utiliser que des attaques offensives !</span>`);
-        return; // ou return { forceFlee: false } en PvE
+        defender.taunted = 3; 
+        logMessage(`<span style="color:#e74c3c">${defName} est provoqué ! Il ne peut utiliser que des attaques offensives !</span>`);
+        return { forceFlee: false };
+    }
+
+    // -- 6.5. ENCORE ET ENTRAVE --
+    if (ENCORE_MOVES.includes(move.nameEn)) {
+        logMessage(`<span style="color:#9b59b6">${defName} est forcé de répéter son attaque !</span>`);
+        return { forceFlee: false };
+    }
+    if (DISABLE_MOVES.includes(move.nameEn)) {
+        logMessage(`<span style="color:#9b59b6">Une capacité de ${defName} a été entravée !</span>`);
+        return { forceFlee: false };
+    }
+
+    // -- 6.6. CONTRES ET PATIENCE --
+    if (COUNTER_MOVES.includes(move.nameEn)) {
+        logMessage(`<b>${aName}</b> se prépare à riposter (Riposte) !`);
+        return { forceFlee: false };
+    }
+    if (MIRROR_COAT_MOVES.includes(move.nameEn)) {
+        logMessage(`<b>${aName}</b> se couvre d'un voile miroir !`);
+        return { forceFlee: false };
+    }
+    if (BIDE_MOVES.includes(move.nameEn)) {
+        logMessage(`<b>${aName}</b> encaisse les coups pour accumuler de l'énergie !`);
+        return { forceFlee: false };
     }
 
     // -- 7. SOINS ET K.O. SPÉCIAUX --
     if (REST_MOVES.includes(move.nameEn)) {
-        atk.currentHp = atk.maxHp; // atk.battleStats.hp en PvE
-        atk.status = 'SLP';
-        atk.statusTurns = 2;
-        logs.push(`<span style="color:#2ecc71">${aName} s'endort pour restaurer ses PV !</span>`);
-        return;
+        attacker.battleStats.hp = attacker.battleStats.maxHp; 
+        attacker.status = 'SLP';
+        attacker.statusTurns = 2;
+        logMessage(`<span style="color:#2ecc71">${aName} s'endort pour restaurer ses PV !</span>`);
+        updateBattleUI(); await new Promise(r => setTimeout(r, 600)); return { forceFlee: false };
     }
     if (PAIN_SPLIT_MOVES.includes(move.nameEn)) {
-        let avgHp = Math.floor((atk.currentHp + def.currentHp) / 2); // .battleStats.hp en PvE
-        atk.currentHp = Math.min(atk.maxHp, avgHp);
-        def.currentHp = Math.min(def.maxHp, avgHp);
-        logs.push(`<span style="color:#9b59b6">Les PV des deux Pokémon sont mis en commun et divisés !</span>`);
-        return;
+        let avgHp = Math.floor((attacker.battleStats.hp + defender.battleStats.hp) / 2); 
+        attacker.battleStats.hp = Math.min(attacker.battleStats.maxHp, avgHp);
+        defender.battleStats.hp = Math.min(defender.battleStats.maxHp, avgHp);
+        logMessage(`<span style="color:#9b59b6">Les PV des deux Pokémon sont mis en commun et divisés !</span>`);
+        updateBattleUI(); await new Promise(r => setTimeout(r, 600)); return { forceFlee: false };
     }
     if (PERISH_SONG_MOVES.includes(move.nameEn)) {
-        if (!atk.perishCount) atk.perishCount = 4;
-        if (!def.perishCount) def.perishCount = 4;
-        logs.push(`<span style="color:#34495e">Tous les Pokémon entendent le Requiem... K.O. dans 3 tours !</span>`);
-        return;
+        if (!attacker.perishCount) attacker.perishCount = 4;
+        if (!defender.perishCount) defender.perishCount = 4;
+        logMessage(`<span style="color:#34495e">Tous les Pokémon entendent le Requiem... K.O. dans 3 tours !</span>`);
+        updateBattleUI(); await new Promise(r => setTimeout(r, 600)); return { forceFlee: false };
     }
     if (DESTINY_BOND_MOVES.includes(move.nameEn)) {
-        atk.destinyBond = true;
-        logs.push(`<span style="color:#8e44ad">${aName} lie son destin à son adversaire !</span>`);
-        return;
+        attacker.destinyBond = true;
+        logMessage(`<span style="color:#8e44ad">${aName} lie son destin à son adversaire !</span>`);
+        updateBattleUI(); await new Promise(r => setTimeout(r, 600)); return { forceFlee: false };
     }
 
     if (move.damageClass === "status" || STATUS_MOVES[move.nameEn]) {
@@ -771,6 +798,11 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
 
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
         await new Promise(r => setTimeout(r, 400)); 
+
+        if (defender.battleStats.hp <= 0 && defender.destinyBond) {
+            attacker.battleStats.hp = 0;
+            logMessage(`<span style="color:#8e44ad">${defName} emporte ${aName} avec lui à cause du Lien du Destin !</span>`);
+        }
 
         let dmgInfo = calculateDamage(attacker, defender, move, globalState.weather);
         let damage = dmgInfo.damage;
@@ -920,11 +952,21 @@ export async function processTurn(playerMove) {
     if (playerGoesFirst) {
         let pResult = await executeMove(activeFighter, currentEnemy, playerMove, true);
         if (pResult && pResult.forceFlee) { fleeBattle(true); return; }
-        if (currentEnemy.battleStats.hp > 0 && activeFighter.battleStats.hp > 0) await executeMove(currentEnemy, activeFighter, bestEnemyMove, false);
+        
+        // --- PAUSE DE 500ms ---
+        if (currentEnemy.battleStats.hp > 0 && activeFighter.battleStats.hp > 0) {
+            await new Promise(r => setTimeout(r, 400));
+            await executeMove(currentEnemy, activeFighter, bestEnemyMove, false);
+        }
     } else {
         let eResult = await executeMove(currentEnemy, activeFighter, bestEnemyMove, false);
         if (eResult && eResult.forceFlee) { fleeBattle(true); return; }
-        if (activeFighter.battleStats.hp > 0 && currentEnemy.battleStats.hp > 0) await executeMove(activeFighter, currentEnemy, playerMove, true);
+        
+        // --- PAUSE DE 500ms ---
+        if (activeFighter.battleStats.hp > 0 && currentEnemy.battleStats.hp > 0) {
+            await new Promise(r => setTimeout(r, 400));
+            await executeMove(activeFighter, currentEnemy, playerMove, true);
+        }
     }
 
     // ÉVALUATION DES ÉVÈNEMENTS DE FIN DE TOUR

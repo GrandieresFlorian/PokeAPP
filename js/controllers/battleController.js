@@ -3,10 +3,13 @@ import { state, CONSTS } from '../state.js';
 import { getPokemonPow, getPokemonDetails, getCardImageUrl, getMovesForLevel } from '../utils.js';
 import { allerASection } from './navController.js';
 import { 
-    USELESS_MOVES, POWDER_MOVES, PRIORITY_MOVES, HEAL_MOVES, DRAIN_MOVES, RECOIL_MOVES, MULTI_HIT_2_5, MULTI_HIT_2, 
+    USELESS_MOVES, PRIORITY_MOVES, HEAL_MOVES, DRAIN_MOVES, RECOIL_MOVES, MULTI_HIT_2_5, MULTI_HIT_2, 
     FLINCH_MOVES, SECONDARY_EFFECTS, STATUS_MOVES, STAT_NAMES, 
     OHKO_MOVES, KAMIKAZE_MOVES, FORCE_FLEE_MOVES, STAT_CLEAR_MOVES, FIXED_DAMAGE_MOVES,
-    STATUS_CONDITIONS, SECONDARY_STATUS, ABILITIES_DB
+    STATUS_CONDITIONS, SECONDARY_STATUS, ABILITIES_DB, POWDER_MOVES,
+    // --- LES NOUVEAUX IMPORTS MANQUANTS ---
+    TAUNT_MOVES, REST_MOVES, PAIN_SPLIT_MOVES, PERISH_SONG_MOVES, DESTINY_BOND_MOVES,
+    COUNTER_MOVES, MIRROR_COAT_MOVES, BIDE_MOVES, ENCORE_MOVES, DISABLE_MOVES
 } from '../data/campagneData.js';
 import { getEffectiveStat, checkMoveHit, calculateDamage } from '../battleEngine.js';
 
@@ -803,10 +806,18 @@ async function resolveSynchronousTurn(data, battleRef) {
 
             if (p1GoesFirst) {
                 if(preMoveCheckSync(p1, turnLogs)) evalMove(p1, p2, move1, turnLogs, data, true);
-                if (p2.currentHp > 0 && p1.currentHp > 0) { if(preMoveCheckSync(p2, turnLogs)) evalMove(p2, p1, move2, turnLogs, data, false); }
+                
+                if (p2.currentHp > 0 && p1.currentHp > 0) { 
+                    turnLogs.push(`<div style="height:1px; background:#444; margin: 8px 0; opacity: 0.5;"></div>`); // Ligne de séparation
+                    if(preMoveCheckSync(p2, turnLogs)) evalMove(p2, p1, move2, turnLogs, data, false); 
+                }
             } else {
                 if(preMoveCheckSync(p2, turnLogs)) evalMove(p2, p1, move2, turnLogs, data, false);
-                if (p1.currentHp > 0 && p2.currentHp > 0) { if(preMoveCheckSync(p1, turnLogs)) evalMove(p1, p2, move1, turnLogs, data, true); }
+                
+                if (p1.currentHp > 0 && p2.currentHp > 0) { 
+                    turnLogs.push(`<div style="height:1px; background:#444; margin: 8px 0; opacity: 0.5;"></div>`); // Ligne de séparation
+                    if(preMoveCheckSync(p1, turnLogs)) evalMove(p1, p2, move1, turnLogs, data, true); 
+                }
             }
         } 
         else if (move1 && p1.currentHp > 0) { if(preMoveCheckSync(p1, turnLogs)) evalMove(p1, p2, move1, turnLogs, data, true); }
@@ -994,7 +1005,31 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
     if (TAUNT_MOVES.includes(move.nameEn)) {
         def.taunted = 3; 
         logs.push(`<span style="color:#e74c3c">${defName} est provoqué ! Il ne peut utiliser que des attaques offensives !</span>`);
-        return; // ou return { forceFlee: false } en PvE
+        return; 
+    }
+
+    // -- 6.5. ENCORE ET ENTRAVE --
+    if (ENCORE_MOVES.includes(move.nameEn)) {
+        logs.push(`<span style="color:#9b59b6">${defName} est forcé de répéter son attaque !</span>`);
+        return; 
+    }
+    if (DISABLE_MOVES.includes(move.nameEn)) {
+        logs.push(`<span style="color:#9b59b6">Une capacité de ${defName} a été entravée !</span>`);
+        return; 
+    }
+
+    // -- 6.6. CONTRES ET PATIENCE --
+    if (COUNTER_MOVES.includes(move.nameEn)) {
+        logs.push(`<b>${aName}</b> se prépare à riposter (Riposte) !`);
+        return; 
+    }
+    if (MIRROR_COAT_MOVES.includes(move.nameEn)) {
+        logs.push(`<b>${aName}</b> se couvre d'un voile miroir !`);
+        return; 
+    }
+    if (BIDE_MOVES.includes(move.nameEn)) {
+        logs.push(`<b>${aName}</b> encaisse les coups pour accumuler de l'énergie !`);
+        return; 
     }
 
     // -- 7. SOINS ET K.O. SPÉCIAUX --
