@@ -18,7 +18,7 @@ export const GYRO_BALL_MOVES = ["gyro-ball"];
 export const ELECTRO_BALL_MOVES = ["electro-ball"];
 export const RAMPAGE_MOVES = ["outrage", "thrash", "petal-dance"];
 export const ROLLOUT_MOVES = ["rollout", "ice-ball"];
-
+export const WISH_MOVES = ["wish"];
 export const POWDER_MOVES = ["spore", "stun-spore", "poison-powder", "sleep-powder", "cotton-spore", "magic-powder"];
 
 // --- CARTE ET ZONES ---

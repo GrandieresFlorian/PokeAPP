@@ -4,12 +4,11 @@ import { getPokemonPow, getPokemonDetails, getCardImageUrl, getMovesForLevel } f
 import { allerASection } from './navController.js';
 import { 
     USELESS_MOVES, PRIORITY_MOVES, HEAL_MOVES, DRAIN_MOVES, RECOIL_MOVES, MULTI_HIT_2_5, MULTI_HIT_2, 
-    FLINCH_MOVES, SECONDARY_EFFECTS, STATUS_MOVES, STAT_NAMES, 
+    FLINCH_MOVES, SECONDARY_EFFECTS, ROLLOUT_MOVES, STATUS_MOVES, STAT_NAMES, 
     OHKO_MOVES, KAMIKAZE_MOVES, FORCE_FLEE_MOVES, STAT_CLEAR_MOVES, FIXED_DAMAGE_MOVES,
     STATUS_CONDITIONS, SECONDARY_STATUS, ABILITIES_DB, POWDER_MOVES,
-    // --- LES NOUVEAUX IMPORTS MANQUANTS ---
     TAUNT_MOVES, REST_MOVES, PAIN_SPLIT_MOVES, PERISH_SONG_MOVES, DESTINY_BOND_MOVES,
-    COUNTER_MOVES, MIRROR_COAT_MOVES, BIDE_MOVES, ENCORE_MOVES, DISABLE_MOVES
+    COUNTER_MOVES, MIRROR_COAT_MOVES, BIDE_MOVES, ENCORE_MOVES, DISABLE_MOVES, WISH_MOVES
 } from '../data/campagneData.js';
 import { getEffectiveStat, checkMoveHit, calculateDamage } from '../battleEngine.js';
 
@@ -218,7 +217,7 @@ async function formatTeam(rawTeam) {
             modifiers: { atk:0, def:0, spatk:0, spdef:0, speed:0, accuracy:0, evasion:0 },
             status: null, statusTurns: 0, confusion: 0, toxCount: 0,
             turnsActive: 0, isProtected: false, protectCount: 0, isSeeded: false, flinched: false,
-            chargingMove: null, invulnerable: false, trapped: false, bound: {name: null, turns: 0},
+            chargingMove: null, invulnerable: false, trapped: false, bound: {name: null, turns: 0}, rolloutCount: 0,
             types: [...d.types],
             original: {
                 types: [...d.types],
@@ -422,6 +421,17 @@ function renderSynchronousUI(data) {
                 
                 if (pActive.chargingMove) {
                     container.innerHTML = `<button class="move-btn type-normal" disabled style="grid-column:span 2;">En attente d'attaque...</button>`;
+                } else if (pActive.rolloutCount > 0) {
+                    // -- FORCER ROULADE --
+                    let rMove = pActive.moves.find(m => ROLLOUT_MOVES.includes(m.nameEn));
+                    if (rMove) {
+                        const btn = document.createElement('button');
+                        btn.className = `move-btn type-${rMove.type}`;
+                        btn.innerHTML = `<span class="move-name">${rMove.nameFr}</span><span style="font-size:0.7rem; font-weight:normal;">TOUR ${pActive.rolloutCount + 1}/5</span>`;
+                        btn.style.gridColumn = "span 2";
+                        btn.onclick = () => submitAction({ type: 'move', move: rMove });
+                        container.appendChild(btn);
+                    } else pActive.rolloutCount = 0;
                 } else {
                     pActive.moves.forEach(move => {
                         const btn = document.createElement('button');
@@ -730,7 +740,7 @@ async function resolveSynchronousTurn(data, battleRef) {
     if (isReplacementTurn) {
         if (a1.type === 'force_switch') { 
             active1 = a1.index; p1 = t1[active1]; 
-            p1.turnsActive = 0; p1.isSeeded = false; p1.confusion = 0; p1.toxCount = 0;
+            p1.turnsActive = 0; p1.isSeeded = false; p1.confusion = 0; p1.toxCount = 0; p1.rolloutCount = 0;
             for(let s in p1.modifiers) p1.modifiers[s] = 0;
             turnLogs.push(`Le Joueur 1 envoie <b>${p1.data.fr}</b> !`); 
             applyHazardsSync(p1, data.hazards1, turnLogs);
@@ -738,7 +748,7 @@ async function resolveSynchronousTurn(data, battleRef) {
         }
         if (a2.type === 'force_switch') { 
             active2 = a2.index; p2 = t2[active2]; 
-            p2.turnsActive = 0; p2.isSeeded = false; p2.confusion = 0; p2.toxCount = 0;
+            p2.turnsActive = 0; p2.isSeeded = false; p2.confusion = 0; p2.toxCount = 0; p2.rolloutCount = 0;
             for(let s in p2.modifiers) p2.modifiers[s] = 0;
             turnLogs.push(`Le Joueur 2 envoie <b>${p2.data.fr}</b> !`); 
             applyHazardsSync(p2, data.hazards2, turnLogs);
@@ -749,12 +759,12 @@ async function resolveSynchronousTurn(data, battleRef) {
             revertTransformation(p1); 
             // 🧹 NETTOYAGE DU POKÉMON SORTANT (P1)
             for(let s in p1.modifiers) p1.modifiers[s] = 0;
-            p1.isSeeded = false; p1.confusion = 0; p1.toxCount = 0;
+            p1.isSeeded = false; p1.confusion = 0; p1.toxCount = 0; p1.rolloutCount = 0;
             
             active1 = a1.index; p1 = t1[active1]; 
             
             // 🧹 NETTOYAGE DU POKÉMON ENTRANT (P1)
-            p1.turnsActive = 0; p1.isSeeded = false; p1.confusion = 0; p1.toxCount = 0;
+            p1.turnsActive = 0; p1.isSeeded = false; p1.confusion = 0; p1.toxCount = 0; p1.rolloutCount = 0;
             for(let s in p1.modifiers) p1.modifiers[s] = 0;
             
             turnLogs.push(`Joueur 1 envoie <b>${p1.data.fr}</b> !`); 
@@ -765,12 +775,12 @@ async function resolveSynchronousTurn(data, battleRef) {
             revertTransformation(p2); 
             // 🧹 NETTOYAGE DU POKÉMON SORTANT (P2)
             for(let s in p2.modifiers) p2.modifiers[s] = 0;
-            p2.isSeeded = false; p2.confusion = 0; p2.toxCount = 0;
+            p2.isSeeded = false; p2.confusion = 0; p2.toxCount = 0; p2.rolloutCount = 0;
             
             active2 = a2.index; p2 = t2[active2]; 
             
             // 🧹 NETTOYAGE DU POKÉMON ENTRANT (P2)
-            p2.turnsActive = 0; p2.isSeeded = false; p2.confusion = 0; p2.toxCount = 0;
+            p2.turnsActive = 0; p2.isSeeded = false; p2.confusion = 0; p2.toxCount = 0; p2.rolloutCount = 0;
             for(let s in p2.modifiers) p2.modifiers[s] = 0;
             
             turnLogs.push(`Joueur 2 envoie <b>${p2.data.fr}</b> !`); 
@@ -808,14 +818,14 @@ async function resolveSynchronousTurn(data, battleRef) {
                 if(preMoveCheckSync(p1, turnLogs)) evalMove(p1, p2, move1, turnLogs, data, true);
                 
                 if (p2.currentHp > 0 && p1.currentHp > 0) { 
-                    turnLogs.push(`<div style="height:1px; background:#444; margin: 8px 0; opacity: 0.5;"></div>`); // Ligne de séparation
+                    turnLogs.push(`<div style="height:1px; background:#444; margin: 8px 0; opacity: 0.5;"></div>`);
                     if(preMoveCheckSync(p2, turnLogs)) evalMove(p2, p1, move2, turnLogs, data, false); 
                 }
             } else {
                 if(preMoveCheckSync(p2, turnLogs)) evalMove(p2, p1, move2, turnLogs, data, false);
                 
                 if (p1.currentHp > 0 && p2.currentHp > 0) { 
-                    turnLogs.push(`<div style="height:1px; background:#444; margin: 8px 0; opacity: 0.5;"></div>`); // Ligne de séparation
+                    turnLogs.push(`<div style="height:1px; background:#444; margin: 8px 0; opacity: 0.5;"></div>`);
                     if(preMoveCheckSync(p1, turnLogs)) evalMove(p1, p2, move1, turnLogs, data, true); 
                 }
             }
@@ -866,7 +876,25 @@ async function resolveSynchronousTurn(data, battleRef) {
             }
         }
 
-        // Diminution des timers
+        // GESTION DU VŒU (WISH)
+        if (data.wish1 && data.wish1.timer > 0) {
+            data.wish1.timer--;
+            if (data.wish1.timer === 0 && p1.currentHp > 0) {
+                p1.currentHp = Math.min(p1.maxHp, p1.currentHp + data.wish1.amount);
+                turnLogs.push(`<span style="color:#2ecc71">Le Vœu s'est réalisé ! ${p1.data.fr} regagne des PV.</span>`);
+                data.wish1 = null;
+            }
+        }
+        if (data.wish2 && data.wish2.timer > 0) {
+            data.wish2.timer--;
+            if (data.wish2.timer === 0 && p2.currentHp > 0) {
+                p2.currentHp = Math.min(p2.maxHp, p2.currentHp + data.wish2.amount);
+                turnLogs.push(`<span style="color:#2ecc71">Le Vœu s'est réalisé ! ${p2.data.fr} regagne des PV.</span>`);
+                data.wish2 = null;
+            }
+        }
+
+        // Diminution des timers d'écrans
         ['reflect', 'lightScreen', 'auroraVeil', 'tailwind'].forEach(screen => {
             if (data.screens1[screen] > 0) data.screens1[screen]--;
             if (data.screens2[screen] > 0) data.screens2[screen]--;
@@ -894,6 +922,7 @@ async function resolveSynchronousTurn(data, battleRef) {
         weather: data.weather, weatherTurns: data.weatherTurns,
         trickRoom: data.trickRoom, terrain: data.terrain, terrainTurns: data.terrainTurns, delayedAttacks: data.delayedAttacks,
         screens1: data.screens1, screens2: data.screens2, hazards1: data.hazards1, hazards2: data.hazards2,
+        wish1: data.wish1 || null, wish2: data.wish2 || null,
         log: data.log.concat(turnLogs),
         status: status, winner: winner
     });
@@ -932,7 +961,6 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
 
     if (def.invulnerable) { logs.push(`Mais <b>${defName}</b> est introuvable ! L'attaque échoue.`); return; }
 
-    // -- IMMUNITÉ POUDRE POUR LES TYPES PLANTE --
     if (POWDER_MOVES.includes(move.nameEn)) {
         let defTypes = def.types || (def.battleStats ? def.battleStats.types : []);
         if (defTypes.includes('grass')) {
@@ -940,6 +968,7 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
             return;
         }
     }
+
     let myTeamState = isP1 ? battleData.screens1 : battleData.screens2;
     let opTeamState = isP1 ? battleData.screens2 : battleData.screens1;
     let opHazards = isP1 ? battleData.hazards2 : battleData.hazards1;
@@ -967,6 +996,7 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
         if (move.nameEn === "trick-room") { battleData.trickRoom = 5; logs.push(`<b>L'ordre des vitesses est inversé (Distorsion) !</b>`); }
         return;
     }
+    
     if (HAZARD_MOVES.includes(move.nameEn)) {
         if (move.nameEn === "stealth-rock" && !opHazards.stealthRock) { opHazards.stealthRock = true; logs.push(`<span style="color:#e67e22">Des pierres pointues lévitent autour de l'équipe adverse !</span>`); }
         else if (move.nameEn === "spikes" && opHazards.spikes < 3) { opHazards.spikes++; logs.push(`<span style="color:#7f8c8d">Des Picots sont répandus sur le terrain adverse !</span>`); }
@@ -981,15 +1011,8 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
         if (move.nameEn === "defog") { opHazards.stealthRock = false; opHazards.spikes = 0; opHazards.toxicSpikes = 0; opHazards.stickyWeb = false; def.modifiers.evasion = Math.max(-6, (def.modifiers.evasion || 0) - 1); }
         return;
     }
-    if (TRAP_MOVES.includes(move.nameEn)) {
-        def.trapped = true; logs.push(`<b>${defName} ne peut plus s'enfuir !</b>`); return;
-    }
-    if (BIND_MOVES.includes(move.nameEn)) {
-        if (!checkMoveHit(move, atk.modifiers, def.modifiers)) { logs.push(`<b>L'attaque a raté !</b>`); return; }
-        def.trapped = true; def.bound = { name: move.nameFr, turns: Math.floor(Math.random() * 2) + 4 };
-        logs.push(`<span style="color:#e74c3c"><b>${defName} est piégé par ${move.nameFr} !</b></span>`);
-    }
 
+    // ESQUIVE ET PRECISION CHECK
     if (ACCURACY_DROPS.includes(move.nameEn)) {
         def.modifiers.accuracy = Math.max(-6, (def.modifiers.accuracy || 0) - 1);
         logs.push(`<span style="color:#e74c3c">La précision de ${def.data.fr} diminue !</span>`);
@@ -1001,14 +1024,53 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
         return;
     }
 
-    // -- 6. MANIPULATION MENTALE --
+    let isStatusOnSelf = move.damageClass === "status" && (EVASION_UPS.includes(move.nameEn) || HEAL_MOVES.includes(move.nameEn) || PROTECT_MOVES_LIST.includes(move.nameEn) || WISH_MOVES.includes(move.nameEn));
+    if (!isStatusOnSelf && move.nameEn !== "transform") {
+        if (!checkMoveHit(move, atk.modifiers, def.modifiers)) {
+            logs.push(`<b>Mais l'attaque a raté !</b>`);
+            if (ROLLOUT_MOVES.includes(move.nameEn)) atk.rolloutCount = 0;
+            return;
+        }
+    }
+
+    if (PROTECT_MOVES_LIST.includes(move.nameEn)) {
+        let chance = Math.pow(0.5, atk.protectCount || 0);
+        if (Math.random() < chance) {
+            atk.isProtected = true; atk.protectCount = (atk.protectCount || 0) + 1;
+            logs.push(`<span style="color:#2ecc71">${atk.data.fr} se protège !</span>`);
+        } else {
+            atk.protectCount = 0; logs.push(`Mais cela échoue !`);
+        }
+        return;
+    } else {
+        atk.protectCount = 0;
+    }
+
+    if (def.isProtected) { 
+        logs.push(`<span style="color:#bdc3c7">${def.data.fr} s'est protégé contre l'attaque !</span>`); 
+        if (ROLLOUT_MOVES.includes(move.nameEn)) atk.rolloutCount = 0;
+        return; 
+    }
+
+    // TRAPPING & Siphons
+    if (TRAP_MOVES.includes(move.nameEn)) {
+        def.trapped = true; logs.push(`<b>${defName} ne peut plus s'enfuir !</b>`); return;
+    }
+    if (BIND_MOVES.includes(move.nameEn)) {
+        def.trapped = true; def.bound = { name: move.nameFr, turns: Math.floor(Math.random() * 2) + 4 };
+        logs.push(`<span style="color:#e74c3c"><b>${defName} est piégé par ${move.nameFr} !</b></span>`);
+    }
+
+    if (move.nameEn === "fake-out") {
+        if ((atk.turnsActive || 0) > 0) { logs.push(`Mais cela échoue !`); return; }
+    }
+
+    // MANIPULATIONS
     if (TAUNT_MOVES.includes(move.nameEn)) {
         def.taunted = 3; 
         logs.push(`<span style="color:#e74c3c">${defName} est provoqué ! Il ne peut utiliser que des attaques offensives !</span>`);
         return; 
     }
-
-    // -- 6.5. ENCORE ET ENTRAVE --
     if (ENCORE_MOVES.includes(move.nameEn)) {
         logs.push(`<span style="color:#9b59b6">${defName} est forcé de répéter son attaque !</span>`);
         return; 
@@ -1017,8 +1079,6 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
         logs.push(`<span style="color:#9b59b6">Une capacité de ${defName} a été entravée !</span>`);
         return; 
     }
-
-    // -- 6.6. CONTRES ET PATIENCE --
     if (COUNTER_MOVES.includes(move.nameEn)) {
         logs.push(`<b>${aName}</b> se prépare à riposter (Riposte) !`);
         return; 
@@ -1031,17 +1091,15 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
         logs.push(`<b>${aName}</b> encaisse les coups pour accumuler de l'énergie !`);
         return; 
     }
-
-    // -- 7. SOINS ET K.O. SPÉCIAUX --
     if (REST_MOVES.includes(move.nameEn)) {
-        atk.currentHp = atk.maxHp; // atk.battleStats.hp en PvE
+        atk.currentHp = atk.maxHp; 
         atk.status = 'SLP';
         atk.statusTurns = 2;
         logs.push(`<span style="color:#2ecc71">${aName} s'endort pour restaurer ses PV !</span>`);
         return;
     }
     if (PAIN_SPLIT_MOVES.includes(move.nameEn)) {
-        let avgHp = Math.floor((atk.currentHp + def.currentHp) / 2); // .battleStats.hp en PvE
+        let avgHp = Math.floor((atk.currentHp + def.currentHp) / 2); 
         atk.currentHp = Math.min(atk.maxHp, avgHp);
         def.currentHp = Math.min(def.maxHp, avgHp);
         logs.push(`<span style="color:#9b59b6">Les PV des deux Pokémon sont mis en commun et divisés !</span>`);
@@ -1058,16 +1116,11 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
         logs.push(`<span style="color:#8e44ad">${aName} lie son destin à son adversaire !</span>`);
         return;
     }
-
-    let isStatusOnSelf = move.damageClass === "status" && (EVASION_UPS.includes(move.nameEn) || HEAL_MOVES.includes(move.nameEn) || PROTECT_MOVES_LIST.includes(move.nameEn));
-    if (!isStatusOnSelf && move.nameEn !== "transform" && !BIND_MOVES.includes(move.nameEn)) {
-        if (!checkMoveHit(move, atk.modifiers, def.modifiers)) {
-            logs.push(`<b>Mais l'attaque a raté !</b>`); return;
-        }
-    }
-    
-    if (move.nameEn === "fake-out") {
-        if ((atk.turnsActive || 0) > 0) { logs.push(`Mais cela échoue !`); return; }
+    if (WISH_MOVES.includes(move.nameEn)) {
+        if (isP1) battleData.wish1 = { timer: 2, amount: Math.floor(atk.maxHp / 2) };
+        else battleData.wish2 = { timer: 2, amount: Math.floor(atk.maxHp / 2) };
+        logs.push(`<span style="color:#2ecc71">${aName} fait un Vœu !</span>`);
+        return;
     }
 
     if (move.nameEn === "transform") {
@@ -1079,21 +1132,6 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
         logs.push(`<span style="color:#9b59b6">${atk.data.fr} se transforme en ${def.data.fr} !</span>`);
         return;
     }
-
-    if (PROTECT_MOVES_LIST.includes(move.nameEn)) {
-        let chance = Math.pow(0.5, atk.protectCount || 0);
-        if (Math.random() < chance) {
-            atk.isProtected = true; atk.protectCount = (atk.protectCount || 0) + 1;
-            logs.push(`<span style="color:#2ecc71">${atk.data.fr} se protège !</span>`);
-        } else {
-            atk.protectCount = 0; logs.push(`Mais cela échoue !`);
-        }
-        return;
-    } else {
-        atk.protectCount = 0;
-    }
-
-    if (def.isProtected) { logs.push(`<span style="color:#bdc3c7">${def.data.fr} s'est protégé contre l'attaque !</span>`); return; }
 
     if (SEED_MOVES_LIST.includes(move.nameEn)) {
         let defTypes = def.types || (def.battleStats ? def.battleStats.types : []);
@@ -1219,6 +1257,11 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
         }
         const secStatus = SECONDARY_STATUS[move.nameEn];
         if (secStatus && Math.random() * 100 <= secStatus.chance) applyStatusSync(def, secStatus, def.data.fr, logs);
+    }
+
+    if (ROLLOUT_MOVES.includes(move.nameEn) && totalDmg > 0) {
+        atk.rolloutCount = (atk.rolloutCount || 0) + 1;
+        if (atk.rolloutCount >= 5) atk.rolloutCount = 0;
     }
 
     if (FLINCH_MOVES.includes(move.nameEn) && totalDmg > 0 && Math.random() < 0.3) {

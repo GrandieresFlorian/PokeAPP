@@ -4,12 +4,11 @@ import { getCardImageUrl, getPokemonDetails, formatMegaName, getMovesForLevel, g
 import { applyTranslation } from './navController.js';
 import { 
     USELESS_MOVES, PRIORITY_MOVES, HEAL_MOVES, DRAIN_MOVES, RECOIL_MOVES, MULTI_HIT_2_5, MULTI_HIT_2, 
-    FLINCH_MOVES, SECONDARY_EFFECTS, STATUS_MOVES, STAT_NAMES, 
+    FLINCH_MOVES, SECONDARY_EFFECTS, ROLLOUT_MOVES, STATUS_MOVES, STAT_NAMES, 
     OHKO_MOVES, KAMIKAZE_MOVES, FORCE_FLEE_MOVES, STAT_CLEAR_MOVES, FIXED_DAMAGE_MOVES,
     STATUS_CONDITIONS, SECONDARY_STATUS, ABILITIES_DB, POWDER_MOVES,
-    // --- LES NOUVEAUX IMPORTS MANQUANTS ---
     TAUNT_MOVES, REST_MOVES, PAIN_SPLIT_MOVES, PERISH_SONG_MOVES, DESTINY_BOND_MOVES,
-    COUNTER_MOVES, MIRROR_COAT_MOVES, BIDE_MOVES, ENCORE_MOVES, DISABLE_MOVES
+    COUNTER_MOVES, MIRROR_COAT_MOVES, BIDE_MOVES, ENCORE_MOVES, DISABLE_MOVES, WISH_MOVES
 } from '../data/campagneData.js';
 import { calcStats, getEffectiveStat, checkMoveHit, calculateDamage } from '../battleEngine.js';
 
@@ -93,7 +92,7 @@ export async function startBattle(zone, fighter, onEnd) {
         nameEn: wData.en, nameFr: wData.fr, data: wData, level: wLevel,
         baseStats: wDetails.baseStats, battleStats: calcStats(wDetails.baseStats, wLevel),
         modifiers: { atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0, accuracy: 0, evasion: 0 },
-        status: null, statusTurns: 0, confusion: 0, toxCount: 0,
+        status: null, statusTurns: 0, confusion: 0, toxCount: 0, rolloutCount: 0,
         turnsActive: 0, isProtected: false, protectCount: 0, isSeeded: false, flinched: false,
         chargingMove: null, invulnerable: false, trapped: false, bound: {name: null, turns: 0},
         sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${wId}.png`,
@@ -104,7 +103,7 @@ export async function startBattle(zone, fighter, onEnd) {
     if (!activeFighter.evs) activeFighter.evs = { hp: 0, atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0 };
     activeFighter.battleStats = calcStats(pDetails.baseStats, activeFighter.level || 1, activeFighter.evs);
     activeFighter.modifiers = { atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0, accuracy: 0, evasion: 0 };
-    activeFighter.status = null; activeFighter.statusTurns = 0; activeFighter.confusion = 0; activeFighter.toxCount = 0;
+    activeFighter.status = null; activeFighter.statusTurns = 0; activeFighter.confusion = 0; activeFighter.toxCount = 0; activeFighter.rolloutCount = 0;
     activeFighter.turnsActive = 0; activeFighter.isProtected = false; activeFighter.protectCount = 0; activeFighter.isSeeded = false; activeFighter.flinched = false;
     activeFighter.chargingMove = null; activeFighter.invulnerable = false; activeFighter.trapped = false; activeFighter.bound = {name: null, turns: 0};
     activeFighter.transformedImage = null; activeFighter.types = pDetails.types;
@@ -125,7 +124,6 @@ export async function startBattle(zone, fighter, onEnd) {
     let eName = state.currentLang === 'en' ? currentEnemy.nameEn : currentEnemy.nameFr;
     logMessage(state.currentLang === 'en' ? `A wild <b>${eName}</b> appears! (Lvl ${currentEnemy.level})` : `Un <b>${eName}</b> sauvage apparaît ! (Niv. ${currentEnemy.level})`);
 
-    // Appliquer les Pièges d'entréej
     applyHazards(activeFighter, p1State);
     applyHazards(currentEnemy, p2State);
 }
@@ -178,6 +176,22 @@ function renderMovesUI() {
     if (activeFighter.chargingMove) {
         container.innerHTML = `<button class="move-btn type-normal" disabled style="grid-column: span 2;">En attente d'attaque...</button>`;
         return;
+    }
+
+    // -- FORCER ROULADE --
+    if (activeFighter.rolloutCount > 0) {
+        let rMove = activeFighter.moves.find(m => ROLLOUT_MOVES.includes(m.nameEn));
+        if (rMove) {
+            const btn = document.createElement('button');
+            btn.className = `move-btn type-${rMove.type}`;
+            btn.innerHTML = `<span class="move-name">${rMove.nameFr}</span><span style="font-size:0.7rem; font-weight:normal;">TOUR ${activeFighter.rolloutCount + 1}/5</span>`;
+            btn.style.gridColumn = "span 2";
+            btn.onclick = () => processTurn(rMove);
+            container.appendChild(btn);
+            return;
+        } else {
+            activeFighter.rolloutCount = 0;
+        }
     }
 
     let movesList = activeFighter.battleMoves || activeFighter.moves;
@@ -582,20 +596,7 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
         return { forceFlee: false };
     }
 
-    // TRAPPING & Siphons
-    if (TRAP_MOVES.includes(move.nameEn)) {
-        playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack'); await new Promise(r => setTimeout(r, 600));
-        defender.trapped = true;
-        logMessage(`<b>${defName} ne peut plus s'enfuir !</b>`);
-        return { forceFlee: false };
-    }
-    if (BIND_MOVES.includes(move.nameEn)) {
-        if (!checkMoveHit(move, attacker.modifiers, defender.modifiers)) { logMessage(`<b>L'attaque a raté !</b>`); return { forceFlee: false }; }
-        defender.trapped = true;
-        defender.bound = { name: move.nameFr, turns: Math.floor(Math.random() * 2) + 4 };
-        logMessage(`<span style="color:#e74c3c"><b>${defName} est piégé par ${move.nameFr} !</b></span>`);
-    }
-
+    // PRÉCISION / ESQUIVE
     if (ACCURACY_DROPS.includes(move.nameEn)) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack'); await new Promise(r => setTimeout(r, 600));
         defender.modifiers.accuracy = Math.max(-6, (defender.modifiers.accuracy || 0) - 1);
@@ -609,32 +610,17 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
         updateBattleUI(); await new Promise(r => setTimeout(r, 800)); return { forceFlee: false };
     }
 
-    let isStatusOnSelf = move.damageClass === "status" && (EVASION_UPS.includes(move.nameEn) || HEAL_MOVES.includes(move.nameEn) || PROTECT_MOVES_LIST.includes(move.nameEn));
+    // --- CHECK ESQUIVE / PRÉCISION GLOBAL ---
+    let isStatusOnSelf = move.damageClass === "status" && (EVASION_UPS.includes(move.nameEn) || HEAL_MOVES.includes(move.nameEn) || PROTECT_MOVES_LIST.includes(move.nameEn) || WISH_MOVES.includes(move.nameEn));
     if (!isStatusOnSelf && move.nameEn !== "transform") {
         if (!checkMoveHit(move, attacker.modifiers, defender.modifiers)) {
             logMessage(`<b>L'attaque a raté !</b>`);
+            if (ROLLOUT_MOVES.includes(move.nameEn)) attacker.rolloutCount = 0; // BRISE LA CHAÎNE
             await new Promise(r => setTimeout(r, 600)); return { forceFlee: false };
         }
     }
 
-    if (move.nameEn === "transform") {
-        playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack'); await new Promise(r => setTimeout(r, 600));
-        attacker.battleStats.types = [...defender.battleStats.types];
-        attacker.battleStats.atk = defender.battleStats.atk; attacker.battleStats.def = defender.battleStats.def;
-        attacker.battleStats.spatk = defender.battleStats.spatk; attacker.battleStats.spdef = defender.battleStats.spdef;
-        attacker.battleStats.speed = defender.battleStats.speed;
-        attacker.modifiers = JSON.parse(JSON.stringify(defender.modifiers || {}));
-        attacker.battleMoves = JSON.parse(JSON.stringify(defender.battleMoves || defender.moves));
-        attacker.transformedImage = isPlayer ? (defender.transformedImage || defender.sprite) : (defender.transformedImage || getCardImageUrl(defender));
-        logMessage(`<span style="color:#9b59b6">${aName} se transforme en ${defName} !</span>`);
-        updateBattleUI(); if (isPlayer) renderMovesUI(); 
-        await new Promise(r => setTimeout(r, 800)); return { forceFlee: false };
-    }
-
-    if (move.nameEn === "fake-out") {
-        if ((attacker.turnsActive || 0) > 0) { logMessage(`Mais cela échoue !`); return { forceFlee: false }; }
-    }
-
+    // PROTECT / ABRI
     if (PROTECT_MOVES_LIST.includes(move.nameEn)) {
         let chance = Math.pow(0.5, attacker.protectCount || 0);
         if (Math.random() < chance) {
@@ -650,9 +636,44 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
 
     if (defender.isProtected) {
         logMessage(`<span style="color:#bdc3c7">${defName} s'est protégé contre l'attaque !</span>`);
+        if (ROLLOUT_MOVES.includes(move.nameEn)) attacker.rolloutCount = 0; // BRISE LA CHAÎNE
         await new Promise(r => setTimeout(r, 600)); return { forceFlee: false };
     }
 
+    // TRAPPING & Siphons
+    if (TRAP_MOVES.includes(move.nameEn)) {
+        playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack'); await new Promise(r => setTimeout(r, 600));
+        defender.trapped = true;
+        logMessage(`<b>${defName} ne peut plus s'enfuir !</b>`);
+        return { forceFlee: false };
+    }
+    if (BIND_MOVES.includes(move.nameEn)) {
+        defender.trapped = true;
+        defender.bound = { name: move.nameFr, turns: Math.floor(Math.random() * 2) + 4 };
+        logMessage(`<span style="color:#e74c3c"><b>${defName} est piégé par ${move.nameFr} !</b></span>`);
+    }
+
+    // FAKE OUT
+    if (move.nameEn === "fake-out") {
+        if ((attacker.turnsActive || 0) > 0) { logMessage(`Mais cela échoue !`); return { forceFlee: false }; }
+    }
+
+    // TRANSFORM
+    if (move.nameEn === "transform") {
+        playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack'); await new Promise(r => setTimeout(r, 600));
+        attacker.battleStats.types = [...defender.battleStats.types];
+        attacker.battleStats.atk = defender.battleStats.atk; attacker.battleStats.def = defender.battleStats.def;
+        attacker.battleStats.spatk = defender.battleStats.spatk; attacker.battleStats.spdef = defender.battleStats.spdef;
+        attacker.battleStats.speed = defender.battleStats.speed;
+        attacker.modifiers = JSON.parse(JSON.stringify(defender.modifiers || {}));
+        attacker.battleMoves = JSON.parse(JSON.stringify(defender.battleMoves || defender.moves));
+        attacker.transformedImage = isPlayer ? (defender.transformedImage || defender.sprite) : (defender.transformedImage || getCardImageUrl(defender));
+        logMessage(`<span style="color:#9b59b6">${aName} se transforme en ${defName} !</span>`);
+        updateBattleUI(); if (isPlayer) renderMovesUI(); 
+        await new Promise(r => setTimeout(r, 800)); return { forceFlee: false };
+    }
+
+    // LEECH SEED
     if (SEED_MOVES_LIST.includes(move.nameEn)) {
         if (defender.battleStats.types.includes('grass')) logMessage(`Ça n'affecte pas les Pokémon Plante !`);
         else if (defender.isSeeded) logMessage(`${defName} est déjà infecté !`);
@@ -660,12 +681,14 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
         await new Promise(r => setTimeout(r, 600)); return { forceFlee: false };
     }
     
+    // FORCE FLEE
     if (FORCE_FLEE_MOVES.includes(move.nameEn)) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack'); await new Promise(r => setTimeout(r, 600));
         logMessage(`Le combat prend fin subitement !`);
         return { forceFlee: true };
     }
 
+    // STAT CLEAR
     if (STAT_CLEAR_MOVES.includes(move.nameEn)) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack'); await new Promise(r => setTimeout(r, 600));
         for(let s in attacker.modifiers) attacker.modifiers[s] = 0;
@@ -674,6 +697,7 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
         updateBattleUI(); await new Promise(r => setTimeout(r, 800)); return { forceFlee: false };
     }
 
+    // OHKO
     if (OHKO_MOVES.includes(move.nameEn)) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack'); await new Promise(r => setTimeout(r, 600));
         if (Math.random() < 0.30) {
@@ -685,12 +709,14 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
         return { forceFlee: false };
     }
 
+    // USELESS
     if (USELESS_MOVES.includes(move.nameEn)) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack'); await new Promise(r => setTimeout(r, 600));
         logMessage(`Mais il ne se passe rien...`);
         await new Promise(r => setTimeout(r, 800)); return { forceFlee: false };
     }
 
+    // HEAL
     if (HEAL_MOVES.includes(move.nameEn)) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack'); await new Promise(r => setTimeout(r, 600));
         let healAmount = Math.floor(attacker.battleStats.maxHp / 2);
@@ -699,6 +725,7 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
         updateBattleUI(); await new Promise(r => setTimeout(r, 800)); return { forceFlee: false };
     }
 
+    // STATUS CONDITIONS
     if (STATUS_CONDITIONS[move.nameEn]) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack'); await new Promise(r => setTimeout(r, 600));
         let statObj = STATUS_CONDITIONS[move.nameEn];
@@ -714,14 +741,12 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
         updateBattleUI(); await new Promise(r => setTimeout(r, 800)); return { forceFlee: false };
     }
 
-    // -- 6. MANIPULATION MENTALE --
+    // MANIPULATION MENTALE & CONTRES & K.O. SPÉCIAUX
     if (TAUNT_MOVES.includes(move.nameEn)) {
         defender.taunted = 3; 
         logMessage(`<span style="color:#e74c3c">${defName} est provoqué ! Il ne peut utiliser que des attaques offensives !</span>`);
         return { forceFlee: false };
     }
-
-    // -- 6.5. ENCORE ET ENTRAVE --
     if (ENCORE_MOVES.includes(move.nameEn)) {
         logMessage(`<span style="color:#9b59b6">${defName} est forcé de répéter son attaque !</span>`);
         return { forceFlee: false };
@@ -730,8 +755,6 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
         logMessage(`<span style="color:#9b59b6">Une capacité de ${defName} a été entravée !</span>`);
         return { forceFlee: false };
     }
-
-    // -- 6.6. CONTRES ET PATIENCE --
     if (COUNTER_MOVES.includes(move.nameEn)) {
         logMessage(`<b>${aName}</b> se prépare à riposter (Riposte) !`);
         return { forceFlee: false };
@@ -744,8 +767,6 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
         logMessage(`<b>${aName}</b> encaisse les coups pour accumuler de l'énergie !`);
         return { forceFlee: false };
     }
-
-    // -- 7. SOINS ET K.O. SPÉCIAUX --
     if (REST_MOVES.includes(move.nameEn)) {
         attacker.battleStats.hp = attacker.battleStats.maxHp; 
         attacker.status = 'SLP';
@@ -769,6 +790,11 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
     if (DESTINY_BOND_MOVES.includes(move.nameEn)) {
         attacker.destinyBond = true;
         logMessage(`<span style="color:#8e44ad">${aName} lie son destin à son adversaire !</span>`);
+        updateBattleUI(); await new Promise(r => setTimeout(r, 600)); return { forceFlee: false };
+    }
+    if (WISH_MOVES.includes(move.nameEn)) {
+        myTeamState.wish = { timer: 2, amount: Math.floor(attacker.battleStats.maxHp / 2) };
+        logMessage(`<span style="color:#2ecc71">${aName} fait un Vœu !</span>`);
         updateBattleUI(); await new Promise(r => setTimeout(r, 600)); return { forceFlee: false };
     }
 
@@ -878,14 +904,14 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
         if (secStatus && Math.random() * 100 <= secStatus.chance) applyStatus(defender, secStatus, defName);
     }
 
-    updateBattleUI();
     let flinched = false;
+    if (ROLLOUT_MOVES.includes(move.nameEn) && totalDamage > 0) {
+        attacker.rolloutCount = (attacker.rolloutCount || 0) + 1;
+        if (attacker.rolloutCount >= 5) attacker.rolloutCount = 0; 
+    }
     if (FLINCH_MOVES.includes(move.nameEn) && totalDamage > 0 && Math.random() < 0.3) defender.flinched = true;
 
     await new Promise(r => setTimeout(r, 600));
-    if (FLINCH_MOVES.includes(move.nameEn) && totalDamage > 0 && Math.random() < 0.3) {
-        defender.flinched = true;
-    }
     return { flinched, forceFlee: false };
 }
 
@@ -909,7 +935,7 @@ export async function processTurn(playerMove) {
         let expected = 0;
         if (USELESS_MOVES.includes(m.nameEn) || FORCE_FLEE_MOVES.includes(m.nameEn) || STAT_CLEAR_MOVES.includes(m.nameEn)) {
             expected = -1;
-        } else if (HEAL_MOVES.includes(m.nameEn)) {
+        } else if (HEAL_MOVES.includes(m.nameEn) || WISH_MOVES.includes(m.nameEn)) {
             if (currentEnemy.battleStats.hp < currentEnemy.battleStats.maxHp / 2) expected = 1000;
             else expected = -1;
         } else if (m.damageClass === "status" || STATUS_CONDITIONS[m.nameEn] || WEATHER_MOVES_DICT[m.nameEn] || ACCURACY_DROPS.includes(m.nameEn) || HAZARD_MOVES.includes(m.nameEn) || SCREENS.includes(m.nameEn) || WINDS.includes(m.nameEn) || TERRAINS.includes(m.nameEn) || TRAP_MOVES.includes(m.nameEn)) {
@@ -929,6 +955,10 @@ export async function processTurn(playerMove) {
 
     // Forcer l'IA à continuer l'attaque à charge
     if (currentEnemy.chargingMove) bestEnemyMove = currentEnemy.chargingMove;
+    if (currentEnemy.rolloutCount > 0) {
+        let rMove = currentEnemy.moves.find(m => ROLLOUT_MOVES.includes(m.nameEn));
+        if (rMove) bestEnemyMove = rMove;
+    }
 
     let ePriority = PRIORITY_MOVES.includes(bestEnemyMove.nameEn) ? 1 : 0;
     if (bestEnemyMove.nameEn === "fake-out") ePriority = 3;
@@ -953,7 +983,7 @@ export async function processTurn(playerMove) {
         let pResult = await executeMove(activeFighter, currentEnemy, playerMove, true);
         if (pResult && pResult.forceFlee) { fleeBattle(true); return; }
         
-        // --- PAUSE DE 500ms ---
+        // --- PAUSE DE 400ms ---
         if (currentEnemy.battleStats.hp > 0 && activeFighter.battleStats.hp > 0) {
             await new Promise(r => setTimeout(r, 400));
             await executeMove(currentEnemy, activeFighter, bestEnemyMove, false);
@@ -962,7 +992,7 @@ export async function processTurn(playerMove) {
         let eResult = await executeMove(currentEnemy, activeFighter, bestEnemyMove, false);
         if (eResult && eResult.forceFlee) { fleeBattle(true); return; }
         
-        // --- PAUSE DE 500ms ---
+        // --- PAUSE DE 400ms ---
         if (activeFighter.battleStats.hp > 0 && currentEnemy.battleStats.hp > 0) {
             await new Promise(r => setTimeout(r, 400));
             await executeMove(activeFighter, currentEnemy, playerMove, true);
@@ -1009,11 +1039,29 @@ export async function processTurn(playerMove) {
         if (da.timer <= 0) {
             let targetEntity = da.target === 'p1' ? activeFighter : currentEnemy;
             if (targetEntity.battleStats.hp > 0) {
-                logMessage(`<b>L'attaque ${da.move.nameFr} frappe ${targetEntity.data.fr} depuis le futur !</b>`);
+                logMessage(`<b>L'attaque ${da.move.nameFr} frappe${targetEntity.data.fr} depuis le futur !</b>`);
                 let dmgInfo = calculateDamage({ level: 50, battleStats: {atk:100, spatk:100}, types:[] }, targetEntity, da.move, globalState.weather);
                 targetEntity.battleStats.hp -= dmgInfo.damage;
             }
             globalState.delayedAttacks.splice(i, 1);
+        }
+    }
+
+    // GESTION DU VŒU (WISH)
+    if (p1State.wish && p1State.wish.timer > 0) {
+        p1State.wish.timer--;
+        if (p1State.wish.timer === 0 && activeFighter.battleStats.hp > 0) {
+            activeFighter.battleStats.hp = Math.min(activeFighter.battleStats.maxHp, activeFighter.battleStats.hp + p1State.wish.amount);
+            logMessage(`<span style="color:#2ecc71">Le Vœu s'est réalisé ! ${activeFighter.data.fr} regagne des PV.</span>`);
+            p1State.wish = null;
+        }
+    }
+    if (p2State.wish && p2State.wish.timer > 0) {
+        p2State.wish.timer--;
+        if (p2State.wish.timer === 0 && currentEnemy.battleStats.hp > 0) {
+            currentEnemy.battleStats.hp = Math.min(currentEnemy.battleStats.maxHp, currentEnemy.battleStats.hp + p2State.wish.amount);
+            logMessage(`<span style="color:#2ecc71">Le Vœu s'est réalisé ! ${currentEnemy.data.fr} regagne des PV.</span>`);
+            p2State.wish = null;
         }
     }
 

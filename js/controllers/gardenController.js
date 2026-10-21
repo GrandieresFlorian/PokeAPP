@@ -4,6 +4,9 @@ import { TOUTES_LES_BAIES, MUTATION_RECIPES } from '../utils.js';
 
 let selectedPlot = null;
 let mutationTick = 0; 
+let activeTool = null; // null, { type: 'seed', id: 'ceriz' }, { type: 'trowel' }
+let isDragging = false;
+let lastProcessedIndex = null;
 
 export function initGarden() {
     document.getElementById('nav-jardin').addEventListener('click', () => {
@@ -27,12 +30,46 @@ export function initGarden() {
         }
     }, 1000);
 
-    document.getElementById('garden-grid').addEventListener('click', (e) => {
+    const grid = document.getElementById('garden-grid');
+
+    // Pointer events pour glisser/planter/récolter (drag & swipe)
+    grid.addEventListener('pointerdown', (e) => {
         const plotEl = e.target.closest('.garden-plot');
         if(plotEl) {
-            handlePlotClick(parseInt(plotEl.dataset.index));
+            isDragging = true;
+            const index = parseInt(plotEl.dataset.index);
+            lastProcessedIndex = index;
+            applyTool(index);
+            grid.setPointerCapture(e.pointerId); // Force la capture du curseur
         }
     });
+
+    grid.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        // Permet de trouver l'élément survolé même avec le curseur verrouillé
+        const elementUnderPointer = document.elementFromPoint(e.clientX, e.clientY);
+        if (!elementUnderPointer) return;
+        
+        const plotEl = elementUnderPointer.closest('.garden-plot');
+        if(plotEl) {
+            const index = parseInt(plotEl.dataset.index);
+            if (index !== lastProcessedIndex) {
+                lastProcessedIndex = index;
+                applyTool(index);
+            }
+        }
+    });
+
+    grid.addEventListener('pointerup', (e) => {
+        isDragging = false;
+        lastProcessedIndex = null;
+        grid.releasePointerCapture(e.pointerId);
+    });
+
+    // Empêcher le scroll intempestif sur mobile quand on drag
+    grid.addEventListener('touchstart', (e) => { 
+        if(activeTool) e.preventDefault(); 
+    }, {passive: false});
 
     document.getElementById('garden-action-content').addEventListener('click', (e) => {
         const target = e.target.closest('[data-action]');
@@ -45,8 +82,6 @@ export function initGarden() {
         if(action === 'sell') {
             const qty = parseInt(target.dataset.qty);
             sellBerry(id, qty);
-        } else if (action === 'plant') {
-            plantBerry(id);
         } else if (action === 'unlock') {
             unlockPlot(index);
         } else if (action === 'water') {
@@ -55,14 +90,171 @@ export function initGarden() {
             harvestPlot(index);
         } else if (action === 'clear') {
             clearPlot(index);
+        } else if (action === 'select_seed') {
+            activeTool = { type: 'seed', id: id };
+            showDefaultTools();
+        } else if (action === 'select_trowel') {
+            activeTool = { type: 'trowel' };
+            showDefaultTools();
+        } else if (action === 'deselect_tool') {
+            activeTool = null;
+            showDefaultTools();
         }
     });
+}
+
+function applyTool(index) {
+    if (!activeTool) {
+        handlePlotClick(index); // S'il n'y a pas d'outil, on inspecte le terrain
+        return;
+    }
+    
+    const plot = state.currentUserData.garden[index];
+    const st = getPlotState(plot);
+    
+    if (activeTool.type === 'seed' && st.stage === 'empty' && !plot.locked) {
+        plantSelectedSeed(index, activeTool.id);
+    } else if (activeTool.type === 'trowel' && st.stage === 'ready') {
+        harvestPlot(index);
+    }
+}
+
+function showDefaultTools() {
+    selectedPlot = null;
+    document.getElementById('garden-action-title').textContent = "Outils & Graines";
+    const content = document.getElementById('garden-action-content');
+    
+    let html = '<div style="max-height: 350px; overflow-y: auto; padding-right:5px;">';
+    
+    const isTrowelActive = activeTool && activeTool.type === 'trowel';
+    html += `
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#1a1a1a; padding:10px; border-radius:5px; margin-bottom:15px; cursor:pointer; border:2px solid ${isTrowelActive ? '#2ecc71' : '#444'};" data-action="select_trowel">
+            <div style="display:flex; align-items:center; gap:10px; pointer-events:none;">
+                <span style="font-size:1.5rem;">⛏️</span>
+                <span style="color:white; font-size:1rem; font-weight:bold;">Truelle (Récolte Rapide)</span>
+            </div>
+        </div>
+        <h4 style="margin-top:0; border-bottom:1px solid #444; padding-bottom:5px;">Vos Graines</h4>
+    `;
+
+    const mesBaies = state.currentUserData.berries || [];
+    const baiesMap = {};
+    mesBaies.forEach(b => { baiesMap[b.id] = (baiesMap[b.id] || 0) + 1; });
+
+    if (Object.keys(baiesMap).length === 0) {
+        html += '<p style="color:#777;">Aucune baie en inventaire.</p>';
+    }
+
+    Object.keys(baiesMap).forEach(id => {
+        const qty = baiesMap[id];
+        const baieDef = TOUTES_LES_BAIES.find(b => b.id === id);
+        if(!baieDef) return;
+        const conf = state.berryConfig[id] || state.berryConfig.default;
+        const enNameImg = baieDef.en.toLowerCase().replace(/\s+/g, '-');
+        const imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${enNameImg}.png`;
+
+        let timeStr = conf.growTime >= 3600000 
+            ? `${Math.round(conf.growTime / 3600000)}h` 
+            : `${Math.round(conf.growTime / 60000)}m`;
+
+        let nameEn = baieDef.en;
+        let nameFr = baieDef.fr;
+        let currentName = state.currentLang === 'en' ? nameEn : nameFr;
+
+        const isSeedActive = activeTool && activeTool.type === 'seed' && activeTool.id === id;
+
+        html += `
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#1a1a1a; padding:10px; border-radius:5px; margin-bottom:5px; cursor:pointer; border:2px solid ${isSeedActive ? '#2ecc71' : '#444'};" data-action="select_seed" data-id="${id}">
+                <div style="display:flex; align-items:center; gap:10px; pointer-events:none;">
+                    <img src="${imgUrl}" style="width:30px; height:30px; image-rendering:pixelated;">
+                    <span class="pokemon-name" data-en="${nameEn} (x${qty})" data-fr="${nameFr} (x${qty})" style="color:white; font-size:0.9rem;">${currentName} (x${qty})</span>
+                </div>
+                <div style="font-size:0.8rem; color:#f1c40f; pointer-events:none;">
+                    ⏱ ${timeStr}
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    
+    if (activeTool) {
+        html += `<button class="btn btn-secondary" style="width:100%; margin-top:15px; background:#e74c3c;" data-action="deselect_tool">Désélectionner (Mode Clic & Inspecter)</button>`;
+    } else {
+        html += `<p style="color:#777; font-size:0.85rem; margin-top:15px;">Sélectionnez une graine ou la truelle, puis glissez/maintenez sur la serre.</p>`;
+    }
+    
+    content.innerHTML = html;
+}
+
+function plantSelectedSeed(index, berryId) {
+    const indexInArray = state.currentUserData.berries.findIndex(b => b.id === berryId);
+    
+    if (indexInArray > -1) {
+        state.currentUserData.berries.splice(indexInArray, 1);
+        
+        const plot = state.currentUserData.garden[index];
+        plot.berryId = berryId;
+        plot.plantedAt = Date.now();
+        plot.lastWatered = Date.now();
+        
+        saveGardenData();
+        renderGardenGrid();
+        
+        if (!state.currentUserData.berries.some(b => b.id === berryId)) {
+            activeTool = null; // Plus de graines, on déséquipe
+        }
+        
+        if (document.getElementById('garden-action-title').textContent === "Outils & Graines") {
+            showDefaultTools(); // Actualise les quantités en live
+        }
+    }
+}
+
+function openSellMenu() {
+    activeTool = null;
+    selectedPlot = null;
+    const content = document.getElementById('garden-action-content');
+    document.getElementById('garden-action-title').textContent = "Boutique (Vendre)";
+
+    let html = '<div style="max-height: 250px; overflow-y: auto; padding-right:5px;">';
+    const mesBaies = state.currentUserData.berries || [];
+    const baiesMap = {};
+    mesBaies.forEach(b => { baiesMap[b.id] = (baiesMap[b.id] || 0) + 1; });
+
+    if (mesBaies.length === 0) {
+        html += '<p style="color:#777;">Vous n\'avez aucune baie à vendre.</p>';
+    }
+
+    Object.keys(baiesMap).forEach(id => {
+        const qty = baiesMap[id];
+        const baieDef = TOUTES_LES_BAIES.find(b => b.id === id);
+        if(!baieDef) return;
+        const conf = state.berryConfig[id] || state.berryConfig.default;
+        const enName = baieDef.en.toLowerCase().replace(/\s+/g, '-');
+        const imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${enName}.png`;
+
+        html += `
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#1a1a1a; padding:10px; border-radius:5px; margin-bottom:5px; border:1px solid #444;">
+                <div style="display:flex; align-items:center; gap:5px;">
+                    <img src="${imgUrl}" style="width:30px; height:30px; image-rendering:pixelated;">
+                    <span style="color:white; font-size:0.9rem;">(x${qty})</span>
+                </div>
+                <div style="display:flex; align-items:center;">
+                    <span style="color:#f1c40f; font-weight:bold; margin-right:10px; font-size:0.9rem;">+${conf.sellPrice}💰</span>
+                    <button class="btn-small-action" style="background:#3498db; padding:4px 8px; margin-right:4px;" data-action="sell" data-id="${id}" data-qty="1">1</button>
+                    <button class="btn-small-action" style="background:#e74c3c; padding:4px 8px;" data-action="sell" data-id="${id}" data-qty="${qty}">Max</button>
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    html += `<button class="btn btn-secondary" style="width:100%; margin-top:10px;" data-action="deselect_tool">Retour aux Outils</button>`;
+    content.innerHTML = html;
 }
 
 function checkMutations() {
     const garden = state.currentUserData.garden;
     if (!garden) return;
-    
     let mutated = false;
     
     garden.forEach((plot, i) => {
@@ -114,7 +306,9 @@ function checkMutations() {
                         document.getElementById('garden-action-content').innerHTML = `
                             <p style="color:#f1c40f; font-weight:bold;">Une nouvelle espèce est apparue !</p>
                             <p>Une <b class="pokemon-name" data-en="${nameEn}" data-fr="${nameFr}" style="color:#2ecc71;">${currentName}</b> a poussé spontanément grâce aux baies voisines !</p>
+                            <button class="btn btn-secondary" style="width:100%; margin-top:10px;" data-action="deselect_tool">Retour aux Outils</button>
                         `;
+                        activeTool = null; // Stoppe l'action du joueur pour qu'il le voie
                         break; 
                     }
                 }
@@ -146,8 +340,8 @@ function openGarden() {
     }
 
     renderGardenGrid();
-    document.getElementById('garden-action-title').textContent = "Jardin";
-    document.getElementById('garden-action-content').innerHTML = "<p style='color:#ccc;'>Sélectionnez un terrain pour interagir.</p>";
+    activeTool = null;
+    showDefaultTools();
     document.getElementById('pokeberry-display').textContent = state.currentUserData.pokeBerrys;
 }
 
@@ -224,11 +418,7 @@ function handlePlotClick(index) {
     const st = getPlotState(plot);
     const content = document.getElementById('garden-action-content');
     
-    if(document.getElementById('garden-action-title').textContent !== "Mutation ! ✨") {
-        document.getElementById('garden-action-title').textContent = "Détails du Terrain";
-    } else {
-        document.getElementById('garden-action-title').textContent = "Détails du Terrain";
-    }
+    document.getElementById('garden-action-title').textContent = "Détails du Terrain";
 
     if (st.stage === 'locked') {
         const unlockedCount = state.currentUserData.garden.filter(p => !p.locked).length;
@@ -241,12 +431,16 @@ function handlePlotClick(index) {
                 <button class="btn" style="width:100%; background:#f1c40f; color:#333;" data-action="unlock" data-index="${index}">
                     Défricher le terrain
                 </button>
+                <button class="btn btn-secondary" style="width:100%; margin-top:10px;" data-action="deselect_tool">Retour aux Outils</button>
             `;
         } else {
-            content.innerHTML = `<p style="color:#e74c3c;">Vous devez défricher un terrain adjacent d'abord.</p>`;
+            content.innerHTML = `
+                <p style="color:#e74c3c;">Vous devez défricher un terrain adjacent d'abord.</p>
+                <button class="btn btn-secondary" style="width:100%; margin-top:10px;" data-action="deselect_tool">Retour aux Outils</button>
+            `;
         }
     } else if (st.stage === 'empty') {
-        openPlantMenu(index);
+        showDefaultTools();
     } else {
         const conf = state.berryConfig[plot.berryId] || state.berryConfig.default;
         const baieDef = TOUTES_LES_BAIES.find(b => b.id === plot.berryId);
@@ -288,6 +482,7 @@ function handlePlotClick(index) {
                 html += `<p style="font-size:0.9rem; color:#aaa;">Prochain besoin d'eau dans : ${waterTexte}</p>`;
             }
         }
+        html += `<button class="btn btn-secondary" style="width:100%; margin-top:10px;" data-action="deselect_tool">Retour aux Outils</button>`;
         content.innerHTML = html;
     }
 }
@@ -310,92 +505,6 @@ function updateActionPanel() {
     }
 }
 
-function openPlantMenu(plotIndex) {
-    selectedPlot = plotIndex;
-    const content = document.getElementById('garden-action-content');
-    document.getElementById('garden-action-title').textContent = "Planter une Baie";
-
-    let html = '<div style="max-height: 250px; overflow-y: auto; padding-right:5px;">';
-    const mesBaies = state.currentUserData.berries || [];
-    const baiesMap = {};
-    mesBaies.forEach(b => { baiesMap[b.id] = (baiesMap[b.id] || 0) + 1; });
-
-    if (mesBaies.length === 0) {
-        html += '<p style="color:#777;">Vous n\'avez aucune baie à planter.</p>';
-    }
-
-    Object.keys(baiesMap).forEach(id => {
-        const qty = baiesMap[id];
-        const baieDef = TOUTES_LES_BAIES.find(b => b.id === id);
-        if(!baieDef) return;
-        const conf = state.berryConfig[id] || state.berryConfig.default;
-        const enNameImg = baieDef.en.toLowerCase().replace(/\s+/g, '-');
-        const imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${enNameImg}.png`;
-
-        let timeStr = conf.growTime >= 3600000 
-            ? `${Math.round(conf.growTime / 3600000)}h` 
-            : `${Math.round(conf.growTime / 60000)}m`;
-
-        let nameEn = baieDef.en;
-        let nameFr = baieDef.fr;
-        let currentName = state.currentLang === 'en' ? nameEn : nameFr;
-
-        html += `
-            <div style="display:flex; justify-content:space-between; align-items:center; background:#1a1a1a; padding:10px; border-radius:5px; margin-bottom:5px; cursor:pointer; border:1px solid #444;" data-action="plant" data-id="${id}">
-                <div style="display:flex; align-items:center; gap:10px; pointer-events:none;">
-                    <img src="${imgUrl}" style="width:30px; height:30px; image-rendering:pixelated;">
-                    <span class="pokemon-name" data-en="${nameEn} (x${qty})" data-fr="${nameFr} (x${qty})" style="color:white; font-size:0.9rem;">${currentName} (x${qty})</span>
-                </div>
-                <div style="font-size:0.8rem; color:#f1c40f; pointer-events:none;">
-                    ⏱ ${timeStr}
-                </div>
-            </div>
-        `;
-    });
-    html += '</div>';
-    content.innerHTML = html;
-}
-
-function openSellMenu() {
-    selectedPlot = null;
-    const content = document.getElementById('garden-action-content');
-    document.getElementById('garden-action-title').textContent = "Boutique (Vendre)";
-
-    let html = '<div style="max-height: 250px; overflow-y: auto; padding-right:5px;">';
-    const mesBaies = state.currentUserData.berries || [];
-    const baiesMap = {};
-    mesBaies.forEach(b => { baiesMap[b.id] = (baiesMap[b.id] || 0) + 1; });
-
-    if (mesBaies.length === 0) {
-        html += '<p style="color:#777;">Vous n\'avez aucune baie à vendre.</p>';
-    }
-
-    Object.keys(baiesMap).forEach(id => {
-        const qty = baiesMap[id];
-        const baieDef = TOUTES_LES_BAIES.find(b => b.id === id);
-        if(!baieDef) return;
-        const conf = state.berryConfig[id] || state.berryConfig.default;
-        const enName = baieDef.en.toLowerCase().replace(/\s+/g, '-');
-        const imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${enName}.png`;
-
-        html += `
-            <div style="display:flex; justify-content:space-between; align-items:center; background:#1a1a1a; padding:10px; border-radius:5px; margin-bottom:5px; border:1px solid #444;">
-                <div style="display:flex; align-items:center; gap:5px;">
-                    <img src="${imgUrl}" style="width:30px; height:30px; image-rendering:pixelated;">
-                    <span style="color:white; font-size:0.9rem;">(x${qty})</span>
-                </div>
-                <div style="display:flex; align-items:center;">
-                    <span style="color:#f1c40f; font-weight:bold; margin-right:10px; font-size:0.9rem;">+${conf.sellPrice}💰</span>
-                    <button class="btn-small-action" style="background:#3498db; padding:4px 8px; margin-right:4px;" data-action="sell" data-id="${id}" data-qty="1">1</button>
-                    <button class="btn-small-action" style="background:#e74c3c; padding:4px 8px;" data-action="sell" data-id="${id}" data-qty="${qty}">Max</button>
-                </div>
-            </div>
-        `;
-    });
-    html += '</div>';
-    content.innerHTML = html;
-}
-
 function unlockPlot(index) {
     const unlockedCount = state.currentUserData.garden.filter(p => !p.locked).length;
     const cost = unlockedCount * 10;
@@ -408,24 +517,6 @@ function unlockPlot(index) {
         handlePlotClick(index); 
     } else {
         alert("Pas assez de PokeBerrys !");
-    }
-}
-
-function plantBerry(berryId) {
-    if(selectedPlot === null) return;
-    const indexInArray = state.currentUserData.berries.findIndex(b => b.id === berryId);
-    
-    if (indexInArray > -1) {
-        state.currentUserData.berries.splice(indexInArray, 1);
-        
-        const plot = state.currentUserData.garden[selectedPlot];
-        plot.berryId = berryId;
-        plot.plantedAt = Date.now();
-        plot.lastWatered = Date.now();
-        
-        saveGardenData();
-        renderGardenGrid();
-        handlePlotClick(selectedPlot); 
     }
 }
 
@@ -456,18 +547,26 @@ function harvestPlot(index) {
     saveGardenData();
     renderGardenGrid();
     
-    let nameEn = baieDef.en;
-    let nameFr = baieDef.fr;
-    let currentName = state.currentLang === 'en' ? nameEn : nameFr;
-    let enNameImg = baieDef.en.toLowerCase().replace(/\s+/g, '-');
-    let imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${enNameImg}.png`;
+    // Si on ramasse "manuellement" via l'inspecteur, on affiche un message. 
+    // Sinon, la truelle amasse silencieusement et rafraîchit l'inventaire des Outils.
+    if (!activeTool) {
+        let nameEn = baieDef.en;
+        let nameFr = baieDef.fr;
+        let currentName = state.currentLang === 'en' ? nameEn : nameFr;
+        let enNameImg = baieDef.en.toLowerCase().replace(/\s+/g, '-');
+        let imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${enNameImg}.png`;
 
-    document.getElementById('garden-action-content').innerHTML = `
-        <p style="color:#2ecc71; display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap;">
-            Vous avez récolté ${yieldAmount} 
-            <img src="${imgUrl}" style="width:24px; height:24px; vertical-align:middle; image-rendering:pixelated;">
-            <span class="pokemon-name" data-en="${nameEn}" data-fr="${nameFr}" style="font-size:inherit; font-weight:bold; color:white; text-transform:none;">${currentName}</span> !
-        </p>`;
+        document.getElementById('garden-action-content').innerHTML = `
+            <p style="color:#2ecc71; display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap;">
+                Vous avez récolté ${yieldAmount} 
+                <img src="${imgUrl}" style="width:24px; height:24px; vertical-align:middle; image-rendering:pixelated;">
+                <span class="pokemon-name" data-en="${nameEn}" data-fr="${nameFr}" style="font-size:inherit; font-weight:bold; color:white; text-transform:none;">${currentName}</span> !
+            </p>
+            <button class="btn btn-secondary" style="width:100%; margin-top:10px;" data-action="deselect_tool">Retour aux Outils</button>
+        `;
+    } else if (document.getElementById('garden-action-title').textContent === "Outils & Graines") {
+        showDefaultTools(); // Actualise les inventaires de la barre latérale en temps réel
+    }
 }
 
 function clearPlot(index) {
@@ -477,7 +576,10 @@ function clearPlot(index) {
     plot.lastWatered = 0;
     saveGardenData();
     renderGardenGrid();
-    document.getElementById('garden-action-content').innerHTML = `<p style="color:#777;">Le terrain a été nettoyé.</p>`;
+    document.getElementById('garden-action-content').innerHTML = `
+        <p style="color:#777;">Le terrain a été nettoyé.</p>
+        <button class="btn btn-secondary" style="width:100%; margin-top:10px;" data-action="deselect_tool">Retour aux Outils</button>
+    `;
 }
 
 function sellBerry(id, qty) {

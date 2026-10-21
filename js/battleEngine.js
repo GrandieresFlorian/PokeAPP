@@ -1,5 +1,5 @@
 import { getEffectiveness } from './utils.js';
-import { ABILITIES_DB, HIGH_CRIT_MOVES, FIXED_DAMAGE_MOVES, WEIGHT_MOVES, GYRO_BALL_MOVES, ELECTRO_BALL_MOVES } from './data/campagneData.js';
+import { ABILITIES_DB, HIGH_CRIT_MOVES, FIXED_DAMAGE_MOVES, WEIGHT_MOVES, GYRO_BALL_MOVES, ELECTRO_BALL_MOVES, ROLLOUT_MOVES } from './data/campagneData.js';
 
 // ==========================================
 // MOTEUR DE CALCUL UNIVERSEL DES COMBATS
@@ -87,6 +87,10 @@ export function calculateDamage(atkEntity, defEntity, move, currentWeather = 'no
         else if (ratio >= 2) movePower = 80;
         else if (ratio >= 1) movePower = 60;
         else movePower = 40;
+    } else if (ROLLOUT_MOVES.includes(move.nameEn)) {
+        // La puissance double à chaque tour (Tour 1 = x1, Tour 2 = x2, Tour 3 = x4...)
+        let rCount = atkEntity.rolloutCount || 0;
+        movePower = move.power * Math.pow(2, rCount);
     }
 
     if (FIXED_DAMAGE_MOVES[move.nameEn] !== undefined) {
