@@ -37,3 +37,16 @@
     line-height: 1.4;
     font-style: italic;
 }
+
+#card-details-modal .modal-content > div:nth-child(2) {
+    min-width: 0; /* Crucial pour empêcher le flexbox d'ignorer les limites */
+    overflow: hidden;
+}
+
+#details-description {
+    width: 100%;
+    max-width: 100%;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+}

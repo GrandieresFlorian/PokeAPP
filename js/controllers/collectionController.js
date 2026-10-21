@@ -54,15 +54,6 @@ export async function openCardDetails(carte) {
     const descElement = document.getElementById('details-description');
     descElement.textContent = descText;
     
-    // --- FORCE LE RETOUR À LA LIGNE STRICT ---
-    descElement.style.display = "block";
-    descElement.style.width = "100%";
-    descElement.style.maxWidth = "100%";
-    descElement.style.whiteSpace = "normal"; 
-    descElement.style.wordWrap = "break-word"; 
-    descElement.style.overflowWrap = "break-word"; 
-    descElement.style.lineHeight = "1.4";
-    
     // Titres traduits dans la modale
     // Titres traduits dans la modale
     const descHeading = modal.querySelector('h3:nth-of-type(1)');
