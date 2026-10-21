@@ -245,18 +245,19 @@
                     <button id="btn-sell-berries" class="btn btn-secondary translatable" data-fr="Boutique & Vente" data-en="Shop & Sell" style="margin-top: 0; padding:10px 20px;">Boutique & Vente</button>
                 </div>
                 <div class="jardin-layout">
+                    <!-- Colonne de Gauche : Grille du jardin -->
                     <div class="garden-grid-container glass-panel">
                         <div id="garden-grid" class="garden-grid"></div>
                     </div>
                     
-                    <!-- Conteneur en colonne ou en ligne pour aligner les outils et les presets à droite -->
+                    <!-- Colonne de Droite : Contient à la fois le panneau d'action ET les presets empilés verticalement -->
                     <div style="display: flex; flex-direction: column; gap: 20px; flex: 1; min-width: 320px;">
                         <div id="garden-action-panel" class="garden-action-panel glass-panel" style="width: 100%; max-width: none; margin: 0;">
                             <h3 id="garden-action-title" class="panel-heading text-accent translatable" data-fr="Jardin" data-en="Garden">Jardin</h3>
                             <div id="garden-action-content" class="translatable" data-fr="Sélectionnez un terrain pour commencer." data-en="Select a plot to start.">Sélectionnez un terrain pour commencer.</div>
                         </div>
-
-                        <div class="glass-panel" style="width: 100%; padding: 20px; margin: 0;">
+                
+                        <div class="glass-panel" style="width: 100%; padding: 20px; margin: 0; box-sizing: border-box;">
                             <h3 class="text-accent" style="margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 10px; font-size: 1.1rem;">Presets de Plantation</h3>
                             <div id="garden-presets-container" style="display: flex; flex-direction: column; gap: 10px;"></div>
                         </div>
