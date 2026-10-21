@@ -316,13 +316,13 @@ function checkMutations() {
             }
         }
         
-        // --- 2. VÉRIFICATION DES MUTATIONS AVANCÉES (8 baies : 2 de chaque type requis) ---
-        // Règle pour la Baie Pomeg : Figuy, Wiki, Mago, Gowav (nécessite exactement 2 de chaque -> 8 au total)
+        // --- 2. PRIORITÉ ABSOLUE : MUTATIONS AVANCÉES (ex: Baie Pomeg) ---
+        // Figuy, Wiki, Mago, Gowav (nécessite exactement 2 de chaque -> 8 au total)
         const pomegReqs = ['figy', 'wiki', 'mago', 'gowav'];
         let isPomegMutation = pomegReqs.every(bId => adjacentPlots.filter(b => b === bId).length >= 2);
         
         if (isPomegMutation && adjacentPlots.length >= 8) {
-            if (Math.random() <= 0.05) { // 5% de chance par tick de mutation (ajustable)
+            if (Math.random() <= 0.05) { // 5% de chance par tick
                 plot.berryId = 'pomeg-berry';
                 plot.plantedAt = Date.now();
                 plot.lastWatered = Date.now();
@@ -335,11 +335,13 @@ function checkMutations() {
                     <button class="btn btn-secondary" style="width:100%; margin-top:10px;" data-action="deselect_tool">Retour aux Outils</button>
                 `;
                 activeTool = null;
-                return;
+                return; // Stoppe ici, aucune mutation classique ne peut se déclencher sur ce plot !
             }
+            // Même si le jet à 5% échoue, on retourne directement pour interdire les mutations classiques sur ce plot encerclé
+            return; 
         }
         
-        // --- 3. ANCIENNES MUTATIONS CLASSIQUES (2 baies adjacentes) ---
+        // --- 3. MUTATIONS CLASSIQUES (Seulement si ce n'est PAS une configuration avancée) ---
         if (adjacentPlots.length >= 2) {
             for (let recipe of MUTATION_RECIPES) {
                 const hasP1 = adjacentPlots.includes(recipe.p1);
