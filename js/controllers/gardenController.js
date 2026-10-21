@@ -170,7 +170,7 @@ function renderToolsList() {
     `;
 
     const mesBaies = state.currentUserData.berries || [];
-    const advancedBerries = ['pomeg-berry'];
+    const advancedBerries = ['grena'];
     const baiesMap = {};
     mesBaies.forEach(b => { baiesMap[b.id] = (baiesMap[b.id] || 0) + 1; });
 

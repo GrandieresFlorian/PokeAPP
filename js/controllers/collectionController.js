@@ -85,7 +85,7 @@ export async function openCardDetails(carte) {
 
         newBtnPomeg.onclick = async () => {
             if (!state.currentUserData.berries) state.currentUserData.berries = [];
-            const berryIndex = state.currentUserData.berries.findIndex(b => b.id === 'pomeg-berry'); // ID mis à jour
+            const berryIndex = state.currentUserData.berries.findIndex(b => b.id === 'grena'); // ID mis à jour
             
             if (berryIndex === -1) {
                 alert(isEn ? "You don't have a Pomeg Berry in your inventory!" : "Vous n'avez pas de Baie Pomeg dans votre inventaire !");
