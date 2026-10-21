@@ -321,7 +321,7 @@ function checkMutations() {
         
         // --- 2. PRIORITÉ ABSOLUE : MUTATIONS AVANCÉES (ex: Baie Pomeg) ---
         // Figuy, Wiki, Mago, Gowav (nécessite exactement 2 de chaque -> 8 au total)
-        const pomegReqs = ['figy', 'wiki', 'mago', 'gowav'];
+        const pomegReqs = ['figuy', 'wiki', 'mago', 'gowav'];
         let isPomegMutation = pomegReqs.every(bId => adjacentPlots.filter(b => b === bId).length >= 2);
         
         if (isPomegMutation && adjacentPlots.length >= 8) {
