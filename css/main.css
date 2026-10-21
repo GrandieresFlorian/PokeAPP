@@ -98,3 +98,45 @@
 .btn-card-upgrade:hover {
     background: #2ecc71;
 }
+
+/* BULLE D'INFO DES ATTAQUES (TOOLTIP) */
+.move-btn {
+    position: relative;
+    overflow: visible !important;
+}
+
+.move-tooltip {
+    display: none;
+    position: absolute;
+    bottom: 115%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 15, 15, 0.95);
+    color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    text-align: center;
+    width: max-content;
+    max-width: 220px;
+    z-index: 1000;
+    border: 1px solid #555;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.8);
+    pointer-events: none;
+}
+
+.move-btn:hover .move-tooltip {
+    display: block;
+}
+
+/* Le petit triangle sous la bulle */
+.move-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -6px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: rgba(15, 15, 15, 0.95) transparent transparent transparent;
+}

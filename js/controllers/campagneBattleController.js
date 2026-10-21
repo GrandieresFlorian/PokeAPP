@@ -12,6 +12,9 @@ import {
 } from '../data/campagneData.js';
 import { calcStats, getEffectiveStat, checkMoveHit, calculateDamage } from '../battleEngine.js';
 
+let skillsDB = {};
+fetch('./data/skill.json').then(r => r.json()).then(d => skillsDB = d).catch(() => console.log("skill.json introuvable"));
+
 // --- NOUVELLES MÉCANIQUES ---
 const PROTECT_MOVES_LIST = ["protect", "detect"];
 const SEED_MOVES_LIST = ["leech-seed"];
@@ -178,13 +181,27 @@ function renderMovesUI() {
         return;
     }
 
+    // Fonction utilitaire pour générer le Tooltip
+    const getTooltipHTML = (moveNameEn, moveNameFr, powerDisplay) => {
+        let sData = skillsDB[moveNameEn] || {};
+        let accStr = sData.accuracy ? sData.accuracy + "%" : "100%"; // Tirets ou 100% si immanquable
+        let descStr = sData.desc || "Description inconnue.";
+        return `
+            <div class="move-tooltip">
+                <strong style="color:#f1c40f;">${moveNameFr}</strong><br>
+                <span style="font-size:0.7rem; color:#aaa;">Puis: ${powerDisplay} | Préc: ${accStr}</span><br>
+                <div style="margin-top:5px; font-style:italic; line-height:1.2;">${descStr}</div>
+            </div>`;
+    };
+
     // -- FORCER ROULADE --
     if (activeFighter.rolloutCount > 0) {
         let rMove = activeFighter.moves.find(m => ROLLOUT_MOVES.includes(m.nameEn));
         if (rMove) {
             const btn = document.createElement('button');
             btn.className = `move-btn type-${rMove.type}`;
-            btn.innerHTML = `<span class="move-name">${rMove.nameFr}</span><span style="font-size:0.7rem; font-weight:normal;">TOUR ${activeFighter.rolloutCount + 1}/5</span>`;
+            let tooltipHTML = getTooltipHTML(rMove.nameEn, rMove.nameFr, rMove.power);
+            btn.innerHTML = `<span class="move-name">${rMove.nameFr}</span><span style="font-size:0.7rem; font-weight:normal;">TOUR ${activeFighter.rolloutCount + 1}/5</span>${tooltipHTML}`;
             btn.style.gridColumn = "span 2";
             btn.onclick = () => processTurn(rMove);
             container.appendChild(btn);
@@ -202,9 +219,11 @@ function renderMovesUI() {
         let displayPower = (move.damageClass === "status" || move.nameEn === "transform" || USELESS_MOVES.includes(move.nameEn) || FORCE_FLEE_MOVES.includes(move.nameEn) || STAT_CLEAR_MOVES.includes(move.nameEn) || OHKO_MOVES.includes(move.nameEn) || PROTECT_MOVES_LIST.includes(move.nameEn) || SEED_MOVES_LIST.includes(move.nameEn) || WEATHER_MOVES_DICT[move.nameEn] || ACCURACY_DROPS.includes(move.nameEn) || EVASION_UPS.includes(move.nameEn) || HAZARD_MOVES.includes(move.nameEn) || HAZARD_CLEAR_MOVES.includes(move.nameEn) || SCREENS.includes(move.nameEn) || WINDS.includes(move.nameEn) || TERRAINS.includes(move.nameEn) || TRAP_MOVES.includes(move.nameEn)) ? "-" : move.power;
         if(FIXED_DAMAGE_MOVES[move.nameEn]) displayPower = "FIX";
 
-        btn.innerHTML = `<span class="move-name" data-en="${move.nameEn}" data-fr="${move.nameFr}">${moveName}</span><span style="font-size:0.7rem; opacity:0.8; font-weight:normal;">POW ${displayPower}</span>`;
+        let tooltipHTML = getTooltipHTML(move.nameEn, moveName, displayPower);
         
-        // --- BLOCAGES UI (Provoc & Entrave) ---
+        btn.innerHTML = `<span class="move-name" data-en="${move.nameEn}" data-fr="${move.nameFr}">${moveName}</span><span style="font-size:0.7rem; opacity:0.8; font-weight:normal;">POW ${displayPower}</span>${tooltipHTML}`;
+        
+        // --- BLOCAGES UI ---
         if (activeFighter.taunted && move.damageClass === 'status') {
             btn.disabled = true;
             btn.style.opacity = "0.4";

@@ -12,6 +12,9 @@ import {
 } from '../data/campagneData.js';
 import { getEffectiveStat, checkMoveHit, calculateDamage } from '../battleEngine.js';
 
+let skillsDB = {};
+fetch('./data/skill.json').then(r => r.json()).then(d => skillsDB = d).catch(() => console.log("skill.json introuvable"));
+
 // --- NOUVELLES MÉCANIQUES ---
 const PROTECT_MOVES_LIST = ["protect", "detect"];
 const SEED_MOVES_LIST = ["leech-seed"];
@@ -200,6 +203,19 @@ function renderSynchronousUI(data) {
                 const container = document.getElementById('pvp-moves-container');
                 container.innerHTML = "";
                 
+                // Fonction utilitaire pour générer le Tooltip en PvP
+                const getTooltipHTML = (moveNameEn, moveNameFr, powerDisplay) => {
+                    let sData = skillsDB[moveNameEn] || {};
+                    let accStr = sData.accuracy ? sData.accuracy + "%" : "100%";
+                    let descStr = sData.desc || "Description inconnue.";
+                    return `
+                        <div class="move-tooltip">
+                            <strong style="color:#f1c40f;">${moveNameFr}</strong><br>
+                            <span style="font-size:0.7rem; color:#aaa;">Puis: ${powerDisplay} | Préc: ${accStr}</span><br>
+                            <div style="margin-top:5px; font-style:italic; line-height:1.2;">${descStr}</div>
+                        </div>`;
+                };
+                
                 if (pActive.chargingMove) {
                     container.innerHTML = `<button class="move-btn type-normal" disabled style="grid-column:span 2;">En attente d'attaque...</button>`;
                 } else if (pActive.rolloutCount > 0) {
@@ -208,7 +224,8 @@ function renderSynchronousUI(data) {
                     if (rMove) {
                         const btn = document.createElement('button');
                         btn.className = `move-btn type-${rMove.type}`;
-                        btn.innerHTML = `<span class="move-name">${rMove.nameFr}</span><span style="font-size:0.7rem; font-weight:normal;">TOUR ${pActive.rolloutCount + 1}/5</span>`;
+                        let tooltipHTML = getTooltipHTML(rMove.nameEn, rMove.nameFr, rMove.power);
+                        btn.innerHTML = `<span class="move-name">${rMove.nameFr}</span><span style="font-size:0.7rem; font-weight:normal;">TOUR ${pActive.rolloutCount + 1}/5</span>${tooltipHTML}`;
                         btn.style.gridColumn = "span 2";
                         btn.onclick = () => submitAction({ type: 'move', move: rMove });
                         container.appendChild(btn);
@@ -220,9 +237,11 @@ function renderSynchronousUI(data) {
                         let displayPower = (move.damageClass === "status" || USELESS_MOVES.includes(move.nameEn) || FORCE_FLEE_MOVES.includes(move.nameEn) || STAT_CLEAR_MOVES.includes(move.nameEn) || OHKO_MOVES.includes(move.nameEn) || PROTECT_MOVES_LIST.includes(move.nameEn) || SEED_MOVES_LIST.includes(move.nameEn) || WEATHER_MOVES_DICT[move.nameEn] || move.nameEn === "transform" || ACCURACY_DROPS.includes(move.nameEn) || EVASION_UPS.includes(move.nameEn) || HAZARD_MOVES.includes(move.nameEn) || HAZARD_CLEAR_MOVES.includes(move.nameEn) || SCREENS.includes(move.nameEn) || WINDS.includes(move.nameEn) || TERRAINS.includes(move.nameEn) || TRAP_MOVES.includes(move.nameEn)) ? "-" : move.power;
                         if(FIXED_DAMAGE_MOVES[move.nameEn]) displayPower = "FIX";
 
-                        btn.innerHTML = `<span class="move-name">${move.nameFr}</span><span style="font-size:0.7rem; font-weight:normal;">POW ${displayPower}</span>`;
+                        let tooltipHTML = getTooltipHTML(move.nameEn, move.nameFr, displayPower);
+
+                        btn.innerHTML = `<span class="move-name">${move.nameFr}</span><span style="font-size:0.7rem; font-weight:normal;">POW ${displayPower}</span>${tooltipHTML}`;
                         
-                        // --- BLOCAGES UI (Provoc & Entrave) ---
+                        // --- BLOCAGES UI ---
                         if (pActive.taunted && move.damageClass === 'status') {
                             btn.disabled = true;
                             btn.style.opacity = "0.4";

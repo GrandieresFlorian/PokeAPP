@@ -1,0 +1,4687 @@
+{
+  "pound": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Écrase l’ennemi avec les pattes avant, la queue, etc."
+  },
+  "karate-chop": {
+    "power": 50,
+    "accuracy": 100,
+    "desc": "L’ennemi est tranché violemment. Taux de critiques élevé."
+  },
+  "double-slap": {
+    "power": 15,
+    "accuracy": 85,
+    "desc": "Gifle rapidement l’ennemi de 2 à 5 fois d’affilée."
+  },
+  "comet-punch": {
+    "power": 18,
+    "accuracy": 85,
+    "desc": "Une tornade de coups de poing qui frappe de 2 à 5 fois d’affilée."
+  },
+  "mega-punch": {
+    "power": 80,
+    "accuracy": 85,
+    "desc": "L’ennemi reçoit un coup de poing d’une puissance incroyable."
+  },
+  "pay-day": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Des pièces sont lancées sur l’ennemi. Permet d’obtenir de l’argent à la fin du combat."
+  },
+  "fire-punch": {
+    "power": 75,
+    "accuracy": 100,
+    "desc": "Un coup de poing enflammé vient frapper l’ennemi. Peut le brûler."
+  },
+  "ice-punch": {
+    "power": 75,
+    "accuracy": 100,
+    "desc": "Un coup de poing glacé vient frapper l’ennemi. Peut le geler."
+  },
+  "thunder-punch": {
+    "power": 75,
+    "accuracy": 100,
+    "desc": "Un coup de poing électrique vient frapper l’ennemi. Peut le paralyser."
+  },
+  "scratch": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Lacère l’ennemi avec des griffes acérées pour lui infliger des dégâts."
+  },
+  "vice-grip": {
+    "power": 55,
+    "accuracy": 100,
+    "desc": "L’ennemi est attrapé et compressé par les côtés."
+  },
+  "guillotine": {
+    "power": null,
+    "accuracy": 30,
+    "desc": "De méchantes pinces lacèrent l’ennemi, le mettant K.O. sur le coup s’il est touché."
+  },
+  "razor-wind": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Attaque en 2 tours. Des lames de vent frappent l’ennemi au 2è tour. Taux de critiques élevé."
+  },
+  "swords-dance": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Danse frénétique qui exalte l’esprit combatif. Augmente beaucoup l’Attaque du lanceur."
+  },
+  "cut": {
+    "power": 50,
+    "accuracy": 95,
+    "desc": "Coupe l’ennemi avec des lames ou des griffes. Hors combat, permet de couper des arbres fins."
+  },
+  "gust": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Le lanceur bat des ailes pour générer une bourrasque qui blesse l’ennemi."
+  },
+  "wing-attack": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "L’ennemi est frappé par de larges ailes déployées pour infliger des dégâts."
+  },
+  "whirlwind": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Éjecte le Pokémon ennemi et le remplace par un autre. Dans la nature, met fin au combat."
+  },
+  "fly": {
+    "power": 90,
+    "accuracy": 95,
+    "desc": "Le lanceur s’envole au 1er tour et frappe au 2è. Permet aussi de voler jusqu’à une ville déjà visitée."
+  },
+  "bind": {
+    "power": 15,
+    "accuracy": 85,
+    "desc": "Ligote l’ennemi avec les tentacules ou le corps pour l’écraser durant 4 à 5 tours."
+  },
+  "slam": {
+    "power": 80,
+    "accuracy": 75,
+    "desc": "Fouette l’ennemi avec la queue, une liane, etc. pour infliger des dégâts."
+  },
+  "vine-whip": {
+    "power": 45,
+    "accuracy": 100,
+    "desc": "Fouette l’ennemi avec de fines lianes pour infliger des dégâts."
+  },
+  "stomp": {
+    "power": 65,
+    "accuracy": 100,
+    "desc": "Écrase l’ennemi avec un énorme pied. Peut aussi l’apeurer."
+  },
+  "double-kick": {
+    "power": 30,
+    "accuracy": 100,
+    "desc": "Deux coups de pied qui frappent l’ennemi deux fois d’affilée."
+  },
+  "mega-kick": {
+    "power": 120,
+    "accuracy": 75,
+    "desc": "Un coup de pied superpuissant et intense qui frappe l’ennemi."
+  },
+  "jump-kick": {
+    "power": 100,
+    "accuracy": 95,
+    "desc": "Le lanceur s’envole pour décocher un coup de pied sauté. S’il échoue, le lanceur se blesse."
+  },
+  "rolling-kick": {
+    "power": 60,
+    "accuracy": 85,
+    "desc": "Le lanceur effectue un coup de pied tournoyant et extrêmement rapide. Peut apeurer l’ennemi."
+  },
+  "sand-attack": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Lance du sable au visage de l’ennemi pour baisser sa Précision."
+  },
+  "headbutt": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Le lanceur donne un coup de tête. Peut apeurer l’ennemi. "
+  },
+  "horn-attack": {
+    "power": 65,
+    "accuracy": 100,
+    "desc": "Frappe l’ennemi d’un coup de corne pointue pour infliger des dégâts."
+  },
+  "fury-attack": {
+    "power": 15,
+    "accuracy": 85,
+    "desc": "Frappe l’ennemi 2 à 5 fois d’affilée avec un bec ou une corne."
+  },
+  "horn-drill": {
+    "power": null,
+    "accuracy": 30,
+    "desc": "Un coup de corne en vrille qui empale l’ennemi, le mettant K.O. sur le coup s’il est touché."
+  },
+  "tackle": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Le lanceur charge l’ennemi et le percute de tout son corps."
+  },
+  "body-slam": {
+    "power": 85,
+    "accuracy": 100,
+    "desc": "Le lanceur se laisse tomber sur l’ennemi de tout son poids. Peut le paralyser."
+  },
+  "wrap": {
+    "power": 15,
+    "accuracy": 90,
+    "desc": "Le lanceur ligote l’ennemi avec des lianes ou son corps pour l’écraser durant 4 à 5 tours."
+  },
+  "take-down": {
+    "power": 90,
+    "accuracy": 85,
+    "desc": "Une charge violente qui blesse aussi légèrement le lanceur."
+  },
+  "thrash": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Une attaque furieuse qui dure de 2 à 3 tours. Le lanceur devient confus."
+  },
+  "double-edge": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Une dangereuse charge. Inflige aussi des dégâts assez importants au lanceur."
+  },
+  "tail-whip": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur remue son adorable queue pour tromper la vigilance de l’ennemi et baisser sa Défense."
+  },
+  "poison-sting": {
+    "power": 15,
+    "accuracy": 100,
+    "desc": "Un dard toxique qui transperce l’ennemi. Peut aussi l’empoisonner."
+  },
+  "twineedle": {
+    "power": 25,
+    "accuracy": 100,
+    "desc": "Un double coup de dard qui transperce l’ennemi 2 fois d’affilée. Peut aussi l’empoisonner."
+  },
+  "pin-missile": {
+    "power": 25,
+    "accuracy": 95,
+    "desc": "Envoie une rafale de dards. Peut toucher de 2 à 5 fois."
+  },
+  "leer": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur fait les gros yeux à l’ennemi pour l’intimider et baisser sa Défense."
+  },
+  "bite": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "L’ennemi est mordu par de tranchantes canines. Peut l’apeurer."
+  },
+  "growl": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur pousse un cri tout mimi pour tromper la vigilance de l’ennemi et baisser son Attaque."
+  },
+  "roar": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Effraie le Pokémon ennemi et le remplace par un autre. Dans la nature, met fin au combat."
+  },
+  "sing": {
+    "power": null,
+    "accuracy": 55,
+    "desc": "Une berceuse plonge l’ennemi dans un profond sommeil."
+  },
+  "supersonic": {
+    "power": null,
+    "accuracy": 55,
+    "desc": "Le lanceur produit d’étranges ondes sonores qui rendent confus."
+  },
+  "sonic-boom": {
+    "power": null,
+    "accuracy": 90,
+    "desc": "Une onde de choc destructrice qui inflige toujours 20 PV de dégâts."
+  },
+  "disable": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Empêche l’ennemi d’employer à nouveau sa dernière attaque. Dure quatre tours."
+  },
+  "acid": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque l’ennemi avec un jet d’acide corrosif. Peut aussi baisser la Défense Spéciale de l’ennemi."
+  },
+  "ember": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "L’ennemi est attaqué par de faibles flammes. Peut aussi le brûler."
+  },
+  "flamethrower": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "L’ennemi reçoit un torrent de flammes. Peut aussi le brûler."
+  },
+  "mist": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Une brume blanche enveloppe l’équipe du lanceur et empêche la réduction des stats pour 5 tours."
+  },
+  "water-gun": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "De l’eau est projetée sur l’ennemi en arc de cercle."
+  },
+  "hydro-pump": {
+    "power": 110,
+    "accuracy": 80,
+    "desc": "Un puissant jet d’eau est dirigé sur l’ennemi."
+  },
+  "surf": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Une énorme vague s’abat sur le champ de bataille. Permet aussi de voyager sur l’eau."
+  },
+  "ice-beam": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Un rayon de glace frappe l’ennemi. Peut aussi le geler."
+  },
+  "blizzard": {
+    "power": 110,
+    "accuracy": 70,
+    "desc": "Une violente tempête de neige est déclenchée sur l’ennemi. Peut aussi le geler."
+  },
+  "psybeam": {
+    "power": 65,
+    "accuracy": 100,
+    "desc": "Un étrange rayon frappe l’ennemi. Peut aussi le rendre confus."
+  },
+  "bubble-beam": {
+    "power": 65,
+    "accuracy": 100,
+    "desc": "Des bulles sont envoyées avec puissance sur l’ennemi. Peut aussi baisser sa Vitesse."
+  },
+  "aurora-beam": {
+    "power": 65,
+    "accuracy": 100,
+    "desc": "Envoie un rayon arc-en-ciel sur l’ennemi. Peut aussi baisser son Attaque."
+  },
+  "hyper-beam": {
+    "power": 150,
+    "accuracy": 90,
+    "desc": "Projette un puissant rayon sur l’ennemi. Le lanceur doit se reposer au tour suivant."
+  },
+  "peck": {
+    "power": 35,
+    "accuracy": 100,
+    "desc": "Frappe l’ennemi d’un bec pointu ou d’une corne pour infliger des dégâts."
+  },
+  "drill-peck": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Une attaque utilisant le bec comme une perceuse."
+  },
+  "submission": {
+    "power": 80,
+    "accuracy": 80,
+    "desc": "Le lanceur agrippe l’ennemi et l’écrase au sol. Blesse aussi légèrement le lanceur."
+  },
+  "low-kick": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Un puissant coup de pied bas qui fauche l’ennemi. Il est plus efficace contre les ennemis lourds."
+  },
+  "counter": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Une riposte qui répond à toute attaque physique en infligeant le double de dégâts."
+  },
+  "seismic-toss": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "L’ennemi est projeté grâce au pouvoir de la gravité. Inflige des dégâts équivalents au niveau du lanceur."
+  },
+  "strength": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur cogne l’ennemi de toutes ses forces. Permet aussi de déplacer des rochers."
+  },
+  "absorb": {
+    "power": 20,
+    "accuracy": 100,
+    "desc": "Une attaque qui convertit la moitié des dégâts infligés en PV."
+  },
+  "mega-drain": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Une attaque qui convertit la moitié des dégâts infligés en PV."
+  },
+  "leech-seed": {
+    "power": null,
+    "accuracy": 90,
+    "desc": "Une graine est semée sur l’ennemi. À chaque tour, elle lui dérobe des PV que le lanceur récupère."
+  },
+  "growth": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le corps du lanceur se développe. Augmente l’Attaque et l’Attaque Spéciale."
+  },
+  "razor-leaf": {
+    "power": 55,
+    "accuracy": 95,
+    "desc": "Des feuilles aiguisées comme des rasoirs entaillent l’ennemi. Taux de critiques élevé."
+  },
+  "solar-beam": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Absorbe la lumière au premier tour et envoie un rayon puissant au tour suivant."
+  },
+  "poison-powder": {
+    "power": null,
+    "accuracy": 75,
+    "desc": "Une poudre toxique empoisonne l’ennemi."
+  },
+  "stun-spore": {
+    "power": null,
+    "accuracy": 75,
+    "desc": "Le lanceur répand sur l’ennemi une poudre qui le paralyse."
+  },
+  "sleep-powder": {
+    "power": null,
+    "accuracy": 75,
+    "desc": "Le lanceur répand une poudre soporifique qui endort la cible."
+  },
+  "petal-dance": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque en projetant des pétales pendant 2 à 3 tours avant de céder à la confusion."
+  },
+  "string-shot": {
+    "power": null,
+    "accuracy": 95,
+    "desc": "Le lanceur crache de la soie pour ligoter l’ennemi et baisser sa Vitesse."
+  },
+  "dragon-rage": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "La colère du lanceur déclenche une onde de choc destructrice qui inflige toujours 40 PV de dégâts."
+  },
+  "fire-spin": {
+    "power": 35,
+    "accuracy": 85,
+    "desc": "Un tourbillon de flammes emprisonne l’ennemi pendant 4 à 5 tours."
+  },
+  "thunder-shock": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Une décharge électrique tombe sur l’ennemi. Peut aussi le paralyser."
+  },
+  "thunderbolt": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Une grosse décharge électrique tombe sur l’ennemi. Peut aussi le paralyser."
+  },
+  "thunder-wave": {
+    "power": null,
+    "accuracy": 90,
+    "desc": "Un faible choc électrique frappe l’ennemi. Si l’attaque touche, celui-ci est paralysé."
+  },
+  "thunder": {
+    "power": 110,
+    "accuracy": 70,
+    "desc": "La foudre tombe sur l’ennemi pour lui infliger des dégâts. Peut aussi le paralyser."
+  },
+  "rock-throw": {
+    "power": 50,
+    "accuracy": 90,
+    "desc": "Le lanceur lâche une pierre sur l’ennemi."
+  },
+  "earthquake": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Le lanceur provoque un tremblement de terre touchant tous les Pokémon autour de lui."
+  },
+  "fissure": {
+    "power": null,
+    "accuracy": 30,
+    "desc": "Le lanceur fait tomber l’ennemi dans une crevasse. Si cette attaque réussit, elle met K.O. sur le coup."
+  },
+  "dig": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur creuse au 1er tour et frappe au 2è. Permet aussi de s’échapper d’un donjon."
+  },
+  "toxic": {
+    "power": null,
+    "accuracy": 90,
+    "desc": "Empoisonne gravement l’ennemi. Les dégâts dus au poison augmentent à chaque tour."
+  },
+  "confusion": {
+    "power": 50,
+    "accuracy": 100,
+    "desc": "Une faible vague télékinésique frappe l’ennemi. Peut aussi le plonger dans la confusion."
+  },
+  "psychic": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Une puissante force télékinésique frappe l’ennemi. Peut aussi faire baisser sa Défense Spéciale."
+  },
+  "hypnosis": {
+    "power": null,
+    "accuracy": 60,
+    "desc": "Le lanceur hypnotise l’ennemi pour le plonger dans un profond sommeil."
+  },
+  "meditate": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur médite pour éveiller son pouvoir latent et augmenter son Attaque."
+  },
+  "agility": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur se relaxe et allège son corps pour augmenter considérablement sa Vitesse."
+  },
+  "quick-attack": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Le lanceur fonce sur l’ennemi si rapidement qu’on parvient à peine à le discerner. Frappe en premier."
+  },
+  "rage": {
+    "power": 20,
+    "accuracy": 100,
+    "desc": "Une fois activée, cette capacité augmente l’Attaque du lanceur à mesure que celui-ci subit des attaques."
+  },
+  "teleport": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Permet de fuir un Pokémon sauvage. Permet aussi de revenir au dernier Centre Pokémon visité."
+  },
+  "night-shade": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur invoque un mirage. Inflige des dégâts équivalents au niveau du lanceur."
+  },
+  "mimic": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur copie la dernière capacité utilisée par la cible et la conserve tant qu’il reste au combat."
+  },
+  "screech": {
+    "power": null,
+    "accuracy": 85,
+    "desc": "Cri strident qui baisse beaucoup la Défense ennemie."
+  },
+  "double-team": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur se déplace si vite qu’il crée des copies illusoires de lui, augmentant son Esquive."
+  },
+  "recover": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Un soin qui permet au lanceur de récupérer jusqu’à la moitié de ses PV max."
+  },
+  "harden": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur contracte tous ses muscles pour augmenter sa Défense."
+  },
+  "minimize": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur comprime son corps pour se faire tout petit et augmenter fortement son Esquive."
+  },
+  "smokescreen": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur disperse un nuage d’encre ou de fumée. Réduit la Précision de l’ennemi."
+  },
+  "confuse-ray": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Un rayon sinistre qui plonge l’ennemi dans un état de confusion."
+  },
+  "withdraw": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur se recroqueville dans sa carapace, ce qui augmente sa Défense."
+  },
+  "defense-curl": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur s’enroule pour cacher ses points faibles, ce qui augmente sa Défense."
+  },
+  "barrier": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur érige un mur solide qui augmente fortement sa Défense."
+  },
+  "light-screen": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Un fabuleux mur de lumière qui réduit les dégâts causés par les attaques spéciales durant 5 tours."
+  },
+  "haze": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Un brouillard qui annule les changements de stats de tous les Pokémon au combat."
+  },
+  "reflect": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Un fabuleux mur de lumière qui réduit les dégâts causés par les attaques physiques durant 5 tours."
+  },
+  "focus-energy": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur prend une profonde inspiration et se concentre pour augmenter son taux de critiques."
+  },
+  "bide": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur encaisse les coups durant 2 tours et réplique en infligeant le double des dégâts subis."
+  },
+  "metronome": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Agite un doigt et stimule le cerveau pour utiliser presque n’importe quelle capacité au hasard."
+  },
+  "mirror-move": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur riposte à l’attaque de l’ennemi avec la même attaque."
+  },
+  "self-destruct": {
+    "power": 200,
+    "accuracy": 100,
+    "desc": "Le lanceur explose en blessant tous les Pokémon autour de lui. Le lanceur tombe K.O."
+  },
+  "egg-bomb": {
+    "power": 100,
+    "accuracy": 75,
+    "desc": "De toutes ses forces, le lanceur jette un gros œuf sur l’ennemi pour lui infliger des dégâts."
+  },
+  "lick": {
+    "power": 30,
+    "accuracy": 100,
+    "desc": "Un grand coup de langue qui inflige des dégâts à l’ennemi. Peut aussi le paralyser."
+  },
+  "smog": {
+    "power": 30,
+    "accuracy": 70,
+    "desc": "Le lanceur attaque à l’aide d’une éruption de gaz répugnants. Peut aussi empoisonner l’ennemi."
+  },
+  "sludge": {
+    "power": 65,
+    "accuracy": 100,
+    "desc": "Des détritus toxiques sont projetés sur l’ennemi. Peut aussi l’empoisonner."
+  },
+  "bone-club": {
+    "power": 65,
+    "accuracy": 85,
+    "desc": "Le lanceur frappe l’ennemi à grands coups d’os. Peut aussi apeurer l’ennemi."
+  },
+  "fire-blast": {
+    "power": 110,
+    "accuracy": 85,
+    "desc": "Un déluge de flammes ardentes submerge l’ennemi. Peut aussi le brûler."
+  },
+  "waterfall": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur charge l’ennemi à une vitesse remarquable, ce qui peut l’apeurer. Permet aussi de franchir une cascade."
+  },
+  "clamp": {
+    "power": 35,
+    "accuracy": 85,
+    "desc": "Le lanceur piège l’ennemi dans sa dure coquille et l’écrase pendant 4 à 5 tours."
+  },
+  "swift": {
+    "power": 60,
+    "accuracy": null,
+    "desc": "Le lanceur envoie des rayons d’étoiles. Touche toujours l’ennemi."
+  },
+  "skull-bash": {
+    "power": 130,
+    "accuracy": 100,
+    "desc": "Le lanceur baisse la tête pour augmenter sa Défense au 1er tour et percuter l’ennemi au 2è."
+  },
+  "spike-cannon": {
+    "power": 20,
+    "accuracy": 100,
+    "desc": "Envoie une rafale de dards. Peut toucher de 2 à 5 fois."
+  },
+  "constrict": {
+    "power": 10,
+    "accuracy": 100,
+    "desc": "De longs tentacules ou lianes attaquent l’ennemi. Peut aussi baisser sa Vitesse."
+  },
+  "amnesia": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur fait le vide dans son esprit pour oublier ses soucis. Augmente fortement sa Défense Spéciale."
+  },
+  "kinesis": {
+    "power": null,
+    "accuracy": 80,
+    "desc": "Le lanceur distrait l’ennemi en pliant une cuillère. Peut baisser la Précision de l’ennemi."
+  },
+  "soft-boiled": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur récupère jusqu’à la moitié de ses PV max. En dehors des combats, permet de transférer des PV du lanceur à un allié."
+  },
+  "high-jump-kick": {
+    "power": 130,
+    "accuracy": 90,
+    "desc": "Le lanceur s’élance pour effectuer un coup de genou sauté. S’il échoue, le lanceur se blesse."
+  },
+  "glare": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur intimide l’ennemi grâce à son regard terrifiant pour le paralyser."
+  },
+  "dream-eater": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Le lanceur mange le rêve de l’ennemi endormi. Le lanceur récupère en PV la moitié des dégâts infligés."
+  },
+  "poison-gas": {
+    "power": null,
+    "accuracy": 90,
+    "desc": "Un nuage de gaz toxique est projeté au visage de l’ennemi. Peut l’empoisonner."
+  },
+  "barrage": {
+    "power": 15,
+    "accuracy": 85,
+    "desc": "Projette de 2 à 5 grosses boules sur l’ennemi."
+  },
+  "leech-life": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Une attaque qui aspire le sang de l’ennemi. La moitié des dégâts sont convertis en PV pour le lanceur."
+  },
+  "lovely-kiss": {
+    "power": null,
+    "accuracy": 75,
+    "desc": "Le lanceur fait un bisou à l’ennemi en prenant une mine effrayante. Endort l’ennemi."
+  },
+  "sky-attack": {
+    "power": 140,
+    "accuracy": 90,
+    "desc": "Une attaque en 2 tours au taux de critiques élevé. Peut aussi apeurer l’ennemi."
+  },
+  "transform": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur devient une copie de sa cible et obtient la même palette de capacités."
+  },
+  "bubble": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Des bulles frappent l’ennemi. Peut réduire sa Vitesse."
+  },
+  "dizzy-punch": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Un enchaînement de coups de poing cadencés. Peut aussi rendre confus."
+  },
+  "spore": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur répand un nuage de spores qui endort."
+  },
+  "flash": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Explosion lumineuse qui fait baisser la Précision de l’ennemi. Permet aussi d’éclairer les grottes."
+  },
+  "psywave": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Une étrange onde d’énergie chaude frappe l’ennemi. Cette attaque est d’intensité variable."
+  },
+  "splash": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur barbote et éclabousse les environs. Cette capacité n’a aucun effet."
+  },
+  "acid-armor": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur modifie sa structure moléculaire pour se liquéfier et augmenter fortement sa Défense."
+  },
+  "crabhammer": {
+    "power": 100,
+    "accuracy": 90,
+    "desc": "Une grande pince martèle l’ennemi. Taux de critiques élevé."
+  },
+  "explosion": {
+    "power": 250,
+    "accuracy": 100,
+    "desc": "Le lanceur explose et inflige des dégâts à tous les Pokémon autour de lui. Met K.O. le lanceur."
+  },
+  "fury-swipes": {
+    "power": 18,
+    "accuracy": 80,
+    "desc": "L’ennemi est lacéré par des faux ou des griffes de 2 à 5 fois."
+  },
+  "bonemerang": {
+    "power": 50,
+    "accuracy": 90,
+    "desc": "Le lanceur projette son os comme un boomerang. Cette attaque frappe à l’aller et au retour."
+  },
+  "rest": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur dort pendant 2 tours. Il regagne tous ses PV et n’a plus de problèmes de statut."
+  },
+  "rock-slide": {
+    "power": 75,
+    "accuracy": 90,
+    "desc": "Envoie de gros rochers sur l’ennemi pour infliger des dégâts. Peut aussi l’apeurer."
+  },
+  "hyper-fang": {
+    "power": 80,
+    "accuracy": 90,
+    "desc": "Le lanceur mord l’ennemi à l’aide de ses incisives aiguisées. Peut aussi apeurer l’ennemi."
+  },
+  "sharpen": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur réduit son nombre de polygones pour accentuer ses angles et augmenter son Attaque."
+  },
+  "conversion": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur change de type pour prendre celui de l’une de ses capacités."
+  },
+  "tri-attack": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur envoie trois boules d’énergie simultanément. Peut aussi paralyser, brûler ou geler l’ennemi."
+  },
+  "super-fang": {
+    "power": null,
+    "accuracy": 90,
+    "desc": "Une vilaine morsure d’incisives qui réduit de moitié les PV de l’ennemi."
+  },
+  "slash": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Un coup de griffe ou autre tranche l’ennemi. Taux de critiques élevé."
+  },
+  "substitute": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur fait une copie de lui-même en sacrifiant quelques PV. La copie sert de leurre."
+  },
+  "struggle": {
+    "power": 50,
+    "accuracy": null,
+    "desc": "Une attaque désespérée, lancée quand le lanceur n’a plus de PP. Le blesse aussi légèrement."
+  },
+  "sketch": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur apprend le dernier coup utilisé par la cible. Gribouille disparaît après utilisation."
+  },
+  "triple-kick": {
+    "power": 10,
+    "accuracy": 90,
+    "desc": "Une salve de 1 à 3 coups de pied dont la puissance augmente à chaque coup porté."
+  },
+  "thief": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque la cible et vole son objet. Le lanceur ne peut rien voler s’il tient déjà un objet."
+  },
+  "spider-web": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur enserre l’ennemi à l’aide d’une fine soie gluante pour l’empêcher de fuir le combat."
+  },
+  "mind-reader": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur analyse les mouvements de l’ennemi pour être sûr de toucher au coup suivant."
+  },
+  "nightmare": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Un cauchemar qui inflige des dégâts à chaque tour à un ennemi endormi."
+  },
+  "flame-wheel": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Le lanceur s’entoure de feu et charge l’ennemi. Peut aussi brûler l’ennemi."
+  },
+  "snore": {
+    "power": 50,
+    "accuracy": 100,
+    "desc": "Une attaque qui ne fonctionne que si le lanceur est endormi. Le boucan peut aussi apeurer l’ennemi."
+  },
+  "curse": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Une capacité à l’effet différent selon que le lanceur est un Pokémon Spectre ou non."
+  },
+  "flail": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur fait tournoyer son fléau. Plus ses PV sont bas, plus l’attaque est puissante."
+  },
+  "conversion-2": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur change de type pour être résistant au type de la dernière attaque lancée par sa cible."
+  },
+  "aeroblast": {
+    "power": 100,
+    "accuracy": 95,
+    "desc": "Le lanceur projette une tornade sur l’ennemi pour infliger des dégâts. Taux de critiques élevé."
+  },
+  "cotton-spore": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur libère des spores cotonneuses qui collent à l’ennemi et baissent fortement sa Vitesse."
+  },
+  "reversal": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur ne retient plus ses coups. Plus ses PV sont bas et plus l’attaque est puissante."
+  },
+  "spite": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur exprime son ressentiment en retirant 4 PP de la dernière attaque de l’ennemi."
+  },
+  "powder-snow": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Le lanceur projette de la neige poudreuse. Peut aussi geler l’ennemi."
+  },
+  "protect": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur esquive toutes les attaques. Plus la capacité est utilisée de fois à la suite, plus elle risque d’échouer."
+  },
+  "mach-punch": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Coup de poing fulgurant. Frappe en premier."
+  },
+  "scary-face": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Une grimace qui effraie l’ennemi et réduit fortement sa Vitesse."
+  },
+  "feint-attack": {
+    "power": 60,
+    "accuracy": null,
+    "desc": "Le lanceur s’approche l’air de rien avant de frapper par surprise. N’échoue jamais."
+  },
+  "sweet-kiss": {
+    "power": null,
+    "accuracy": 75,
+    "desc": "Le lanceur envoie un bisou si mignon et désarmant qu’il plonge l’ennemi dans la confusion."
+  },
+  "belly-drum": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Améliore l’Attaque au maximum en sacrifiant la moitié des PV max."
+  },
+  "sludge-bomb": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Des détritus toxiques sont projetés sur l’ennemi. Peut aussi l’empoisonner."
+  },
+  "mud-slap": {
+    "power": 20,
+    "accuracy": 100,
+    "desc": "Le lanceur envoie de la boue au visage de l’ennemi pour infliger des dégâts et baisser sa Précision."
+  },
+  "octazooka": {
+    "power": 65,
+    "accuracy": 85,
+    "desc": "Le lanceur attaque en projetant de l’encre au visage de l’ennemi. Peut aussi baisser la Précision de l’ennemi."
+  },
+  "spikes": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur disperse des piquants sur le sol pour blesser tout ennemi qui entre au combat."
+  },
+  "zap-cannon": {
+    "power": 120,
+    "accuracy": 50,
+    "desc": "Un boulet de canon électrifié qui inflige des dégâts et paralyse l’ennemi."
+  },
+  "foresight": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Permet de toucher un Pokémon Spectre avec n’importe quelle capacité et de toucher un ennemi insaisissable."
+  },
+  "destiny-bond": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Quand cette capacité est activée, elle met K.O. un ennemi qui porte un coup fatal au lanceur."
+  },
+  "perish-song": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Tout Pokémon qui entend ce requiem est K.O. dans 3 tours à moins qu’il ne quitte le combat."
+  },
+  "icy-wind": {
+    "power": 55,
+    "accuracy": 95,
+    "desc": "Une bourrasque de vent froid blesse l’ennemi. Réduit aussi sa Vitesse."
+  },
+  "detect": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur esquive toutes les attaques. Plus la capacité est utilisée de fois à la suite, plus elle risque d’échouer."
+  },
+  "bone-rush": {
+    "power": 25,
+    "accuracy": 90,
+    "desc": "Le lanceur frappe l’ennemi 2 à 5 fois avec un os."
+  },
+  "lock-on": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Verrouille l’ennemi pour ne pas le rater au tour suivant."
+  },
+  "outrage": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Le lanceur laisse éclater sa rage et attaque pendant 2 à 3 tours avant de céder à la confusion."
+  },
+  "sandstorm": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Une tempête de sable de 5 tours qui blesse tous les Pokémon sauf les types Roche, Sol et Acier."
+  },
+  "giga-drain": {
+    "power": 75,
+    "accuracy": 100,
+    "desc": "Une attaque qui convertit la moitié des dégâts infligés en PV."
+  },
+  "endure": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur résiste aux attaques avec 1 PV. Peut échouer si utilisée plusieurs fois de suite."
+  },
+  "charm": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur fait les yeux doux pour berner l’ennemi et réduire considérablement son Attaque."
+  },
+  "rollout": {
+    "power": 30,
+    "accuracy": 90,
+    "desc": "Un rocher roule sur l’ennemi pendant 5 tours. L’attaque gagne en puissance à chaque coup."
+  },
+  "false-swipe": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Le lanceur retient ses coups pour que l’ennemi garde au moins 1 PV et ne tombe pas K.O."
+  },
+  "swagger": {
+    "power": null,
+    "accuracy": 85,
+    "desc": "Fait enrager la cible et la plonge dans la confusion, mais augmente fortement son Attaque."
+  },
+  "milk-drink": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur récupère jusqu’à la moitié de ses PV max. En dehors des combats, permet de transférer des PV du lanceur à un allié."
+  },
+  "spark": {
+    "power": 65,
+    "accuracy": 100,
+    "desc": "Lance une charge électrique sur l’ennemi. Peut aussi le paralyser."
+  },
+  "fury-cutter": {
+    "power": 40,
+    "accuracy": 95,
+    "desc": "Un coup de faux ou de griffe dont la force augmente quand il touche plusieurs fois d’affilée."
+  },
+  "steel-wing": {
+    "power": 70,
+    "accuracy": 90,
+    "desc": "Le lanceur frappe l’ennemi avec des ailes d’acier. Peut aussi augmenter la Défense du lanceur."
+  },
+  "mean-look": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur pétrifie l’ennemi en lui lançant un regard noir. Il devient incapable de s’enfuir."
+  },
+  "attract": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Si l’ennemi est du sexe opposé, il tombe amoureux et rechigne alors à attaquer."
+  },
+  "sleep-talk": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur utilise un de ses coups au hasard pendant qu’il dort."
+  },
+  "heal-bell": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Carillon apaisant qui soigne les problèmes de statut de tous les Pokémon de l’équipe."
+  },
+  "return": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Une attaque furieuse dont la puissance augmente quand le Pokémon apprécie son Dresseur."
+  },
+  "present": {
+    "power": null,
+    "accuracy": 90,
+    "desc": "Le lanceur attaque en offrant un cadeau piégé à la cible. Peut à l’inverse restaurer certains de ses PV."
+  },
+  "frustration": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Moins le Pokémon aime son Dresseur, plus cette attaque est puissante."
+  },
+  "safeguard": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Champ protecteur empêchant tous les problèmes de statut pendant 5 tours."
+  },
+  "pain-split": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur ajoute ses PV à ceux de sa cible et les répartit équitablement."
+  },
+  "sacred-fire": {
+    "power": 100,
+    "accuracy": 95,
+    "desc": "Un feu mystique d’une intensité redoutable attaque l’ennemi. Peut aussi le brûler."
+  },
+  "magnitude": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Un tremblement de terre d’intensité variable qui affecte tous les Pokémon alentour. L’efficacité varie."
+  },
+  "dynamic-punch": {
+    "power": 100,
+    "accuracy": 50,
+    "desc": "Le lanceur rassemble ses forces et envoie un coup de poing à l’ennemi. S’il est touché, il est confus."
+  },
+  "megahorn": {
+    "power": 120,
+    "accuracy": 85,
+    "desc": "Le lanceur utilise ses gigantesques cornes pour charger l’ennemi."
+  },
+  "dragon-breath": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Le lanceur souffle fort sur l’ennemi pour infliger des dégâts. Peut aussi le paralyser."
+  },
+  "baton-pass": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur échange sa place et tout changement de stat avec un Pokémon de l’équipe."
+  },
+  "encore": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Oblige l’ennemi à répéter la dernière capacité utilisée durant 3 tours."
+  },
+  "pursuit": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Une attaque qui inflige deux fois plus de dégâts à un ennemi qui quitte le combat."
+  },
+  "rapid-spin": {
+    "power": 50,
+    "accuracy": 100,
+    "desc": "Une attaque tournoyante pouvant aussi annuler par ex. Étreinte, Ligotage, Vampigraine ou Picots."
+  },
+  "sweet-scent": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Un doux parfum qui réduit l’Esquive de l’ennemi. Attire aussi les Pokémon sauvages."
+  },
+  "iron-tail": {
+    "power": 100,
+    "accuracy": 75,
+    "desc": "Attaque l’ennemi avec une queue de fer. Peut aussi baisser la Défense de l’ennemi."
+  },
+  "metal-claw": {
+    "power": 50,
+    "accuracy": 95,
+    "desc": "Attaque avec des griffes d’acier. Peut aussi augmenter l’Attaque du lanceur."
+  },
+  "vital-throw": {
+    "power": 70,
+    "accuracy": null,
+    "desc": "Le lanceur porte son coup en dernier. En échange, cette capacité n’échoue jamais."
+  },
+  "morning-sun": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Un soin qui restaure des PV au lanceur. Son efficacité varie en fonction de la météo."
+  },
+  "synthesis": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Un soin qui restaure des PV au lanceur. Son efficacité varie en fonction de la météo."
+  },
+  "moonlight": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Un soin qui restaure des PV au lanceur. Son efficacité varie en fonction de la météo."
+  },
+  "hidden-power": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Attaque dont la puissance et le type dépendent du Pokémon qui l’utilise."
+  },
+  "cross-chop": {
+    "power": 100,
+    "accuracy": 80,
+    "desc": "Le lanceur délivre un coup double en croisant les avant-bras. Taux de critiques élevé."
+  },
+  "twister": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Déclenche un terrible ouragan sur l’ennemi. Peut aussi l’apeurer."
+  },
+  "rain-dance": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Invoque de fortes pluies qui durent 5 tours et améliorent les capacités de type Eau."
+  },
+  "sunny-day": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Fait briller le soleil pendant 5 tours et améliore les capacités de type Feu."
+  },
+  "crunch": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur mord l’ennemi de ses crocs pointus. Peut aussi baisser la Défense de l’ennemi."
+  },
+  "mirror-coat": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Une riposte qui contre n’importe quelle attaque spéciale en infligeant le double des dégâts subis."
+  },
+  "psych-up": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Une autohypnose qui permet au lanceur de copier les changements de stats de la cible."
+  },
+  "extreme-speed": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur charge à une vitesse renversante. Cette attaque a toujours l’initiative."
+  },
+  "ancient-power": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Une attaque préhistorique qui peut augmenter toutes les stats du lanceur d’un seul coup."
+  },
+  "shadow-ball": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Projette une grande ombre sur l’ennemi. Peut aussi faire baisser sa Défense Spéciale."
+  },
+  "future-sight": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "De l’énergie psychique vient frapper l’ennemi 2 tours après l’utilisation de cette capacité."
+  },
+  "rock-smash": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Porte un coup dévastateur à l’ennemi. Peut briser des rochers fissurés. Peut baisser la Défense."
+  },
+  "whirlpool": {
+    "power": 35,
+    "accuracy": 85,
+    "desc": "Piège l’ennemi dans une trombe d’eau pendant 4 à 5 tours."
+  },
+  "beat-up": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur appelle tous les Pokémon de son équipe à attaquer. Plus ils sont nombreux, plus il y a d’attaques."
+  },
+  "fake-out": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Permet de frapper en premier et apeure l’ennemi. Ne fonctionne qu’au premier tour."
+  },
+  "uproar": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque en rugissant durant 3 tours. Pendant ce temps, personne ne peut s’endormir."
+  },
+  "stockpile": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur accumule de la puissance et augmente sa Défense et sa Défense Spéciale. Peut être utilisé 3 fois."
+  },
+  "spit-up": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Libère dans une attaque la puissance précédemment accumulée avec Stockage."
+  },
+  "swallow": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur absorbe la puissance accumulée avec Stockage pour restaurer ses PV."
+  },
+  "heat-wave": {
+    "power": 95,
+    "accuracy": 90,
+    "desc": "Le lanceur provoque une vague de chaleur. Peut aussi brûler l’ennemi."
+  },
+  "hail": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Invoque une tempête de grêle qui dure 5 tours. Ne blesse pas les Pokémon de type Glace."
+  },
+  "torment": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur irrite l’ennemi pour l’empêcher d’utiliser la même capacité 2 fois de suite."
+  },
+  "flatter": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Rend la cible confuse, mais augmente son Attaque Spéciale."
+  },
+  "will-o-wisp": {
+    "power": null,
+    "accuracy": 85,
+    "desc": "Lance une sinistre flamme violette à l’ennemi pour lui infliger une brûlure."
+  },
+  "memento": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur est mis K.O., mais l’Attaque et l’Attaque Spéciale de l’ennemi baissent beaucoup."
+  },
+  "facade": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Une attaque dont la puissance double lorsque le lanceur est empoisonné, paralysé ou brûlé."
+  },
+  "focus-punch": {
+    "power": 150,
+    "accuracy": 100,
+    "desc": "Le lanceur se concentre avant d’attaquer. Échoue s’il est touché avant d’avoir frappé."
+  },
+  "smelling-salts": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Cette attaque est doublement efficace sur les Pokémon paralysés, mais elle soigne leur paralysie."
+  },
+  "follow-me": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Attire l’attention. Les ennemis n’attaquent que le lanceur."
+  },
+  "nature-power": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Une attaque qui tire sa force de la nature. Son type varie selon le terrain."
+  },
+  "charge": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur concentre sa puissance pour sa prochaine attaque Électrik. Augmente sa Défense Spéciale."
+  },
+  "taunt": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Provoque l’ennemi. L’oblige à n’utiliser que des attaques pendant 3 tours."
+  },
+  "helping-hand": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Une capacité qui augmente la puissance d’attaque de l’allié pendant un tour."
+  },
+  "trick": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur prend la cible au dépourvu et l’oblige à échanger son objet contre le sien."
+  },
+  "role-play": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Imite la cible et copie sa capacité spéciale."
+  },
+  "wish": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Un vœu qui permet de récupérer la moitié des PV max au tour suivant."
+  },
+  "assist": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur se dépêche d’utiliser une capacité au hasard parmi celles des Pokémon de l’équipe."
+  },
+  "ingrain": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur plante ses racines et récupère des PV à chaque tour. Une fois enraciné, il ne peut plus fuir."
+  },
+  "superpower": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Une attaque puissante, mais qui baisse l’Attaque et la Défense du lanceur."
+  },
+  "magic-coat": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Une barrière qui renvoie les capacités comme Vampigraine et celles affectant le statut et les stats."
+  },
+  "recycle": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Recycle un objet tenu à usage unique déjà utilisé lors du combat pour pouvoir l’utiliser à nouveau."
+  },
+  "revenge": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Une attaque deux fois plus puissante si le lanceur a été blessé par l’ennemi durant ce tour."
+  },
+  "brick-break": {
+    "power": 75,
+    "accuracy": 100,
+    "desc": "Une attaque avec le tranchant de la main. Permet aussi de  briser les barrières comme Mur Lumière et Protection."
+  },
+  "yawn": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Fait bâiller l’ennemi qui s’endort au tour suivant."
+  },
+  "knock-off": {
+    "power": 65,
+    "accuracy": 100,
+    "desc": "Le lanceur fait tomber l’objet tenu par l’ennemi pour le rendre inutilisable durant le combat."
+  },
+  "endeavor": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Une attaque qui réduit les PV de l’ennemi au niveau des PV du lanceur."
+  },
+  "eruption": {
+    "power": 150,
+    "accuracy": 100,
+    "desc": "Le lanceur laisse exploser sa colère. Plus ses PV sont bas et moins l’attaque est puissante."
+  },
+  "skill-swap": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur utilise ses pouvoirs psychiques pour échanger sa capacité spéciale avec la cible."
+  },
+  "imprison": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Si l’ennemi et le lanceur ont des capacités en commun, l’ennemi ne pourra pas les utiliser."
+  },
+  "refresh": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur se repose pour guérir d’un empoisonnement, d’une brûlure ou d’une paralysie."
+  },
+  "grudge": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Si le lanceur est mis K.O., sa rancune épuise les PP de la capacité utilisée pour le mettre K.O."
+  },
+  "snatch": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur vole l’effet des capacités de soin ou de changement de stats utilisées par la cible."
+  },
+  "secret-power": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Les effets de cette attaque varient en fonction de l’environnement."
+  },
+  "dive": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur plonge sous l’eau au 1er tour et frappe au 2è. Permet aussi de plonger au fond de l’eau."
+  },
+  "arm-thrust": {
+    "power": 15,
+    "accuracy": 100,
+    "desc": "Un déluge de coups adressés avec la paume qui frappe de 2 à 5 fois d’affilée."
+  },
+  "camouflage": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Modifie le type du lanceur en fonction du terrain, comme une berge, une grotte, l’herbe, etc."
+  },
+  "tail-glow": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur regarde un flash lumineux fixement. Augmente considérablement son Attaque Spéciale."
+  },
+  "luster-purge": {
+    "power": 95,
+    "accuracy": 100,
+    "desc": "Le lanceur libère un éclair lumineux. Peut aussi baisser la Défense Spéciale de l’ennemi."
+  },
+  "mist-ball": {
+    "power": 95,
+    "accuracy": 100,
+    "desc": "Une bulle de brume inflige des dégâts à l’ennemi. Peut aussi réduire son Attaque Spéciale."
+  },
+  "feather-dance": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Une montagne de plumes ensevelit l’ennemi et réduit considérablement son Attaque."
+  },
+  "teeter-dance": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Danse qui rend confus tous les Pokémon autour du lanceur."
+  },
+  "blaze-kick": {
+    "power": 85,
+    "accuracy": 90,
+    "desc": "Le lanceur envoie un coup de pied au taux de critiques élevé. Peut aussi brûler la cible."
+  },
+  "mud-sport": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur se couvre de boue pour affaiblir les capacités Électrik quand il combat."
+  },
+  "ice-ball": {
+    "power": 30,
+    "accuracy": 90,
+    "desc": "Envoie une balle de glace pendant 5 tours. L’attaque gagne en puissance à chaque coup."
+  },
+  "needle-arm": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque en fouettant l’ennemi de ses bras épineux. Peut aussi l’apeurer."
+  },
+  "slack-off": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur se tourne les pouces et récupère jusqu’à la moitié de ses PV max."
+  },
+  "hyper-voice": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Le lanceur pousse un cri dont l’écho terrifiant a le pouvoir d’infliger des dégâts."
+  },
+  "poison-fang": {
+    "power": 50,
+    "accuracy": 100,
+    "desc": "Le lanceur mord l’ennemi de ses crocs toxiques. Peut aussi l’empoisonner gravement."
+  },
+  "crush-claw": {
+    "power": 75,
+    "accuracy": 95,
+    "desc": "Lacère l’ennemi avec des griffes solides et aiguisées. Peut aussi baisser sa Défense."
+  },
+  "blast-burn": {
+    "power": 150,
+    "accuracy": 90,
+    "desc": "Une explosion ardente souffle l’adversaire. Le lanceur doit se reposer au tour suivant."
+  },
+  "hydro-cannon": {
+    "power": 150,
+    "accuracy": 90,
+    "desc": "Une trombe d’eau heurte l’ennemi. Le lanceur doit se reposer au tour suivant."
+  },
+  "meteor-mash": {
+    "power": 90,
+    "accuracy": 90,
+    "desc": "Un coup de poing lancé à la vitesse d’un météore. Peut aussi augmenter l’Attaque du lanceur."
+  },
+  "astonish": {
+    "power": 30,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque l’ennemi en poussant un cri terrifiant. Peut aussi l’apeurer."
+  },
+  "weather-ball": {
+    "power": 50,
+    "accuracy": 100,
+    "desc": "Une attaque dont la puissance et le type varient en fonction du temps qu’il fait."
+  },
+  "aromatherapy": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur libère un parfum apaisant qui guérit tous les problèmes de statut de l’équipe."
+  },
+  "fake-tears": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur fait semblant de pleurer pour troubler l’ennemi et baisser fortement sa Défense Spéciale."
+  },
+  "air-cutter": {
+    "power": 60,
+    "accuracy": 95,
+    "desc": "Le lanceur appelle des vents tranchants qui lacèrent l’ennemi. Taux de critiques élevé."
+  },
+  "overheat": {
+    "power": 130,
+    "accuracy": 90,
+    "desc": "Attaque l’ennemi à pleine puissance. Le contrecoup baisse énormément l’Attaque Spéciale du lanceur."
+  },
+  "odor-sleuth": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Permet de toucher un Pokémon Spectre avec n’importe quelle capacité et de toucher un ennemi insaisissable."
+  },
+  "rock-tomb": {
+    "power": 60,
+    "accuracy": 95,
+    "desc": "Des rochers frappent l’ennemi. Réduit aussi sa Vitesse en l’empêchant de se déplacer."
+  },
+  "silver-wind": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Vent qui projette des écailles poudreuses sur l’ennemi. Peut aussi monter toutes les stats du lanceur."
+  },
+  "metal-sound": {
+    "power": null,
+    "accuracy": 85,
+    "desc": "Un cri horrible tel un crissement métallique qui réduit fortement la Défense Spéciale de l’ennemi."
+  },
+  "grass-whistle": {
+    "power": null,
+    "accuracy": 55,
+    "desc": "Le lanceur joue une douce mélodie qui plonge l’ennemi dans un profond sommeil."
+  },
+  "tickle": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur chatouille l’ennemi, ce qui baisse son Attaque et sa Défense."
+  },
+  "cosmic-power": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur absorbe un pouvoir mystique spatial qui augmente sa Défense et sa Défense Spéciale."
+  },
+  "water-spout": {
+    "power": 150,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque avec un jet d’eau. Moins il a de PV et moins l’attaque est puissante."
+  },
+  "signal-beam": {
+    "power": 75,
+    "accuracy": 100,
+    "desc": "Le lanceur projette un rayon de lumière sinistre. Peut aussi rendre l’ennemi confus."
+  },
+  "shadow-punch": {
+    "power": 60,
+    "accuracy": null,
+    "desc": "Le lanceur surgit des ombres et donne un coup de poing. N’échoue jamais."
+  },
+  "extrasensory": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque avec un pouvoir étrange et invisible. Peut aussi apeurer l’ennemi."
+  },
+  "sky-uppercut": {
+    "power": 85,
+    "accuracy": 90,
+    "desc": "Le lanceur attaque avec un uppercut. Il envoie son poing vers le ciel de toutes ses forces."
+  },
+  "sand-tomb": {
+    "power": 35,
+    "accuracy": 85,
+    "desc": "Le lanceur emprisonne l’ennemi dans une tempête de sable terrifiante qui dure de 4 à 5 tours."
+  },
+  "sheer-cold": {
+    "power": null,
+    "accuracy": 30,
+    "desc": "Une vague de froid glacial frappe l’ennemi. S’il est touché, il est mis K.O. sur le coup."
+  },
+  "muddy-water": {
+    "power": 90,
+    "accuracy": 85,
+    "desc": "Le lanceur attaque en projetant de l’eau boueuse. Peut aussi réduire la Précision de l’ennemi."
+  },
+  "bullet-seed": {
+    "power": 25,
+    "accuracy": 100,
+    "desc": "Le lanceur mitraille l’ennemi avec une rafale de graines. De 2 à 5 rafales sont lancées à la suite."
+  },
+  "aerial-ace": {
+    "power": 60,
+    "accuracy": null,
+    "desc": "Le lanceur prend l’ennemi de vitesse et le lacère. N’échoue jamais."
+  },
+  "icicle-spear": {
+    "power": 25,
+    "accuracy": 100,
+    "desc": "Le lanceur jette des pics de glace sur l’ennemi, de 2 à 5 fois de suite."
+  },
+  "iron-defense": {
+    "power": null,
+    "accuracy": null,
+    "desc": "L’épiderme du lanceur devient dur comme du fer, ce qui augmente considérablement sa Défense."
+  },
+  "block": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur bloque la route de l’ennemi pour empêcher sa fuite."
+  },
+  "howl": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur hurle pour se rassurer, ce qui augmente son Attaque."
+  },
+  "dragon-claw": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur lacère l’ennemi de ses grandes griffes aiguisées."
+  },
+  "frenzy-plant": {
+    "power": 150,
+    "accuracy": 90,
+    "desc": "Un violent coup de racines s’abat sur l’ennemi. Immobilise le lanceur au tour suivant."
+  },
+  "bulk-up": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur tend ses muscles pour se gonfler, ce qui booste son Attaque et sa Défense."
+  },
+  "bounce": {
+    "power": 85,
+    "accuracy": 85,
+    "desc": "Le lanceur bondit très haut et plonge sur l’ennemi au 2è tour. Peut aussi paralyser l’ennemi."
+  },
+  "mud-shot": {
+    "power": 55,
+    "accuracy": 95,
+    "desc": "Le lanceur attaque en projetant de la boue sur l’ennemi. Réduit aussi la Vitesse de la cible."
+  },
+  "poison-tail": {
+    "power": 50,
+    "accuracy": 100,
+    "desc": "Attaque à taux de critiques élevé. Peut aussi empoisonner l’ennemi."
+  },
+  "covet": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Le lanceur s’approche de la cible avec un air angélique afin de dérober l’objet qu’elle tient."
+  },
+  "volt-tackle": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Le lanceur électrifie son corps avant de charger. Le choc blesse aussi beaucoup le lanceur et peut paralyser l’ennemi."
+  },
+  "magical-leaf": {
+    "power": 60,
+    "accuracy": null,
+    "desc": "Le lanceur disperse d’étranges feuilles qui poursuivent l’ennemi. N’échoue jamais."
+  },
+  "water-sport": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur s’asperge d’eau. Affaiblit les capacités Feu quand le lanceur est au combat."
+  },
+  "calm-mind": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur se concentre et fait le vide dans son esprit pour monter son Attaque Spéciale et sa Défense Spéciale."
+  },
+  "leaf-blade": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Une feuille coupante comme une lame entaille l’ennemi. Taux de critiques élevé."
+  },
+  "dragon-dance": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Une danse mystique dont le rythme effréné augmente l’Attaque et la Vitesse du lanceur."
+  },
+  "rock-blast": {
+    "power": 25,
+    "accuracy": 90,
+    "desc": "Le lanceur projette un rocher sur l’ennemi de 2 à 5 fois d’affilée."
+  },
+  "shock-wave": {
+    "power": 60,
+    "accuracy": null,
+    "desc": "Le lanceur envoie un choc électrique rapide à l’ennemi. Impossible à esquiver."
+  },
+  "water-pulse": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Le lanceur envoie un puissant jet d’eau sur l’ennemi. Peut rendre l’ennemi confus."
+  },
+  "doom-desire": {
+    "power": 140,
+    "accuracy": 100,
+    "desc": "Le lanceur génère une sphère lumineuse qu’il projette sur l’ennemi 2 tours plus tard."
+  },
+  "psycho-boost": {
+    "power": 140,
+    "accuracy": 90,
+    "desc": "Attaque l’ennemi à pleine puissance. Le contrecoup baisse énormément l’Attaque Spéciale du lanceur."
+  },
+  "roost": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur atterrit et se repose. Restaure jusqu’à la moitié de ses PV max."
+  },
+  "gravity": {
+    "power": null,
+    "accuracy": null,
+    "desc": "La gravité augmente pendant 5 tours, ce qui empêche les capacités volantes et annule Lévitation."
+  },
+  "miracle-eye": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Permet de toucher un Pokémon Ténèbres avec toute capacité et de toucher un ennemi insaisissable."
+  },
+  "wake-up-slap": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Cette attaque inflige d’importants dégâts à un Pokémon endormi. Mais elle le réveille également."
+  },
+  "hammer-arm": {
+    "power": 100,
+    "accuracy": 90,
+    "desc": "Le lanceur lâche un puissant coup de poing sur l’ennemi. Réduit la vitesse du lanceur."
+  },
+  "gyro-ball": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur effectue une rotation et frappe l’ennemi. Plus le lanceur est lent, plus il fait de dégâts."
+  },
+  "healing-wish": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur tombe K.O. pour soigner les PV et le statut du Pokémon qui passe après lui."
+  },
+  "brine": {
+    "power": 65,
+    "accuracy": 100,
+    "desc": "Cette attaque est deux fois plus puissante lorsque l’ennemi a moins de la moitié de ses PV."
+  },
+  "natural-gift": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Avant d’attaquer, le lanceur rassemble ses forces grâce à sa Baie. Elle détermine le type et la puissance."
+  },
+  "feint": {
+    "power": 30,
+    "accuracy": 100,
+    "desc": "Une attaque capable de toucher un ennemi qui utilise Détection ou Abri. Annule aussi leur effet."
+  },
+  "pluck": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Le lanceur picore la cible. Si cette dernière tient une Baie, le lanceur la mange et profite de ses effets."
+  },
+  "tailwind": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Génère une rafale de vent qui augmente la Vitesse des Pokémon de l’équipe pendant 4 tours."
+  },
+  "acupressure": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur effectue des pressions pour augmenter fortement l’une de ses stats."
+  },
+  "metal-burst": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque le dernier ennemi l’ayant blessé durant le même tour en frappant plus fort."
+  },
+  "u-turn": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Après son attaque, le lanceur revient à toute vitesse et change de place avec un Pokémon de l’équipe prêt au combat."
+  },
+  "close-combat": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Le lanceur combat au corps à corps sans se protéger. Baisse aussi sa Défense et sa Défense Spéciale."
+  },
+  "payback": {
+    "power": 50,
+    "accuracy": 100,
+    "desc": "Le lanceur charge son énergie, puis attaque. La puissance est doublée si le lanceur agit après l’ennemi."
+  },
+  "assurance": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Cette attaque est deux fois plus efficace si l’ennemi a déjà été blessé durant ce tour."
+  },
+  "embargo": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Empêche l’ennemi d’utiliser un objet tenu et son Dresseur d’utiliser un objet sur lui."
+  },
+  "fling": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur envoie l’objet qu’il tient sur l’ennemi. La puissance et les effets dépendent de l’objet."
+  },
+  "psycho-shift": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur transfère ses problèmes de statut à l’ennemi grâce à son pouvoir de suggestion."
+  },
+  "trump-card": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Moins cette capacité possède de PP, plus elle est puissante."
+  },
+  "heal-block": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur empêche l’ennemi d’utiliser ses capacités, cap. spé. ou objets tenus pour récupérer des PV pendant 5 tours."
+  },
+  "wring-out": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur essore l’ennemi. Plus l’ennemi a de PV, plus cette attaque est puissante."
+  },
+  "power-trick": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur utilise ses pouvoirs psychiques pour échanger sa stat Défense et sa stat Attaque."
+  },
+  "gastro-acid": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur répand ses sucs digestifs sur l’ennemi. Le fluide neutralise la capacité spéciale de l’ennemi."
+  },
+  "lucky-chant": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur envoie une incantation vers le ciel pour empêcher l’ennemi d’effectuer des coups critiques."
+  },
+  "me-first": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur vole la capacité prévue par l’ennemi et l’utilise en faisant plus de dégâts. Il doit frapper en premier."
+  },
+  "copycat": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur imite la dernière capacité employée. Échoue si aucune capacité n’a été utilisée."
+  },
+  "power-swap": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Pouvoir qui échange les modifications de l’Attaque Spéciale et de l’Attaque du lanceur avec la cible."
+  },
+  "guard-swap": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Pouvoir qui échange les modifications de la Défense Spéciale et de la Défense avec la cible."
+  },
+  "punishment": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Plus l’ennemi a utilisé des augmentations de stats et plus cette capacité est puissante."
+  },
+  "last-resort": {
+    "power": 140,
+    "accuracy": 100,
+    "desc": "Cette capacité ne peut être utilisée qu’après que le lanceur a utilisé toutes les autres."
+  },
+  "worry-seed": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Plante sur la cible une graine qui la rend soucieuse et remplace sa capacité spéciale par Insomnia, l’empêchant ainsi de dormir."
+  },
+  "sucker-punch": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Permet au lanceur de frapper en premier. Échoue si l’ennemi ne prépare pas une attaque."
+  },
+  "toxic-spikes": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Lance des pics autour de l’ennemi. Ils empoisonnent les ennemis qui entrent au combat."
+  },
+  "heart-swap": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur utilise un pouvoir psychique pour échanger ses changements de stats avec la cible."
+  },
+  "aqua-ring": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Un voile liquide enveloppe le lanceur. Il récupère des PV à chaque tour."
+  },
+  "magnet-rise": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur utilise l’électricité pour générer un champ magnétique et léviter durant 5 tours."
+  },
+  "flare-blitz": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Le lanceur s’embrase avant de charger l’ennemi. Le choc blesse aussi gravement le lanceur. Peut brûler l’ennemi."
+  },
+  "force-palm": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Une onde de choc frappe l’ennemi. Peut aussi paralyser la cible."
+  },
+  "aura-sphere": {
+    "power": 80,
+    "accuracy": null,
+    "desc": "Le lanceur dégage une aura et projette de l’énergie. N’échoue jamais."
+  },
+  "rock-polish": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur polit son corps pour diminuer sa résistance au vent. Augmente fortement la Vitesse."
+  },
+  "poison-jab": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Attaque l’ennemi avec un tentacule ou un bras plein de poison. Peut aussi l’empoisonner."
+  },
+  "dark-pulse": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur dégage une horrible aura chargée d’idées noires. Peut aussi apeurer l’ennemi."
+  },
+  "night-slash": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Le lanceur lacère l’ennemi à la première occasion. Taux de critiques élevé."
+  },
+  "aqua-tail": {
+    "power": 90,
+    "accuracy": 90,
+    "desc": "Le lanceur attaque en balançant sa queue comme une lame de fond en pleine tempête."
+  },
+  "seed-bomb": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur fait pleuvoir un déluge de graines solides sur l’ennemi."
+  },
+  "air-slash": {
+    "power": 75,
+    "accuracy": 95,
+    "desc": "Le lanceur attaque avec une lame d’air qui fend tout. Peut aussi apeurer l’ennemi."
+  },
+  "x-scissor": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur taillade l’ennemi en utilisant ses faux ou ses griffes comme une paire de ciseaux."
+  },
+  "bug-buzz": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Le lanceur fait vibrer ses ailes pour lancer une vague sonique. Peut aussi baisser la Défense Spéciale de l’ennemi."
+  },
+  "dragon-pulse": {
+    "power": 85,
+    "accuracy": 100,
+    "desc": "Le lanceur ouvre la bouche pour envoyer une onde de choc qui frappe l’ennemi."
+  },
+  "dragon-rush": {
+    "power": 100,
+    "accuracy": 75,
+    "desc": "Le lanceur frappe l’ennemi d’un air menaçant. Peut aussi apeurer l’ennemi."
+  },
+  "power-gem": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque avec un rayon de lumière qui scintille comme s’il était composé de gemmes."
+  },
+  "drain-punch": {
+    "power": 75,
+    "accuracy": 100,
+    "desc": "Un coup de poing qui draine l’énergie. Convertit la moitié des dégâts infligés en PV pour le lanceur."
+  },
+  "vacuum-wave": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Le lanceur agite son poing pour projeter une onde de vide. Frappe toujours en premier."
+  },
+  "focus-blast": {
+    "power": 120,
+    "accuracy": 70,
+    "desc": "Le lanceur rassemble ses forces et laisse éclater son pouvoir. Peut aussi baisser la Défense Spéciale de l’ennemi."
+  },
+  "energy-ball": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Utilise les pouvoirs de la nature pour attaquer l’ennemi. Peut aussi baisser la Défense Spéciale de l’ennemi."
+  },
+  "brave-bird": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Le lanceur replie ses ailes et charge en rase-mottes. Le lanceur subit aussi de graves dégâts."
+  },
+  "earth-power": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Des éruptions volcaniques ont lieu sous l’ennemi. Peut aussi baisser la Défense Spéciale de l’ennemi."
+  },
+  "switcheroo": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur échange son objet avec celui de la cible à une vitesse que l’œil a du mal à suivre."
+  },
+  "giga-impact": {
+    "power": 150,
+    "accuracy": 90,
+    "desc": "Le lanceur charge l’ennemi de toute sa puissance. Il doit ensuite se reposer au tour suivant."
+  },
+  "nasty-plot": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Stimule l’esprit par de mauvaises pensées. Augmente fortement l’Attaque Spéciale du lanceur."
+  },
+  "bullet-punch": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Le lanceur envoie des coups de poing aussi rapides que des balles de revolver. Frappe toujours en premier."
+  },
+  "avalanche": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Une attaque deux fois plus puissante si le lanceur a été blessé par l’ennemi durant le tour."
+  },
+  "ice-shard": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Le lanceur crée des éclats de glace qu’il envoie sur l’ennemi. Frappe toujours en premier."
+  },
+  "shadow-claw": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Attaque avec une griffe puissante faite d’ombres. Taux de critiques élevé."
+  },
+  "thunder-fang": {
+    "power": 65,
+    "accuracy": 95,
+    "desc": "Le lanceur utilise une morsure électrifiée. Peut aussi paralyser ou apeurer l’ennemi."
+  },
+  "ice-fang": {
+    "power": 65,
+    "accuracy": 95,
+    "desc": "Le lanceur utilise une morsure glaciale. Peut aussi geler ou apeurer l’ennemi."
+  },
+  "fire-fang": {
+    "power": 65,
+    "accuracy": 95,
+    "desc": "Le lanceur utilise une morsure enflammée. Peut aussi brûler ou apeurer l’ennemi."
+  },
+  "shadow-sneak": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Le lanceur étend son ombre pour frapper par derrière. Frappe toujours en premier."
+  },
+  "mud-bomb": {
+    "power": 65,
+    "accuracy": 85,
+    "desc": "Le lanceur attaque à l’aide d’une boule de boue solidifiée. Peut aussi baisser la Précision de l’ennemi."
+  },
+  "psycho-cut": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Le lanceur entaille l’ennemi grâce à des lames faites de pouvoir psychique. Taux de critiques élevé."
+  },
+  "zen-headbutt": {
+    "power": 80,
+    "accuracy": 90,
+    "desc": "Le lanceur concentre sa volonté et donne un coup de tête. Peut aussi apeurer l’ennemi."
+  },
+  "mirror-shot": {
+    "power": 65,
+    "accuracy": 85,
+    "desc": "Le corps poli du lanceur libère un éclair d’énergie. Peut aussi baisser la Précision de l’ennemi."
+  },
+  "flash-cannon": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur concentre son énergie lumineuse et la fait exploser. Peut aussi baisser la Défense Spéciale de l’ennemi."
+  },
+  "rock-climb": {
+    "power": 90,
+    "accuracy": 85,
+    "desc": "Le lanceur se jette violemment sur l’ennemi. Peut aussi le rendre confus."
+  },
+  "defog": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Un grand coup de vent qui disperse la Protection ou le Mur Lumière de l’ennemi. Diminue aussi son Esquive."
+  },
+  "trick-room": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur crée une zone étrange où les Pokémon les plus lents frappent en 1er pendant 5 tours."
+  },
+  "draco-meteor": {
+    "power": 130,
+    "accuracy": 90,
+    "desc": "Le lanceur invoque des comètes. Le contrecoup réduit fortement son Attaque Spéciale."
+  },
+  "discharge": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Un flamboiement d’électricité frappe tous les Pokémon autour du lanceur. Peut aussi paralyser."
+  },
+  "lava-plume": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Des boules de feu s’abattent sur tous les Pokémon autour du lanceur. Peut aussi brûler."
+  },
+  "leaf-storm": {
+    "power": 130,
+    "accuracy": 90,
+    "desc": "Invoque une tempête de feuilles acérées. Le contrecoup réduit fortement l’Attaque Spéciale du lanceur."
+  },
+  "power-whip": {
+    "power": 120,
+    "accuracy": 85,
+    "desc": "Le lanceur fait virevolter violemment ses lianes ou ses tentacules pour fouetter l’ennemi."
+  },
+  "rock-wrecker": {
+    "power": 150,
+    "accuracy": 90,
+    "desc": "Le lanceur attaque en projetant un gros rocher sur l’ennemi. Il doit se reposer au tour suivant."
+  },
+  "cross-poison": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Un coup tranchant qui peut empoisonner l’ennemi. Taux de critiques élevé."
+  },
+  "gunk-shot": {
+    "power": 120,
+    "accuracy": 80,
+    "desc": "Le lanceur envoie des détritus sur l’ennemi. Peut aussi l’empoisonner."
+  },
+  "iron-head": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur heurte l’ennemi avec sa tête dure comme de l’acier. Peut aussi apeurer l’ennemi."
+  },
+  "magnet-bomb": {
+    "power": 60,
+    "accuracy": null,
+    "desc": "Le lanceur projette des bombes d’acier qui collent à l’ennemi. N’échoue jamais."
+  },
+  "stone-edge": {
+    "power": 100,
+    "accuracy": 80,
+    "desc": "Fait surgir des pierres aiguisées sous l’ennemi. Taux de critiques élevé."
+  },
+  "captivate": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Si l’ennemi est de sexe opposé au lanceur, il est séduit et son Attaque Spéciale baisse fortement."
+  },
+  "stealth-rock": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Lance des pierres flottantes autour de l’ennemi, qui blessent tout ennemi entrant au combat."
+  },
+  "grass-knot": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "L’ennemi est piégé dans de l’herbe qui le fait trébucher. Plus il est lourd, plus il subit de dégâts."
+  },
+  "chatter": {
+    "power": 65,
+    "accuracy": 100,
+    "desc": "Le lanceur envoie une onde musicale en récitant des mots. Peut aussi rendre l’ennemi confus."
+  },
+  "judgment": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Le lanceur libère une myriade de rayons de lumière. Le type varie selon la Plaque que tient le lanceur."
+  },
+  "bug-bite": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Le lanceur pique l’ennemi. Si ce dernier tient une Baie, le lanceur la dévore et obtient son effet."
+  },
+  "charge-beam": {
+    "power": 50,
+    "accuracy": 90,
+    "desc": "Le lanceur tire un rayon chargé d’électricité. Peut aussi augmenter son Attaque Spéciale."
+  },
+  "wood-hammer": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Le lanceur heurte l’ennemi de son corps robuste. Inflige de sérieux dégâts au lanceur aussi."
+  },
+  "aqua-jet": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Le lanceur fonce sur l’ennemi si rapidement qu’on parvient à peine à le discerner. Frappe en premier."
+  },
+  "attack-order": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Le lanceur appelle ses sous-fifres pour frapper l’ennemi. Taux de critiques élevé."
+  },
+  "defend-order": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur appelle ses sous-fifres pour former un bouclier qui augmente sa Défense et sa Défense Spéciale."
+  },
+  "heal-order": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur appelle ses sous-fifres pour le soigner. Il récupère jusqu’à la moitié de ses PV max."
+  },
+  "head-smash": {
+    "power": 150,
+    "accuracy": 80,
+    "desc": "Le lanceur assène un coup de tête désespéré. Blesse aussi gravement le lanceur."
+  },
+  "double-hit": {
+    "power": 35,
+    "accuracy": 90,
+    "desc": "Un coup de queue ou de liane qui frappe l’ennemi deux fois d’affilée."
+  },
+  "roar-of-time": {
+    "power": 150,
+    "accuracy": 90,
+    "desc": "Le lanceur frappe si fort qu’il affecte le cours du temps. Il se repose au tour suivant."
+  },
+  "spacial-rend": {
+    "power": 100,
+    "accuracy": 95,
+    "desc": "Le lanceur déchire l’ennemi et l’espace autour de lui. Taux de critiques élevé."
+  },
+  "lunar-dance": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur tombe K.O. pour soigner le statut et les PV du Pokémon qui prendra sa place au combat."
+  },
+  "crush-grip": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Une force puissante écrase l’ennemi. Plus il lui reste de PV et plus l’attaque est puissante."
+  },
+  "magma-storm": {
+    "power": 100,
+    "accuracy": 75,
+    "desc": "L’ennemi est pris dans un tourbillon de feu qui dure de 4 à 5 tours."
+  },
+  "dark-void": {
+    "power": null,
+    "accuracy": 50,
+    "desc": "L’ennemi est plongé dans les ténèbres. Il tombe dans un profond sommeil."
+  },
+  "seed-flare": {
+    "power": 120,
+    "accuracy": 85,
+    "desc": "Le corps du lanceur émet une onde de choc. Peut aussi baisser grandement la Défense Spéciale de la cible."
+  },
+  "ominous-wind": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Le lanceur crée une violente bourrasque. Peut aussi augmenter toutes ses stats."
+  },
+  "shadow-force": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Le lanceur disparaît et frappe l’ennemi au second tour. Fonctionne même si l’ennemi se protège."
+  },
+  "hone-claws": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur s’aiguise les griffes. Augmente l’Attaque et la Précision."
+  },
+  "wide-guard": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Annule les attaques visant toute l’équipe pendant 1 tour. Peut échouer si utilisée plusieurs fois de suite."
+  },
+  "guard-split": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Additionne la Défense et la Défense Spéciale du lanceur et de sa cible et les redistribue équitablement entre les deux."
+  },
+  "power-split": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Additionne l’Attaque Spéciale et l’Attaque du lanceur et de sa cible et les redistribue équitablement entre les deux."
+  },
+  "wonder-room": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Crée une zone étrange où pendant 5 tours, la Défense et la Défense Spéciale de tous les Pokémon sont inversées."
+  },
+  "psyshock": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur matérialise des ondes mystérieuses qu’il projette sur l’ennemi. Inflige des dégâts physiques."
+  },
+  "venoshock": {
+    "power": 65,
+    "accuracy": 100,
+    "desc": "Le lanceur inocule un poison spécial à l’ennemi. L’effet est doublé si l’ennemi est déjà empoisonné."
+  },
+  "autotomize": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur se débarrasse des parties inutiles de son corps. Son poids diminue et sa Vitesse augmente fortement."
+  },
+  "rage-powder": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur s’asperge d’une poudre irritante pour attirer l’attention. Il attire toutes les attaques ennemies."
+  },
+  "telekinesis": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Un pouvoir qui fait flotter l’ennemi dans les airs. Pendant 3 tours, il devient plus facile à atteindre."
+  },
+  "magic-room": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur crée une zone étrange. Pendant 5 tours, les objets tenus par tous les Pokémon n’ont plus aucun effet."
+  },
+  "smack-down": {
+    "power": 50,
+    "accuracy": 100,
+    "desc": "Le lanceur jette toutes sortes de projectiles à un ennemi. Si ce dernier vole, il tombe au sol."
+  },
+  "storm-throw": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Un coup très puissant dont l’effet est toujours critique."
+  },
+  "flame-burst": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Quand l’attaque atteint sa cible, elle projette des flammes qui touchent tout ennemi situé à côté."
+  },
+  "sludge-wave": {
+    "power": 95,
+    "accuracy": 100,
+    "desc": "Une vague de détritus attaque tous les Pokémon autour du lanceur. Peut aussi empoisonner."
+  },
+  "quiver-dance": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Une danse mystique dont le rythme parfait augmente l’Attaque Spéciale, la Défense Spéciale et la Vitesse du lanceur."
+  },
+  "heavy-slam": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur se jette sur l’ennemi de tout son poids. S’il est plus lourd que l’ennemi, l’effet augmente en conséquence."
+  },
+  "synchronoise": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Des ondes mystérieuses blessent tous les Pokémon alentour qui sont du même type que le lanceur."
+  },
+  "electro-ball": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur envoie une boule d’électricité. Si sa Vitesse est plus grande que celle de l’ennemi, les dégâts augmentent d’autant."
+  },
+  "soak": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur projette beaucoup d’eau sur sa cible, qui devient de type Eau."
+  },
+  "flame-charge": {
+    "power": 50,
+    "accuracy": 100,
+    "desc": "Le lanceur s’entoure de flammes pour attaquer l’ennemi. Il se concentre et sa Vitesse augmente."
+  },
+  "coil": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur s’enroule sur lui-même et se concentre. Son Attaque, sa Défense et sa Précision augmentent."
+  },
+  "low-sweep": {
+    "power": 65,
+    "accuracy": 100,
+    "desc": "Un coup rapide qui vise les pieds de l’ennemi et diminue sa Vitesse."
+  },
+  "acid-spray": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Un liquide acide qui fait fondre l’ennemi. Sa Défense Spéciale diminue beaucoup."
+  },
+  "foul-play": {
+    "power": 95,
+    "accuracy": 100,
+    "desc": "Le lanceur utilise la force de l’ennemi. Plus l’Attaque de l’ennemi est élevée, plus le lanceur inflige de dégâts."
+  },
+  "simple-beam": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur envoie des ondes mystérieuses à l’ennemi. Sa capacité spéciale devient Simple."
+  },
+  "entrainment": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur danse sur un rythme étrange. Il force sa cible à l’imiter, ce qui lui fait adopter sa capacité spéciale."
+  },
+  "after-you": {
+    "power": null,
+    "accuracy": null,
+    "desc": "S’il est le premier à agir, le lanceur permet à sa cible d’utiliser une capacité juste après lui."
+  },
+  "round": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque l’ennemi en chantant. Si plusieurs Pokémon déclenchent cette attaque à la suite, l’effet augmente."
+  },
+  "echoed-voice": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Un cri retentissant blesse l’ennemi. Si le lanceur ou d’autres Pokémon l’utilisent à chaque tour, l’effet augmente."
+  },
+  "chip-away": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Une attaque puissante quand l’ennemi baisse sa garde. Inflige des dégâts sans tenir compte des changements de stats."
+  },
+  "clear-smog": {
+    "power": 50,
+    "accuracy": null,
+    "desc": "Le lanceur jette un tas de détritus spéciaux sur la cible. Les changements de stats de la cible sont annulés."
+  },
+  "stored-power": {
+    "power": 20,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque l’ennemi avec une force accumulée. Plus les stats du lanceur sont augmentées, plus le coup est efficace."
+  },
+  "quick-guard": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur et son équipe sont protégés contre les attaques prioritaires. Peut échouer si utilisée plusieurs fois de suite."
+  },
+  "ally-switch": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur se téléporte à l’aide d’un pouvoir mystérieux. Il échange sa place avec celle d’un allié sur le terrain."
+  },
+  "scald": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "L’ennemi est attaqué par un jet d’eau bouillante. Peut aussi le brûler."
+  },
+  "shell-smash": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur brise sa coquille. Il baisse sa Défense et Déf. Spé., mais augmente forte- ment son Attaque, Atq. Spé. et Vitesse."
+  },
+  "heal-pulse": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Une aura de bien-être fait récupérer la moitié de ses PV max à la cible."
+  },
+  "hex": {
+    "power": 65,
+    "accuracy": 100,
+    "desc": "Attaque acharnée qui cause davantage de dégâts à l’ennemi s’il a un problème de statut."
+  },
+  "sky-drop": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Le lanceur emmène l’ennemi dans les airs au 1er tour et le lâche dans le vide au 2è. L’ennemi saisi ne peut pas attaquer."
+  },
+  "shift-gear": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur fait tourner ses engrenages. Ceci augmente son Attaque et augmente fortement sa Vitesse."
+  },
+  "circle-throw": {
+    "power": 60,
+    "accuracy": 90,
+    "desc": "Projette le Pokémon ennemi et le remplace par un autre. Dans la nature, met fin au combat."
+  },
+  "incinerate": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Des flammes calcinent l’ennemi. S’il tient une Baie, elle est brûlée et devient inutilisable."
+  },
+  "quash": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Retient la cible de force, l’obligeant à agir en dernier."
+  },
+  "acrobatics": {
+    "power": 55,
+    "accuracy": 100,
+    "desc": "Attaque agile. Si le lanceur ne tient pas d’objet, l’attaque inflige davantage de dégâts."
+  },
+  "reflect-type": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur copie le type de la cible et devient du même type."
+  },
+  "retaliate": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Venge un Pokémon de l’équipe mis K.O. Si un Pokémon de l’équipe a été mis K.O. au tour d’avant, l’effet augmente."
+  },
+  "final-gambit": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Une attaque très risquée. Le lanceur perd tous ses PV restants et inflige autant de dégâts à l’ennemi."
+  },
+  "bestow": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Si la cible ne tient pas d’objet, le lanceur lui donne l’objet qu’il tient."
+  },
+  "inferno": {
+    "power": 100,
+    "accuracy": 50,
+    "desc": "L’ennemi est entouré d’un torrent de flammes ardentes qui le brûlent."
+  },
+  "water-pledge": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Une masse d’eau s’abat sur l’ennemi. En l’utilisant avec Aire de Feu, l’effet augmente et un arc-en-ciel apparaît."
+  },
+  "fire-pledge": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Une masse de feu s’abat sur l’ennemi. En l’utilisant avec Aire d’Herbe, l’effet augmente et une mer de feu apparaît."
+  },
+  "grass-pledge": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Une masse végétale s’abat sur l’ennemi. En l’utilisant avec Aire d’Eau, l’effet augmente et un marécage apparaît."
+  },
+  "volt-switch": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Après son attaque, le lanceur revient à toute vitesse et change de place avec un Pokémon de l’équipe prêt au combat."
+  },
+  "struggle-bug": {
+    "power": 50,
+    "accuracy": 100,
+    "desc": "Le lanceur se débat de toutes ses forces, et baisse l’Attaque Spéciale de l’ennemi."
+  },
+  "bulldoze": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Le lanceur piétine le sol et inflige des dégâts à tous les Pokémon autour de lui. Baisse aussi la Vitesse."
+  },
+  "frost-breath": {
+    "power": 60,
+    "accuracy": 90,
+    "desc": "Un souffle froid blesse l’ennemi. L’effet est toujours critique."
+  },
+  "dragon-tail": {
+    "power": 60,
+    "accuracy": 90,
+    "desc": "Un coup puissant qui blesse la cible et l’envoie balader. Dans la nature, met fin au combat."
+  },
+  "work-up": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur se rengorge. Augmente l’Attaque et l’Attaque Spéciale."
+  },
+  "electroweb": {
+    "power": 55,
+    "accuracy": 95,
+    "desc": "Attrape l’ennemi dans un filet électrique. Baisse aussi la Vitesse de l’ennemi."
+  },
+  "wild-charge": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Une charge électrique violente qui blesse aussi légèrement le lanceur."
+  },
+  "drill-run": {
+    "power": 80,
+    "accuracy": 95,
+    "desc": "Le lanceur tourne sur lui-même comme une perceuse et se jette sur l’ennemi. Taux de critiques élevé."
+  },
+  "dual-chop": {
+    "power": 40,
+    "accuracy": 90,
+    "desc": "Le lanceur frappe l’ennemi deux fois d’affilée avec les parties les plus robustes de son corps."
+  },
+  "heart-stamp": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Déconcentre l’ennemi avec des mouvements mignons avant de le frapper violemment. Peut apeurer l’ennemi."
+  },
+  "horn-leech": {
+    "power": 75,
+    "accuracy": 100,
+    "desc": "Un coup de corne qui draine l’énergie de l’ennemi. Convertit la moitié des dégâts infligés en PV pour le lanceur."
+  },
+  "sacred-sword": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Un coup de lame violent qui lacère l’ennemi et lui inflige des dégâts quels que soient ses changements de stats."
+  },
+  "razor-shell": {
+    "power": 75,
+    "accuracy": 95,
+    "desc": "Un coquillage aiguisé lacère l’ennemi. Peut aussi baisser sa Défense."
+  },
+  "heat-crash": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur projette son corps enflammé contre l’ennemi. S’il est plus lourd que l’ennemi, l’effet augmente en conséquence."
+  },
+  "leaf-tornado": {
+    "power": 65,
+    "accuracy": 90,
+    "desc": "L’ennemi est pris dans un tourbillon de feuilles acérées. Peut aussi baisser la Précision de l’ennemi."
+  },
+  "steamroller": {
+    "power": 65,
+    "accuracy": 100,
+    "desc": "Le lanceur se roule en boule et écrase son ennemi. Peut aussi apeurer l’ennemi."
+  },
+  "cotton-guard": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur se protège en s’emmitouflant dans du coton. Sa Défense augmente fortement."
+  },
+  "night-daze": {
+    "power": 85,
+    "accuracy": 95,
+    "desc": "Le lanceur attaque l’ennemi avec une onde de choc ténébreuse. Peut aussi baisser la Précision de l’ennemi."
+  },
+  "psystrike": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Le lanceur matérialise des ondes mystérieuses qu’il projette sur l’ennemi. Inflige des dégâts physiques."
+  },
+  "tail-slap": {
+    "power": 25,
+    "accuracy": 85,
+    "desc": "Le lanceur frappe l’ennemi de 2 à 5 fois d’affilée avec sa queue robuste."
+  },
+  "hurricane": {
+    "power": 110,
+    "accuracy": 70,
+    "desc": "Le lanceur déclenche une tempête de vents violents qui s’abat sur l’ennemi. Peut aussi le rendre confus."
+  },
+  "head-charge": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Le lanceur donne un coup avec sa tête couronnée d’une fière crinière. Blesse aussi légèrement le lanceur."
+  },
+  "gear-grind": {
+    "power": 50,
+    "accuracy": 85,
+    "desc": "Le lanceur jette deux écrous d’acier qui frappent l’ennemi deux fois d’affilée."
+  },
+  "searing-shot": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Des flammes rougeoyantes s’abattent sur tous les Pokémon autour du lanceur. Peut aussi brûler."
+  },
+  "techno-blast": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Le lanceur projette un rayon lumineux sur l’ennemi. Le type varie selon le Module que tient le lanceur."
+  },
+  "relic-song": {
+    "power": 75,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque l’ennemi en lui chantant une chanson d’un autre temps. Peut endormir l’ennemi."
+  },
+  "secret-sword": {
+    "power": 85,
+    "accuracy": 100,
+    "desc": "L’ennemi est lacéré par une longue lame. Le pouvoir mystérieux de la lame inflige des dégâts physiques."
+  },
+  "glaciate": {
+    "power": 65,
+    "accuracy": 95,
+    "desc": "Un souffle de vent qui congèle tout sur son passage s’abat sur l’ennemi. Réduit aussi sa Vitesse."
+  },
+  "bolt-strike": {
+    "power": 130,
+    "accuracy": 85,
+    "desc": "S’enveloppe d’une charge électrique surpuissante et se jette sur l’ennemi. Peut aussi le paralyser."
+  },
+  "blue-flare": {
+    "power": 130,
+    "accuracy": 85,
+    "desc": "De magnifiques et redoutables flammes bleues fondent sur l’ennemi. Peut aussi le brûler."
+  },
+  "fiery-dance": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur enveloppe l’ennemi de flammes. Peut aussi augmenter l’Attaque Spéciale du lanceur."
+  },
+  "freeze-shock": {
+    "power": 140,
+    "accuracy": 90,
+    "desc": "Projette un bloc de glace électrifié sur l’ennemi au second tour. Peut aussi le paralyser."
+  },
+  "ice-burn": {
+    "power": 140,
+    "accuracy": 90,
+    "desc": "Au second tour, le lanceur projette un souffle de vent glacial dévastateur sur l’ennemi. Peut le brûler."
+  },
+  "snarl": {
+    "power": 55,
+    "accuracy": 95,
+    "desc": "Le lanceur hurle sur l’ennemi. Baisse l’Attaque Spéciale de l’ennemi."
+  },
+  "icicle-crash": {
+    "power": 85,
+    "accuracy": 90,
+    "desc": "Envoie de gros blocs de glace sur l’ennemi pour lui infliger des dégâts. Peut aussi l’apeurer."
+  },
+  "v-create": {
+    "power": 180,
+    "accuracy": 95,
+    "desc": "Le lanceur projette une flamme ardente de son front et se jette sur l’ennemi. Baisse la Défense, la Déf. Spé. et la Vitesse."
+  },
+  "fusion-flare": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Projette une boule de feu gigantesque. L’effet augmente sous l’influence d’Éclair Croix."
+  },
+  "fusion-bolt": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Projette un orbe électrique gigantesque. L’effet augmente sous l’influence de Flamme Croix."
+  },
+  "flying-press": {
+    "power": 100,
+    "accuracy": 95,
+    "desc": "Une attaque en piqué depuis le ciel, à la fois de type Combat et de type Vol."
+  },
+  "mat-block": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Retourne un tatami pour bloquer, comme avec un bouclier, les capacités visant le lanceur ou ses alliés. N’a pas d’effet sur les attaques de statut."
+  },
+  "belch": {
+    "power": 120,
+    "accuracy": 90,
+    "desc": "Le lanceur se tourne vers l’ennemi et lui éructe dessus, infligeant des dégâts. Ne fonctionne que si le lanceur consomme la Baie qu’il tient."
+  },
+  "rototiller": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Laboure le sol et le rend plus fertile. Augmente l’Attaque et l’Attaque Spéciale des Pokémon de type Plante."
+  },
+  "sticky-web": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Déploie une toile visqueuse autour de l’ennemi qui ralentit la Vitesse de tout adversaire entrant au combat."
+  },
+  "fell-stinger": {
+    "power": 50,
+    "accuracy": 100,
+    "desc": "Augmente fortement l’Attaque du lanceur si un ennemi est mis K.O. avec cette capacité."
+  },
+  "phantom-force": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Le lanceur disparaît au premier tour et frappe au second. Cette attaque passe outre les protections."
+  },
+  "trick-or-treat": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Insuffle à la cible l’esprit d’Halloween, et ajoute le type Spectre à ses types actuels."
+  },
+  "noble-roar": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur pousse un rugissement qui intimide l’ennemi et diminue son Attaque et son Attaque Spéciale."
+  },
+  "ion-deluge": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Diffuse des particules saturées d’électricité qui transforment les capacités de type Normal en capacités de type Électrik."
+  },
+  "parabolic-charge": {
+    "power": 65,
+    "accuracy": 100,
+    "desc": "Inflige des dégâts à tous les Pokémon autour du lanceur. Il récupère en PV la moitié des dégâts infligés."
+  },
+  "forests-curse": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "La cible est charmée par l’esprit de la forêt. Le type Plante est ajouté à ses types actuels."
+  },
+  "petal-blizzard": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Déclenche une violente tempête de fleurs qui inflige des dégâts à tous les Pokémon alentour."
+  },
+  "freeze-dry": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Refroidit violemment l’ennemi et peut le geler. Super efficace sur les Pokémon de type Eau."
+  },
+  "disarming-voice": {
+    "power": 40,
+    "accuracy": null,
+    "desc": "Laisse s’échapper une voix enchanteresse qui inflige des dégâts psychiques à l’ennemi. Touche à coup sûr."
+  },
+  "parting-shot": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Menace l’ennemi dans une ultime tirade avant de changer de place avec un autre Pokémon. Réduit l’Attaque et l’Attaque Spéciale de l’ennemi."
+  },
+  "topsy-turvy": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Inverse tous les changements de stats de la cible."
+  },
+  "draining-kiss": {
+    "power": 50,
+    "accuracy": 100,
+    "desc": "Aspire la force vitale de l’ennemi par un baiser. Rend au lanceur un nombre de PV supérieur ou égal à la moitié des dégâts infligés."
+  },
+  "crafty-shield": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Utilise une force mystérieuse pour protéger l’équipe des attaques de statut. Ne protège pas des autres capacités."
+  },
+  "flower-shield": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Grâce à une force mystérieuse, la Défense de tous les Pokémon Plante au combat augmente."
+  },
+  "grassy-terrain": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Pendant cinq tours, le terrain aux pieds du lanceur se transforme en gazon. Les Pokémon au sol récupèrent des PV à chaque tour."
+  },
+  "misty-terrain": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Pendant cinq tours, le terrain aux pieds du lanceur se couvre de brume. Les Pokémon au sol ne peuvent pas subir d’altération de statut."
+  },
+  "electrify": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Si le lanceur attaque avant l’ennemi, les capacités de ce dernier seront de type Électrik jusqu’à la fin du tour."
+  },
+  "play-rough": {
+    "power": 90,
+    "accuracy": 90,
+    "desc": "Attaque l’ennemi avec un câlin. Peut diminuer son Attaque."
+  },
+  "fairy-wind": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Déchaîne un vent magique qui cingle l’ennemi."
+  },
+  "moonblast": {
+    "power": 95,
+    "accuracy": 100,
+    "desc": "Attaque l’ennemi grâce au pouvoir de la lune. Peut diminuer son Attaque Spéciale."
+  },
+  "boomburst": {
+    "power": 140,
+    "accuracy": 100,
+    "desc": "Attaque les Pokémon alentour grâce à une onde sonore assourdissante qui détruit tout sur son passage."
+  },
+  "fairy-lock": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Des chaînes entourent la zone de combat, empêchant tous les Pokémon de fuir au prochain tour."
+  },
+  "kings-shield": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Prend une posture défensive pour bloquer les dégâts. Diminue fortement l’Attaque de tout Pokémon qui entre en contact avec le lanceur."
+  },
+  "play-nice": {
+    "power": null,
+    "accuracy": null,
+    "desc": "L’ennemi se lie d’amitié avec le lanceur et perd sa combativité, diminuant son Attaque."
+  },
+  "confide": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Dévoile des secrets à l’ennemi qui perd sa concentration et voit son Attaque Spéciale diminuer."
+  },
+  "diamond-storm": {
+    "power": 100,
+    "accuracy": 95,
+    "desc": "Provoque une tempête de diamants qui inflige des dégâts. Peut augmenter la Défense du lanceur."
+  },
+  "steam-eruption": {
+    "power": 110,
+    "accuracy": 95,
+    "desc": "Plonge l’ennemi dans une chaleur étouffante. Peut le brûler."
+  },
+  "hyperspace-hole": {
+    "power": 80,
+    "accuracy": null,
+    "desc": "Crée une faille dimensionnelle pour attaquer soudainement l’ennemi de côté. Ignore même Abri ou Détection."
+  },
+  "water-shuriken": {
+    "power": 15,
+    "accuracy": 100,
+    "desc": "Attaque l’ennemi avec des shuriken de mucus. Frappe deux à cinq fois d’affilée en un tour, et toujours en premier."
+  },
+  "mystical-fire": {
+    "power": 75,
+    "accuracy": 100,
+    "desc": "Attaque avec des flammes brûlantes soufflées de la bouche du lanceur. Diminue l’Attaque Spéciale de l’ennemi."
+  },
+  "spiky-shield": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Protège des attaques, et diminue les PV de tout attaquant qui entre en contact avec le lanceur."
+  },
+  "aromatic-mist": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Grâce à un parfum mystérieux, augmente la Défense Spéciale d’un allié."
+  },
+  "eerie-impulse": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le corps du lanceur produit des ondes anormales qui enveloppent l’ennemi et diminuent fortement son Attaque Spéciale."
+  },
+  "venom-drench": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Sécrète un liquide empoisonné. Diminue l’Attaque, l’Attaque Spéciale et la Vitesse de l’ennemi empoisonné."
+  },
+  "powder": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "L’ennemi est pris dans un nuage de poudre. S’il utilise une capacité de type Feu lors du même tour, le nuage explose et lui inflige des dégâts."
+  },
+  "geomancy": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur absorbe de l’énergie au premier tour et augmente fortement son Attaque Spéciale, sa Défense Spéciale et sa Vitesse au second."
+  },
+  "magnetic-flux": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Manipule les champs magnétiques pour augmenter la Défense et la Défense Spéciale des Pokémon alliés dotés du talent Plus ou du talent Minus."
+  },
+  "happy-hour": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Utilisé pendant un combat, multiplie par deux l’argent gagné à la fin."
+  },
+  "electric-terrain": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Pendant cinq tours, le terrain aux pieds du lanceur se charge d’électricité. Les Pokémon au sol ne peuvent pas s’endormir."
+  },
+  "dazzling-gleam": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Libère une puissante décharge lumineuse qui inflige des dégâts à l’ennemi."
+  },
+  "celebrate": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le Pokémon vous souhaite plein de bonnes choses pour cet événement spécial."
+  },
+  "hold-hands": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur et un allié se prennent la main, ce qui les rend heureux."
+  },
+  "baby-doll-eyes": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Fixe l’ennemi d’un air très attendrissant qui le touche et diminue son Attaque. Agit toujours en premier."
+  },
+  "nuzzle": {
+    "power": 20,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque en frottant ses bajoues chargées d’électricité. Paralyse l’ennemi."
+  },
+  "hold-back": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque avec retenue, et laisse l’ennemi à 1 PV."
+  },
+  "infestation": {
+    "power": 20,
+    "accuracy": 100,
+    "desc": "Cette attaque perdure pendant quatre à cinq tours. L’ennemi ne peut pas fuir au cours de cette période."
+  },
+  "power-up-punch": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "À force de frapper, les poings deviennent plus durs. Augmente l’Attaque du lanceur si l’ennemi est touché."
+  },
+  "oblivion-wing": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Vole l’énergie de la cible. Rend au lanceur un nombre de PV supérieur ou égal à la moitié des dégâts infligés."
+  },
+  "thousand-arrows": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Touche même les Pokémon dans les airs. Dans ce cas, la cible retombe au sol."
+  },
+  "thousand-waves": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Attaque avec des vagues glissant au sol. L’ennemi pris dedans ne peut pas s’échapper."
+  },
+  "lands-wrath": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Utilise la puissance du sol et la concentre sur l’ennemi pour infliger des dégâts."
+  },
+  "light-of-ruin": {
+    "power": 140,
+    "accuracy": 90,
+    "desc": "Utilise la puissance de la Fleur Éternelle pour lancer un formidable rayon d’énergie. Blesse aussi gravement le lanceur."
+  },
+  "origin-pulse": {
+    "power": 110,
+    "accuracy": 85,
+    "desc": "D’innombrables rayons lumineux d’un bleu étincelant s’abattent sur la cible."
+  },
+  "precipice-blades": {
+    "power": 120,
+    "accuracy": 85,
+    "desc": "Le Pokémon transforme la puissance de la terre et attaque la cible avec une lame acérée."
+  },
+  "dragon-ascent": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Le Pokémon s’abat à toute vitesse sur la cible depuis les hautes couches de l’atmosphère. Baisse la Défense et la Défense Spéciale du lanceur. "
+  },
+  "hyperspace-fury": {
+    "power": 100,
+    "accuracy": null,
+    "desc": "Le Pokémon utilise sa multitude de bras pour infliger une nuée de coups qui ignorent les capacités telles qu’Abri ou Détection. Baisse la Défense du lanceur. "
+  },
+  "breakneck-blitz--physical": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le Pokémon utilise la Force Z pour s’élancer à toute vitesse sur l’adversaire. La puissance varie selon celle de la capacité originale."
+  },
+  "breakneck-blitz--special": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Dummy"
+  },
+  "all-out-pummeling--physical": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le Pokémon utilise la Force Z pour créer une boule d’énergie qu’il projette sur l’adversaire. La puissance varie selon celle de la capacité originale."
+  },
+  "all-out-pummeling--special": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Dummy"
+  },
+  "supersonic-skystrike--physical": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le Pokémon utilise la Force Z pour s’envoler très haut dans le ciel avant de plonger sur l’adversaire. La puissance varie selon celle de la capacité originale."
+  },
+  "supersonic-skystrike--special": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Dummy"
+  },
+  "acid-downpour--physical": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le Pokémon utilise la Force Z pour répandre un marécage empoisonné où l’adversaire sombre. La puissance varie selon celle de la capacité originale."
+  },
+  "acid-downpour--special": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Dummy"
+  },
+  "tectonic-rage--physical": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le Pokémon utilise la Force Z pour entraîner l’adversaire dans les profondeurs de la terre. La puissance varie selon celle de la capacité originale."
+  },
+  "tectonic-rage--special": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Dummy"
+  },
+  "continental-crush--physical": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le Pokémon utilise la Force Z pour créer un immense rocher et écraser l’adversaire avec. La puissance varie selon celle de la capacité originale."
+  },
+  "continental-crush--special": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Dummy"
+  },
+  "savage-spin-out--physical": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le Pokémon utilise la Force Z pour cracher de longs fils de soie et enserrer l’adversaire. La puissance varie selon celle de la capacité originale."
+  },
+  "savage-spin-out--special": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Dummy"
+  },
+  "never-ending-nightmare--physical": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le Pokémon utilise la Force Z pour invoquer des esprits rancuniers qui s’abattent sur l’adversaire. La puissance varie selon celle de la capacité originale."
+  },
+  "never-ending-nightmare--special": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Dummy"
+  },
+  "corkscrew-crash--physical": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le Pokémon utilise la Force Z pour tourner à toute vitesse et écraser l’adversaire. La puissance varie selon celle de la capacité originale."
+  },
+  "corkscrew-crash--special": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Dummy"
+  },
+  "inferno-overdrive--physical": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le Pokémon utilise la Force Z pour cracher une boule de feu qui réduit l’adversaire en cendres. La puissance varie selon celle de la capacité originale."
+  },
+  "inferno-overdrive--special": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Dummy"
+  },
+  "hydro-vortex--physical": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le Pokémon utilise la Force Z pour créer un tourbillon gigantesque qui avale l’adversaire. La puissance varie selon celle de la capacité originale."
+  },
+  "hydro-vortex--special": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Dummy"
+  },
+  "bloom-doom--physical": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le Pokémon utilise la Force Z pour libérer l’énergie des plantes et attaquer l’adversaire. La puissance varie selon celle de la capacité originale."
+  },
+  "bloom-doom--special": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Dummy"
+  },
+  "gigavolt-havoc--physical": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le Pokémon utilise la Force Z pour générer un courant électrique puissant qu’il projette sur l’adversaire. La puissance varie selon celle de la capacité originale."
+  },
+  "gigavolt-havoc--special": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Dummy"
+  },
+  "shattered-psyche--physical": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le Pokémon utilise la Force Z pour manipuler l’adversaire et lui infliger de sérieux dégâts. La puissance varie selon celle de la capacité originale."
+  },
+  "shattered-psyche--special": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Dummy"
+  },
+  "subzero-slammer--physical": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le Pokémon utilise la Force Z pour baisser la température brutalement et congeler l’adversaire. La puissance varie selon celle de la capacité originale."
+  },
+  "subzero-slammer--special": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Dummy"
+  },
+  "devastating-drake--physical": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le Pokémon utilise la Force Z pour matérialiser son aura et assaillir l’adversaire. La puissance varie selon celle de la capacité originale."
+  },
+  "devastating-drake--special": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Dummy"
+  },
+  "black-hole-eclipse--physical": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le Pokémon utilise la Force Z pour rassembler l’énergie négative et y aspirer l’adversaire. La puissance varie selon celle de la capacité originale."
+  },
+  "black-hole-eclipse--special": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Dummy"
+  },
+  "twinkle-tackle--physical": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le Pokémon utilise la Force Z pour créer une dimension irréelle où l’adversaire est à sa merci. La puissance varie selon celle de la capacité originale."
+  },
+  "twinkle-tackle--special": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Dummy"
+  },
+  "catastropika": {
+    "power": 210,
+    "accuracy": null,
+    "desc": "Pikachu utilise la Force Z pour concentrer toute son électricité avant de se jeter à toute vitesse sur l’adversaire."
+  },
+  "shore-up": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur récupère jusqu’à la moitié de ses PV max. Durant une tempête de sable, il en récupère encore plus."
+  },
+  "first-impression": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Une capacité très puissante, mais qui ne fonctionne qu’au premier tour."
+  },
+  "baneful-bunker": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Protège le lanceur contre les attaques de l’ennemi et empoisonne ce dernier s’il utilise une attaque directe sur le lanceur."
+  },
+  "spirit-shackle": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Une attaque qui coud l’ennemi à son ombre, ce qui l’empêche de s’enfuir."
+  },
+  "darkest-lariat": {
+    "power": 85,
+    "accuracy": 100,
+    "desc": "Le Pokémon étend les bras et frappe l’adversaire en tournant violemment. Inflige des dégâts et ignore les changements de stats de la cible."
+  },
+  "sparkling-aria": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Le lanceur émet plusieurs bulles en chantant. Soigne les brûlures des Pokémon touchés par ces bulles."
+  },
+  "ice-hammer": {
+    "power": 100,
+    "accuracy": 90,
+    "desc": "Le lanceur donne un puissant coup de poing à l’ennemi. Réduit la Vitesse du lanceur."
+  },
+  "floral-healing": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Rend la moitié de ses PV max à la cible. Plus efficace sur un Champ Herbu."
+  },
+  "high-horsepower": {
+    "power": 95,
+    "accuracy": 95,
+    "desc": "Le lanceur attaque violemment en utilisant tout son poids."
+  },
+  "strength-sap": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Rend au lanceur une quantité de PV équivalente à la stat d’Attaque de la cible, puis baisse celle-ci."
+  },
+  "solar-blade": {
+    "power": 125,
+    "accuracy": 100,
+    "desc": "Le lanceur absorbe la lumière au premier tour et attaque au second tour en libérant cette énergie sous forme de lames."
+  },
+  "leafage": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque l’ennemi avec des feuilles."
+  },
+  "spotlight": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Met un Pokémon sous le feu des projecteurs et force tout le monde à le viser."
+  },
+  "toxic-thread": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Tisse un fil imprégné de venin. Empoisonne la cible et baisse sa Vitesse."
+  },
+  "laser-focus": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur se concentre pour être sûr de porter un coup critique au tour suivant."
+  },
+  "gear-up": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Change de réglage pour augmenter l’Attaque et l’Attaque Spéciale des alliés ayant les talents Plus ou Minus."
+  },
+  "throat-chop": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Inflige une douleur tellement violente à la cible qu’elle ne peut plus émettre de sons pendant deux tours."
+  },
+  "pollen-puff": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Utilisé sur l’ennemi, envoie une boule explosive qui fait des dégâts ; sur un allié, donne du bon pollen nutritif qui fait récupérer des PV."
+  },
+  "anchor-shot": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur jette son ancre sur la cible pour l’attaquer. Une fois accrochée, elle l’empêche de s’enfuir."
+  },
+  "psychic-terrain": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Pendant cinq tours, les Pokémon au sol ne peuvent plus subir d’attaques prioritaires et la puissance des capacités de type Psy augmente."
+  },
+  "lunge": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur se jette sur la cible de toutes ses forces pour lui infliger des dégâts et baisser son Attaque."
+  },
+  "fire-lash": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Frappe la cible avec un fouet incandescent et baisse sa Défense."
+  },
+  "power-trip": {
+    "power": 20,
+    "accuracy": 100,
+    "desc": "Ivre de puissance, le lanceur attaque de toutes ses forces. Plus ses stats ont été augmentées, plus la puissance de l’attaque est élevée."
+  },
+  "burn-up": {
+    "power": 130,
+    "accuracy": 100,
+    "desc": "Le Pokémon se consume et les flammes de son corps infligent des dégâts élevés à la cible. Le lanceur perd le type Feu."
+  },
+  "speed-swap": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Intervertit la Vitesse du lanceur et celle de la cible."
+  },
+  "smart-strike": {
+    "power": 70,
+    "accuracy": null,
+    "desc": "Le lanceur transperce la cible avec sa corne effilée. Touche toujours l’ennemi."
+  },
+  "purify": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur soigne les altérations de statut de la cible, ce qui lui permet de regagner des PV."
+  },
+  "revelation-dance": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque en dansant avec enthousiasme. Le type de la capacité est le même que celui du lanceur."
+  },
+  "core-enforcer": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "La cible subit des dégâts et, si elle a déjà agi à ce tour, elle perd aussi son talent."
+  },
+  "trop-kick": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Un coup de pied chaud comme les tropiques qui inflige des dégâts à la cible et baisse son Attaque."
+  },
+  "instruct": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Force la cible à lancer immédiatement la dernière capacité qu’elle a utilisée."
+  },
+  "beak-blast": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Le lanceur fait chauffer son bec avant d’attaquer. S’il subit une attaque directe pendant la montée en température, l’attaquant sera brûlé."
+  },
+  "clanging-scales": {
+    "power": 110,
+    "accuracy": 100,
+    "desc": "Le lanceur déclenche un vacarme en frottant ses écailles les unes contre les autres pour attaquer. Baisse la Défense du lanceur."
+  },
+  "dragon-hammer": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Le lanceur utilise son corps comme un véritable marteau pour écraser la cible."
+  },
+  "brutal-swing": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Le lanceur pivote pour prendre de l’élan et infliger des dégâts."
+  },
+  "aurora-veil": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Réduit les dégâts causés par les capacités physiques et spéciales durant cinq tours. Ne peut être utilisé que lorsqu’il grêle."
+  },
+  "sinister-arrow-raid": {
+    "power": 180,
+    "accuracy": null,
+    "desc": "Archéduc utilise la Force Z pour créer un nuage de flèches qui transpercent la cible."
+  },
+  "malicious-moonsault": {
+    "power": 180,
+    "accuracy": null,
+    "desc": "Félinferno utilise la Force Z pour gonfler ses muscles et écraser la cible de toutes ses forces."
+  },
+  "oceanic-operetta": {
+    "power": 195,
+    "accuracy": null,
+    "desc": "Oratoria utilise la Force Z pour rassembler une grande quantité d’eau et la projeter sur la cible à pleine puissance."
+  },
+  "guardian-of-alola": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le Pokémon Tutélaire utilise la Force Z et déchaîne toute la puissance d’Alola sur sa cible. Inflige des dégâts en fonction des PV restants de celle-ci."
+  },
+  "soul-stealing-7-star-strike": {
+    "power": 195,
+    "accuracy": null,
+    "desc": "Marshadow concentre toute la Force Z dans ses poings et ses pieds pour infliger un déluge de coups à la cible."
+  },
+  "stoked-sparksurfer": {
+    "power": 175,
+    "accuracy": null,
+    "desc": "Le Raichu de la région d’Alola utilise la Force Z pour frapper la cible et la paralyser."
+  },
+  "pulverizing-pancake": {
+    "power": 210,
+    "accuracy": null,
+    "desc": "Ronflex utilise la Force Z pour montrer ce qu’il a dans le ventre et écraser la cible de tout son poids."
+  },
+  "extreme-evoboost": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Évoli utilise la Force Z pour emprunter la puissance de tous ses amis évolués et beaucoup augmenter toutes ses stats."
+  },
+  "genesis-supernova": {
+    "power": 185,
+    "accuracy": null,
+    "desc": "Mew utilise la Force Z pour attaquer la cible. Le terrain devient un Champ Psychique."
+  },
+  "shell-trap": {
+    "power": 150,
+    "accuracy": 100,
+    "desc": "Pose une carapace piégée. Si l’adversaire utilise une capacité physique, la carapace explose et lui inflige des dégâts."
+  },
+  "fleur-cannon": {
+    "power": 130,
+    "accuracy": 90,
+    "desc": "Envoie un rayon laser dévastateur. Baisse beaucoup l’Attaque Spéciale du lanceur."
+  },
+  "psychic-fangs": {
+    "power": 85,
+    "accuracy": 100,
+    "desc": "Le lanceur mord la cible avec ses pouvoirs psychiques. Brise aussi les barrières comme Mur Lumière et Protection."
+  },
+  "stomping-tantrum": {
+    "power": 75,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque en utilisant sa frustration. S’il a utilisé une capacité qui a échoué au tour précédent, la puissance de Trépignement est doublée."
+  },
+  "shadow-bone": {
+    "power": 85,
+    "accuracy": 100,
+    "desc": "Le lanceur frappe avec un os possédé par l’âme d’un défunt. Peut aussi baisser la Défense de la cible."
+  },
+  "accelerock": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Le lanceur charge l’ennemi à toute vitesse. Frappe en priorité."
+  },
+  "liquidation": {
+    "power": 85,
+    "accuracy": 100,
+    "desc": "Le lanceur utilise la force de l’eau pour attaquer. Peut aussi baisser la Défense de la cible."
+  },
+  "prismatic-laser": {
+    "power": 160,
+    "accuracy": 100,
+    "desc": "Le lanceur utilise la puissance d’un prisme pour envoyer un laser destructeur, mais il doit se reposer au tour suivant."
+  },
+  "spectral-thief": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Le lanceur plonge dans l’ombre de la cible, vole ses augmentations de stats et l’attaque."
+  },
+  "sunsteel-strike": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Le lanceur fonce sur la cible à la vitesse d’une météorite. Ignore le talent de l’ennemi."
+  },
+  "moongeist-beam": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque avec un rayon de lumière mystérieux. Ignore le talent de la cible."
+  },
+  "tearful-look": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur jette un regard plein de larmes à la cible. Celle-ci perd toute velléité de combat et voit son Attaque et son Attaque Spéciale baisser."
+  },
+  "zing-zap": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur fonce sur la cible et lui envoie un puissant choc électrique. Peut aussi l’effrayer."
+  },
+  "natures-madness": {
+    "power": null,
+    "accuracy": 90,
+    "desc": "Le lanceur déchaîne toute la colère de la nature pour baisser les PV de la cible de moitié."
+  },
+  "multi-attack": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Le Pokémon s’entoure d’une puissante énergie avant de foncer sur sa cible. Le type de la capacité dépend de la ROM installée."
+  },
+  "10-000-000-volt-thunderbolt": {
+    "power": 195,
+    "accuracy": null,
+    "desc": "Le Pikachu à casquette utilise la Force Z pour augmenter sa puissance électrique avant de la déchaîner sur la cible. Taux de critique élevé."
+  },
+  "mind-blown": {
+    "power": 150,
+    "accuracy": 100,
+    "desc": "Le lanceur fait exploser sa tête pour attaquer toutes les cibles autour de lui. Il subit aussi des dégâts."
+  },
+  "plasma-fists": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque en projetant de l’électricité avec ses poings. Convertit les capacités de type Normal en type Électrik."
+  },
+  "photon-geyser": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Le lanceur fait jaillir un pilier de lumière. Compare l’Attaque et l’Attaque Spéciale, et utilise celle qui infligera le plus de dégâts."
+  },
+  "light-that-burns-the-sky": {
+    "power": 200,
+    "accuracy": null,
+    "desc": "Compare l’Attaque et l’Attaque Spéciale, et utilise celle qui infligera le plus de dégâts. Ignore le talent de la cible."
+  },
+  "searing-sunraze-smash": {
+    "power": 200,
+    "accuracy": null,
+    "desc": "Baigné dans la Force Z, Solgaleo attaque en déchaînant toute sa puissance. Ignore le talent de la cible."
+  },
+  "menacing-moonraze-maelstrom": {
+    "power": 200,
+    "accuracy": null,
+    "desc": "Baigné dans la Force Z, Lunala attaque en déchaînant toute sa puissance. Ignore le talent de la cible."
+  },
+  "lets-snuggle-forever": {
+    "power": 190,
+    "accuracy": null,
+    "desc": "Mimiqui concentre toute la Force Z dans son corps, et attaque dans le plus grand fracas !"
+  },
+  "splintered-stormshards": {
+    "power": 190,
+    "accuracy": null,
+    "desc": "Lougaroc utilise la Force Z pour attaquer la cible de toutes ses forces. Efface aussi tout Champ existant."
+  },
+  "clangorous-soulblaze": {
+    "power": 185,
+    "accuracy": null,
+    "desc": "Ékaïser utilise la Force Z pour frapper l’ennemi de toutes ses forces. Augmente aussi ses stats."
+  },
+  "zippy-zap": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Une attaque électrique rapide comme l’éclair qui inflige un coup critique à coup sûr. Frappe en priorité."
+  },
+  "splishy-splash": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Pikachu frappe l’adversaire avec une vague géante chargée d’électricité. Peut aussi paralyser l’ennemi."
+  },
+  "floaty-fall": {
+    "power": 90,
+    "accuracy": 95,
+    "desc": "Pikachu prend de la hauteur avant de fondre sur son adversaire. Peut aussi apeurer l’ennemi."
+  },
+  "pika-papow": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Une attaque électrique dont la puissance est proportionnelle à l’amour que Pikachu vous porte. Touche à coup sûr."
+  },
+  "bouncy-bubble": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Évoli frappe l’adversaire avec des bulles d’eau qu’il absorbe ensuite pour récupérer un nombre de PV égal à la moitié des dégâts infligés à l’ennemi."
+  },
+  "buzzy-buzz": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Une attaque qui foudroie et paralyse l’adversaire."
+  },
+  "sizzly-slide": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Évoli s’embrase et percute violemment l’adversaire. Brûle aussi l’ennemi."
+  },
+  "glitzy-glow": {
+    "power": 80,
+    "accuracy": 95,
+    "desc": "Évoli submerge l’adversaire sous un flot d’ondes psychiques et crée un mur fabuleux qui réduit les dégâts causés par les attaques spéciales de l’ennemi."
+  },
+  "baddy-bad": {
+    "power": 80,
+    "accuracy": 95,
+    "desc": "Évoli fait appel à son côté sombre pour attaquer l’adversaire et créer un mur fabuleux qui réduit les dégâts causés par les attaques physiques de l’ennemi."
+  },
+  "sappy-seed": {
+    "power": 100,
+    "accuracy": 90,
+    "desc": "Une liane géante surgit du sol et bombarde l’adversaire de graines qui lui dérobent des PV à chaque tour. Ces PV sont ensuite absorbés par Évoli."
+  },
+  "freezy-frost": {
+    "power": 100,
+    "accuracy": 90,
+    "desc": "Évoli frappe l’adversaire avec un cristal de buée noire gelée. Annule les changements de stats de tous les Pokémon au combat."
+  },
+  "sparkly-swirl": {
+    "power": 120,
+    "accuracy": 85,
+    "desc": "Une attaque qui enserre l’adversaire dans un tourbillon de senteurs oppressantes. Guérit toutes les altérations de statut de l’équipe."
+  },
+  "veevee-volley": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Une charge dont la puissance est proportionnelle à l’amour qu’Évoli vous porte. Touche à coup sûr."
+  },
+  "double-iron-bash": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Le lanceur fait pivoter l’écrou de sa poitrine deux fois d’affilée pour frapper l’adversaire avec ses bras. Peut apeurer l’ennemi."
+  },
+  "max-guard": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur se protège de toutes les attaques. Peut échouer si utilisée plusieurs fois de suite."
+  },
+  "dynamax-cannon": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque en émettant un laser depuis son noyau. Cette capacité inflige deux fois plus de dégâts si l’adversaire est un Pokémon Dynamax."
+  },
+  "snipe-shot": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur parvient toujours à viser la cible voulue, en ignorant l’effet des talents et des capacités capables de détourner les attaques."
+  },
+  "jaw-lock": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur et sa cible ne peuvent plus quitter le terrain jusqu’à ce que l’un d’entre eux tombe K.O. L’effet est annulé si l’un des deux Pokémon disparaît."
+  },
+  "stuff-cheeks": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur mange la Baie qu’il tient, ce qui augmente beaucoup sa Défense."
+  },
+  "no-retreat": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur voit toutes ses stats augmenter, mais en contrepartie, il ne peut plus fuir ou se retirer du combat."
+  },
+  "tar-shot": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur recouvre sa cible de goudron liquide pour baisser sa Vitesse et la rendre vulnérable au feu."
+  },
+  "magic-powder": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur recouvre sa cible d’une poudre magique qui change son type en Psy."
+  },
+  "dragon-darts": {
+    "power": 50,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque en propulsant deux Fantyrm. S’il y a deux adversaires, chacun d’entre eux est frappé par un Fantyrm."
+  },
+  "teatime": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur invite tous les Pokémon sur le terrain à prendre le goûter autour d’une tasse de thé. Ceux qui tiennent une Baie la mangent."
+  },
+  "octolock": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur empêche l’adversaire de fuir. À chaque tour qui passe, cette capacité baisse la Défense et la Défense Spéciale de la cible."
+  },
+  "bolt-beak": {
+    "power": 85,
+    "accuracy": 100,
+    "desc": "Le lanceur transperce sa cible avec son bec chargé d’électricité. Si cette attaque est lancée avant que la cible n’attaque, elle infligera deux fois plus de dégâts."
+  },
+  "fishious-rend": {
+    "power": 85,
+    "accuracy": 100,
+    "desc": "Le lanceur mord sa cible avec ses solides branchies. Si cette capacité est lancée avant que la cible n’attaque, elle infligera deux fois plus de dégâts."
+  },
+  "court-change": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Une force mystérieuse intervertit les effets affectant chaque côté du terrain."
+  },
+  "max-flare": {
+    "power": 100,
+    "accuracy": null,
+    "desc": "Une attaque de type Feu que seuls les Pokémon Dynamax peuvent utiliser. Fait briller le soleil pendant cinq tours."
+  },
+  "max-flutterby": {
+    "power": 10,
+    "accuracy": null,
+    "desc": "Une attaque de type Insecte que seuls les Pokémon Dynamax peuvent utiliser. Baisse l’Attaque Spéciale de la cible."
+  },
+  "max-lightning": {
+    "power": 10,
+    "accuracy": null,
+    "desc": "Une attaque de type Électrik que seuls les Pokémon Dynamax peuvent utiliser. Crée un Champ Électrifié qui dure cinq tours."
+  },
+  "max-strike": {
+    "power": 10,
+    "accuracy": null,
+    "desc": "Une attaque de type Normal que seuls les Pokémon Dynamax peuvent utiliser. Baisse la Vitesse de la cible."
+  },
+  "max-knuckle": {
+    "power": 10,
+    "accuracy": null,
+    "desc": "Une attaque de type Combat que seuls les Pokémon Dynamax peuvent utiliser. Augmente l’Attaque des alliés."
+  },
+  "max-phantasm": {
+    "power": 10,
+    "accuracy": null,
+    "desc": "Une attaque de type Spectre que seuls les Pokémon Dynamax peuvent utiliser. Baisse la Défense de la cible."
+  },
+  "max-hailstorm": {
+    "power": 10,
+    "accuracy": null,
+    "desc": "Une attaque de type Glace que seuls les Pokémon Dynamax peuvent utiliser. Invoque une tempête de grêle qui dure cinq tours."
+  },
+  "max-ooze": {
+    "power": 10,
+    "accuracy": null,
+    "desc": "Une attaque de type Poison que seuls les Pokémon Dynamax peuvent utiliser. Augmente l’Attaque Spéciale des alliés."
+  },
+  "max-geyser": {
+    "power": 10,
+    "accuracy": null,
+    "desc": "Une attaque de type Eau que seuls les Pokémon Dynamax peuvent utiliser. Invoque de fortes pluies qui durent cinq tours."
+  },
+  "max-airstream": {
+    "power": 10,
+    "accuracy": null,
+    "desc": "Une attaque de type Vol que seuls les Pokémon Dynamax peuvent utiliser. Augmente la Vitesse des alliés."
+  },
+  "max-starfall": {
+    "power": 10,
+    "accuracy": null,
+    "desc": "Une attaque de type Fée que seuls les Pokémon Dynamax peuvent utiliser. Crée un Champ Brumeux qui dure cinq tours."
+  },
+  "max-wyrmwind": {
+    "power": 10,
+    "accuracy": null,
+    "desc": "Une attaque de type Dragon que seuls les Pokémon Dynamax peuvent utiliser. Baisse l’Attaque de la cible."
+  },
+  "max-mindstorm": {
+    "power": 10,
+    "accuracy": null,
+    "desc": "Une attaque de type Psy que seuls les Pokémon Dynamax peuvent utiliser. Crée un Champ Psychique qui dure cinq tours."
+  },
+  "max-rockfall": {
+    "power": 10,
+    "accuracy": null,
+    "desc": "Une attaque de type Roche que seuls les Pokémon Dynamax peuvent utiliser. Invoque une tempête de sable qui dure cinq tours."
+  },
+  "max-quake": {
+    "power": 10,
+    "accuracy": null,
+    "desc": "Une attaque de type Sol que seuls les Pokémon Dynamax peuvent utiliser. Augmente la Défense Spéciale des alliés."
+  },
+  "max-darkness": {
+    "power": 10,
+    "accuracy": null,
+    "desc": "Une attaque de type Ténèbres que seuls les Pokémon Dynamax peuvent utiliser. Baisse la Défense Spéciale de la cible."
+  },
+  "max-overgrowth": {
+    "power": 10,
+    "accuracy": null,
+    "desc": "Une attaque de type Plante que seuls les Pokémon Dynamax peuvent utiliser. Crée un Champ Herbu qui dure cinq tours."
+  },
+  "max-steelspike": {
+    "power": 10,
+    "accuracy": null,
+    "desc": "Une attaque de type Acier que seuls les Pokémon Dynamax peuvent utiliser. Augmente la Défense des alliés."
+  },
+  "clangorous-soul": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur sacrifie une partie de ses PV pour augmenter toutes ses stats."
+  },
+  "body-press": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur utilise son corps pour attaquer sa cible. Plus la Défense du lanceur est élevée, plus les dégâts infligés sont importants."
+  },
+  "decorate": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur augmente beaucoup l’Attaque et l’Attaque Spéciale de la cible en la nappant de glaçage."
+  },
+  "drum-beating": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur bat son tambour pour en diriger les racines sur la cible, l’attaquer, et baisser sa Vitesse."
+  },
+  "snap-trap": {
+    "power": 35,
+    "accuracy": 100,
+    "desc": "Le lanceur piège sa cible dans son Troquenard d’acier et lui inflige des dégâts pendant quatre ou cinq tours."
+  },
+  "pyro-ball": {
+    "power": 120,
+    "accuracy": 90,
+    "desc": "Le lanceur attaque avec un ballon fait à partir d’un caillou enflammé. Peut aussi brûler la cible."
+  },
+  "behemoth-blade": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Le lanceur se transforme en une immense épée et pourfend son adversaire. Inflige le double de dégâts aux Pokémon Dynamax."
+  },
+  "behemoth-bash": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Le lanceur se transforme en un immense bouclier et charge son adversaire. Inflige le double de dégâts aux Pokémon Dynamax."
+  },
+  "aura-wheel": {
+    "power": 110,
+    "accuracy": 100,
+    "desc": "Morpeko libère l’énergie stockée dans ses joues pour attaquer et augmenter sa Vitesse. Le type de cette capacité change en fonction de la forme de Morpeko."
+  },
+  "breaking-swipe": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Le lanceur balaie violemment le camp adverse avec son immense queue. Baisse l’Attaque de la cible."
+  },
+  "branch-poke": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque sa cible en la piquant avec une branche pointue."
+  },
+  "overdrive": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur gratte ses cordes de guitare ou de basse pour créer de violentes vibrations sonores qui blessent la cible."
+  },
+  "apple-acid": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque son adversaire avec un liquide corrosif créé à partir d’une pomme acide. Baisse la Défense Spéciale de la cible."
+  },
+  "grav-apple": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque son adversaire avec une pomme qu’il fait tomber de très haut. Baisse la Défense de la cible."
+  },
+  "spirit-break": {
+    "power": 75,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque son adversaire avec une telle force que ce dernier peut s’en retrouver profondément troublé. Baisse l’Attaque Spéciale de la cible."
+  },
+  "strange-steam": {
+    "power": 90,
+    "accuracy": 95,
+    "desc": "Le lanceur émet de la vapeur pour attaquer sa cible. Peut aussi la rendre confuse."
+  },
+  "life-dew": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur projette une eau mystérieuse autour du terrain pour restaurer ses PV et ceux de ses alliés au combat."
+  },
+  "obstruct": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Le lanceur se protège de toutes les attaques. Peut échouer si utilisée plusieurs fois de suite. Baisse beaucoup la Défense de l’assaillant s’il utilise une attaque directe."
+  },
+  "false-surrender": {
+    "power": 80,
+    "accuracy": null,
+    "desc": "Le lanceur fait semblant de se prosterner et utilise ses cheveux pour poignarder sa cible. Touche à tous les coups."
+  },
+  "meteor-assault": {
+    "power": 150,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque son adversaire avec son poireau. Toutefois, cette action le fait vaciller et il doit se reposer au tour suivant."
+  },
+  "eternabeam": {
+    "power": 160,
+    "accuracy": 90,
+    "desc": "L’attaque la plus puissante d’Éthernatos sous sa forme originelle. S’il l’utilise, il devra se reposer au tour suivant."
+  },
+  "steel-beam": {
+    "power": 140,
+    "accuracy": 95,
+    "desc": "Le lanceur concentre du métal issu de tout son corps en un rayon qu’il projette violemment sur sa cible. Il subit aussi des dégâts."
+  },
+  "expanding-force": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque la cible avec ses pouvoirs psychiques. Si un Champ Psychique est actif, la puissance de cette capacité augmente et elle touche tous les ennemis."
+  },
+  "steel-roller": {
+    "power": 130,
+    "accuracy": 100,
+    "desc": "Une attaque qui inflige des dégâts et fait disparaître le champ actif, mais qui échoue s’il n’y en a pas à ce moment."
+  },
+  "scale-shot": {
+    "power": 25,
+    "accuracy": 90,
+    "desc": "Le lanceur projette des écailles sur la cible de deux à cinq fois d’affilée. Augmente la Vitesse, mais diminue la Défense."
+  },
+  "meteor-beam": {
+    "power": 120,
+    "accuracy": 90,
+    "desc": "Le lanceur concentre l’énergie cosmique au premier tour, ce qui augmente son Attaque Spéciale, et frappe au second."
+  },
+  "shell-side-arm": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Une attaque physique ou spéciale, en fonction de ce qui est le plus efficace contre la cible. Peut aussi empoisonner."
+  },
+  "misty-explosion": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Le lanceur frappe tous les Pokémon autour de lui en explosant, ce qui le met K.O. La puissance de cette attaque augmente si un Champ Brumeux est actif."
+  },
+  "grassy-glide": {
+    "power": 55,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque l’ennemi en glissant sur le terrain. Frappe toujours en priorité si un Champ Herbu est actif."
+  },
+  "rising-voltage": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Des éclairs surgissent du sol et frappent l’ennemi. La puissance de cette attaque est doublée si la cible est sur un Champ Électrifié."
+  },
+  "terrain-pulse": {
+    "power": 50,
+    "accuracy": 100,
+    "desc": "Une attaque qui tire sa force des champs. Son type et sa puissance varient selon le champ actif."
+  },
+  "skitter-smack": {
+    "power": 70,
+    "accuracy": 90,
+    "desc": "Le lanceur rampe derrière l’ennemi pour l’attaquer. Baisse l’Attaque Spéciale de la cible."
+  },
+  "burning-jealousy": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque sa cible avec toute sa jalousie. Cette capacité brûle tout Pokémon dont les stats ont augmenté pendant ce tour."
+  },
+  "lash-out": {
+    "power": 75,
+    "accuracy": 100,
+    "desc": "Le lanceur frappe l’ennemi avec toute sa rancune. Si les stats du lanceur ont diminué pendant ce tour, la puissance de cette attaque est doublée."
+  },
+  "poltergeist": {
+    "power": 110,
+    "accuracy": 90,
+    "desc": "Le lanceur manipule l’objet tenu par l’ennemi pour l’attaquer. Échoue si la cible ne tient rien."
+  },
+  "corrosive-gas": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Un gaz corrosif qui enveloppe tous les Pokémon alentour et qui dissout les objets qu’ils tiennent."
+  },
+  "coaching": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur coache ses alliés, augmentant ainsi leur Attaque et leur Défense."
+  },
+  "flip-turn": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Après son attaque, le lanceur revient à toute vitesse et change de place avec un Pokémon de l’équipe prêt au combat."
+  },
+  "triple-axel": {
+    "power": 20,
+    "accuracy": 90,
+    "desc": "Une salve composée de un à trois coups de pied dont la puissance augmente à chaque coup porté."
+  },
+  "dual-wingbeat": {
+    "power": 40,
+    "accuracy": 90,
+    "desc": "Le lanceur frappe l’ennemi avec ses ailes deux fois d’affilée."
+  },
+  "scorching-sands": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Le lanceur projette du sable chauffé à blanc sur l’ennemi. Peut aussi brûler la cible."
+  },
+  "jungle-healing": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Le lanceur fait appel au pouvoir de la jungle pour restaurer les PV et soigner les altérations d’état de ses alliés et de lui-même."
+  },
+  "wicked-blow": {
+    "power": 75,
+    "accuracy": 100,
+    "desc": "Le lanceur assène un coup puissant à l’ennemi. Cette technique qui inflige toujours un coup critique est réservée à ceux qui maîtrisent la puissance des Ténèbres."
+  },
+  "surging-strikes": {
+    "power": 25,
+    "accuracy": 100,
+    "desc": "Le lanceur assène trois coups fluides à l’ennemi. Cette technique qui inflige toujours un coup critique est réservée à ceux qui maîtrisent la puissance de l’Eau."
+  },
+  "thunder-cage": {
+    "power": 80,
+    "accuracy": 90,
+    "desc": "Le lanceur frappe l’ennemi, et le piège dans une prison électrique qui dure de quatre à cinq tours."
+  },
+  "dragon-energy": {
+    "power": 150,
+    "accuracy": 100,
+    "desc": "Le lanceur utilise son énergie vitale pour attaquer l’ennemi. Moins il a de PV, moins l’attaque est puissante."
+  },
+  "freezing-glare": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Les yeux du lanceur tirent des rayons psychiques. Peut aussi geler l’ennemi."
+  },
+  "fiery-wrath": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Le lanceur canalise sa colère et la transforme en aura brûlante, avec laquelle il attaque l’ennemi. Peut aussi l’apeurer."
+  },
+  "thunderous-kick": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Le lanceur assène un coup de pied à la cible à la vitesse de l’éclair. Baisse aussi la Défense de la cible."
+  },
+  "glacial-lance": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque l’ennemi avec une lance de glace entourée d’un blizzard."
+  },
+  "astral-barrage": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque l’ennemi avec une multitude de petits spectres."
+  },
+  "eerie-spell": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque avec de puissants pouvoirs psychiques et retire 3 PP de la dernière capacité de l’ennemi."
+  },
+  "dire-claw": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque avec des griffes destructrices en visant les points faibles. La cible peut aussi être empoisonnée, paralysée, ou prise de somnolence."
+  },
+  "psyshield-bash": {
+    "power": 70,
+    "accuracy": 90,
+    "desc": "Le lanceur s'enveloppe d'énergie psychique et frappe sa cible de plein fouet. Peut aussi augmenter la puissance défensive du lanceur."
+  },
+  "power-shift": {
+    "power": 0,
+    "accuracy": null,
+    "desc": "Le lanceur échange sa puissance offensive avec sa puissance défensive."
+  },
+  "stone-axe": {
+    "power": 65,
+    "accuracy": 90,
+    "desc": "Le lanceur attaque le point faible de sa cible avec sa hache de pierre. Les débris de pierre continuent d'infliger des dégâts à la cible plusieurs fois."
+  },
+  "springtide-storm": {
+    "power": 100,
+    "accuracy": 80,
+    "desc": "Le lanceur déclenche un violent typhon mêlé de haine et d'amour qui s'abat sur l'ennemi. Les effets additionnels changent en fonction de la forme du lanceur."
+  },
+  "mystical-power": {
+    "power": 70,
+    "accuracy": 90,
+    "desc": "Le lanceur utilise un pouvoir mystique pour se renforcer. S'il excelle en attaque, sa puissance offensive augmente. S'il excelle en défense, sa puissance défensive augmente."
+  },
+  "raging-fury": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque en déchaînant de violentes flammes, et devient obsédé par la capacité."
+  },
+  "wave-crash": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Le lanceur se recouvre entièrement d'eau avant de charger sa cible. Blesse aussi le lanceur, mais avance sa position dans l'ordre d'action."
+  },
+  "chloroblast": {
+    "power": 150,
+    "accuracy": 95,
+    "desc": "Le lanceur tire un concentré de chlorophylle sur l'ennemi. Blesse aussi le lanceur, et recule sa position dans l'ordre d'action."
+  },
+  "mountain-gale": {
+    "power": 100,
+    "accuracy": 85,
+    "desc": "Le lanceur envoie un bloc de glace de la taille d'un iceberg sur l'ennemi."
+  },
+  "victory-dance": {
+    "power": 0,
+    "accuracy": null,
+    "desc": "Le lanceur danse pour invoquer la victoire. Augmente la puissance offensive et la puissance défensive du lanceur et multiplie par 1,5 les dégâts des capacités."
+  },
+  "headlong-rush": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Le lanceur charge l'ennemi de toutes ses forces. Baisse la puissance défensive du lanceur."
+  },
+  "barb-barrage": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Une multitude de pointes toxiques frappent l'ennemi et peuvent l'empoisonner. La puissance est doublée si la cible souffre d'une altération de statut."
+  },
+  "esper-wing": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur entaille l'ennemi avec ses ailes renforcées par une aura psychique. Taux de critiques élevé. Avance la position du lanceur dans l'ordre d'action."
+  },
+  "bitter-malice": {
+    "power": 75,
+    "accuracy": 100,
+    "desc": "Une rancœur glaciale frappe l'ennemi. Peut aussi le geler. La puissance est doublée si la cible souffre d'une altération de statut."
+  },
+  "shelter": {
+    "power": 0,
+    "accuracy": null,
+    "desc": "Rend la peau du lanceur dure comme un mur de fer. Augmente sa puissance défensive. Les attaques de la cible deviennent plus faciles à esquiver."
+  },
+  "triple-arrows": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Le lanceur frappe du talon et tire trois flèches simultanément. Augmente son taux de critiques. Baisse la puissance défensive de l'ennemi."
+  },
+  "infernal-parade": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Une multitude de boules de feu frappent l'ennemi. Elles peuvent aussi le brûler. La puissance double si la cible souffre d'une altération de statut."
+  },
+  "ceaseless-edge": {
+    "power": 65,
+    "accuracy": 90,
+    "desc": "Des lames de coquillages entaillent l'ennemi en visant ses points faibles. Les débris de coquillages disséminés infligent des dégâts à la cible à plusieurs reprises."
+  },
+  "bleakwind-storm": {
+    "power": 100,
+    "accuracy": 80,
+    "desc": "Frappe l'ennemi d'un typhon froid et brutal, qui fait trembler le cœur et le corps. Peut aussi geler la cible."
+  },
+  "wildbolt-storm": {
+    "power": 100,
+    "accuracy": 80,
+    "desc": "Le lanceur déclenche un violent typhon orageux dont les rafales et la foudre frappent l'ennemi. Peut aussi paralyser la cible."
+  },
+  "sandsear-storm": {
+    "power": 100,
+    "accuracy": 80,
+    "desc": "Le lanceur déclenche un violent typhon mêlé à du sable ardent qui s'abat sur l'ennemi. Brûle la cible."
+  },
+  "lunar-blessing": {
+    "power": 0,
+    "accuracy": null,
+    "desc": "Le lanceur soigne ses altérations de statut et récupère des PV. Les attaques de la cible deviennent plus faciles à esquiver."
+  },
+  "take-heart": {
+    "power": 0,
+    "accuracy": null,
+    "desc": "Le lanceur fait preuve de bravoure pour soigner ses altérations de statut et augmenter sa puissance offensive et défensive."
+  },
+  "tera-blast": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Si le lanceur est Téracristallisé, il libère l'énergie de son Type Téracristal. Cette capacité inflige des dégâts en utilisant l'Attaque ou l'Attaque Spéciale du lanceur, selon la statistique la plus élevée."
+  },
+  "silk-trap": {
+    "power": 0,
+    "accuracy": null,
+    "desc": "Le lanceur déploie un piège de fil pour se protéger contre les attaques, et si un assaillant utilise une attaque directe contre lui, la Vitesse de l'assaillant baisse."
+  },
+  "axe-kick": {
+    "power": 120,
+    "accuracy": 90,
+    "desc": "Le lanceur donne un coup de talon descendant à la cible, ce qui peut aussi la rendre confuse. S'il échoue, le lanceur se blesse."
+  },
+  "last-respects": {
+    "power": 50,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque pour venger ses alliés. Plus le nombre de Pokémon alliés mis K.O. est élevé, plus la puissance de cette capacité augmente."
+  },
+  "lumina-crash": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque en émettant une étrange lumière qui ébranle l'esprit de la cible. Cela baisse beaucoup la Défense Spéciale de la cible."
+  },
+  "order-up": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque avec grâce et élégance. Si le lanceur a un Nigirigon dans sa bouche, cette capacité augmente une des statistiques du lanceur selon la forme du Nigirigon."
+  },
+  "jet-punch": {
+    "power": 60,
+    "accuracy": 100,
+    "desc": "Le lanceur enveloppe son poing d'un torrent furieux et attaque si rapidement qu'on peine à le discerner. Frappe en priorité."
+  },
+  "spicy-extract": {
+    "power": 0,
+    "accuracy": null,
+    "desc": "Le lanceur relâche un concentré extrêmement pimenté sur la cible, ce qui augmente beaucoup l'Attaque de celle-ci, mais baisse aussi beaucoup sa Défense."
+  },
+  "spin-out": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Le lanceur met tout son poids sur ses pattes et effectue de violentes rotations, ce qui inflige des dégâts à la cible, mais baisse beaucoup la Vitesse du lanceur."
+  },
+  "population-bomb": {
+    "power": 20,
+    "accuracy": 90,
+    "desc": "Le lanceur et ses congénères prolifèrent en masse et attaquent ensemble d'une à dix fois d'affilée."
+  },
+  "ice-spinner": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur enveloppe ses jambes d'une fine couche de glace et heurte la cible en tournant sur lui-même. Ses rotations détruisent le champ actif sur le terrain."
+  },
+  "glaive-rush": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Le lanceur se jette dans une charge inconsciente sur la cible. Une fois cette capacité utilisée, toute attaque sur le lanceur inflige le double de dégâts et n'échoue jamais."
+  },
+  "revival-blessing": {
+    "power": 0,
+    "accuracy": null,
+    "desc": "Dans un élan de compassion, le lanceur adresse une prière afin de ranimer un Pokémon de l'équipe K.O. en lui rendant la moitié de ses PV."
+  },
+  "salt-cure": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Le lanceur couvre la cible de sel, ce qui lui inflige des dégâts à chaque tour. Si la cible est de type Acier ou Eau, ces dégâts sont plus élevés."
+  },
+  "triple-dive": {
+    "power": 30,
+    "accuracy": 95,
+    "desc": "Le lanceur effectue des plongeons parfaitement cadencés pour éclabousser la cible et lui infliger des dégâts trois fois d'affilée."
+  },
+  "mortal-spin": {
+    "power": 30,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque en tournant sur lui-même et empoisonne la cible. Il se libère également des effets de capacités comme Étreinte, Ligotage ou Vampigraine."
+  },
+  "doodle": {
+    "power": 0,
+    "accuracy": 100,
+    "desc": "Le lanceur capture l'essence de la cible et la décalque. Le talent du lanceur et de ses alliés devient alors identique à celui de la cible."
+  },
+  "fillet-away": {
+    "power": 0,
+    "accuracy": null,
+    "desc": "Le lanceur sacrifie des PV pour beaucoup augmenter son Attaque, son Attaque Spéciale, et sa Vitesse."
+  },
+  "kowtow-cleave": {
+    "power": 85,
+    "accuracy": null,
+    "desc": "Le lanceur se prosterne devant la cible et profite de cette distraction pour l'attaquer avec une lame. N'échoue jamais."
+  },
+  "flower-trick": {
+    "power": 70,
+    "accuracy": null,
+    "desc": "Le lanceur attaque en jetant un bouquet de fleurs piégé sur la cible. N'échoue jamais et inflige toujours un coup critique."
+  },
+  "torch-song": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur carbonise la cible en projetant sur elle de vives flammes créées par un chant. Cette capacité augmente l'Attaque Spéciale du lanceur."
+  },
+  "aqua-step": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur se joue de la cible et lui inflige des dégâts avec ses pas de danse gracieux et légers. Cette capacité augmente la Vitesse du lanceur."
+  },
+  "raging-bull": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Le lanceur effectue un plaquage comme un taureau enragé. Le type de cette capacité dépend de la forme du lanceur. Peut aussi briser les barrières comme Mur Lumière et Protection."
+  },
+  "make-it-rain": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque en lançant de nombreuses pièces, ce qui baisse son Attaque Spéciale. Permet d'obtenir plus d'argent à la fin du combat."
+  },
+  "psyblade": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur lacère la cible à l'aide d'une lame intangible. S'il se trouve dans un champ électrifié, la puissance de cette capacité augmente de 50 %."
+  },
+  "hydro-steam": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur asperge la cible avec un puissant jet d'eau bouillante. Quand le soleil brille, la puissance de cette capacité augmente de 50 % au lieu de baisser."
+  },
+  "ruination": {
+    "power": 1,
+    "accuracy": 90,
+    "desc": "Le lanceur déclenche un cataclysme qui baisse les PV de la cible de moitié."
+  },
+  "collision-course": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Le lanceur change de forme et s'écrase sur la cible dans une explosion antique. Si la capacité est super efficace, elle inflige encore plus de dégâts que d'ordinaire."
+  },
+  "electro-drift": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Le lanceur change de forme et fonce sur la cible en la perforant d'électricité futuriste. Si la capacité est super efficace, sa puissance augmente encore plus."
+  },
+  "shed-tail": {
+    "power": 0,
+    "accuracy": null,
+    "desc": "Le lanceur crée un clone en sacrifiant des PV, puis il revient et échange sa place avec un Pokémon de l'équipe prêt à combattre."
+  },
+  "chilly-reception": {
+    "power": 0,
+    "accuracy": null,
+    "desc": "Le lanceur fait un si mauvais jeu de mots qu'il jette un froid et échange sa place avec un Pokémon de l'équipe prêt à combattre. La neige tombe pendant cinq tours."
+  },
+  "tidy-up": {
+    "power": 0,
+    "accuracy": null,
+    "desc": "Le lanceur fait le ménage sur le terrain, ce qui annule les effets de Picots, Piège de Roc, Toile Gluante, Pics Toxik, et Clonage. Augmente l'Attaque et la Vitesse du lanceur."
+  },
+  "snowscape": {
+    "power": 0,
+    "accuracy": null,
+    "desc": "Le lanceur invoque une tempête de neige qui dure cinq tours, ce qui augmente la Défense des Pokémon de type Glace."
+  },
+  "pounce": {
+    "power": 50,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque en bondissant sur la cible, ce qui baisse la Vitesse de celle-ci."
+  },
+  "trailblaze": {
+    "power": 50,
+    "accuracy": 100,
+    "desc": "Le lanceur surgit des hautes herbes pour attaquer la cible. Les mouvements agiles du lanceur augmentent sa Vitesse."
+  },
+  "chilling-water": {
+    "power": 50,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque la cible en l'arrosant d'une eau si froide qu'elle détériore son esprit combatif. Baisse l'Attaque de la cible."
+  },
+  "hyper-drill": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Le lanceur fait tourner à toute vitesse la partie pointue de son corps afin de transpercer la cible. Ignore même les capacités comme Abri ou Détection."
+  },
+  "twin-beam": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Le lanceur projette d'étranges rayons lumineux avec ses yeux et inflige des dégâts deux fois d'affilée."
+  },
+  "rage-fist": {
+    "power": 50,
+    "accuracy": 100,
+    "desc": "Le lanceur transforme sa colère en énergie pour attaquer. Plus il a subi d'attaques, plus la puissance de cette capacité augmente."
+  },
+  "armor-cannon": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Le lanceur tire un boulet de canon ardent provenant de sa propre armure sur la cible. Cela baisse la Défense et la Défense Spéciale du lanceur."
+  },
+  "bitter-blade": {
+    "power": 90,
+    "accuracy": 100,
+    "desc": "Le lanceur concentre son amertume du monde des vivants dans la pointe de ses épées et tranche la cible. La moitié des dégâts infligés sont convertis en PV pour le lanceur."
+  },
+  "double-shock": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Le lanceur libère toute l'électricité contenue dans son corps pour infliger des dégâts élevés à la cible. Le lanceur perd le type Électrik."
+  },
+  "gigaton-hammer": {
+    "power": 160,
+    "accuracy": 100,
+    "desc": "Le lanceur met tout son corps à contribution pour attaquer la cible avec un immense marteau. Cette capacité ne peut pas être utilisée deux fois d'affilée."
+  },
+  "comeuppance": {
+    "power": 1,
+    "accuracy": 100,
+    "desc": "Le lanceur contre-attaque avec un coup infligeant des dégâts supérieurs à ceux de la dernière capacité qui l'a blessé."
+  },
+  "aqua-cutter": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Le lanceur projette de l'eau pressurisée qui entaille la cible comme une lame. Taux de critiques élevé."
+  },
+  "blazing-torque": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Aucune description."
+  },
+  "wicked-torque": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Aucune description."
+  },
+  "noxious-torque": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Aucune description."
+  },
+  "combat-torque": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Aucune description."
+  },
+  "magical-torque": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Aucune description."
+  },
+  "blood-moon": {
+    "power": 140,
+    "accuracy": 100,
+    "desc": "Le lanceur concentre toute son énergie dans la lune rouge sang sur son front et la projette sur la cible. Cette capacité ne peut pas être utilisée deux fois d'affilée."
+  },
+  "matcha-gotcha": {
+    "power": 80,
+    "accuracy": 90,
+    "desc": "Le lanceur remue son thé et en bombarde la cible. La moitié des dégâts infligés sont convertis en PV pour le lanceur. Cette capacité peut aussi brûler la cible."
+  },
+  "syrup-bomb": {
+    "power": 60,
+    "accuracy": 85,
+    "desc": "Le lanceur jette une bombe qui recouvre la cible de sirop gluant et fait progressivement baisser la Vitesse de la cible pendant trois tours."
+  },
+  "ivy-cudgel": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Le lanceur frappe avec un gourdin enveloppé de lierre. Le type de cette capacité change selon le masque porté par le lanceur, et a un taux de critiques élevé."
+  },
+  "electro-shot": {
+    "power": 130,
+    "accuracy": 100,
+    "desc": "Le lanceur absorbe de l'électricité au premier tour, ce qui augmente son Attaque Spéciale, et envoie une puissante décharge au second. S'il pleut, il l'envoie au premier tour."
+  },
+  "tera-starstorm": {
+    "power": 120,
+    "accuracy": 100,
+    "desc": "Le lanceur bombarde la cible afin de l'éliminer grâce au pouvoir des cristaux. Si le lanceur est Terapagos sous sa Forme Stellaire, la capacité touche tous les ennemis."
+  },
+  "fickle-beam": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque en tirant un rayon lumineux. Il arrive parfois que toutes les têtes agissent ensemble, ce qui double la puissance de la capacité."
+  },
+  "burning-bulwark": {
+    "power": 0,
+    "accuracy": 0,
+    "desc": "Le lanceur se protège contre les attaques grâce à son pelage incandescent, et si un assaillant utilise une attaque directe contre lui, il le brûle."
+  },
+  "thunderclap": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Permet au lanceur d'attaquer la cible en priorité avec une décharge électrique. Échoue si la cible ne prépare pas une attaque."
+  },
+  "mighty-cleave": {
+    "power": 95,
+    "accuracy": 100,
+    "desc": "Le lanceur pourfend la cible avec la lumière accumulée sur sa tête. Cette attaque passe outre les protections."
+  },
+  "tachyon-cutter": {
+    "power": 50,
+    "accuracy": 0,
+    "desc": "Le lanceur concentre des particules élémentaires pour créer une lame qui inflige des dégâts à la cible deux fois d'affilée. N'échoue jamais."
+  },
+  "hard-press": {
+    "power": 0,
+    "accuracy": 100,
+    "desc": "Le lanceur écrase la cible avec ses bras ou ses pinces. Plus il reste de PV à la cible, plus la puissance de la capacité augmente."
+  },
+  "dragon-cheer": {
+    "power": 0,
+    "accuracy": 0,
+    "desc": "Le lanceur galvanise ses alliés avec un encouragement draconique qui augmente leur taux de critiques. L'effet est plus puissant si les alliés ont le type Dragon."
+  },
+  "alluring-voice": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque la cible avec sa voix angélique. Cette capacité rend la cible confuse si ses stats ont augmenté pendant ce tour."
+  },
+  "temper-flare": {
+    "power": 75,
+    "accuracy": 100,
+    "desc": "Le lanceur utilise la force de son dépit pour attaquer. S'il a utilisé une capacité qui a échoué au tour précédent, la puissance d'Indignition est doublée."
+  },
+  "supercell-slam": {
+    "power": 100,
+    "accuracy": 95,
+    "desc": "Le lanceur se charge en électricité et fond sur la cible. S'il échoue, le lanceur se blesse."
+  },
+  "psychic-noise": {
+    "power": 75,
+    "accuracy": 100,
+    "desc": "Le lanceur attaque avec des ondes sonores dissonantes. Cela empêche la cible de récupérer des PV à l'aide de capacités, talents ou objets tenus pendant 2 tours."
+  },
+  "upper-hand": {
+    "power": 65,
+    "accuracy": 100,
+    "desc": "Le lanceur réagit instinctivement au moindre mouvement et donne un coup de paume qui apeure la cible. Échoue si cette dernière n'a pas utilisé une attaque prioritaire."
+  },
+  "malignant-chain": {
+    "power": 100,
+    "accuracy": 100,
+    "desc": "Le lanceur ligote la cible avec une chaîne faite de poison et lui injecte un venin corrosif, ce qui peut aussi gravement l'empoisonner."
+  },
+  "shadow-rush": {
+    "power": 55,
+    "accuracy": 100,
+    "desc": "Aucune description."
+  },
+  "shadow-blast": {
+    "power": 80,
+    "accuracy": 100,
+    "desc": "Aucune description."
+  },
+  "shadow-blitz": {
+    "power": 40,
+    "accuracy": 100,
+    "desc": "Aucune description."
+  },
+  "shadow-bolt": {
+    "power": 75,
+    "accuracy": 100,
+    "desc": "Aucune description."
+  },
+  "shadow-break": {
+    "power": 75,
+    "accuracy": 100,
+    "desc": "Aucune description."
+  },
+  "shadow-chill": {
+    "power": 75,
+    "accuracy": 100,
+    "desc": "Aucune description."
+  },
+  "shadow-end": {
+    "power": 120,
+    "accuracy": 60,
+    "desc": "Aucune description."
+  },
+  "shadow-fire": {
+    "power": 75,
+    "accuracy": 100,
+    "desc": "Aucune description."
+  },
+  "shadow-rave": {
+    "power": 70,
+    "accuracy": 100,
+    "desc": "Aucune description."
+  },
+  "shadow-storm": {
+    "power": 95,
+    "accuracy": 100,
+    "desc": "Aucune description."
+  },
+  "shadow-wave": {
+    "power": 50,
+    "accuracy": 100,
+    "desc": "Aucune description."
+  },
+  "shadow-down": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Aucune description."
+  },
+  "shadow-half": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Aucune description."
+  },
+  "shadow-hold": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Aucune description."
+  },
+  "shadow-mist": {
+    "power": null,
+    "accuracy": 100,
+    "desc": "Aucune description."
+  },
+  "shadow-panic": {
+    "power": null,
+    "accuracy": 90,
+    "desc": "Aucune description."
+  },
+  "shadow-shed": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Aucune description."
+  },
+  "shadow-sky": {
+    "power": null,
+    "accuracy": null,
+    "desc": "Aucune description."
+  }
+}
