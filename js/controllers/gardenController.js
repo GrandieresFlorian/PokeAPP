@@ -140,12 +140,18 @@ function savePreset(presetId) {
     const garden = state.currentUserData.garden;
     if (!garden) return;
 
+    // Sécurité : Si les presets n'existent pas encore dans l'objet utilisateur, on les initialise
+    if (!state.currentUserData.gardenPresets) {
+        state.currentUserData.gardenPresets = Array.from({length: 5}, (_, i) => ({
+            id: i + 1, name: `Preset ${i + 1}`, layout: {}
+        }));
+    }
+
     const preset = state.currentUserData.gardenPresets.find(p => p.id === presetId);
     if (!preset) return;
 
     const layout = {};
     garden.forEach((plot, index) => {
-        // On sauvegarde uniquement les plots débloqués qui contiennent une baie plantée
         if (!plot.locked && plot.berryId) {
             layout[index] = plot.berryId;
         }
@@ -159,6 +165,11 @@ function savePreset(presetId) {
 
 // --- CHARGER ET PLANTER UN PRESET ---
 function loadPreset(presetId) {
+    if (!state.currentUserData.gardenPresets) {
+        state.currentUserData.gardenPresets = Array.from({length: 5}, (_, i) => ({
+            id: i + 1, name: `Preset ${i + 1}`, layout: {}
+        }));
+    }
     const preset = state.currentUserData.gardenPresets.find(p => p.id === presetId);
     if (!preset || Object.keys(preset.layout).length === 0) {
         return alert("Ce preset est vide ! Configurez des baies dans votre jardin avant de sauvegarder.");
