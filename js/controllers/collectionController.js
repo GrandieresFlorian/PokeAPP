@@ -51,7 +51,11 @@ export async function openCardDetails(carte) {
             descText = descriptionObj;
         }
     }
-    document.getElementById('details-description').textContent = descText;
+    const descElement = document.getElementById('details-description');
+    descElement.textContent = descText;
+    descElement.style.whiteSpace = "normal"; // Force le retour à la ligne
+    descElement.style.wordWrap = "break-word"; // Empêche les mots trop longs de déborder
+    descElement.style.lineHeight = "1.4"; // Améliore légèrement la lisibilité des lignes
     
     // Titres traduits dans la modale
     const descHeading = modal.querySelector('h3:nth-of-type(1)');

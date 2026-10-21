@@ -329,7 +329,11 @@ async function formatTeam(rawTeam) {
             speed: Math.floor(((2 * d.baseStats.speed) * (pkmn.level||1)) / 100) + 5,
             types: d.types
         };
-        let initialMoves = await getMovesForLevel(pkmn.pokedexNumber, pkmn.level || 1);
+        
+        // --- CORRECTION ICI : On utilise les attaques sauvegardées du Pokémon s'il en a ! ---
+        let initialMoves = (pkmn.moves && pkmn.moves.length > 0) 
+            ? pkmn.moves 
+            : await getMovesForLevel(pkmn.pokedexNumber, pkmn.level || 1);
 
         return {
             ...pkmn,
