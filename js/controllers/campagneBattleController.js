@@ -203,13 +203,20 @@ function renderMovesUI() {
         if(FIXED_DAMAGE_MOVES[move.nameEn]) displayPower = "FIX";
 
         btn.innerHTML = `<span class="move-name" data-en="${move.nameEn}" data-fr="${move.nameFr}">${moveName}</span><span style="font-size:0.7rem; opacity:0.8; font-weight:normal;">POW ${displayPower}</span>`;
+        
+        // --- BLOCAGES UI (Provoc & Entrave) ---
         if (activeFighter.taunted && move.damageClass === 'status') {
             btn.disabled = true;
             btn.style.opacity = "0.4";
             btn.title = "Interdit sous l'effet de Provoc !";
+        } else if (activeFighter.disabledMove && activeFighter.disabledMove.turns > 0 && activeFighter.disabledMove.name === move.nameEn) {
+            btn.disabled = true;
+            btn.style.opacity = "0.4";
+            btn.title = "Capacité entravée !";
         } else {
             btn.onclick = () => processTurn(move);
         }
+        
         container.appendChild(btn);
     });
 }
@@ -361,7 +368,7 @@ function playAnimation(id, animClass) {
 }
 
 function applyStatus(target, statusObj, targetName) {
-    let types = target.battleStats ? target.battleStats.types : (target.types || []);
+    let types = target.types || [];
 
     // IMMUNITÉS LIÉES AUX TYPES (Acier, Poison, Feu, Electrik, Glace)
     if ((statusObj.status === 'PSN' || statusObj.status === 'TOX') && (types.includes('poison') || types.includes('steel'))) return;
@@ -461,10 +468,17 @@ async function applyEndTurnEffects(entity, opponent, isPlayer) {
         }
     }
 
-    // DIMINUTION PROVOC
+    // DIMINUTION PROVOC & ENTRAVE
     if (entity.taunted && entity.taunted > 0) {
         entity.taunted--;
         if (entity.taunted === 0) logMessage(`<b>${name} n'est plus provoqué.</b>`);
+    }
+    if (entity.disabledMove && entity.disabledMove.turns > 0) {
+        entity.disabledMove.turns--;
+        if (entity.disabledMove.turns === 0) {
+            logMessage(`<b>${name} n'est plus entravé !</b>`);
+            entity.disabledMove = null;
+        }
     }
 
     // RÉINITIALISATION LIEN DU DESTIN
@@ -528,6 +542,9 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
 
     let colorClass = isPlayer ? "var(--accent)" : "var(--danger)";
     logMessage(`<b>${aName}</b> utilise <b style="color:${colorClass};">${move.nameFr}</b> !`);
+    
+    // --- MÉMORISATION POUR ENTRAVE ---
+    attacker.lastUsedMove = move;
 
     if (defender.invulnerable) {
         logMessage(`Mais <b>${defName}</b> est introuvable ! L'attaque échoue.`);
@@ -535,7 +552,7 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
     }
 
     if (POWDER_MOVES.includes(move.nameEn)) {
-        let defTypes = defender.battleStats ? defender.battleStats.types : (defender.types || []);
+        let defTypes = defender.types || [];
         if (defTypes.includes('grass')) {
             logMessage(`Ça n'affecte pas les Pokémon Plante !`);
             await new Promise(r => setTimeout(r, 600)); 
@@ -661,7 +678,7 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
     // TRANSFORM
     if (move.nameEn === "transform") {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack'); await new Promise(r => setTimeout(r, 600));
-        attacker.battleStats.types = [...defender.battleStats.types];
+        attacker.types = [...(defender.types || [])];
         attacker.battleStats.atk = defender.battleStats.atk; attacker.battleStats.def = defender.battleStats.def;
         attacker.battleStats.spatk = defender.battleStats.spatk; attacker.battleStats.spdef = defender.battleStats.spdef;
         attacker.battleStats.speed = defender.battleStats.speed;
@@ -675,7 +692,8 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
 
     // LEECH SEED
     if (SEED_MOVES_LIST.includes(move.nameEn)) {
-        if (defender.battleStats.types.includes('grass')) logMessage(`Ça n'affecte pas les Pokémon Plante !`);
+        let defTypes = defender.types || [];
+        if (defTypes.includes('grass')) logMessage(`Ça n'affecte pas les Pokémon Plante !`);
         else if (defender.isSeeded) logMessage(`${defName} est déjà infecté !`);
         else { defender.isSeeded = true; logMessage(`<span style="color:#2ecc71">${defName} est infecté par Vampigraine !</span>`); }
         await new Promise(r => setTimeout(r, 600)); return { forceFlee: false };
@@ -752,8 +770,14 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
         return { forceFlee: false };
     }
     if (DISABLE_MOVES.includes(move.nameEn)) {
-        logMessage(`<span style="color:#9b59b6">Une capacité de ${defName} a été entravée !</span>`);
-        return { forceFlee: false };
+        playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack'); await new Promise(r => setTimeout(r, 600));
+        if (defender.lastUsedMove && (!defender.disabledMove || defender.disabledMove.turns === 0)) {
+            defender.disabledMove = { name: defender.lastUsedMove.nameEn, turns: 4 };
+            logMessage(`<span style="color:#9b59b6">La capacité ${defender.lastUsedMove.nameFr} de ${defName} a été entravée !</span>`);
+        } else {
+            logMessage(`Mais cela échoue !`);
+        }
+        updateBattleUI(); await new Promise(r => setTimeout(r, 800)); return { forceFlee: false };
     }
     if (COUNTER_MOVES.includes(move.nameEn)) {
         logMessage(`<b>${aName}</b> se prépare à riposter (Riposte) !`);
@@ -933,7 +957,11 @@ export async function processTurn(playerMove) {
     
     eMoves.forEach(m => {
         let expected = 0;
-        if (USELESS_MOVES.includes(m.nameEn) || FORCE_FLEE_MOVES.includes(m.nameEn) || STAT_CLEAR_MOVES.includes(m.nameEn)) {
+        
+        // --- L'IA NE DOIT PAS UTILISER D'ATTAQUE ENTRAVÉE ---
+        if (currentEnemy.disabledMove && currentEnemy.disabledMove.turns > 0 && currentEnemy.disabledMove.name === m.nameEn) {
+            expected = -1;
+        } else if (USELESS_MOVES.includes(m.nameEn) || FORCE_FLEE_MOVES.includes(m.nameEn) || STAT_CLEAR_MOVES.includes(m.nameEn)) {
             expected = -1;
         } else if (HEAL_MOVES.includes(m.nameEn) || WISH_MOVES.includes(m.nameEn)) {
             if (currentEnemy.battleStats.hp < currentEnemy.battleStats.maxHp / 2) expected = 1000;
@@ -984,7 +1012,6 @@ export async function processTurn(playerMove) {
         
         if (currentEnemy.battleStats.hp > 0 && activeFighter.battleStats.hp > 0) {
             await new Promise(r => setTimeout(r, 400));
-            // CORRECTION ICI : On capture bien le résultat du deuxième coup
             let eResult = await executeMove(currentEnemy, activeFighter, bestEnemyMove, false);
             if (eResult && eResult.forceFlee) { fleeBattle(true); return; }
         }
@@ -994,7 +1021,6 @@ export async function processTurn(playerMove) {
         
         if (activeFighter.battleStats.hp > 0 && currentEnemy.battleStats.hp > 0) {
             await new Promise(r => setTimeout(r, 400));
-            // CORRECTION ICI : On capture bien le résultat du deuxième coup
             let pResult = await executeMove(activeFighter, currentEnemy, playerMove, true);
             if (pResult && pResult.forceFlee) { fleeBattle(true); return; }
         }
@@ -1011,7 +1037,7 @@ export async function processTurn(playerMove) {
             logMessage(`<b>La météo redevient normale.</b>`);
             globalState.weather = 'none';
         } else {
-            let pTypes = activeFighter.battleStats.types || [];
+            let pTypes = activeFighter.types || [];
             if (globalState.weather === 'sandstorm' && !pTypes.includes('rock') && !pTypes.includes('ground') && !pTypes.includes('steel')) {
                 activeFighter.battleStats.hp -= Math.max(1, Math.floor(activeFighter.battleStats.maxHp / 16));
                 logMessage(`<span style="color:#e67e22">${activeFighter.data.fr} subit la tempête de sable !</span>`);
@@ -1021,7 +1047,7 @@ export async function processTurn(playerMove) {
                 logMessage(`<span style="color:#bdc3c7">${activeFighter.data.fr} subit la grêle !</span>`);
             }
             
-            let eTypes = currentEnemy.battleStats.types || [];
+            let eTypes = currentEnemy.types || [];
             if (globalState.weather === 'sandstorm' && !eTypes.includes('rock') && !eTypes.includes('ground') && !eTypes.includes('steel')) {
                 currentEnemy.battleStats.hp -= Math.max(1, Math.floor(currentEnemy.battleStats.maxHp / 16));
                 logMessage(`<span style="color:#e67e22">${currentEnemy.data.fr} subit la tempête de sable !</span>`);

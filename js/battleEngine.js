@@ -132,7 +132,17 @@ export function calculateDamage(atkEntity, defEntity, move, currentWeather = 'no
     if (currentWeather === 'rain') { if (move.type === 'water') weatherMult = 1.5; if (move.type === 'fire') weatherMult = 0.5; }
 
     let baseDmg = Math.floor(Math.floor(Math.floor(2 * level / 5 + 2) * movePower * A / D) / 50) + 2;
-    let stab = atkTypes.includes(move.type) ? 1.5 : 1;
+    
+    // -- CALCUL DU STAB ET ADAPTABILITÉ --
+    let stab = 1;
+    if (atkTypes.includes(move.type)) {
+        if (atkEntity.talent && atkEntity.talent.en === "Adaptability") {
+            stab = 2; // Le talent Adaptabilité double le STAB
+        } else {
+            stab = 1.5; // STAB normal
+        }
+    }
+
     let random = (Math.random() * (1 - 0.85) + 0.85);
     let critMult = isCrit ? 1.5 : 1;
 

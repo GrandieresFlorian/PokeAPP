@@ -96,49 +96,107 @@ async function sendChallenge(friendId, mode, team = null) {
     } catch (e) { console.error(e); }
 }
 
-export function renderBattleUI() {
-    const requestsList = document.getElementById('combat-requests-list');
-    const historyList = document.getElementById('combat-history-list');
-    if (!requestsList || !historyList) return;
+function renderSynchronousUI(data) {
+    updateGlobalFieldsUI(data);
 
-    requestsList.innerHTML = ""; historyList.innerHTML = "";
+    let myTeam = myRole === 'p1' ? data.team1 : data.team2;
+    let enemyTeam = myRole === 'p1' ? data.team2 : data.team1;
+    let myActiveIdx = myRole === 'p1' ? data.active1 : data.active2;
+    let enemyActiveIdx = myRole === 'p1' ? data.active2 : data.active1;
+    
+    let pActive = myTeam[myActiveIdx];
+    let eActive = enemyTeam[enemyActiveIdx];
 
-    const requests = state.currentUserData.battleRequests || [];
-    if (requests.length === 0) {
-        requestsList.innerHTML = `<li class="friend-item" style="color: #777;">Aucun défi en attente.</li>`;
+    document.getElementById('pvp-player-name').textContent = pActive.data.fr;
+    document.getElementById('pvp-player-lvl').textContent = `Niv. ${pActive.level || 1}`;
+    document.getElementById('pvp-player-hp-text').textContent = `${Math.max(0, pActive.currentHp)} / ${pActive.maxHp}`;
+    document.getElementById('pvp-player-hp-fill').style.width = `${(Math.max(0, pActive.currentHp) / pActive.maxHp) * 100}%`;
+    document.getElementById('pvp-player-sprite').src = pActive.transformedImage || getCardImageUrl(pActive);
+    updateBarColor('pvp-player-hp-fill', pActive.currentHp, pActive.maxHp);
+    document.getElementById('pvp-player-team-ui').innerHTML = myTeam.map((p, i) => `<div class="ball ${p.currentHp <= 0 ? 'fainted' : (i === myActiveIdx ? 'active' : 'alive')}"></div>`).join('');
+    document.getElementById('pvp-player-sprite').style.opacity = pActive.invulnerable ? "0.3" : "1";
+
+    document.getElementById('pvp-enemy-name').textContent = eActive.data.fr;
+    document.getElementById('pvp-enemy-lvl').textContent = `Niv. ${eActive.level || 1}`;
+    document.getElementById('pvp-enemy-hp-text').textContent = `${Math.max(0, eActive.currentHp)} / ${eActive.maxHp}`;
+    document.getElementById('pvp-enemy-hp-fill').style.width = `${(Math.max(0, eActive.currentHp) / eActive.maxHp) * 100}%`;
+    document.getElementById('pvp-enemy-sprite').src = eActive.transformedImage || getCardImageUrl(eActive);
+    updateBarColor('pvp-enemy-hp-fill', eActive.currentHp, eActive.maxHp);
+    document.getElementById('pvp-enemy-team-ui').innerHTML = enemyTeam.map((p, i) => `<div class="ball ${p.currentHp <= 0 ? 'fainted' : (i === enemyActiveIdx ? 'active' : 'alive')}"></div>`).join('');
+    document.getElementById('pvp-enemy-sprite').style.opacity = eActive.invulnerable ? "0.3" : "1";
+
+    renderModifiersUI(pActive, 'pvp-player-modifiers');
+    renderModifiersUI(eActive, 'pvp-enemy-modifiers');
+
+    const logBox = document.getElementById('pvp-battle-log');
+    logBox.innerHTML = data.log.slice(-10).join('<br>'); 
+    logBox.scrollTop = logBox.scrollHeight;
+
+    if (data.status === 'playing') {
+        let myAction = myRole === 'p1' ? data.action1 : data.action2;
+        let iAmDead = pActive.currentHp <= 0;
+        let enemyIsDead = eActive.currentHp <= 0;
+
+        if (myAction) {
+            document.getElementById('pvp-action-wrapper').classList.add('hidden');
+            document.getElementById('pvp-waiting-action').classList.remove('hidden');
+        } else {
+            if (iAmDead) {
+                document.getElementById('pvp-action-wrapper').classList.add('hidden');
+                document.getElementById('pvp-waiting-action').classList.add('hidden');
+                openSynchronousSwitchMenu(true);
+            } else if (enemyIsDead) {
+                submitAction({ type: 'wait' });
+            } else {
+                document.getElementById('pvp-waiting-action').classList.add('hidden');
+                document.getElementById('pvp-action-wrapper').classList.remove('hidden');
+                
+                const container = document.getElementById('pvp-moves-container');
+                container.innerHTML = "";
+                
+                if (pActive.chargingMove) {
+                    container.innerHTML = `<button class="move-btn type-normal" disabled style="grid-column:span 2;">En attente d'attaque...</button>`;
+                } else if (pActive.rolloutCount > 0) {
+                    // -- FORCER ROULADE --
+                    let rMove = pActive.moves.find(m => ROLLOUT_MOVES.includes(m.nameEn));
+                    if (rMove) {
+                        const btn = document.createElement('button');
+                        btn.className = `move-btn type-${rMove.type}`;
+                        btn.innerHTML = `<span class="move-name">${rMove.nameFr}</span><span style="font-size:0.7rem; font-weight:normal;">TOUR ${pActive.rolloutCount + 1}/5</span>`;
+                        btn.style.gridColumn = "span 2";
+                        btn.onclick = () => submitAction({ type: 'move', move: rMove });
+                        container.appendChild(btn);
+                    } else pActive.rolloutCount = 0;
+                } else {
+                    pActive.moves.forEach(move => {
+                        const btn = document.createElement('button');
+                        btn.className = `move-btn type-${move.type}`;
+                        let displayPower = (move.damageClass === "status" || USELESS_MOVES.includes(move.nameEn) || FORCE_FLEE_MOVES.includes(move.nameEn) || STAT_CLEAR_MOVES.includes(move.nameEn) || OHKO_MOVES.includes(move.nameEn) || PROTECT_MOVES_LIST.includes(move.nameEn) || SEED_MOVES_LIST.includes(move.nameEn) || WEATHER_MOVES_DICT[move.nameEn] || move.nameEn === "transform" || ACCURACY_DROPS.includes(move.nameEn) || EVASION_UPS.includes(move.nameEn) || HAZARD_MOVES.includes(move.nameEn) || HAZARD_CLEAR_MOVES.includes(move.nameEn) || SCREENS.includes(move.nameEn) || WINDS.includes(move.nameEn) || TERRAINS.includes(move.nameEn) || TRAP_MOVES.includes(move.nameEn)) ? "-" : move.power;
+                        if(FIXED_DAMAGE_MOVES[move.nameEn]) displayPower = "FIX";
+
+                        btn.innerHTML = `<span class="move-name">${move.nameFr}</span><span style="font-size:0.7rem; font-weight:normal;">POW ${displayPower}</span>`;
+                        
+                        // --- BLOCAGES UI (Provoc & Entrave) ---
+                        if (pActive.taunted && move.damageClass === 'status') {
+                            btn.disabled = true;
+                            btn.style.opacity = "0.4";
+                            btn.title = "Interdit sous l'effet de Provoc !";
+                        } else if (pActive.disabledMove && pActive.disabledMove.turns > 0 && pActive.disabledMove.name === move.nameEn) {
+                            btn.disabled = true;
+                            btn.style.opacity = "0.4";
+                            btn.title = "Capacité entravée !";
+                        } else {
+                            btn.onclick = () => submitAction({ type: 'move', move: move });
+                        }
+                        
+                        container.appendChild(btn);
+                    });
+                }
+            }
+        }
     } else {
-        requests.forEach(req => {
-            const li = document.createElement('li');
-            li.className = "friend-item";
-            li.innerHTML = `<span>${req.from} <b style="color:${req.type==='ranked'?'#f39c12':'#3498db'}">(${req.type === 'ranked' ? 'Classé' : 'Amical'})</b></span>
-                <div><button class="btn-small-action btn-accept">✔️</button><button class="btn-small-action btn-reject">❌</button></div>`;
-            
-            li.querySelector('.btn-accept').addEventListener('click', () => accepterCombat(req));
-            li.querySelector('.btn-reject').addEventListener('click', async () => {
-                let r = state.currentUserData.battleRequests.filter(x => x.id !== req.id);
-                await db.collection('users').doc(state.currentUser).update({ battleRequests: r });
-            });
-            requestsList.appendChild(li);
-        });
-    }
-
-    const history = state.currentUserData.battleHistory || [];
-    if (history.length === 0) {
-        historyList.innerHTML = `<li class="friend-item" style="color: #777;">Aucun historique.</li>`;
-    } else {
-        history.slice().reverse().forEach(bat => {
-            const li = document.createElement('li');
-            li.className = "friend-item";
-            let color = bat.winner === state.currentUser ? '#2ecc71' : '#e74c3c';
-            li.innerHTML = `<div style="display:flex; flex-direction:column; gap:5px; width:100%;">
-                    <div style="display:flex; justify-content:space-between;">
-                        <span><b>${bat.player1}</b> vs <b>${bat.player2}</b> <span style="font-size:0.7rem;">(${bat.mode})</span></span>
-                        <span style="color:${color}; font-weight:bold;">${bat.winner === state.currentUser ? 'Victoire 🏆' : 'Défaite 💀'}</span>
-                    </div>
-                    <span style="font-size:0.8rem; color:#aaa;">${new Date(bat.timestamp).toLocaleString()}</span>
-                </div>`;
-            historyList.appendChild(li);
-        });
+        document.getElementById('pvp-action-wrapper').classList.add('hidden');
+        document.getElementById('pvp-waiting-action').classList.remove('hidden');
     }
 }
 
@@ -271,14 +329,39 @@ function renderTeamSelectionGrid(selectedArray, onSelectCallback) {
     const grid = document.getElementById('pvp-selection-grid');
     grid.innerHTML = "";
     document.getElementById('pvp-selection-counter').classList.remove('hidden');
-    let valid = (state.currentUserData.collection||[]).filter(c => !c.isBaie).sort((a,b) => b.pokedexNumber - a.pokedexNumber);
+    
+    let rawCollection = (state.currentUserData.collection || []).filter(c => !c.isBaie);
+    
+    // --- DÉDUPLICATION DES POKÉMON ---
+    let uniqueMap = {};
+    rawCollection.forEach(c => {
+        // On crée une clé unique pour chaque variante (ex: 25_normal_shiny, ou 6_mega-x_normal)
+        let key = `${c.pokedexNumber}_${c.mega ? c.megaForm : 'normal'}_${c.shiny ? 'shiny' : 'normal'}`;
+        
+        if (!uniqueMap[key]) {
+            uniqueMap[key] = c;
+        } else {
+            // S'il y a un doublon, on garde celui avec le rang (maxLevel) le plus élevé par sécurité
+            let currentMax = uniqueMap[key].maxLevel || 20;
+            let newMax = c.maxLevel || 20;
+            if (newMax > currentMax) {
+                uniqueMap[key] = c;
+            }
+        }
+    });
+    
+    // On transforme la map en tableau et on trie par numéro de Pokédex décroissant
+    let valid = Object.values(uniqueMap).sort((a, b) => b.pokedexNumber - a.pokedexNumber);
     
     valid.forEach(carte => {
-        let d = carte.data || state.pokemonDataList[carte.pokedexNumber - 1];
+        // Sécurité en cas de données manquantes
+        let d = carte.data || state.pokemonDataList[carte.pokedexNumber - 1] || {}; 
+        
         const div = document.createElement('div');
         div.className = `mini-card ${selectedArray.includes(carte) ? 'selected' : ''}`;
         div.style.backgroundImage = `url('${getCardImageUrl(carte)}')`;
         div.style.backgroundColor = CONSTS.couleursRarete[carte.mega ? "MG" : (d.rarity || "C")] || "#333";
+        
         if (carte.shiny || (carte.mega && carte.shiny)) div.innerHTML += '<div class="mini-card-holo"></div>';
         
         let lvlBadge = document.createElement('div');
@@ -296,6 +379,7 @@ function renderTeamSelectionGrid(selectedArray, onSelectCallback) {
         };
         grid.appendChild(div);
     });
+    
     onSelectCallback();
 }
 
@@ -649,17 +733,24 @@ function applyEndTurnStatusSync(entity, opponent, logs) {
     if (entity.perishCount > 0) {
         entity.perishCount--;
         if (entity.perishCount === 0) {
-            entity.currentHp = 0; // ou .battleStats.hp en PvE
+            entity.currentHp = 0; 
             logs.push(`<b style="color:#34495e">Le compte à rebours de Requiem tombe à zéro pour ${name} !</b>`);
         } else {
             logs.push(`<span style="color:#7f8c8d">Le compte à rebours de Requiem de ${name} est à ${entity.perishCount}.</span>`);
         }
     }
 
-    // DIMINUTION PROVOC
+    // DIMINUTION PROVOC & ENTRAVE
     if (entity.taunted && entity.taunted > 0) {
         entity.taunted--;
         if (entity.taunted === 0) logs.push(`<b>${name} n'est plus provoqué.</b>`);
+    }
+    if (entity.disabledMove && entity.disabledMove.turns > 0) {
+        entity.disabledMove.turns--;
+        if (entity.disabledMove.turns === 0) {
+            logs.push(`<b>${name} n'est plus entravé !</b>`);
+            entity.disabledMove = null;
+        }
     }
 
     // RÉINITIALISATION LIEN DU DESTIN
@@ -676,6 +767,7 @@ function applyEndTurnStatusSync(entity, opponent, logs) {
     entity.turnsActive = (entity.turnsActive || 0) + 1;
     if (entity.currentHp <= 0) logs.push(`<b style="color:#e74c3c">${name} est K.O. !</b>`);
 }
+
 
 function applyHazardsSync(entity, hazards, logs) {
     let name = entity.data.fr;
@@ -958,11 +1050,14 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
     }
 
     logs.push(`<b>${atk.data.fr}</b> utilise <span style="color:#3498db">${move.nameFr}</span> !`);
+    
+    // --- MÉMORISATION POUR ENTRAVE ---
+    atk.lastUsedMove = move;
 
     if (def.invulnerable) { logs.push(`Mais <b>${defName}</b> est introuvable ! L'attaque échoue.`); return; }
 
     if (POWDER_MOVES.includes(move.nameEn)) {
-        let defTypes = def.types || (def.battleStats ? def.battleStats.types : []);
+        let defTypes = def.types || [];
         if (defTypes.includes('grass')) {
             logs.push(`Ça n'affecte pas les Pokémon Plante !`);
             return;
@@ -1076,7 +1171,12 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
         return; 
     }
     if (DISABLE_MOVES.includes(move.nameEn)) {
-        logs.push(`<span style="color:#9b59b6">Une capacité de ${defName} a été entravée !</span>`);
+        if (def.lastUsedMove && (!def.disabledMove || def.disabledMove.turns === 0)) {
+            def.disabledMove = { name: def.lastUsedMove.nameEn, turns: 4 };
+            logs.push(`<span style="color:#9b59b6">La capacité ${def.lastUsedMove.nameFr} de ${defName} a été entravée !</span>`);
+        } else {
+            logs.push(`Mais cela échoue !`);
+        }
         return; 
     }
     if (COUNTER_MOVES.includes(move.nameEn)) {
@@ -1134,7 +1234,7 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
     }
 
     if (SEED_MOVES_LIST.includes(move.nameEn)) {
-        let defTypes = def.types || (def.battleStats ? def.battleStats.types : []);
+        let defTypes = def.types || [];
         if (defTypes.includes('grass')) { logs.push(`Ça n'affecte pas les Pokémon Plante !`); } 
         else if (def.isSeeded) { logs.push(`${def.data.fr} est déjà infecté !`); } 
         else { def.isSeeded = true; logs.push(`<span style="color:#2ecc71">${def.data.fr} est infecté par Vampigraine !</span>`); }
