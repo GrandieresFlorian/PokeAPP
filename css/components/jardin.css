@@ -9,7 +9,7 @@
 .garden-plot { width: 36px; height: 36px; background-color: #6B4E3D; border: 2px solid #4a3427; border-radius: 4px; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 1rem; transition: filter 0.2s; position: relative; }
 .garden-plot:hover { filter: brightness(1.2); }
 
-/* Etats des terrains */
+/* Etats does terrains */
 .garden-plot.locked { background-color: #222; border-color: #111; cursor: not-allowed; }
 .garden-plot.locked.adjacent { cursor: pointer; background-color: #333; border-color: #555; }
 .garden-plot.planted { background-color: #8c6850; }
