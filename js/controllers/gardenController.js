@@ -185,7 +185,7 @@ function renderToolsList() {
         let nameFr = baieDef.fr;
         let currentName = state.currentLang === 'en' ? nameEn : nameFr;
         
-        // Appliquer la recherche (Filtre)
+        // Appliquer la recherche e(Filtre)
         if (currentFilter && !currentName.toLowerCase().includes(currentFilter.toLowerCase())) return;
         countVisible++;
 
