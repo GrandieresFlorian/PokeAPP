@@ -16,6 +16,31 @@ export function initGarden() {
     });
 
     document.getElementById('btn-sell-berries').addEventListener('click', openSellMenu);
+    renderPresetsUI();
+    document.addEventListener('click', (e) => {
+        const target = e.target.closest('[data-preset-action]');
+        if (!target) return;
+        const action = target.dataset.presetAction;
+        const presetId = parseInt(target.dataset.presetId);
+
+        if (action === 'save') {
+            savePreset(presetId);
+        } else if (action === 'load') {
+            loadPreset(presetId);
+        }
+    });
+    document.addEventListener('input', (e) => {
+        if (e.target.classList.contains('preset-name-input')) {
+            const presetId = parseInt(e.target.dataset.presetId);
+            const newName = e.target.value;
+            const presets = state.currentUserData.gardenPresets || [];
+            const preset = presets.find(p => p.id === presetId);
+            if (preset) {
+                preset.name = newName;
+                saveGardenData();
+            }
+        }
+    });
 
     // --- BOUCLE GLOBALE (Tourne en arrière-plan en permanence) ---
     setInterval(() => {
@@ -109,6 +134,122 @@ export function initGarden() {
             showDefaultTools();
         }
     });
+}
+
+function savePreset(presetId) {
+    const garden = state.currentUserData.garden;
+    if (!garden) return;
+
+    const preset = state.currentUserData.gardenPresets.find(p => p.id === presetId);
+    if (!preset) return;
+
+    const layout = {};
+    garden.forEach((plot, index) => {
+        // On sauvegarde uniquement les plots débloqués qui contiennent une baie plantée
+        if (!plot.locked && plot.berryId) {
+            layout[index] = plot.berryId;
+        }
+    });
+
+    preset.layout = layout;
+    saveGardenData();
+    renderPresetsUI();
+    alert(`Preset "${preset.name}" sauvegardé avec succès !`);
+}
+
+// --- CHARGER ET PLANTER UN PRESET ---
+function loadPreset(presetId) {
+    const preset = state.currentUserData.gardenPresets.find(p => p.id === presetId);
+    if (!preset || Object.keys(preset.layout).length === 0) {
+        return alert("Ce preset est vide ! Configurez des baies dans votre jardin avant de sauvegarder.");
+    }
+
+    const garden = state.currentUserData.garden;
+    const berriesInventory = state.currentUserData.berries;
+
+    // 1. Calculer le nombre de chaque baie requise par le preset
+    const requiredBerriesCount = {};
+    Object.values(preset.layout).forEach(berryId => {
+        requiredBerriesCount[berryId] = (requiredBerriesCount[berryId] || 0) + 1;
+    });
+
+    // 2. Compter ce que le joueur possède réellement en inventaire
+    const inventoryCount = {};
+    berriesInventory.forEach(b => {
+        if (!['pomeg-berry', 'grena'].includes(b.id)) { // Exclure les baies non plantables
+            inventoryCount[b.id] = (inventoryCount[b.id] || 0) + 1;
+        }
+    });
+
+    // 3. Vérifier si le joueur a assez de chaque baie
+    for (const [berryId, neededQty] of Object.entries(requiredBerriesCount)) {
+        const availableQty = inventoryCount[berryId] || 0;
+        if (availableQty < neededQty) {
+            const baieDef = TOUTES_LES_BAIES.find(b => b.id === berryId);
+            const berryName = baieDef ? (state.currentLang === 'en' ? baieDef.en : baieDef.fr) : berryId;
+            return alert(`Stock insuffisant ! Il vous manque ${neededQty - availableQty}x ${berryName}.`);
+        }
+    }
+
+    // 4. Vérifier si les plots cibles sont libres et débloqués
+    for (const indexStr of Object.keys(preset.layout)) {
+        const index = parseInt(indexStr);
+        const plot = garden[index];
+        if (!plot || plot.locked || plot.berryId !== null) {
+            return alert(`Impossible de charger : Certains plots requis sont verrouillés ou occupés par une autre plante !`);
+        }
+    }
+
+    // 5. Tout est bon : on retire les baies de l'inventaire et on plante sur la grille
+    for (const [indexStr, berryId] of Object.entries(preset.layout)) {
+        const index = parseInt(indexStr);
+        
+        // Supprimer 1 exemplaire de l'inventaire du joueur
+        const itemIndex = berriesInventory.findIndex(b => b.id === berryId);
+        if (itemIndex > -1) {
+            berriesInventory.splice(itemIndex, 1);
+        }
+
+        // Planter sur le plot
+        const plot = garden[index];
+        plot.berryId = berryId;
+        plot.plantedAt = Date.now();
+        plot.lastWatered = Date.now();
+    }
+
+    saveGardenData();
+    renderGardenGrid();
+    showDefaultTools();
+    alert(`Preset "${preset.name}" chargé et planté avec succès ! ✨`);
+}
+
+function renderPresetsUI() {
+    const container = document.getElementById('garden-presets-container');
+    if (!container) return;
+
+    if (!state.currentUserData.gardenPresets) {
+        state.currentUserData.gardenPresets = Array.from({length: 5}, (_, i) => ({
+            id: i + 1, name: `Preset ${i + 1}`, layout: {}
+        }));
+    }
+
+    let html = '';
+    state.currentUserData.gardenPresets.forEach(preset => {
+        const countBerries = Object.keys(preset.layout).length;
+        html += `
+            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 8px; border: 1px solid #444; gap: 10px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 200px;">
+                    <input type="text" class="preset-name-input" data-preset-id="${preset.id}" value="${preset.name}" maxlength="20" style="background: #222; border: 1px solid #555; color: white; padding: 5px 10px; border-radius: 5px; font-weight: bold; width: 140px;">
+                    <span style="font-size: 0.85rem; color: #aaa;">(${countBerries} baies configurées)</span>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;" data-preset-action="save" data-preset-id="${preset.id}">💾 Sauvegarder</button>
+                    <button class="btn" style="padding: 6px 12px; font-size: 0.85rem; background: #2ecc71;" data-preset-action="load" data-preset-id="${preset.id}">🌱 Charger & Planter</button>
+                </div>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
 }
 
 function applyTool(index) {

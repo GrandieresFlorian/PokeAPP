@@ -1,6 +1,12 @@
 export const state = {
     currentUser: localStorage.getItem('pokeAppCurrentUser') || null,
-    currentUserData: { collection: [], berries: [], garden: null, pokeBerrys: 0, boostersLeft: 10, lastBoosterTime: Date.now(), friends: [], friendRequests: [], trades: [], battleRequests: [], battleHistory: [], specialBoostersLeft: 0, battlesProposedToday: 0, lastBattleDate: null },
+    currentUserData: { collection: [], berries: [], garden: null, pokeBerrys: 0, boostersLeft: 10, lastBoosterTime: Date.now(), friends: [], friendRequests: [], trades: [], battleRequests: [], battleHistory: [], specialBoostersLeft: 0, battlesProposedToday: 0, lastBattleDate: null, gardenPresets: [
+        { id: 1, name: "Preset 1", layout: {} },
+        { id: 2, name: "Preset 2", layout: {} },
+        { id: 3, name: "Preset 3", layout: {} },
+        { id: 4, name: "Preset 4", layout: {} },
+        { id: 5, name: "Preset 5", layout: {} }
+    ] },
     pokemonDataList: [],
     movesData: { dictionary: {}, pokemonMoves: {} }, // NOUVEAU
     currentLang: localStorage.getItem('pokeAppLang') || 'fr',
