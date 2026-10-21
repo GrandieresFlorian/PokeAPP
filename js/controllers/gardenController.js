@@ -326,7 +326,7 @@ function checkMutations() {
         
         if (isPomegMutation && adjacentPlots.length >= 8) {
             if (Math.random() <= 0.2) { // 5% de chance par tick
-                plot.berryId = 'pomeg-berry';
+                plot.berryId = 'grena';
                 plot.plantedAt = Date.now();
                 plot.lastWatered = Date.now();
                 mutated = true;
