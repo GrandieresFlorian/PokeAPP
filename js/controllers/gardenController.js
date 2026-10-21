@@ -17,17 +17,20 @@ export function initGarden() {
 
     document.getElementById('btn-sell-berries').addEventListener('click', openSellMenu);
 
+    // --- BOUCLE GLOBALE (Tourne en arrière-plan en permanence) ---
     setInterval(() => {
+        // On met à jour les données et les mutations en arrière-plan
+        mutationTick++;
+        if (mutationTick >= 5) {
+            checkMutations();
+            mutationTick = 0;
+        }
+
+        // On rafraîchit l'affichage visuel UNIQUEMENT si l'onglet du jardin est ouvert
         const sect = document.getElementById('section-jardin');
         if (sect && !sect.classList.contains('hidden')) {
             renderGardenGrid();
             updateActionPanel();
-            
-            mutationTick++;
-            if (mutationTick >= 5) {
-                checkMutations();
-                mutationTick = 0;
-            }
         }
     }, 1000);
 
@@ -322,7 +325,7 @@ function checkMutations() {
         let isPomegMutation = pomegReqs.every(bId => adjacentPlots.filter(b => b === bId).length >= 2);
         
         if (isPomegMutation && adjacentPlots.length >= 8) {
-            if (Math.random() <= 0.05) { // 5% de chance par tick
+            if (Math.random() <= 0.2) { // 5% de chance par tick
                 plot.berryId = 'pomeg-berry';
                 plot.plantedAt = Date.now();
                 plot.lastWatered = Date.now();
