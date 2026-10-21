@@ -51,6 +51,7 @@ export async function openCardDetails(carte) {
             descText = descriptionObj;
         }
     }
+    const descElement = document.getElementById('details-description');
     descElement.textContent = descText;
     
     // --- FORCE LE RETOUR À LA LIGNE STRICT ---
