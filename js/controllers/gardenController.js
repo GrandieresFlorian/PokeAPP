@@ -167,11 +167,13 @@ function renderToolsList() {
     `;
 
     const mesBaies = state.currentUserData.berries || [];
+    const advancedBerries = ['pomeg-berry'];
     const baiesMap = {};
     mesBaies.forEach(b => { baiesMap[b.id] = (baiesMap[b.id] || 0) + 1; });
 
     let countVisible = 0;
     Object.keys(baiesMap).forEach(id => {
+        if (advancedBerries.includes(id)) return; // On ne peut pas la planter !
         const qty = baiesMap[id];
         const baieDef = TOUTES_LES_BAIES.find(b => b.id === id);
         if(!baieDef) return;
@@ -293,32 +295,60 @@ function checkMutations() {
         
         const row = Math.floor(i / 9);
         const col = i % 9;
-        const adjacentBerries = [];
         
-        const checkAndAdd = (idx) => {
-            const p = garden[idx];
-            if (!p.locked && p.berryId !== null) {
-                const st = getPlotState(p);
-                if (st.stage === 'growing' || st.stage === 'thirsty' || st.stage === 'ready') {
-                    adjacentBerries.push(p.berryId);
+        // --- 1. RÉCUPÉRATION DES 8 CASES ADJACENTES (Voisinage de Moore) ---
+        const adjacentPlots = [];
+        for (let rOffset = -1; rOffset <= 1; rOffset++) {
+            for (let cOffset = -1; cOffset <= 1; cOffset++) {
+                if (rOffset === 0 && cOffset === 0) continue;
+                let nRow = row + rOffset;
+                let nCol = col + cOffset;
+                if (nRow >= 0 && nRow < 9 && nCol >= 0 && nCol < 9) {
+                    let nIdx = nRow * 9 + nCol;
+                    let p = garden[nIdx];
+                    if (!p.locked && p.berryId !== null) {
+                        const st = getPlotState(p);
+                        if (st.stage === 'growing' || st.stage === 'thirsty' || st.stage === 'ready') {
+                            adjacentPlots.push(p.berryId);
+                        }
+                    }
                 }
             }
-        };
+        }
         
-        if (row > 0) checkAndAdd(i - 9); 
-        if (row < 8) checkAndAdd(i + 9); 
-        if (col > 0) checkAndAdd(i - 1); 
-        if (col < 8) checkAndAdd(i + 1); 
+        // --- 2. VÉRIFICATION DES MUTATIONS AVANCÉES (8 baies : 2 de chaque type requis) ---
+        // Règle pour la Baie Pomeg : Figuy, Wiki, Mago, Gowav (nécessite exactement 2 de chaque -> 8 au total)
+        const pomegReqs = ['figy', 'wiki', 'mago', 'gowav'];
+        let isPomegMutation = pomegReqs.every(bId => adjacentPlots.filter(b => b === bId).length >= 2);
         
-        if (adjacentBerries.length >= 2) {
+        if (isPomegMutation && adjacentPlots.length >= 8) {
+            if (Math.random() <= 0.05) { // 5% de chance par tick de mutation (ajustable)
+                plot.berryId = 'pomeg-berry';
+                plot.plantedAt = Date.now();
+                plot.lastWatered = Date.now();
+                mutated = true;
+                
+                document.getElementById('garden-action-title').textContent = "Mutation Avancée ! ✨";
+                document.getElementById('garden-action-content').innerHTML = `
+                    <p style="color:#f1c40f; font-weight:bold;">Une mutation légendaire s'est produite !</p>
+                    <p>Une <b style="color:#2ecc71;">Baie Pomeg</b> a germé au centre de vos cultures expertes !</p>
+                    <button class="btn btn-secondary" style="width:100%; margin-top:10px;" data-action="deselect_tool">Retour aux Outils</button>
+                `;
+                activeTool = null;
+                return;
+            }
+        }
+        
+        // --- 3. ANCIENNES MUTATIONS CLASSIQUES (2 baies adjacentes) ---
+        if (adjacentPlots.length >= 2) {
             for (let recipe of MUTATION_RECIPES) {
-                const hasP1 = adjacentBerries.includes(recipe.p1);
+                const hasP1 = adjacentPlots.includes(recipe.p1);
                 let hasP2 = false;
                 
                 if (recipe.p1 === recipe.p2) {
-                    hasP2 = adjacentBerries.filter(b => b === recipe.p1).length >= 2;
+                    hasP2 = adjacentPlots.filter(b => b === recipe.p1).length >= 2;
                 } else {
-                    hasP2 = adjacentBerries.includes(recipe.p2);
+                    hasP2 = adjacentPlots.includes(recipe.p2);
                 }
                 
                 if (hasP1 && hasP2) {
@@ -339,7 +369,7 @@ function checkMutations() {
                             <p>Une <b class="pokemon-name" data-en="${nameEn}" data-fr="${nameFr}" style="color:#2ecc71;">${currentName}</b> a poussé spontanément grâce aux baies voisines !</p>
                             <button class="btn btn-secondary" style="width:100%; margin-top:10px;" data-action="deselect_tool">Retour aux Outils</button>
                         `;
-                        activeTool = null; // Stoppe l'action du joueur pour qu'il le voie
+                        activeTool = null;
                         break; 
                     }
                 }

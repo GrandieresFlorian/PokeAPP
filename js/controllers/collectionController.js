@@ -51,19 +51,26 @@ export async function openCardDetails(carte) {
             descText = descriptionObj;
         }
     }
-    const descElement = document.getElementById('details-description');
     descElement.textContent = descText;
-    descElement.style.whiteSpace = "normal"; // Force le retour à la ligne
-    descElement.style.wordWrap = "break-word"; // Empêche les mots trop longs de déborder
-    descElement.style.lineHeight = "1.4"; // Améliore légèrement la lisibilité des lignes
     
+    // --- FORCE LE RETOUR À LA LIGNE STRICT ---
+    descElement.style.display = "block";
+    descElement.style.width = "100%";
+    descElement.style.maxWidth = "100%";
+    descElement.style.whiteSpace = "normal"; 
+    descElement.style.wordWrap = "break-word"; 
+    descElement.style.overflowWrap = "break-word"; 
+    descElement.style.lineHeight = "1.4";
+    
+    // Titres traduits dans la modale
     // Titres traduits dans la modale
     const descHeading = modal.querySelector('h3:nth-of-type(1)');
     if (descHeading) descHeading.textContent = isEn ? "Description" : "Description";
 
     const talentHeading = modal.querySelector('h3:nth-of-type(2)');
     if (talentHeading) {
-        talentHeading.innerHTML = `${isEn ? "Ability (Special Trait)" : "Talent (Capacité Spéciale)"} <button id="btn-use-figy" class="btn btn-secondary" style="padding: 3px 10px; font-size: 0.75rem; margin:0;">🍒 ${isEn ? "Figy Berry" : "Baie Figy"}</button>`;
+        // Remplacement par Pomeg
+        talentHeading.innerHTML = `${isEn ? "Ability (Special Trait)" : "Talent (Capacité Spéciale)"} <button id="btn-use-pomeg" class="btn btn-secondary" style="padding: 3px 10px; font-size: 0.75rem; margin:0;">🍒 ${isEn ? "Pomeg Berry" : "Baie Pomeg"}</button>`;
     }
 
     const statsHeading = modal.querySelector('h3:nth-of-type(3)');
@@ -78,31 +85,31 @@ export async function openCardDetails(carte) {
     let currentTalentEn = carte.talent ? carte.talent.en : "None";
     document.getElementById('details-talent').textContent = isEn ? currentTalentEn : currentTalentFr;
 
-    // --- GESTION DE LA BAIE FIGY ---
-    const btnFigy = document.getElementById('btn-use-figy');
-    if (btnFigy) {
-        const newBtnFigy = btnFigy.cloneNode(true); 
-        btnFigy.parentNode.replaceChild(newBtnFigy, btnFigy);
+    // --- GESTION DE LA BAIE POMEG ---
+    const btnPomeg = document.getElementById('btn-use-pomeg');
+    if (btnPomeg) {
+        const newBtnPomeg = btnPomeg.cloneNode(true); 
+        btnPomeg.parentNode.replaceChild(newBtnPomeg, btnPomeg);
 
-        newBtnFigy.onclick = async () => {
+        newBtnPomeg.onclick = async () => {
             if (!state.currentUserData.berries) state.currentUserData.berries = [];
-            const berryIndex = state.currentUserData.berries.findIndex(b => b.id === 'figy-berry');
+            const berryIndex = state.currentUserData.berries.findIndex(b => b.id === 'pomeg-berry'); // ID mis à jour
             
             if (berryIndex === -1) {
-                alert(isEn ? "You don't have a Figy Berry in your inventory!" : "Vous n'avez pas de Baie Figy dans votre inventaire !");
+                alert(isEn ? "You don't have a Pomeg Berry in your inventory!" : "Vous n'avez pas de Baie Pomeg dans votre inventaire !");
                 return;
             }
 
-            newBtnFigy.disabled = true;
-            newBtnFigy.textContent = isEn ? "Awakening..." : "Éveil...";
+            newBtnPomeg.disabled = true;
+            newBtnPomeg.textContent = isEn ? "Awakening..." : "Éveil...";
 
             let possibleAbilities = d.abilities || [{en: "Overgrow", fr: "Engrais"}, {en: "Chlorophyll", fr: "Chlorophylle"}]; 
             const filteredAbilities = possibleAbilities.filter(ab => !carte.talent || ab.en !== carte.talent.en);
 
             if (filteredAbilities.length === 0) {
                 alert(isEn ? "This Pokémon has no other possible abilities!" : "Ce Pokémon n'a pas d'autres talents possibles !");
-                newBtnFigy.disabled = false;
-                newBtnFigy.textContent = `🍒 ${isEn ? "Figy Berry" : "Baie Figy"}`;
+                newBtnPomeg.disabled = false;
+                newBtnPomeg.textContent = `🍒 ${isEn ? "Pomeg Berry" : "Baie Pomeg"}`;
                 return;
             }
 
@@ -125,8 +132,8 @@ export async function openCardDetails(carte) {
                 alert(isEn ? "Save error." : "Erreur de sauvegarde.");
             }
 
-            newBtnFigy.disabled = false;
-            newBtnFigy.textContent = `🍒 ${isEn ? "Figy Berry" : "Baie Figy"}`;
+            newBtnPomeg.disabled = false;
+            newBtnPomeg.textContent = `🍒 ${isEn ? "Pomeg Berry" : "Baie Pomeg"}`;
         };
     }
 
