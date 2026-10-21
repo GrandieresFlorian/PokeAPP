@@ -1,5 +1,5 @@
 import { getEffectiveness } from './utils.js';
-import { ABILITIES_DB, HIGH_CRIT_MOVES, FIXED_DAMAGE_MOVES } from './data/campagneData.js';
+import { ABILITIES_DB, HIGH_CRIT_MOVES, FIXED_DAMAGE_MOVES, WEIGHT_MOVES, GYRO_BALL_MOVES, ELECTRO_BALL_MOVES } from './data/campagneData.js';
 
 // ==========================================
 // MOTEUR DE CALCUL UNIVERSEL DES COMBATS
