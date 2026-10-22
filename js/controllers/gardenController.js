@@ -129,6 +129,9 @@ export function initGarden() {
         } else if (action === 'select_trowel') {
             activeTool = { type: 'trowel' };
             showDefaultTools();
+        } else if (action === 'select_shovel') { // <--- NOUVEAU
+            activeTool = { type: 'shovel' };
+            showDefaultTools();
         } else if (action === 'deselect_tool') {
             activeTool = null;
             showDefaultTools();
@@ -265,7 +268,7 @@ function renderPresetsUI() {
 
 function applyTool(index) {
     if (!activeTool) {
-        handlePlotClick(index); // S'il n'y a pas d'outil, on inspecte le terrain
+        handlePlotClick(index); 
         return;
     }
     
@@ -276,9 +279,11 @@ function applyTool(index) {
         plantSelectedSeed(index, activeTool.id);
     } else if (activeTool.type === 'trowel' && st.stage === 'ready') {
         harvestPlot(index);
+    } else if (activeTool.type === 'shovel' && st.stage !== 'empty' && st.stage !== 'locked') {
+        // La pelle nettoie le terrain peu importe l'état (sans rien redonner)
+        clearPlot(index);
     }
 }
-
 function showDefaultTools() {
     selectedPlot = null;
     document.getElementById('garden-action-title').textContent = "Outils & Graines";
@@ -311,7 +316,14 @@ function renderToolsList() {
 
     let html = '';
     const isTrowelActive = activeTool && activeTool.type === 'trowel';
+    const isShovelActive = activeTool && activeTool.type === 'shovel';
     html += `
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#1a1a1a; padding:10px; border-radius:5px; margin-bottom:8px; cursor:pointer; border:2px solid ${isShovelActive ? '#e74c3c' : '#444'};" data-action="select_shovel">
+            <div style="display:flex; align-items:center; gap:10px; pointer-events:none;">
+                <span style="font-size:1.5rem;">️ shov</span> <!-- Ou l'émoji de ton choix -->
+                <span style="color:white; font-size:1rem; font-weight:bold;">Pelle (Arrachage Rapide)</span>
+            </div>
+        </div>
         <div style="display:flex; justify-content:space-between; align-items:center; background:#1a1a1a; padding:10px; border-radius:5px; margin-bottom:15px; cursor:pointer; border:2px solid ${isTrowelActive ? '#2ecc71' : '#444'};" data-action="select_trowel">
             <div style="display:flex; align-items:center; gap:10px; pointer-events:none;">
                 <span style="font-size:1.5rem;">⛏️</span>
