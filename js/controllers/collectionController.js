@@ -85,47 +85,49 @@ export async function openCardDetails(carte) {
 
         newBtnPomeg.onclick = async () => {
             if (!state.currentUserData.berries) state.currentUserData.berries = [];
-            const berryIndex = state.currentUserData.berries.findIndex(b => b.id === 'grena'); // ID mis à jour
+            const indexBaie = state.currentUserData.berries.findIndex(b => b.id === 'grena');
             
-            if (berryIndex === -1) {
-                alert(isEn ? "You don't have a Pomeg Berry in your inventory!" : "Vous n'avez pas de Baie Pomeg dans votre inventaire !");
+            if (indexBaie === -1) {
+                return alert(isEn ? "You don't have a Pomeg Berry in your inventory! Mutate one in the greenhouse." : "Vous ne possédez aucune Baie Pomeg ! Faites-la muter dans la serre.");
+            }
+
+            // Récupérer les vrais talents possibles du Pokémon depuis data.json
+            let talentsPossibles = d.abilities || [];
+            
+            // On exclut le talent que le Pokémon possède déjà
+            let talentsFiltres = talentsPossibles.filter(ab => !carte.talent || ab.en !== carte.talent.en);
+
+            if (talentsFiltres.length === 0) {
+                return alert(isEn ? "This Pokémon has no other possible abilities!" : "Ce Pokémon n'a pas d'autres talents possibles !");
+            }
+
+            // Confirmation si le Pokémon a déjà un talent
+            if (carte.talent && !confirm(isEn ? `This Pokémon already has the ability "${carte.talent.en}". Do you want to consume a Pomeg Berry to change it?` : `Ce Pokémon possède déjà le talent "${carte.talent.fr}". Voulez-vous vraiment consommer une Baie Pomeg pour le changer ?`)) {
                 return;
             }
 
-            newBtnPomeg.disabled = true;
-            newBtnPomeg.textContent = isEn ? "Awakening..." : "Éveil...";
-
-            let possibleAbilities = d.abilities || [{en: "Overgrow", fr: "Engrais"}, {en: "Chlorophyll", fr: "Chlorophylle"}]; 
-            const filteredAbilities = possibleAbilities.filter(ab => !carte.talent || ab.en !== carte.talent.en);
-
-            if (filteredAbilities.length === 0) {
-                alert(isEn ? "This Pokémon has no other possible abilities!" : "Ce Pokémon n'a pas d'autres talents possibles !");
-                newBtnPomeg.disabled = false;
-                newBtnPomeg.textContent = `🍒 ${isEn ? "Pomeg Berry" : "Baie Pomeg"}`;
-                return;
-            }
-
-            state.currentUserData.berries.splice(berryIndex, 1);
+            // Consommer la baie (la retirer de l'inventaire)
+            state.currentUserData.berries.splice(indexBaie, 1);
             
-            const randomTalent = filteredAbilities[Math.floor(Math.random() * filteredAbilities.length)];
-            carte.talent = randomTalent;
+            // Tirer un talent au hasard parmi ses vrais talents restants
+            let talentTire = talentsFiltres[Math.floor(Math.random() * talentsFiltres.length)];
+            
+            // Sauvegarder sur la carte
+            carte.talent = talentTire;
 
-            try {
-                const { db } = await import('../firebase-config.js');
-                await db.collection('users').doc(state.currentUser).update({ 
+            // Mettre à jour l'interface visuelle
+            talentText.textContent = isEn ? talentTire.en : talentTire.fr;
+            talentText.style.color = '#f1c40f';
+
+            // Sauvegarder dans Firebase
+            import('../firebase-config.js').then(({db}) => {
+                db.collection('users').doc(state.currentUser).update({
                     collection: state.currentUserData.collection,
                     berries: state.currentUserData.berries
-                });
-                
-                document.getElementById('details-talent').textContent = isEn ? randomTalent.en : randomTalent.fr;
-                alert(isEn ? `Success! New ability: ${randomTalent.en}` : `Succès ! Le Pokémon a éveillé le talent : ${randomTalent.fr} !`);
-            } catch(e) {
-                console.error(e);
-                alert(isEn ? "Save error." : "Erreur de sauvegarde.");
-            }
-
-            newBtnPomeg.disabled = false;
-            newBtnPomeg.textContent = `🍒 ${isEn ? "Pomeg Berry" : "Baie Pomeg"}`;
+                }).then(() => {
+                    alert(isEn ? `Success! The Pomeg Berry awakened the ability: ${talentTire.en} ✨` : `Succès ! La Baie Pomeg a éveillé le talent : ${talentTire.fr} ✨`);
+                }).catch(err => console.error(err));
+            });
         };
     }
 
