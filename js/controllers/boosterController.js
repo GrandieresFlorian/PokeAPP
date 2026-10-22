@@ -254,7 +254,11 @@ function creerCarte(pokemonData, numeroPokedex, index) {
 }
 
 function ouvrirBooster(isSpecial = false) {
-    if (!state.currentUser) { alert(state.currentLang==='en'?"You must be logged in!":"Vous devez être connecté !"); return allerASection('section-auth'); }
+    if (!state.currentUser) { 
+        alert(state.currentLang==='en'?"You must be logged in to open packs and save your progress!":"Vous devez être connecté ou créer un compte pour ouvrir des boosters et sauvegarder votre progression !"); 
+        return allerASection('section-auth'); 
+    }
+    
     if (state.pokemonDataList.length === 0) return alert(state.currentLang==='en'?"Loading data...":"Les données chargent...");
 
     if (isSpecial) {
