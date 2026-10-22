@@ -78,11 +78,28 @@ export async function openCardDetails(carte) {
     document.getElementById('details-talent').textContent = isEn ? currentTalentEn : currentTalentFr;
 
     // --- GESTION DE LA BAIE POMEG ---
-    const btnPomeg = document.getElementById('btn-use-pomeg');
+// --- GESTION DE LA BAIE POMEG ---
+    // On cible le vrai ID du bouton présent dans ton index.html
+    const btnPomeg = document.getElementById('btn-use-figy');
+    const talentText = document.getElementById('details-talent');
+
     if (btnPomeg) {
+        // On clone le bouton pour écraser les anciens écouteurs d'événements
         const newBtnPomeg = btnPomeg.cloneNode(true); 
         btnPomeg.parentNode.replaceChild(newBtnPomeg, btnPomeg);
 
+        // Le bouton reste toujours visible et on adapte sa langue
+        newBtnPomeg.style.display = 'inline-block';
+        newBtnPomeg.textContent = isEn ? "🍒 Pomeg Berry" : "🍒 Baie Pomeg";
+
+        // 1. Affichage initial de la couleur du talent actuel
+        if (carte.talent) {
+            talentText.style.color = '#f1c40f'; // Doré si un talent est déjà éveillé
+        } else {
+            talentText.style.color = '#ccc'; // Gris si aucun talent
+        }
+
+        // 2. Action au clic sur le bouton
         newBtnPomeg.onclick = async () => {
             if (!state.currentUserData.berries) state.currentUserData.berries = [];
             const indexBaie = state.currentUserData.berries.findIndex(b => b.id === 'grena');
