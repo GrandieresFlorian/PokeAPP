@@ -235,7 +235,25 @@ export function sauvegarderBaie(baieData) {
     import('./firebase-config.js').then(({db}) => {
         if (!state.currentUser) return;
         if (!state.currentUserData.berries) state.currentUserData.berries = [];
-        state.currentUserData.berries.push({ data: baieData, id: baieData.id, date: new Date().getTime() });
-        db.collection('users').doc(state.currentUser).update({ berries: state.currentUserData.berries }).catch(err => console.error(err));
+        
+        // On cherche si on possède déjà cette baie
+        const existingBaie = state.currentUserData.berries.find(b => b.id === baieData.id);
+        
+        if (existingBaie) {
+            // Si oui, on incrémente juste sa quantité !
+            existingBaie.quantity = (existingBaie.quantity || 1) + 1;
+        } else {
+            // Sinon on la crée avec une quantité de 1
+            state.currentUserData.berries.push({ 
+                data: baieData, 
+                id: baieData.id, 
+                date: Date.now(), 
+                quantity: 1 
+            });
+        }
+        
+        db.collection('users').doc(state.currentUser).update({ 
+            berries: state.currentUserData.berries 
+        }).catch(err => console.error(err));
     });
 }

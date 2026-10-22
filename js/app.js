@@ -41,80 +41,84 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(data => { state.movesData = data; })
         .catch(e => console.error("Fichier moves.json introuvable :", e));
 
-    if (state.currentUser) {
-        db.collection('users').doc(state.currentUser).get().then(doc => {
-            if (doc.exists) {
-                state.currentUserData = doc.data();
-                
-                // --- SCRIPT DE MIGRATION ANTI-DOUBLONS (CARTES) ---
-                if (state.currentUserData.collection && state.currentUserData.collection.length > 0) {
-                    let collectionNeedsUpdate = false;
-                    let groupedMap = {};
+        if (state.currentUser) {
+            db.collection('users').doc(state.currentUser).get().then(doc => {
+                if (doc.exists) {
+                    state.currentUserData = doc.data();
                     
-                    state.currentUserData.collection.forEach(card => {
-                        const key = `${card.pokedexNumber}_${card.shiny}_${card.mega}_${card.megaForm}`;
+                    // --- SCRIPT DE MIGRATION ANTI-DOUBLONS (CARTES) ---
+                    if (state.currentUserData.collection && state.currentUserData.collection.length > 0) {
+                        let collectionNeedsUpdate = false;
+                        let groupedMap = {};
                         
-                        if (!groupedMap[key]) {
-                            groupedMap[key] = { ...card, quantity: card.quantity || 1 };
-                        } else {
-                            collectionNeedsUpdate = true;
-                            groupedMap[key].quantity += (card.quantity || 1);
+                        state.currentUserData.collection.forEach(card => {
+                            // Clé plus robuste pour éviter les bugs avec undefined
+                            const key = `${card.pokedexNumber}_${!!card.shiny}_${!!card.mega}_${card.megaForm || 'none'}`;
                             
-                            if ((card.maxLevel || 20) > (groupedMap[key].maxLevel || 20)) {
-                                const totalQty = groupedMap[key].quantity;
-                                groupedMap[key] = { ...card, quantity: totalQty };
+                            if (!groupedMap[key]) {
+                                groupedMap[key] = { ...card, quantity: Number(card.quantity || 1) };
+                            } else {
+                                collectionNeedsUpdate = true;
+                                groupedMap[key].quantity += Number(card.quantity || 1);
+                                
+                                if ((card.maxLevel || 20) > (groupedMap[key].maxLevel || 20)) {
+                                    const totalQty = groupedMap[key].quantity;
+                                    groupedMap[key] = { ...card, quantity: totalQty };
+                                }
                             }
+                        });
+    
+                        if (collectionNeedsUpdate) {
+                            // L'astuce magique JSON nettoie les 'undefined' que Firebase refuse d'enregistrer
+                            state.currentUserData.collection = JSON.parse(JSON.stringify(Object.values(groupedMap)));
+                            db.collection('users').doc(state.currentUser).update({
+                                collection: state.currentUserData.collection
+                            }).then(() => console.log("✅ Collection optimisée avec succès !"))
+                              .catch(err => console.error("❌ Erreur Firebase Collection :", err));
                         }
-                    });
-
-                    if (collectionNeedsUpdate) {
-                        state.currentUserData.collection = Object.values(groupedMap);
-                        db.collection('users').doc(state.currentUser).update({
-                            collection: state.currentUserData.collection
-                        }).then(() => console.log("Collection optimisée avec succès (doublons fusionnés) !")).catch(err => console.error("Erreur de sauvegarde de la collection:", err));
                     }
-                }
-                
-                // --- SCRIPT DE MIGRATION ANTI-DOUBLONS (BAIES) ---
-                if (state.currentUserData.berries && state.currentUserData.berries.length > 0) {
-                    let berriesNeedUpdate = false;
-                    let groupedBerries = {};
                     
-                    state.currentUserData.berries.forEach(berry => {
-                        if (!groupedBerries[berry.id]) {
-                            groupedBerries[berry.id] = { ...berry, quantity: berry.quantity || 1 };
-                        } else {
-                            berriesNeedUpdate = true;
-                            groupedBerries[berry.id].quantity += (berry.quantity || 1);
+                    // --- SCRIPT DE MIGRATION ANTI-DOUBLONS (BAIES) ---
+                    if (state.currentUserData.berries && state.currentUserData.berries.length > 0) {
+                        let berriesNeedUpdate = false;
+                        let groupedBerries = {};
+                        
+                        state.currentUserData.berries.forEach(berry => {
+                            if (!groupedBerries[berry.id]) {
+                                groupedBerries[berry.id] = { ...berry, quantity: Number(berry.quantity || 1) };
+                            } else {
+                                berriesNeedUpdate = true;
+                                groupedBerries[berry.id].quantity += Number(berry.quantity || 1);
+                            }
+                        });
+    
+                        if (berriesNeedUpdate) {
+                            state.currentUserData.berries = JSON.parse(JSON.stringify(Object.values(groupedBerries)));
+                            db.collection('users').doc(state.currentUser).update({
+                                berries: state.currentUserData.berries
+                            }).then(() => console.log("✅ Baies optimisées avec succès !"))
+                              .catch(err => console.error("❌ Erreur Firebase Baies :", err));
                         }
-                    });
-
-                    if (berriesNeedUpdate) {
-                        state.currentUserData.berries = Object.values(groupedBerries);
-                        db.collection('users').doc(state.currentUser).update({
-                            berries: state.currentUserData.berries
-                        }).then(() => console.log("Baies optimisées avec succès (doublons fusionnés) !")).catch(err => console.error("Erreur de sauvegarde des baies:", err));
                     }
+    
+                    if (state.currentUserData.boostersLeft === undefined) {
+                        state.currentUserData.boostersLeft = CONSTS.MAX_BOOSTERS;
+                        state.currentUserData.lastBoosterTime = Date.now();
+                    }
+                    if (state.currentUserData.pokeBerrys === undefined) {
+                        state.currentUserData.pokeBerrys = 0;
+                    }
+                    
+                    updateAuthUI(); 
+                    updateBoosterLogic(); 
+                    startFriendsListener();
+                } else {
+                    state.currentUser = null; 
+                    localStorage.removeItem('pokeAppCurrentUser'); 
+                    updateAuthUI();
                 }
-
-                if (state.currentUserData.boostersLeft === undefined) {
-                    state.currentUserData.boostersLeft = CONSTS.MAX_BOOSTERS;
-                    state.currentUserData.lastBoosterTime = Date.now();
-                }
-                if (state.currentUserData.pokeBerrys === undefined) {
-                    state.currentUserData.pokeBerrys = 0;
-                }
-                
-                updateAuthUI(); 
-                updateBoosterLogic(); 
-                startFriendsListener();
-            } else {
-                state.currentUser = null; 
-                localStorage.removeItem('pokeAppCurrentUser'); 
-                updateAuthUI();
-            }
-        });
-    } else {
-        updateAuthUI();
-    }
-});
+            });
+        } else {
+            updateAuthUI();
+        }
+    });
