@@ -237,10 +237,9 @@ export function initCollection() {
 
 export function upgradeCard(cardDate) {
     const collection = state.currentUserData.collection;
-    const mainCardIndex = collection.findIndex(c => c.date === cardDate);
-    if (mainCardIndex === -1) return;
+    const mainCard = collection.find(c => c.date === cardDate);
+    if (!mainCard) return;
     
-    const mainCard = collection[mainCardIndex];
     let maxLevel = mainCard.maxLevel || 20;
     
     let cost = 0;
@@ -250,15 +249,16 @@ export function upgradeCard(cardDate) {
     else if (maxLevel === 80) cost = 4;
     else return; 
     
-    // NOUVEAU SYSTÈME : On lit directement la quantité sur la carte
-    const currentQty = mainCard.quantity || 1;
+    // La quantité totale (ex: X2 = 1 carte de base + 1 doublon)
+    const totalQty = mainCard.quantity || 1;
+    // On doit garder 1 exemplaire, donc les doublons réellement utilisables sont (totalQty - 1)
+    const doublonsDisponibles = totalQty - 1;
     
-    // Il faut garder 1 exemplaire pour soi, donc on a besoin de "cost + 1" en tout
-    if (currentQty <= cost) {
-        return alert(`Vous n'avez pas assez de doublons pour cette amélioration ! (Il vous en manque ${cost - (currentQty - 1)})`);
+    if (doublonsDisponibles < cost) {
+        return alert(`Vous n'avez pas assez de doublons pour cette amélioration ! (Il vous en faut ${cost}, vous en avez ${doublonsDisponibles})`);
     }
     
-    // On soustrait le coût des doublons et on monte le niveau max
+    // On retire le coût des doublons de la quantité totale et on monte le rang
     mainCard.quantity -= cost;
     mainCard.maxLevel = maxLevel + 20;
     

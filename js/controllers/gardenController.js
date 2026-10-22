@@ -324,7 +324,10 @@ function renderToolsList() {
     const mesBaies = state.currentUserData.berries || [];
     const advancedBerries = ['grena'];
     const baiesMap = {};
-    mesBaies.forEach(b => { baiesMap[b.id] = (baiesMap[b.id] || 0) + 1; });
+    mesBaies.forEach(b => { 
+        const q = b.quantity || 1;
+        baiesMap[b.id] = (baiesMap[b.id] || 0) + q; 
+    });
 
     let countVisible = 0;
     Object.keys(baiesMap).forEach(id => {
@@ -375,10 +378,19 @@ function renderToolsList() {
 }
 
 function plantSelectedSeed(index, berryId) {
-    const indexInArray = state.currentUserData.berries.findIndex(b => b.id === berryId);
+    const berryEntry = state.currentUserData.berries.find(b => b.id === berryId);
     
-    if (indexInArray > -1) {
-        state.currentUserData.berries.splice(indexInArray, 1);
+    if (berryEntry) {
+        // On décrémente la quantité de la baie
+        berryEntry.quantity = (berryEntry.quantity || 1) - 1;
+        
+        // Si la quantité tombe à 0 ou moins, on retire la baie du tableau
+        if (berryEntry.quantity <= 0) {
+            const indexInArray = state.currentUserData.berries.indexOf(berryEntry);
+            if (indexInArray > -1) {
+                state.currentUserData.berries.splice(indexInArray, 1);
+            }
+        }
         
         const plot = state.currentUserData.garden[index];
         plot.berryId = berryId;
@@ -388,8 +400,8 @@ function plantSelectedSeed(index, berryId) {
         saveGardenData();
         renderGardenGrid();
         
-        if (!state.currentUserData.berries.some(b => b.id === berryId)) {
-            activeTool = null; // Plus de graines, on déséquipe
+        if (!state.currentUserData.berries.some(b => b.id === berryId && (b.quantity || 1) > 0)) {
+            activeTool = null; // Plus de graines de ce type, on déséquipe l'outil
         }
         
         if (document.getElementById('garden-action-title').textContent === "Outils & Graines") {
@@ -755,9 +767,15 @@ function harvestPlot(index) {
     
     const yieldAmount = Math.floor(Math.random() * (conf.yieldMax - conf.yieldMin + 1)) + conf.yieldMin;
     
-    for(let i=0; i<yieldAmount; i++) {
+    // Ajout dans le système de quantité des baies
+    if (!state.currentUserData.berries) state.currentUserData.berries = [];
+    const existingBerry = state.currentUserData.berries.find(b => b.id === baieDef.id);
+    
+    if (existingBerry) {
+        existingBerry.quantity = (existingBerry.quantity || 1) + yieldAmount;
+    } else {
         state.currentUserData.berries.push({
-            data: baieDef, id: baieDef.id, date: Date.now() + i
+            data: baieDef, id: baieDef.id, date: Date.now(), quantity: yieldAmount
         });
     }
     
@@ -784,7 +802,7 @@ function harvestPlot(index) {
             <button class="btn btn-secondary" style="width:100%; margin-top:10px;" data-action="deselect_tool">Retour aux Outils</button>
         `;
     } else if (document.getElementById('garden-action-title').textContent === "Outils & Graines") {
-        showDefaultTools(); // Actualise les inventaires de la barre latérale en temps réel
+        showDefaultTools(); 
     }
 }
 
