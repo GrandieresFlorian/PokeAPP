@@ -250,18 +250,17 @@ export function upgradeCard(cardDate) {
     else if (maxLevel === 80) cost = 4;
     else return; 
     
-    const duplicates = collection.filter(c => 
-        c.date !== mainCard.date && c.pokedexNumber === mainCard.pokedexNumber &&
-        c.shiny === mainCard.shiny && c.mega === mainCard.mega && c.megaForm === mainCard.megaForm
-    );
+    // NOUVEAU SYSTÈME : On lit directement la quantité sur la carte
+    const currentQty = mainCard.quantity || 1;
     
-    if (duplicates.length < cost) return alert("Vous n'avez pas assez de doublons pour cette amélioration !");
+    // Il faut garder 1 exemplaire pour soi, donc on a besoin de "cost + 1" en tout
+    if (currentQty <= cost) {
+        return alert(`Vous n'avez pas assez de doublons pour cette amélioration ! (Il vous en manque ${cost - (currentQty - 1)})`);
+    }
     
-    const datesToRemove = duplicates.slice(0, cost).map(c => c.date);
-    state.currentUserData.collection = collection.filter(c => !datesToRemove.includes(c.date));
-    
-    const updatedMainCard = state.currentUserData.collection.find(c => c.date === cardDate);
-    updatedMainCard.maxLevel = maxLevel + 20;
+    // On soustrait le coût des doublons et on monte le niveau max
+    mainCard.quantity -= cost;
+    mainCard.maxLevel = maxLevel + 20;
     
     import('../firebase-config.js').then(({db}) => {
         db.collection('users').doc(state.currentUser).update({ collection: state.currentUserData.collection })

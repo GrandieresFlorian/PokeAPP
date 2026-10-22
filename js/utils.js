@@ -141,6 +141,33 @@ export async function getPokemonPow(carte) {
 }
 
 export function sauvegarderCarte(pokemonData, numeroPokedex, isShiny, isMega, megaForm) {
+    if (!state.currentUserData.collection) state.currentUserData.collection = [];
+    
+    // On cherche si la carte exacte existe déjà dans la collection
+    const existingCard = state.currentUserData.collection.find(c => 
+        c.pokedexNumber === pokedexNumber && 
+        c.shiny === isShiny && 
+        c.mega === isMega && 
+        c.megaForm === megaForm
+    );
+
+    if (existingCard) {
+        // Si elle existe, on augmente juste la quantité ! (Plus de surcharge Firebase)
+        existingCard.quantity = (existingCard.quantity || 1) + 1;
+    } else {
+        // Sinon on la crée pour la première fois avec quantité = 1
+        const nouvelleCarte = {
+            pokedexNumber: pokedexNumber,
+            shiny: isShiny,
+            mega: isMega,
+            megaForm: megaForm,
+            date: Date.now(),
+            level: 1,
+            maxLevel: 20,
+            quantity: 1 // Nouvelle propriété !
+        };
+        state.currentUserData.collection.push(nouvelleCarte);
+    }
     import('./firebase-config.js').then(({db}) => {
         if (!state.currentUser) return; 
         state.currentUserData.collection.push({
