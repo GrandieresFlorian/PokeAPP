@@ -55,14 +55,12 @@ export async function openCardDetails(carte) {
     descElement.textContent = descText;
     
     // Titres traduits dans la modale
-    // Titres traduits dans la modale
     const descHeading = modal.querySelector('h3:nth-of-type(1)');
     if (descHeading) descHeading.textContent = isEn ? "Description" : "Description";
 
     const talentHeading = modal.querySelector('h3:nth-of-type(2)');
     if (talentHeading) {
-        // Remplacement par Pomeg
-        talentHeading.innerHTML = `${isEn ? "Ability (Special Trait)" : "Talent (Capacité Spéciale)"} <button id="btn-use-pomeg" class="btn btn-secondary" style="padding: 3px 10px; font-size: 0.75rem; margin:0;">🍒 ${isEn ? "Pomeg Berry" : "Baie Pomeg"}</button>`;
+        talentHeading.innerHTML = `${isEn ? "Ability (Special Trait)" : "Talent (Capacité Spéciale)"} <button id="btn-use-figy" class="btn btn-secondary" style="padding: 3px 10px; font-size: 0.75rem; margin:0;">🍒 ${isEn ? "Pomeg Berry" : "Baie Pomeg"}</button>`;
     }
 
     const statsHeading = modal.querySelector('h3:nth-of-type(3)');
@@ -78,29 +76,22 @@ export async function openCardDetails(carte) {
     document.getElementById('details-talent').textContent = isEn ? currentTalentEn : currentTalentFr;
 
     // --- GESTION DE LA BAIE POMEG ---
-// --- GESTION DE LA BAIE POMEG ---
-    // On cible le vrai ID du bouton présent dans ton index.html
     const btnPomeg = document.getElementById('btn-use-figy');
     const talentText = document.getElementById('details-talent');
 
     if (btnPomeg) {
-        // On clone le bouton pour écraser les anciens écouteurs d'événements
         const newBtnPomeg = btnPomeg.cloneNode(true); 
         btnPomeg.parentNode.replaceChild(newBtnPomeg, btnPomeg);
 
-        // Le bouton reste toujours visible et on adapte sa langue
         newBtnPomeg.style.display = 'inline-block';
         newBtnPomeg.textContent = isEn ? "🍒 Pomeg Berry" : "🍒 Baie Pomeg";
 
-        // 1. Affichage initial de la couleur du talent actuel
         if (carte.talent) {
-            talentText.style.color = '#f1c40f'; // Doré si un talent est déjà éveillé
+            talentText.style.color = '#f1c40f';
         } else {
-            talentText.style.color = '#ccc'; // Gris si aucun talent
+            talentText.style.color = '#ccc';
         }
 
-        // 2. Action au clic sur le bouton
-        // 2. Action au clic sur le bouton
         newBtnPomeg.onclick = async () => {
             if (!state.currentUserData.berries) state.currentUserData.berries = [];
             const indexBaie = state.currentUserData.berries.findIndex(b => b.id === 'grena');
@@ -109,13 +100,11 @@ export async function openCardDetails(carte) {
                 return alert(isEn ? "You don't have a Pomeg Berry in your inventory! Mutate one in the greenhouse." : "Vous ne possédez aucune Baie Pomeg ! Faites-la muter dans la serre.");
             }
 
-            // SOLUTION : On va chercher les talents dans le Pokédex de base (data.json) si la carte sauvegardée est trop ancienne
             const baseData = state.pokemonDataList[carte.pokedexNumber - 1] || {};
             let talentsPossibles = baseData.abilities || d.abilities || [];
             
-            // On exclut le talent que le Pokémon possède déjà (gère les anciens talents texte et les nouveaux en objet)
             let talentsFiltres = talentsPossibles.filter(ab => {
-                if (!carte.talent) return true; // S'il n'a pas de talent, tous sont possibles
+                if (!carte.talent) return true;
                 if (typeof carte.talent === 'string') return ab.fr !== carte.talent && ab.en !== carte.talent;
                 return ab.en !== carte.talent.en;
             });
@@ -124,25 +113,17 @@ export async function openCardDetails(carte) {
                 return alert(isEn ? "This Pokémon has no other possible abilities!" : "Ce Pokémon n'a pas d'autres talents possibles !");
             }
 
-            // Confirmation si le Pokémon a déjà un talent
             if (carte.talent && !confirm(isEn ? `This Pokémon already has the ability "${carte.talent.en || carte.talent}". Do you want to consume a Pomeg Berry to change it?` : `Ce Pokémon possède déjà le talent "${carte.talent.fr || carte.talent}". Voulez-vous vraiment consommer une Baie Pomeg pour le changer ?`)) {
                 return;
             }
 
-            // Consommer la baie (la retirer de l'inventaire)
             state.currentUserData.berries.splice(indexBaie, 1);
-            
-            // Tirer un talent au hasard parmi ses vrais talents restants
             let talentTire = talentsFiltres[Math.floor(Math.random() * talentsFiltres.length)];
-            
-            // Sauvegarder sur la carte
             carte.talent = talentTire;
 
-            // Mettre à jour l'interface visuelle
             talentText.textContent = isEn ? talentTire.en : talentTire.fr;
             talentText.style.color = '#f1c40f';
 
-            // Sauvegarder dans Firebase
             import('../firebase-config.js').then(({db}) => {
                 db.collection('users').doc(state.currentUser).update({
                     collection: state.currentUserData.collection,
@@ -172,17 +153,73 @@ export async function openCardDetails(carte) {
         <div>✨ ${isEn ? "Sp. Def" : "Déf Spé"} : <b>${spdef}</b></div>
     `;
 
-    // Affichage des EVs du Pokémon
+    // --- GESTION DES EVS ET DE LA BAIE ALGA (-) ---
     if (!carte.evs) carte.evs = { hp: 0, atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0 };
 
-    document.getElementById('details-evs-grid').innerHTML = `
-        <div>HP/PV : <b>${carte.evs.hp}/252</b></div>
-        <div>Atk : <b>${carte.evs.atk}/252</b></div>
-        <div>${isEn ? "Def" : "Déf"} : <b>${carte.evs.def}/252</b></div>
-        <div>${isEn ? "Sp. Atk" : "Atk Spé"} : <b>${carte.evs.spatk}/252</b></div>
-        <div>${isEn ? "Sp. Def" : "Déf Spé"} : <b>${carte.evs.spdef}/252</b></div>
-        <div>${isEn ? "Spe" : "Vit"} : <b>${carte.evs.speed}/252</b></div>
-    `;
+    const renderEvsGrid = () => {
+        const evs = carte.evs;
+        const statsList = [
+            { key: 'hp', label: 'HP/PV' },
+            { key: 'atk', label: 'Atk' },
+            { key: 'def', label: isEn ? 'Def' : 'Déf' },
+            { key: 'spatk', label: isEn ? 'Sp. Atk' : 'Atk Spé' },
+            { key: 'spdef', label: isEn ? 'Sp. Def' : 'Déf Spé' },
+            { key: 'speed', label: isEn ? 'Spe' : 'Vit' }
+        ];
+
+        let html = '';
+        statsList.forEach(stat => {
+            html += `
+                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px;">
+                    <span>${stat.label} : <b>${evs[stat.key]}/252</b></span>
+                    <button class="btn-ev-minus" data-stat="${stat.key}" style="background: #e74c3c; color: white; border: none; border-radius: 3px; width: 22px; height: 22px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center;" title="Retirer 1 EV avec une Baie Alga">-</button>
+                </div>
+            `;
+        });
+        document.getElementById('details-evs-grid').innerHTML = html;
+    };
+
+    renderEvsGrid();
+
+    const evsGridContainer = document.getElementById('details-evs-grid');
+    const newEvsContainer = evsGridContainer.cloneNode(true);
+    evsGridContainer.parentNode.replaceChild(newEvsContainer, evsGridContainer);
+
+    newEvsContainer.addEventListener('click', (e) => {
+        const btnMinus = e.target.closest('.btn-ev-minus');
+        if (!btnMinus) return;
+
+        const statKey = btnMinus.dataset.stat;
+
+        if (carte.evs[statKey] <= 0) {
+            return alert(isEn ? "This stat has 0 EVs to remove!" : "Cette statistique a déjà 0 EV à retirer !");
+        }
+
+        if (!state.currentUserData.berries) state.currentUserData.berries = [];
+        const indexBaieAlga = state.currentUserData.berries.findIndex(b => b.id === 'alga');
+
+        if (indexBaieAlga === -1) {
+            return alert(isEn ? "You don't have any Kelpsy (Alga) Berries in your inventory! Mutate one in the greenhouse." : "Vous ne possédez aucune Baie Alga dans votre inventaire ! Faites-la muter dans la serre.");
+        }
+
+        state.currentUserData.berries.splice(indexBaieAlga, 1);
+        carte.evs[statKey]--;
+
+        let totalEvs = Object.values(carte.evs).reduce((a, b) => a + b, 0);
+        const totalEvsSpan = document.getElementById('details-ev-total');
+        if (totalEvsSpan) totalEvsSpan.textContent = totalEvs;
+
+        renderEvsGrid();
+
+        import('../firebase-config.js').then(({db}) => {
+            db.collection('users').doc(state.currentUser).update({
+                collection: state.currentUserData.collection,
+                berries: state.currentUserData.berries
+            }).then(() => {
+                // Succès
+            }).catch(err => console.error("Erreur de sauvegarde des EVs :", err));
+        });
+    });
 }
 
 // ==========================================

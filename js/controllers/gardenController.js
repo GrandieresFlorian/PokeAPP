@@ -153,17 +153,23 @@ function savePreset(presetId) {
     const preset = state.currentUserData.gardenPresets.find(p => p.id === presetId);
     if (!preset) return;
 
+    // Liste des ID de baies avancées qu'on ne peut pas planter
+    const advancedBerries = ['grena', 'alga']; // Ajoute d'autres ID si tu en as d'autres plus tard
+
     const layout = {};
     garden.forEach((plot, index) => {
         if (!plot.locked && plot.berryId) {
-            layout[index] = plot.berryId;
+            // On ignore la baie si c'est une baie avancée
+            if (!advancedBerries.includes(plot.berryId)) {
+                layout[index] = plot.berryId;
+            }
         }
     });
 
     preset.layout = layout;
     saveGardenData();
     renderPresetsUI();
-    alert(`Preset "${preset.name}" sauvegardé avec succès !`);
+    alert(`Preset "${preset.name}" sauvegardé avec succès ! (Baies avancées ignorées)`);
 }
 
 // --- CHARGER ET PLANTER UN PRESET ---
