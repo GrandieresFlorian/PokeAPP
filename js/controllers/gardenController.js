@@ -440,7 +440,12 @@ function openSellMenu() {
     let html = '<div style="max-height: 250px; overflow-y: auto; padding-right:5px;">';
     const mesBaies = state.currentUserData.berries || [];
     const baiesMap = {};
-    mesBaies.forEach(b => { baiesMap[b.id] = (baiesMap[b.id] || 0) + 1; });
+    
+    // CORRECTION : On compte la vraie quantité de chaque baie
+    mesBaies.forEach(b => { 
+        const q = Number(b.quantity || 1);
+        baiesMap[b.id] = (baiesMap[b.id] || 0) + q; 
+    });
 
     if (Object.keys(baiesMap).length === 0) {
         html += '<p style="color:#777;">Vous n\'avez aucune baie à vendre.</p>';
