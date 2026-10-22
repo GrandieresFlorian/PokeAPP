@@ -819,15 +819,16 @@ function sellBerry(id, qty) {
 // --- OPTIMISATION (DEBOUNCE) DE LA SAUVEGARDE SUR FIREBASE ---
 // --- OPTIMISATION (DEBOUNCE) DE LA SAUVEGARDE SUR FIREBASE ---
 let saveTimeout = null;
-function saveGardenData() {
+
+export function saveGardenData() {
     if (saveTimeout) clearTimeout(saveTimeout);
     saveTimeout = setTimeout(() => {
         db.collection('users').doc(state.currentUser).update({
             garden: state.currentUserData.garden,
             berries: state.currentUserData.berries,
             pokeBerrys: state.currentUserData.pokeBerrys,
-            // --- AJOUT DE LA SAUVEGARDE DES PRESETS ICI ---
+            // C'EST CETTE LIGNE QUI SAUVEGARDE LES PRESETS DANS LE CLOUD :
             gardenPresets: state.currentUserData.gardenPresets || [] 
         }).catch(err => console.error(err));
-    }, 1000); // Effectue la requête 1 seconde après la fin de l'interaction
+    }, 1000); 
 }

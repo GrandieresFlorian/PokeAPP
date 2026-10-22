@@ -244,22 +244,22 @@
                     <div class="pokeberry-count">PokeBerrys : <span id="pokeberry-display" class="text-accent">0</span> 💰</div>
                     <button id="btn-sell-berries" class="btn btn-secondary translatable" data-fr="Boutique & Vente" data-en="Shop & Sell" style="margin-top: 0; padding:10px 20px;">Boutique & Vente</button>
                 </div>
-                <div class="jardin-layout" style="display: flex; flex-direction: row; gap: 15px; align-items: flex-start; justify-content: center; flex-wrap: wrap; width: 100%;">
+                <div class="jardin-layout" style="display: grid; grid-template-columns: 280px auto 300px; gap: 20px; align-items: start; max-width: 1200px; margin: 0 auto;">
                     
                     <!-- 1. COLONNE DE GAUCHE : Outils & Graines -->
-                    <div id="garden-action-panel" class="garden-action-panel glass-panel" style="flex: 1; min-width: 220px; max-width: 300px; margin: 0;">
+                    <div id="garden-action-panel" class="garden-action-panel glass-panel" style="margin: 0; width: 100%;">
                         <h3 id="garden-action-title" class="panel-heading text-accent translatable" data-fr="Jardin" data-en="Garden">Jardin</h3>
                         <div id="garden-action-content" class="translatable" data-fr="Sélectionnez un terrain pour commencer." data-en="Select a plot to start.">Sélectionnez un terrain pour commencer.</div>
                     </div>
                     
                     <!-- 2. COLONNE CENTRALE : La Grille du Jardin -->
-                    <div class="garden-grid-container glass-panel" style="flex: auto; min-width: 340px; max-width: 500px; margin: 0; display: flex; justify-content: center;">
+                    <div class="garden-grid-container glass-panel" style="margin: 0; display: flex; justify-content: center;">
                         <div id="garden-grid" class="garden-grid"></div>
                     </div>
                     
                     <!-- 3. COLONNE DE DROITE : Presets de Plantation -->
-                    <div class="glass-panel" style="flex: 1; min-width: 240px; max-width: 350px; margin: 0; padding: 15px; box-sizing: border-box;">
-                        <h3 class="text-accent" style="margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 10px; font-size: 1rem;">Presets de Plantation</h3>
+                    <div class="glass-panel" style="margin: 0; padding: 20px; width: 100%; box-sizing: border-box;">
+                        <h3 class="text-accent" style="margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 10px; font-size: 1.1rem;">Presets de Plantation</h3>
                         <div id="garden-presets-container" style="display: flex; flex-direction: column; gap: 10px;">
                             <!-- Généré dynamiquement en JS -->
                         </div>
