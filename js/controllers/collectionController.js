@@ -399,6 +399,9 @@ function getBerryHint(baieId) {
     if (baieId === 'grena') {
         return "Indice de mutation 🔬 : Entourez une case vide avec 2 Baies Figuy, 2 Baies Wiki, 2 Baies Mago et 2 Baies Gowav (8 baies au total)";
     }
+    if (baieId === 'alga') {
+        return "Indice de mutation 🔬 : Entourez une case vide avec 2 Baies Framby, 2 Baies Remu, 2 Baies Nanab et 2 Baies Nanana (8 baies au total)";
+    }
     const recipe = MUTATION_RECIPES.find(r => r.result === baieId);
     if (recipe) {
         const p1Def = TOUTES_LES_BAIES.find(b => b.id === recipe.p1); const p2Def = TOUTES_LES_BAIES.find(b => b.id === recipe.p2);

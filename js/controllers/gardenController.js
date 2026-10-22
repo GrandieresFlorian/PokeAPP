@@ -190,7 +190,7 @@ function loadPreset(presetId) {
     // 2. Compter ce que le joueur possède réellement en inventaire
     const inventoryCount = {};
     berriesInventory.forEach(b => {
-        if (!['pomeg-berry', 'grena'].includes(b.id)) { // Exclure les baies non plantables
+        if (!['pomeg-berry', 'grena','alga'].includes(b.id)) { // Exclure les baies non plantables
             inventoryCount[b.id] = (inventoryCount[b.id] || 0) + 1;
         }
     });
@@ -320,7 +320,7 @@ function renderToolsList() {
     html += `
         <div style="display:flex; justify-content:space-between; align-items:center; background:#1a1a1a; padding:10px; border-radius:5px; margin-bottom:8px; cursor:pointer; border:2px solid ${isShovelActive ? '#e74c3c' : '#444'};" data-action="select_shovel">
             <div style="display:flex; align-items:center; gap:10px; pointer-events:none;">
-                <span style="font-size:1.5rem;">️ shov</span> <!-- Ou l'émoji de ton choix -->
+                <span style="font-size:1.5rem;">️🪏</span> <!-- Ou l'émoji de ton choix -->
                 <span style="color:white; font-size:1rem; font-weight:bold;">Pelle (Arrachage Rapide)</span>
             </div>
         </div>
@@ -334,7 +334,7 @@ function renderToolsList() {
     `;
 
     const mesBaies = state.currentUserData.berries || [];
-    const advancedBerries = ['grena'];
+    const advancedBerries = ['grena','alga'];
     const baiesMap = {};
     mesBaies.forEach(b => { 
         const q = b.quantity || 1;
@@ -517,6 +517,28 @@ function checkMutations() {
                 return; // Stoppe ici, aucune mutation classique ne peut se déclencher sur ce plot !
             }
             // Même si le jet à 5% échoue, on retourne directement pour interdire les mutations classiques sur ce plot encerclé
+            return; 
+        }
+
+        const algaReqs = ['framby', 'remu', 'nanab', 'nanana'];
+        let isAlgaMutation = algaReqs.every(bId => adjacentPlots.includes(bId));
+        
+        if (isAlgaMutation && adjacentPlots.length >= 8) {
+            if (Math.random() <= 0.2) { // 20% de chance par tick (ou ajuste selon ta préférence)
+                plot.berryId = 'alga';
+                plot.plantedAt = Date.now();
+                plot.lastWatered = Date.now();
+                mutated = true;
+                
+                document.getElementById('garden-action-title').textContent = "Mutation Avancée ! ✨";
+                document.getElementById('garden-action-content').innerHTML = `
+                    <p style="color:#f1c40f; font-weight:bold;">Une mutation rare s'est produite !</p>
+                    <p>Une <b style="color:#2ecc71;">Baie Alga</b> a germé au centre de vos cultures expertes !</p>
+                    <button class="btn btn-secondary" style="width:100%; margin-top:10px;" data-action="deselect_tool">Retour aux Outils</button>
+                `;
+                activeTool = null;
+                return;
+            }
             return; 
         }
         
