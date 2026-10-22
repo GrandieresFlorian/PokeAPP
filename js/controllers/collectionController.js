@@ -341,7 +341,8 @@ export function afficherCollection() {
             let classFond = "card-front"; let styleFond = "";
             if (form && afficheHolo) classFond += " mega-shiny-bg"; else if (form) classFond += " mega-bg"; else if (afficheHolo) classFond += " shiny-bg"; else styleFond = `style="background-color: ${bgColor}"`;
 
-            let badgeQuantite = quantite > 1 ? `<div class="badge-quantite">X${quantite}</div>` : ""; 
+            let quantiteReelle = mainCard.quantity || 1;
+            let badgeQuantite = quantiteReelle > 1 ? `<div class="badge-quantite">X${quantiteReelle}</div>` : "";
 
             let overlayHtml = `
                 <div class="card-hover-actions">
