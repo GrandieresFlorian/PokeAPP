@@ -36,7 +36,6 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(data => { state.pokemonDataList = data.pokemon; })
         .catch(e => console.error(e));
 
-    // NOUVEAU : Chargement de la mémoire des attaques !
     fetch('moves.json')
         .then(r => r.json())
         .then(data => { state.movesData = data; })
@@ -47,24 +46,20 @@ document.addEventListener("DOMContentLoaded", () => {
             if (doc.exists) {
                 state.currentUserData = doc.data();
                 
-                // --- SCRIPT DE MIGRATION ANTI-DOUBLONS (OPTIMISATION FIREBASE) ---
+                // --- SCRIPT DE MIGRATION ANTI-DOUBLONS (CARTES) ---
                 if (state.currentUserData.collection && state.currentUserData.collection.length > 0) {
                     let collectionNeedsUpdate = false;
                     let groupedMap = {};
                     
                     state.currentUserData.collection.forEach(card => {
-                        // On crée une clé unique pour chaque variante de Pokémon
                         const key = `${card.pokedexNumber}_${card.shiny}_${card.mega}_${card.megaForm}`;
                         
                         if (!groupedMap[key]) {
-                            // Première fois qu'on voit ce Pokémon, on l'ajoute avec quantité
                             groupedMap[key] = { ...card, quantity: card.quantity || 1 };
                         } else {
-                            // C'est un doublon ! On l'efface en augmentant la quantité du principal
                             collectionNeedsUpdate = true;
                             groupedMap[key].quantity += (card.quantity || 1);
                             
-                            // Si ce doublon avait un meilleur niveau/rang, on garde ses stats
                             if ((card.maxLevel || 20) > (groupedMap[key].maxLevel || 20)) {
                                 const totalQty = groupedMap[key].quantity;
                                 groupedMap[key] = { ...card, quantity: totalQty };
@@ -72,15 +67,35 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                     });
 
-                    // S'il y avait des doublons à nettoyer, on met à jour Firebase instantanément
                     if (collectionNeedsUpdate) {
                         state.currentUserData.collection = Object.values(groupedMap);
                         db.collection('users').doc(state.currentUser).update({
                             collection: state.currentUserData.collection
-                        }).then(() => console.log("Collection optimisée avec succès (doublons fusionnés) !"));
+                        }).then(() => console.log("Collection optimisée avec succès (doublons fusionnés) !")).catch(err => console.error("Erreur de sauvegarde de la collection:", err));
                     }
                 }
-                // -----------------------------------------------------------------
+                
+                // --- SCRIPT DE MIGRATION ANTI-DOUBLONS (BAIES) ---
+                if (state.currentUserData.berries && state.currentUserData.berries.length > 0) {
+                    let berriesNeedUpdate = false;
+                    let groupedBerries = {};
+                    
+                    state.currentUserData.berries.forEach(berry => {
+                        if (!groupedBerries[berry.id]) {
+                            groupedBerries[berry.id] = { ...berry, quantity: berry.quantity || 1 };
+                        } else {
+                            berriesNeedUpdate = true;
+                            groupedBerries[berry.id].quantity += (berry.quantity || 1);
+                        }
+                    });
+
+                    if (berriesNeedUpdate) {
+                        state.currentUserData.berries = Object.values(groupedBerries);
+                        db.collection('users').doc(state.currentUser).update({
+                            berries: state.currentUserData.berries
+                        }).then(() => console.log("Baies optimisées avec succès (doublons fusionnés) !")).catch(err => console.error("Erreur de sauvegarde des baies:", err));
+                    }
+                }
 
                 if (state.currentUserData.boostersLeft === undefined) {
                     state.currentUserData.boostersLeft = CONSTS.MAX_BOOSTERS;
