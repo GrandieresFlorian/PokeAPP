@@ -117,7 +117,9 @@ export async function openCardDetails(carte) {
                 return;
             }
 
-            state.currentUserData.berries.splice(indexBaie, 1);
+            let baieEntry = state.currentUserData.berries[indexBaie];
+            baieEntry.quantity = (baieEntry.quantity || 1) - 1;
+            if (baieEntry.quantity <= 0) state.currentUserData.berries.splice(indexBaie, 1);
             let talentTire = talentsFiltres[Math.floor(Math.random() * talentsFiltres.length)];
             carte.talent = talentTire;
 
@@ -202,7 +204,9 @@ export async function openCardDetails(carte) {
             return alert(isEn ? "You don't have any Kelpsy (Alga) Berries in your inventory! Mutate one in the greenhouse." : "Vous ne possédez aucune Baie Alga dans votre inventaire ! Faites-la muter dans la serre.");
         }
 
-        state.currentUserData.berries.splice(indexBaieAlga, 1);
+        let algaEntry = state.currentUserData.berries[indexBaieAlga];
+        algaEntry.quantity = (algaEntry.quantity || 1) - 1;
+        if (algaEntry.quantity <= 0) state.currentUserData.berries.splice(indexBaieAlga, 1);
         carte.evs[statKey]--;
 
         let totalEvs = Object.values(carte.evs).reduce((a, b) => a + b, 0);

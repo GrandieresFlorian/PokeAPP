@@ -67,7 +67,9 @@ export function checkMoveHit(move, atkModifiers, defModifiers) {
 export function calculateDamage(atkEntity, defEntity, move, currentWeather = 'none') {
     if (move.power === 0 || !move.power) return { damage: 0, isCrit: false, mult: 1 };
 
-    let isCrit = Math.random() < (HIGH_CRIT_MOVES.includes(move.nameEn) ? 0.125 : 0.0625);
+    let forcedCritMoves = ['razor-leaf', 'slash', 'cross-chop', 'stone-edge', 'psycho-cut', 'shadow-claw', 'leaf-blade', 'night-slash'];
+    let isHighCrit = HIGH_CRIT_MOVES.includes(move.nameEn) || forcedCritMoves.includes(move.nameEn);
+    let isCrit = Math.random() < (isHighCrit ? 0.125 : 0.0625);
     let atkTypes = atkEntity.types || (atkEntity.battleStats ? atkEntity.battleStats.types : []) || [];
     let defTypes = defEntity.types || (defEntity.battleStats ? defEntity.battleStats.types : []) || [];
     // ------------------------

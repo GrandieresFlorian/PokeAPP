@@ -388,13 +388,13 @@ function renderToolsList() {
         `;
     });
     
-    if (countVisible === 0) html += '<p style="color:#777;">Aucune baie correspondante.</p>';
+    if (countVisible === 0) html += ''; // On enlève le texte "Aucune baie correspondante"
     container.innerHTML = html;
     
     if (activeTool) {
-        footer.innerHTML = `<button class="btn btn-secondary" style="width:100%; margin-top:15px; background:#e74c3c;" data-action="deselect_tool">Désélectionner (Mode Clic & Inspecter)</button>`;
+        footer.innerHTML = `<button class="btn btn-secondary" style="width:100%; margin-top:15px; background:#e74c3c;" data-action="deselect_tool">Désélectionner l'outil</button>`;
     } else {
-        footer.innerHTML = `<p style="color:#777; font-size:0.85rem; margin-top:15px;">Sélectionnez une graine ou la truelle, puis glissez/maintenez sur la serre.</p>`;
+        footer.innerHTML = ``; // On enlève le texte gris d'explication
     }
 }
 
@@ -496,7 +496,7 @@ function checkMutations() {
                     let p = garden[nIdx];
                     if (!p.locked && p.berryId !== null) {
                         const st = getPlotState(p);
-                        if (st.stage === 'growing' || st.stage === 'thirsty' || st.stage === 'ready') {
+                        if (st.stage === 'growing' || st.stage === 'thirsty') {
                             adjacentPlots.push(p.berryId);
                         }
                     }
@@ -516,12 +516,6 @@ function checkMutations() {
                 plot.lastWatered = Date.now();
                 mutated = true;
                 
-                document.getElementById('garden-action-title').textContent = "Mutation Avancée ! ✨";
-                document.getElementById('garden-action-content').innerHTML = `
-                    <p style="color:#f1c40f; font-weight:bold;">Une mutation légendaire s'est produite !</p>
-                    <p>Une <b style="color:#2ecc71;">Baie Pomeg</b> a germé au centre de vos cultures expertes !</p>
-                    <button class="btn btn-secondary" style="width:100%; margin-top:10px;" data-action="deselect_tool">Retour aux Outils</button>
-                `;
                 activeTool = null;
                 return; // Stoppe ici, aucune mutation classique ne peut se déclencher sur ce plot !
             }
@@ -539,12 +533,6 @@ function checkMutations() {
                 plot.lastWatered = Date.now();
                 mutated = true;
                 
-                document.getElementById('garden-action-title').textContent = "Mutation Avancée ! ✨";
-                document.getElementById('garden-action-content').innerHTML = `
-                    <p style="color:#f1c40f; font-weight:bold;">Une mutation rare s'est produite !</p>
-                    <p>Une <b style="color:#2ecc71;">Baie Alga</b> a germé au centre de vos cultures expertes !</p>
-                    <button class="btn btn-secondary" style="width:100%; margin-top:10px;" data-action="deselect_tool">Retour aux Outils</button>
-                `;
                 activeTool = null;
                 return;
             }
@@ -576,11 +564,6 @@ function checkMutations() {
                         let nameFr = baieDef.fr;
                         let currentName = state.currentLang === 'en' ? nameEn : nameFr;
 
-                        document.getElementById('garden-action-content').innerHTML = `
-                            <p style="color:#f1c40f; font-weight:bold;">Une nouvelle espèce est apparue !</p>
-                            <p>Une <b class="pokemon-name" data-en="${nameEn}" data-fr="${nameFr}" style="color:#2ecc71;">${currentName}</b> a poussé spontanément grâce aux baies voisines !</p>
-                            <button class="btn btn-secondary" style="width:100%; margin-top:10px;" data-action="deselect_tool">Retour aux Outils</button>
-                        `;
                         activeTool = null;
                         break; 
                     }
@@ -828,25 +811,8 @@ function harvestPlot(index) {
     
     saveGardenData();
     renderGardenGrid();
+    showDefaultTools(); // Maintient les outils affichés en permanence sans message
     
-    if (!activeTool) {
-        let nameEn = baieDef.en;
-        let nameFr = baieDef.fr;
-        let currentName = state.currentLang === 'en' ? nameEn : nameFr;
-        let enNameImg = baieDef.en.toLowerCase().replace(/\s+/g, '-');
-        let imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${enNameImg}.png`;
-
-        document.getElementById('garden-action-content').innerHTML = `
-            <p style="color:#2ecc71; display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap;">
-                Vous avez récolté ${yieldAmount} 
-                <img src="${imgUrl}" style="width:24px; height:24px; vertical-align:middle; image-rendering:pixelated;">
-                <span class="pokemon-name" data-en="${nameEn}" data-fr="${nameFr}" style="font-size:inherit; font-weight:bold; color:white; text-transform:none;">${currentName}</span> !
-            </p>
-            <button class="btn btn-secondary" style="width:100%; margin-top:10px;" data-action="deselect_tool">Retour aux Outils</button>
-        `;
-    } else if (document.getElementById('garden-action-title').textContent === "Outils & Graines") {
-        showDefaultTools(); 
-    }
 }
 
 function clearPlot(index) {
@@ -856,23 +822,23 @@ function clearPlot(index) {
     plot.lastWatered = 0;
     saveGardenData();
     renderGardenGrid();
-    document.getElementById('garden-action-content').innerHTML = `
-        <p style="color:#777;">Le terrain a été nettoyé.</p>
-        <button class="btn btn-secondary" style="width:100%; margin-top:10px;" data-action="deselect_tool">Retour aux Outils</button>
-    `;
 }
 
 function sellBerry(id, qty) {
-    let sold = 0;
-    for(let i = state.currentUserData.berries.length - 1; i >= 0; i--) {
-        if(state.currentUserData.berries[i].id === id && sold < qty) {
-            state.currentUserData.berries.splice(i, 1);
-            sold++;
-        }
+    const berryEntry = state.currentUserData.berries.find(b => b.id === id);
+    if (!berryEntry) return;
+    
+    const currentQty = berryEntry.quantity || 1;
+    const actualSold = Math.min(qty, currentQty);
+    
+    berryEntry.quantity = currentQty - actualSold;
+    if (berryEntry.quantity <= 0) {
+        const index = state.currentUserData.berries.indexOf(berryEntry);
+        if (index > -1) state.currentUserData.berries.splice(index, 1);
     }
     
     const conf = state.berryConfig[id] || state.berryConfig.default;
-    const gain = sold * conf.sellPrice;
+    const gain = actualSold * conf.sellPrice;
     state.currentUserData.pokeBerrys += gain;
     
     saveGardenData();

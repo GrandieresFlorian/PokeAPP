@@ -684,13 +684,14 @@ function openSynchronousSwitchMenu(forced = false) {
     });
 }
 
-function surrenderBattle() {
-    if(confirm("Voulez-vous vraiment abandonner ce combat ?")) {
+export function surrenderBattle() {
+    if(!currentBattleId) return; // Sécurité
+    if(confirm("Voulez-vous vraiment abandonner/annuler ce combat ?")) {
         db.collection('active_battles').doc(currentBattleId).update({
             status: 'finished',
             winner: myRole === 'p1' ? 'p2' : 'p1', 
-            log: firebase.firestore.FieldValue.arrayUnion(`<b style="color:#e74c3c;">Un joueur a abandonné le combat !</b>`)
-        });
+            log: firebase.firestore.FieldValue.arrayUnion(`<b style="color:#e74c3c;">Un joueur a annulé le combat !</b>`)
+        }).catch(err => console.error("Erreur annulation:", err));
     }
 }
 
