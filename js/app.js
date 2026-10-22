@@ -41,91 +41,96 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(data => { state.movesData = data; })
         .catch(e => console.error("Fichier moves.json introuvable :", e));
 
-        if (state.currentUser) {
-            db.collection('users').doc(state.currentUser).get().then(doc => {
-                if (doc.exists) {
-                    state.currentUserData = doc.data();
+    if (state.currentUser) {
+        db.collection('users').doc(state.currentUser).get().then(doc => {
+            if (doc.exists) {
+                state.currentUserData = doc.data();
+                
+                // --- 1. MIGRATION ET COMPRESSION DES CARTES ---
+                if (state.currentUserData.collection && state.currentUserData.collection.length > 0) {
+                    console.log(`🔄 Analyse de la collection : ${state.currentUserData.collection.length} éléments trouvés...`);
                     
-                    // --- SCRIPT DE MIGRATION ANTI-DOUBLONS (CARTES) ---
-                    if (state.currentUserData.collection && state.currentUserData.collection.length > 0) {
-                        let groupedMap = {};
+                    let groupedMap = {};
+                    state.currentUserData.collection.forEach(card => {
+                        const num = Number(card.pokedexNumber || card.data?.pokedexNumber || 1);
+                        const isShiny = card.shiny ? "1" : "0";
+                        const isMega = card.mega ? "1" : "0";
+                        const megaForm = card.megaForm || "none";
                         
-                        state.currentUserData.collection.forEach(card => {
-                            // On sécurise les valeurs au cas où certaines seraient undefined
-                            const num = card.pokedexNumber || 0;
-                            const shiny = card.shiny ? '1' : '0';
-                            const mega = card.mega ? '1' : '0';
-                            const form = card.megaForm || 'none';
-                            
-                            const key = `${num}_${shiny}_${mega}_${form}`;
-                            
-                            if (!groupedMap[key]) {
-                                groupedMap[key] = { 
-                                    ...card, 
-                                    quantity: Number(card.quantity || 1) 
-                                };
-                            } else {
-                                groupedMap[key].quantity += Number(card.quantity || 1);
-                                
-                                // On garde le meilleur niveau max trouvé parmi les doublons
-                                if ((card.maxLevel || 20) > (groupedMap[key].maxLevel || 20)) {
-                                    groupedMap[key].maxLevel = card.maxLevel;
-                                    groupedMap[key].level = card.level;
-                                }
+                        const key = `p_${num}_s_${isShiny}_m_${isMega}_f_${megaForm}`;
+                        
+                        if (!groupedMap[key]) {
+                            groupedMap[key] = {
+                                ...card,
+                                pokedexNumber: num,
+                                quantity: Number(card.quantity || 1)
+                            };
+                        } else {
+                            groupedMap[key].quantity += Number(card.quantity || 1);
+                            if ((card.maxLevel || 20) > (groupedMap[key].maxLevel || 20)) {
+                                groupedMap[key].maxLevel = card.maxLevel;
+                                groupedMap[key].level = card.level;
                             }
-                        });
-    
-                        // On force l'application et la sauvegarde vers Firebase
-                        state.currentUserData.collection = JSON.parse(JSON.stringify(Object.values(groupedMap)));
-                        
-                        db.collection('users').doc(state.currentUser).update({
-                            collection: state.currentUserData.collection
-                        }).then(() => {
-                            console.log("🔥 COLLECTION COMPRESSÉE AVEC SUCCÈS ! Nouvelles cartes uniques :", state.currentUserData.collection.length);
-                        }).catch(err => console.error("❌ Erreur critique Firebase Collection :", err));
-                    }
-                    
-                    // --- SCRIPT DE MIGRATION ANTI-DOUBLONS (BAIES) ---
-                    if (state.currentUserData.berries && state.currentUserData.berries.length > 0) {
-                        let berriesNeedUpdate = false;
-                        let groupedBerries = {};
-                        
-                        state.currentUserData.berries.forEach(berry => {
-                            if (!groupedBerries[berry.id]) {
-                                groupedBerries[berry.id] = { ...berry, quantity: Number(berry.quantity || 1) };
-                            } else {
-                                berriesNeedUpdate = true;
-                                groupedBerries[berry.id].quantity += Number(berry.quantity || 1);
-                            }
-                        });
-    
-                        if (berriesNeedUpdate) {
-                            state.currentUserData.berries = JSON.parse(JSON.stringify(Object.values(groupedBerries)));
-                            db.collection('users').doc(state.currentUser).update({
-                                berries: state.currentUserData.berries
-                            }).then(() => console.log("✅ Baies optimisées avec succès !"))
-                              .catch(err => console.error("❌ Erreur Firebase Baies :", err));
                         }
-                    }
-    
-                    if (state.currentUserData.boostersLeft === undefined) {
-                        state.currentUserData.boostersLeft = CONSTS.MAX_BOOSTERS;
-                        state.currentUserData.lastBoosterTime = Date.now();
-                    }
-                    if (state.currentUserData.pokeBerrys === undefined) {
-                        state.currentUserData.pokeBerrys = 0;
-                    }
-                    
-                    updateAuthUI(); 
-                    updateBoosterLogic(); 
-                    startFriendsListener();
-                } else {
-                    state.currentUser = null; 
-                    localStorage.removeItem('pokeAppCurrentUser'); 
-                    updateAuthUI();
+                    });
+
+                    const nouvelleCollection = Object.values(groupedMap);
+                    console.log(`✨ Fusion cartes terminée ! Réduit à ${nouvelleCollection.length} cartes uniques.`);
+                    state.currentUserData.collection = JSON.parse(JSON.stringify(nouvelleCollection));
                 }
-            });
-        } else {
-            updateAuthUI();
-        }
-    });
+                
+                // --- 2. MIGRATION ET COMPRESSION DES BAIES ---
+                if (state.currentUserData.berries && state.currentUserData.berries.length > 0) {
+                    console.log(`🔄 Analyse des baies : ${state.currentUserData.berries.length} éléments trouvés...`);
+                    
+                    let groupedBerries = {};
+                    state.currentUserData.berries.forEach(berry => {
+                        const berryId = berry.id || berry.data?.id || "unknown";
+                        
+                        if (!groupedBerries[berryId]) {
+                            groupedBerries[berryId] = {
+                                ...berry,
+                                id: berryId,
+                                quantity: Number(berry.quantity || 1)
+                            };
+                        } else {
+                            groupedBerries[berryId].quantity += Number(berry.quantity || 1);
+                        }
+                    });
+
+                    const nouvellesBaies = Object.values(groupedBerries);
+                    console.log(`✨ Fusion baies terminée ! Réduit à ${nouvellesBaies.length} types de baies uniques.`);
+                    state.currentUserData.berries = JSON.parse(JSON.stringify(nouvellesBaies));
+                }
+
+                // --- 3. SAUVEGARDE GLOBALE VERS FIREBASE ---
+                db.collection('users').doc(state.currentUser).update({
+                    collection: state.currentUserData.collection || [],
+                    berries: state.currentUserData.berries || []
+                }).then(() => {
+                    console.log("🔥 SUCCÈS : Firebase a reçu les données compressées (Cartes + Baies) !");
+                }).catch(err => {
+                    console.error("❌ ERREUR FIREBASE :", err);
+                });
+
+                if (state.currentUserData.boostersLeft === undefined) {
+                    state.currentUserData.boostersLeft = CONSTS.MAX_BOOSTERS;
+                    state.currentUserData.lastBoosterTime = Date.now();
+                }
+                if (state.currentUserData.pokeBerrys === undefined) {
+                    state.currentUserData.pokeBerrys = 0;
+                }
+                
+                updateAuthUI(); 
+                updateBoosterLogic(); 
+                startFriendsListener();
+            } else {
+                state.currentUser = null; 
+                localStorage.removeItem('pokeAppCurrentUser'); 
+                updateAuthUI();
+            }
+        });
+    } else {
+        updateAuthUI();
+    }
+});
