@@ -561,6 +561,9 @@ function openGarden() {
     activeTool = null;
     showDefaultTools();
     document.getElementById('pokeberry-display').textContent = state.currentUserData.pokeBerrys;
+    
+    // --- AJOUTE CETTE LIGNE ICI ---
+    renderPresetsUI(); 
 }
 
 function getPlotState(plot) {
