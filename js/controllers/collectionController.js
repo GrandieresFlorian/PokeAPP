@@ -308,7 +308,9 @@ export function afficherCollection() {
         else if (state.collectionMode === 'mega') list = cartesPossedeesMap[i]?.megas?.[form]?.normal || [];
         else if (state.collectionMode === 'mega-shiny') list = cartesPossedeesMap[i]?.megas?.[form]?.shiny || [];
 
-        let quantite = list.length; let possedeLaCarte = quantite > 0;
+        let possedeLaCarte = list.length > 0;
+        // On récupère la quantité directement depuis la propriété quantity de la carte
+        let quantite = possedeLaCarte ? (list[0].quantity || 1) : 0;
         let afficheHolo = state.collectionMode === 'shiny' || state.collectionMode === 'mega-shiny';
 
         if (rarityVal !== 'all' && pokemonRarity !== rarityVal) return; 
@@ -330,8 +332,11 @@ export function afficherCollection() {
         const cachedTypes = dataOrigine.types ? generateTypeBadgesHTML(dataOrigine.types) : 'Pokémon';
 
         if (possedeLaCarte) {
-            const mainCard = list.reduce((prev, curr) => (curr.maxLevel || 20) > (prev.maxLevel || 20) ? curr : prev);
-            let currentLevel = mainCard.level || 1; let maxLevel = mainCard.maxLevel || 20; let doublons = quantite - 1;
+            const mainCard = list[0]; // Puisqu'il n'y a plus qu'un seul objet unique par variante
+            let currentLevel = mainCard.level || 1; 
+            let maxLevel = mainCard.maxLevel || 20; 
+            let quantiteReelle = mainCard.quantity || 1;
+            let doublons = quantiteReelle - 1; // La quantité totale moins la carte principale
             
             let cost = 0;
             if (maxLevel === 20) cost = 1; else if (maxLevel === 40) cost = 2; else if (maxLevel === 60) cost = 3; else if (maxLevel === 80) cost = 4;
@@ -341,8 +346,9 @@ export function afficherCollection() {
             let classFond = "card-front"; let styleFond = "";
             if (form && afficheHolo) classFond += " mega-shiny-bg"; else if (form) classFond += " mega-bg"; else if (afficheHolo) classFond += " shiny-bg"; else styleFond = `style="background-color: ${bgColor}"`;
 
-            let quantiteReelle = mainCard.quantity || 1;
             let badgeQuantite = quantiteReelle > 1 ? `<div class="badge-quantite">X${quantiteReelle}</div>` : "";
+
+            let niveauDisplayHtml = `<div style="font-size: 0.75rem; color: #f1c40f; margin-top: 4px; font-weight: bold;">Niv. ${currentLevel} / ${maxLevel}</div>`;
 
             let overlayHtml = `
                 <div class="card-hover-actions">
@@ -351,6 +357,7 @@ export function afficherCollection() {
                         (canUpgrade ? `<button class="btn-card-action btn-card-upgrade" data-date="${mainCard.date}">⭐ Améliorer <br><span style="font-size:0.7rem; font-weight:normal;">(-${cost} doublon${cost>1?'s':''})</span></button>` : `<div class="upgrade-hint"><span class="translatable" data-fr="Manque ${cost - doublons} doublon(s)<br>pour le rang${maxLevel + 20}" data-en="Need ${cost - doublons} duplicate(s)<br>for rank${maxLevel + 20}">Manque ${cost - doublons} doublon(s)<br>pour le rang${maxLevel + 20}</span></div>`) 
                         : `<div class="upgrade-max">✨ RANG MAX ✨</div>`
                     }
+                    ${niveauDisplayHtml}
                 </div>`;
 
             htmlContent += `
