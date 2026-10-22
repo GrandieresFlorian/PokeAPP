@@ -185,7 +185,7 @@ function loadPreset(presetId) {
     }
 
     const garden = state.currentUserData.garden;
-    const berriesInventory = state.currentUserData.berries;
+    const berriesInventory = state.currentUserData.berries || [];
 
     // 1. Calculer le nombre de chaque baie requise par le preset
     const requiredBerriesCount = {};
@@ -193,12 +193,11 @@ function loadPreset(presetId) {
         requiredBerriesCount[berryId] = (requiredBerriesCount[berryId] || 0) + 1;
     });
 
-    // 2. Compter ce que le joueur possède réellement en inventaire
+    // 2. Compter ce que le joueur possède réellement en inventaire (en tenant compte de quantity)
     const inventoryCount = {};
     berriesInventory.forEach(b => {
-        if (!['pomeg-berry', 'grena','alga'].includes(b.id)) { // Exclure les baies non plantables
-            inventoryCount[b.id] = (inventoryCount[b.id] || 0) + 1;
-        }
+        const q = b.quantity || 1;
+        inventoryCount[b.id] = (inventoryCount[b.id] || 0) + q;
     });
 
     // 3. Vérifier si le joueur a assez de chaque baie
@@ -220,14 +219,18 @@ function loadPreset(presetId) {
         }
     }
 
-    // 5. Tout est bon : on retire les baies de l'inventaire et on plante sur la grille
+    // 5. Tout est bon : on retire les baies de l'inventaire (via quantity) et on plante sur la grille
     for (const [indexStr, berryId] of Object.entries(preset.layout)) {
         const index = parseInt(indexStr);
         
-        // Supprimer 1 exemplaire de l'inventaire du joueur
-        const itemIndex = berriesInventory.findIndex(b => b.id === berryId);
-        if (itemIndex > -1) {
-            berriesInventory.splice(itemIndex, 1);
+        // Décrémenter la quantité dans l'inventaire du joueur
+        const berryEntry = berriesInventory.find(b => b.id === berryId);
+        if (berryEntry) {
+            berryEntry.quantity = (berryEntry.quantity || 1) - 1;
+            if (berryEntry.quantity <= 0) {
+                const itemIndex = berriesInventory.indexOf(berryEntry);
+                if (itemIndex > -1) berriesInventory.splice(itemIndex, 1);
+            }
         }
 
         // Planter sur le plot

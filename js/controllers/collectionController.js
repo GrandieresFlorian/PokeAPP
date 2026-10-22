@@ -465,11 +465,12 @@ function afficherBaies(container, countDisplay, ownedOnlyVal) {
         let hint = getBerryHint(baie.id);
 
         if (possedeLaCarte) {
-            let badgeQuantite = quantite > 1 ? `<div class="badge-quantite">X${quantite}</div>` : "";
+            let quantiteReelle = baie.quantity || baiesMap[baie.id] || 1;
+            let badgeQuantite = quantiteReelle > 1 ? `<div class="badge-quantite">X${quantiteReelle}</div>` : "";
             htmlContent += `
-                <div class="card flipped" style="cursor: help;" title="${hint}">
+                <div class="card flipped" style="cursor: help; position: relative;" title="${hint}">
                     <div class="card-inner">
-                        <div class="card-front" style="background-color: #2ecc71; border-color: #27ae60;">
+                        <div class="card-front" style="background-color: #2ecc71; border-color: #27ae60; position: relative;">
                             ${badgeQuantite}
                             <div class="card-header"><h1 class="pokemon-name" data-en="${baie.en}" data-fr="${baie.fr}">${nomAffiche}</h1><div class="icon" style="background-color: white; color: #27ae60;">B</div></div>
                             <div class="image-wrapper" style="background-color: #fceea7;"><img class="pokemon-image" src="${finalImageUrl}" alt="Baie" style="object-fit: contain; height: 160px; padding: 15px; image-rendering: pixelated;" loading="lazy"></div>
