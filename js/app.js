@@ -48,34 +48,41 @@ document.addEventListener("DOMContentLoaded", () => {
                     
                     // --- SCRIPT DE MIGRATION ANTI-DOUBLONS (CARTES) ---
                     if (state.currentUserData.collection && state.currentUserData.collection.length > 0) {
-                        let collectionNeedsUpdate = false;
                         let groupedMap = {};
                         
                         state.currentUserData.collection.forEach(card => {
-                            // Clé plus robuste pour éviter les bugs avec undefined
-                            const key = `${card.pokedexNumber}_${!!card.shiny}_${!!card.mega}_${card.megaForm || 'none'}`;
+                            // On sécurise les valeurs au cas où certaines seraient undefined
+                            const num = card.pokedexNumber || 0;
+                            const shiny = card.shiny ? '1' : '0';
+                            const mega = card.mega ? '1' : '0';
+                            const form = card.megaForm || 'none';
+                            
+                            const key = `${num}_${shiny}_${mega}_${form}`;
                             
                             if (!groupedMap[key]) {
-                                groupedMap[key] = { ...card, quantity: Number(card.quantity || 1) };
+                                groupedMap[key] = { 
+                                    ...card, 
+                                    quantity: Number(card.quantity || 1) 
+                                };
                             } else {
-                                collectionNeedsUpdate = true;
                                 groupedMap[key].quantity += Number(card.quantity || 1);
                                 
+                                // On garde le meilleur niveau max trouvé parmi les doublons
                                 if ((card.maxLevel || 20) > (groupedMap[key].maxLevel || 20)) {
-                                    const totalQty = groupedMap[key].quantity;
-                                    groupedMap[key] = { ...card, quantity: totalQty };
+                                    groupedMap[key].maxLevel = card.maxLevel;
+                                    groupedMap[key].level = card.level;
                                 }
                             }
                         });
     
-                        if (collectionNeedsUpdate) {
-                            // L'astuce magique JSON nettoie les 'undefined' que Firebase refuse d'enregistrer
-                            state.currentUserData.collection = JSON.parse(JSON.stringify(Object.values(groupedMap)));
-                            db.collection('users').doc(state.currentUser).update({
-                                collection: state.currentUserData.collection
-                            }).then(() => console.log("✅ Collection optimisée avec succès !"))
-                              .catch(err => console.error("❌ Erreur Firebase Collection :", err));
-                        }
+                        // On force l'application et la sauvegarde vers Firebase
+                        state.currentUserData.collection = JSON.parse(JSON.stringify(Object.values(groupedMap)));
+                        
+                        db.collection('users').doc(state.currentUser).update({
+                            collection: state.currentUserData.collection
+                        }).then(() => {
+                            console.log("🔥 COLLECTION COMPRESSÉE AVEC SUCCÈS ! Nouvelles cartes uniques :", state.currentUserData.collection.length);
+                        }).catch(err => console.error("❌ Erreur critique Firebase Collection :", err));
                     }
                     
                     // --- SCRIPT DE MIGRATION ANTI-DOUBLONS (BAIES) ---
