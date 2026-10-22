@@ -100,6 +100,7 @@ export async function openCardDetails(carte) {
         }
 
         // 2. Action au clic sur le bouton
+        // 2. Action au clic sur le bouton
         newBtnPomeg.onclick = async () => {
             if (!state.currentUserData.berries) state.currentUserData.berries = [];
             const indexBaie = state.currentUserData.berries.findIndex(b => b.id === 'grena');
@@ -108,18 +109,23 @@ export async function openCardDetails(carte) {
                 return alert(isEn ? "You don't have a Pomeg Berry in your inventory! Mutate one in the greenhouse." : "Vous ne possédez aucune Baie Pomeg ! Faites-la muter dans la serre.");
             }
 
-            // Récupérer les vrais talents possibles du Pokémon depuis data.json
-            let talentsPossibles = d.abilities || [];
+            // SOLUTION : On va chercher les talents dans le Pokédex de base (data.json) si la carte sauvegardée est trop ancienne
+            const baseData = state.pokemonDataList[carte.pokedexNumber - 1] || {};
+            let talentsPossibles = baseData.abilities || d.abilities || [];
             
-            // On exclut le talent que le Pokémon possède déjà
-            let talentsFiltres = talentsPossibles.filter(ab => !carte.talent || ab.en !== carte.talent.en);
+            // On exclut le talent que le Pokémon possède déjà (gère les anciens talents texte et les nouveaux en objet)
+            let talentsFiltres = talentsPossibles.filter(ab => {
+                if (!carte.talent) return true; // S'il n'a pas de talent, tous sont possibles
+                if (typeof carte.talent === 'string') return ab.fr !== carte.talent && ab.en !== carte.talent;
+                return ab.en !== carte.talent.en;
+            });
 
             if (talentsFiltres.length === 0) {
                 return alert(isEn ? "This Pokémon has no other possible abilities!" : "Ce Pokémon n'a pas d'autres talents possibles !");
             }
 
             // Confirmation si le Pokémon a déjà un talent
-            if (carte.talent && !confirm(isEn ? `This Pokémon already has the ability "${carte.talent.en}". Do you want to consume a Pomeg Berry to change it?` : `Ce Pokémon possède déjà le talent "${carte.talent.fr}". Voulez-vous vraiment consommer une Baie Pomeg pour le changer ?`)) {
+            if (carte.talent && !confirm(isEn ? `This Pokémon already has the ability "${carte.talent.en || carte.talent}". Do you want to consume a Pomeg Berry to change it?` : `Ce Pokémon possède déjà le talent "${carte.talent.fr || carte.talent}". Voulez-vous vraiment consommer une Baie Pomeg pour le changer ?`)) {
                 return;
             }
 
