@@ -145,7 +145,7 @@ export function sauvegarderCarte(pokemonData, numeroPokedex, isShiny, isMega, me
     
     // On cherche si la carte exacte existe déjà dans la collection
     const existingCard = state.currentUserData.collection.find(c => 
-        c.pokedexNumber === pokedexNumber && 
+        c.pokedexNumber === numeroPokedex && // Correction : "numeroPokedex" au lieu de "pokedexNumber"
         c.shiny === isShiny && 
         c.mega === isMega && 
         c.megaForm === megaForm
@@ -157,23 +157,25 @@ export function sauvegarderCarte(pokemonData, numeroPokedex, isShiny, isMega, me
     } else {
         // Sinon on la crée pour la première fois avec quantité = 1
         const nouvelleCarte = {
-            pokedexNumber: pokedexNumber,
+            data: pokemonData,
+            pokedexNumber: numeroPokedex, // Correction ici aussi
             shiny: isShiny,
             mega: isMega,
             megaForm: megaForm,
             date: Date.now(),
             level: 1,
             maxLevel: 20,
-            quantity: 1 // Nouvelle propriété !
+            quantity: 1
         };
         state.currentUserData.collection.push(nouvelleCarte);
     }
+
+    // Sauvegarde dans Firebase
     import('./firebase-config.js').then(({db}) => {
         if (!state.currentUser) return; 
-        state.currentUserData.collection.push({
-            data: pokemonData, pokedexNumber: numeroPokedex, shiny: isShiny, mega: isMega, megaForm: megaForm, date: new Date().getTime()
-        });
-        db.collection('users').doc(state.currentUser).update({ collection: state.currentUserData.collection }).catch(err => console.error(err));
+        db.collection('users').doc(state.currentUser).update({ 
+            collection: state.currentUserData.collection 
+        }).catch(err => console.error(err));
     });
 }
 
