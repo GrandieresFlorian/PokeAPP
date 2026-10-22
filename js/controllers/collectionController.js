@@ -450,12 +450,17 @@ function getBerryHint(baieId) {
 
 function afficherBaies(container, countDisplay, ownedOnlyVal) {
     const mesBaies = state.currentUserData.berries || [];
-    const baiesMap = {}; mesBaies.forEach(b => { baiesMap[b.id] = (baiesMap[b.id] || 0) + 1; });
+    const baiesMap = {}; 
+    mesBaies.forEach(b => { 
+        const q = Number(b.quantity || 1);
+        baiesMap[b.id] = (baiesMap[b.id] || 0) + q; 
+    });
 
     let maxAffiche = 0; let uniquesCount = 0; let htmlContent = "";
 
     TOUTES_LES_BAIES.forEach(baie => {
-        const quantite = baiesMap[baie.id] || 0; const possedeLaCarte = quantite > 0;
+        const quantite = baiesMap[baie.id] || 0; 
+        const possedeLaCarte = quantite > 0;
         if (ownedOnlyVal && !possedeLaCarte) return;
 
         maxAffiche++; if (possedeLaCarte) uniquesCount++;
@@ -465,8 +470,7 @@ function afficherBaies(container, countDisplay, ownedOnlyVal) {
         let hint = getBerryHint(baie.id);
 
         if (possedeLaCarte) {
-            let quantiteReelle = baie.quantity || baiesMap[baie.id] || 1;
-            let badgeQuantite = quantiteReelle > 1 ? `<div class="badge-quantite">X${quantiteReelle}</div>` : "";
+            let badgeQuantite = quantite > 1 ? `<div class="badge-quantite">X${quantite}</div>` : "";
             htmlContent += `
                 <div class="card flipped" style="cursor: help; position: relative;" title="${hint}">
                     <div class="card-inner">
