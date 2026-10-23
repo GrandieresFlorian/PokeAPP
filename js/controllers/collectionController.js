@@ -443,6 +443,10 @@ function getBerryHint(baieId) {
     if (baieId === 'alga') {
         return "Indice de mutation 🔬 : Entourez une case vide avec 2 Baies Framby, 2 Baies Remu, 2 Baies Nanab et 2 Baies Nanana (8 baies au total)";
     }
+
+    if (baieId === 'repoi') {
+        return "Indice : Cet baie rare peut être obtenu en battant le géant rochu dans une zone sombre...";
+    }
     // --- NOUVELLES BAIES AVANCÉES ---
     if (baieId === 'qualot') {
         return "Indice de mutation 🔬 : Entourez une case vide avec 2 Baies Ceriz, 2 Baies Maron, 2 Baies Pêcha et 2 Baies Fraive (8 baies au total)";
