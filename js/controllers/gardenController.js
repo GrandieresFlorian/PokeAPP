@@ -27,6 +27,10 @@ export function initGarden() {
             savePreset(presetId);
         } else if (action === 'load') {
             loadPreset(presetId);
+        } else if (action === 'export') { // <--- NOUVEAU
+            exportPreset(presetId);
+        } else if (action === 'import') { // <--- NOUVEAU
+            importPreset(presetId);
         }
     });
     document.addEventListener('input', (e) => {
@@ -263,11 +267,13 @@ function renderPresetsUI() {
             <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 8px; border: 1px solid #444; gap: 10px; flex-wrap: wrap;">
                 <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 200px;">
                     <input type="text" class="preset-name-input" data-preset-id="${preset.id}" value="${preset.name}" maxlength="20" style="background: #222; border: 1px solid #555; color: white; padding: 5px 10px; border-radius: 5px; font-weight: bold; width: 140px;">
-                    <span style="font-size: 0.85rem; color: #aaa;">(${countBerries} baies configurées)</span>
+                    <span style="font-size: 0.85rem; color: #aaa;">(${countBerries} baies)</span>
                 </div>
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;" data-preset-action="save" data-preset-id="${preset.id}">💾 Sauvegarder</button>
-                    <button class="btn" style="padding: 6px 12px; font-size: 0.85rem; background: #2ecc71;" data-preset-action="load" data-preset-id="${preset.id}">🌱 Charger & Planter</button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" style="padding: 6px 10px; font-size: 0.8rem;" data-preset-action="save" data-preset-id="${preset.id}">💾 Sauver</button>
+                    <button class="btn" style="padding: 6px 10px; font-size: 0.8rem; background: #2ecc71;" data-preset-action="load" data-preset-id="${preset.id}">🌱 Planter</button>
+                    <button class="btn btn-secondary" style="padding: 6px 10px; font-size: 0.8rem; background: #3498db;" data-preset-action="export" data-preset-id="${preset.id}">📤 Exporter</button>
+                    <button class="btn btn-secondary" style="padding: 6px 10px; font-size: 0.8rem; background: #9b59b6;" data-preset-action="import" data-preset-id="${preset.id}">📥 Importer</button>
                 </div>
             </div>
         `;
@@ -866,4 +872,77 @@ export function saveGardenData() {
             gardenPresets: state.currentUserData.gardenPresets || [] 
         }).catch(err => console.error(err));
     }, 1000); 
+}
+
+// --- EXPORTER UN PRESET EN FICHIER LOCAL ---
+function exportPreset(presetId) {
+    const presets = state.currentUserData.gardenPresets || [];
+    const preset = presets.find(p => p.id === presetId);
+    
+    if (!preset || Object.keys(preset.layout || {}).length === 0) {
+        return alert("Ce preset est vide ! Sauvegardez un aménagement avant de l'exporter.");
+    }
+
+    // On transforme l'objet en texte JSON
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(preset));
+    
+    // On simule un clic sur un lien de téléchargement
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", `preset_jardin_${preset.name.replace(/\s+/g, '_')}.json`);
+    document.body.appendChild(downloadAnchorNode); // Requis pour Firefox
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
+
+// --- IMPORTER UN PRESET DEPUIS UN FICHIER LOCAL ---
+function importPreset(presetId) {
+    // On crée un input file caché
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.json';
+    
+    fileInput.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.readAsText(file, 'UTF-8');
+        reader.onload = readerEvent => {
+            try {
+                const content = readerEvent.target.result;
+                const importedPreset = JSON.parse(content);
+
+                // Vérification basique pour s'assurer que c'est bien un preset
+                if (!importedPreset.layout) {
+                    return alert("Fichier invalide : Impossible de trouver la configuration du jardin.");
+                }
+
+                if (!state.currentUserData.gardenPresets) {
+                    state.currentUserData.gardenPresets = Array.from({length: 5}, (_, i) => ({
+                        id: i + 1, name: `Preset ${i + 1}`, layout: {}
+                    }));
+                }
+
+                const presetIndex = state.currentUserData.gardenPresets.findIndex(p => p.id === presetId);
+                if (presetIndex > -1) {
+                    // On remplace le layout et le nom, mais on GARDE l'ID de l'emplacement actuel (1 à 5)
+                    state.currentUserData.gardenPresets[presetIndex].layout = importedPreset.layout;
+                    if (importedPreset.name) {
+                        state.currentUserData.gardenPresets[presetIndex].name = importedPreset.name;
+                    }
+                    
+                    saveGardenData();
+                    renderPresetsUI();
+                    alert(`Le preset "${importedPreset.name || 'Importé'}" a été chargé avec succès dans l'emplacement ${presetId} !`);
+                }
+            } catch (error) {
+                alert("Erreur lors de la lecture du fichier. Assurez-vous qu'il s'agit d'un fichier .json valide.");
+                console.error(error);
+            }
+        }
+    }
+    
+    // Ouvre la boîte de dialogue de sélection de fichier
+    fileInput.click();
 }
