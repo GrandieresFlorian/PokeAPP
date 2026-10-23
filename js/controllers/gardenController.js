@@ -568,12 +568,6 @@ function checkMutations() {
                         plot.plantedAt = Date.now();
                         plot.lastWatered = Date.now();
                         mutated = true;
-                        
-                        document.getElementById('garden-action-title').textContent = "Mutation ! ✨";
-                        const baieDef = TOUTES_LES_BAIES.find(b => b.id === recipe.result);
-                        let nameEn = baieDef.en;
-                        let nameFr = baieDef.fr;
-                        let currentName = state.currentLang === 'en' ? nameEn : nameFr;
 
                         activeTool = null;
                         break; 
