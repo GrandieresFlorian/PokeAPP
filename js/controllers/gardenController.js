@@ -158,7 +158,7 @@ function savePreset(presetId) {
     if (!preset) return;
 
     // Liste des ID de baies avancées qu'on ne peut pas planter
-    const advancedBerries = ['grena', 'alga']; // Ajoute d'autres ID si tu en as d'autres plus tard
+    const advancedBerries = ['grena', 'alga', 'qualot', 'lonme', 'resin'];
 
     const layout = {};
     garden.forEach((plot, index) => {
@@ -545,6 +545,42 @@ function checkMutations() {
                 mutated = true;
                 
                 activeTool = null;
+                return;
+            }
+            return; 
+        }
+
+        // BAIE QUALOT
+        const qualotReqs = ['ceriz', 'maron', 'pecha', 'fraive'];
+        let isQualotMutation = qualotReqs.every(bId => adjacentPlots.includes(bId));
+        if (isQualotMutation && adjacentPlots.length >= 8) {
+            if (Math.random() <= 0.2) {
+                plot.berryId = 'qualot'; plot.plantedAt = Date.now(); plot.lastWatered = Date.now();
+                mutated = true; activeTool = null;
+                return;
+            }
+            return; 
+        }
+
+        // BAIE LONME
+        const lonmeReqs = ['willia', 'mepo', 'oran', 'kika'];
+        let isLonmeMutation = lonmeReqs.every(bId => adjacentPlots.includes(bId));
+        if (isLonmeMutation && adjacentPlots.length >= 8) {
+            if (Math.random() <= 0.2) {
+                plot.berryId = 'lonme'; plot.plantedAt = Date.now(); plot.lastWatered = Date.now();
+                mutated = true; activeTool = null;
+                return;
+            }
+            return; 
+        }
+
+        // BAIE RESIN
+        const resinReqs = ['prine', 'sitrus', 'framby', 'nanana'];
+        let isResinMutation = resinReqs.every(bId => adjacentPlots.includes(bId));
+        if (isResinMutation && adjacentPlots.length >= 8) {
+            if (Math.random() <= 0.2) {
+                plot.berryId = 'resin'; plot.plantedAt = Date.now(); plot.lastWatered = Date.now();
+                mutated = true; activeTool = null;
                 return;
             }
             return; 

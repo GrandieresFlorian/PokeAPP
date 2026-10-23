@@ -443,6 +443,17 @@ function getBerryHint(baieId) {
     if (baieId === 'alga') {
         return "Indice de mutation 🔬 : Entourez une case vide avec 2 Baies Framby, 2 Baies Remu, 2 Baies Nanab et 2 Baies Nanana (8 baies au total)";
     }
+    // --- NOUVELLES BAIES AVANCÉES ---
+    if (baieId === 'qualot') {
+        return "Indice de mutation 🔬 : Entourez une case vide avec 2 Baies Ceriz, 2 Baies Maron, 2 Baies Pêcha et 2 Baies Fraive (8 baies au total)";
+    }
+    if (baieId === 'lonme') {
+        return "Indice de mutation 🔬 : Entourez une case vide avec 2 Baies Willia, 2 Baies Mepo, 2 Baies Oran et 2 Baies Kika (8 baies au total)";
+    }
+    if (baieId === 'resin') {
+        return "Indice de mutation 🔬 : Entourez une case vide avec 2 Baies Prine, 2 Baies Sitrus, 2 Baies Framby et 2 Baies Nanana (8 baies au total)";
+    }
+
     const recipe = MUTATION_RECIPES.find(r => r.result === baieId);
     if (recipe) {
         const p1Def = TOUTES_LES_BAIES.find(b => b.id === recipe.p1); const p2Def = TOUTES_LES_BAIES.find(b => b.id === recipe.p2);
@@ -451,7 +462,6 @@ function getBerryHint(baieId) {
     }
     return "Indice : Mutation secrète non découverte...";
 }
-
 function afficherBaies(container, countDisplay, ownedOnlyVal) {
     const mesBaies = state.currentUserData.berries || [];
     const baiesMap = {}; 

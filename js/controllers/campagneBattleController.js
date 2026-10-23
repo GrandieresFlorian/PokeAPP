@@ -1,6 +1,6 @@
 import { db } from '../firebase-config.js';
 import { state } from '../state.js';
-import { getCardImageUrl, getPokemonDetails, formatMegaName, getMovesForLevel, getMoveDetails } from '../utils.js';
+import { getCardImageUrl, getPokemonDetails, formatMegaName, getMovesForLevel, getMoveDetails, TOUTES_LES_BAIES } from '../utils.js';
 import { applyTranslation } from './navController.js';
 import { 
     USELESS_MOVES, PRIORITY_MOVES, HEAL_MOVES, DRAIN_MOVES, RECOIL_MOVES, MULTI_HIT_2_5, MULTI_HIT_2, 
@@ -41,6 +41,7 @@ const WEATHER_MOVES_DICT = {
 const EXTENDED_STAT_NAMES = { ...STAT_NAMES.fr, accuracy: "Précision", evasion: "Esquive" };
 let activeFighter = null;
 let currentEnemy = null;
+let currentZone = null;
 let isAnimating = false;
 let onBattleEndCallback = null;
 
@@ -53,6 +54,7 @@ const STATUS_COLORS = { "BRN": "#e67e22", "PSN": "#9b59b6", "TOX": "#8e44ad", "P
 
 export async function startBattle(zone, fighter, onEnd) {
     activeFighter = fighter;
+    currentZone = zone;
     onBattleEndCallback = onEnd;
     isAnimating = false;
     
@@ -1204,6 +1206,23 @@ async function handleLevelUpMoves(oldLvl, newLvl) {
 
 async function winBattle() {
     logMessage(`<b style="color:#2ecc71;">Le Pokémon sauvage est vaincu !</b>`);
+
+    if (currentZone && currentZone.name === "Grotte Sombre" && (currentEnemy.data.id === 95 || currentEnemy.nameEn.toLowerCase() === "onix")) {
+        if (!state.currentUserData.berries) state.currentUserData.berries = [];
+        let repoiEntry = state.currentUserData.berries.find(b => b.id === 'repoi');
+        
+        if (repoiEntry) {
+            repoiEntry.quantity = (repoiEntry.quantity || 1) + 1;
+        } else {
+            const baieDef = TOUTES_LES_BAIES.find(b => b.id === 'repoi');
+            if (baieDef) {
+                state.currentUserData.berries.push({
+                    data: baieDef, id: 'repoi', date: Date.now(), quantity: 1
+                });
+            }
+        }
+        logMessage(`<span style="color:#f1c40f;">✨ Incroyable ! Le Onix sauvage a laissé tomber une <b>Baie Repoi</b> !</span>`);
+    }
     
     let highestStat = 'hp';
     let highestValue = 0;
@@ -1255,6 +1274,11 @@ async function winBattle() {
     updateBattleUI();
     renderMovesUI(); 
     
-    try { await db.collection('users').doc(state.currentUser).update({ collection: state.currentUserData.collection }); } catch(e) {}
+    try { 
+        await db.collection('users').doc(state.currentUser).update({ 
+            collection: state.currentUserData.collection,
+            berries: state.currentUserData.berries || [] // <--- Sauvegarde des baies ajoutée
+        }); 
+    } catch(e) {}
     setTimeout(() => { if(onBattleEndCallback) onBattleEndCallback(); }, 4000);
 }
