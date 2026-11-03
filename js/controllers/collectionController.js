@@ -317,6 +317,7 @@ export function afficherCollection() {
     const collectionCount = document.getElementById('collection-count');
     const filterRarity = document.getElementById('filter-rarity');
     const filterOwned = document.getElementById('filter-owned');
+    const filterOwnedVal = filterOwned ? filterOwned.checked : false;
 
     if (!collectionContainer || !collectionCount) return;
 
