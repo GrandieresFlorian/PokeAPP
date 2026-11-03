@@ -531,9 +531,12 @@ function afficherDresseurs(container, countDisplay, ownedOnlyVal) {
         dresseursMap[d.variantId] = (dresseursMap[d.variantId] || 0) + q; 
     });
 
+    // 1. On récupère la valeur actuelle du filtre de rareté
+    const filterRarity = document.getElementById('filter-rarity');
+    const raritySelected = filterRarity ? filterRarity.value : 'all';
+
     let maxAffiche = 0; let uniquesCount = 0; let htmlContent = "";
 
-    // On utilise state.dresseursData directement
     const TOUS_LES_DRESSEURS = state.dresseursData || [];
     
     TOUS_LES_DRESSEURS.forEach(trainerClass => {
@@ -541,7 +544,11 @@ function afficherDresseurs(container, countDisplay, ownedOnlyVal) {
             const quantite = dresseursMap[variant.id] || 0; 
             const possede = quantite > 0;
             
+            // 2. On applique le filtre "Uniquement possédées"
             if (ownedOnlyVal && !possede) return;
+
+            // 3. NOUVEAU : On applique le filtre de Rareté
+            if (raritySelected !== 'all' && variant.rarity !== raritySelected) return;
 
             maxAffiche++; if (possede) uniquesCount++;
             let nomAffiche = state.currentLang === 'en' ? trainerClass.en : trainerClass.fr;
