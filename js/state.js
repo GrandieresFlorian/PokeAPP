@@ -15,6 +15,11 @@ export const state = {
     cartesRetournees: 0,
     currentPulls: [],
     currentPullIndex: 0,
+    trainerConfig: {
+        maxBoosters: 1,
+        regenTimeMs: 4 * 60 * 60 * 1000 // 4 heures par défaut
+    },
+    currentBoosterIndex: 0,
     isOpening: false,
     currentPullIsSpecial: false,
     boosterTimerInterval: null,

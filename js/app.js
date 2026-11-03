@@ -27,6 +27,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (doc.exists) state.probabilities = { ...state.probabilities, ...doc.data() };
     }).catch(e => console.error(e));
 
+    db.collection('settings').doc('trainerConfig').get().then(doc => {
+        if (doc.exists) state.trainerConfig = { ...state.trainerConfig, ...doc.data() };
+    }).catch(e => console.error(e));
+
     db.collection('settings').doc('berries').get().then(doc => {
         if (doc.exists) state.berryConfig = { ...state.berryConfig, ...doc.data() };
     }).catch(e => console.error(e));
@@ -124,6 +128,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 if (state.currentUserData.pokeBerrys === undefined) {
                     state.currentUserData.pokeBerrys = 0;
+                }
+                if (state.currentUserData.trainerBoostersLeft === undefined) {
+                    state.currentUserData.trainerBoostersLeft = state.trainerConfig.maxBoosters;
+                    state.currentUserData.lastTrainerBoosterTime = Date.now();
                 }
                 
                 updateAuthUI(); 

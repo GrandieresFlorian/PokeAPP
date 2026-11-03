@@ -4,93 +4,77 @@ import { allerASection } from './navController.js';
 import { tirerRarete, formatMegaName, sauvegarderCarte, getCardImageUrl, getPokemonDetails, generateTypeBadgesHTML, BAIES_BOOSTERS, sauvegarderBaie, getRandomTrainer } from '../utils.js';
 
 export function updateBoosterLogic() {
-    const boosterStatus = document.getElementById('booster-status');
-    const boosterCountDisplay = document.getElementById('booster-count-display');
-    const boosterTimerText = document.getElementById('booster-timer-text');
-    const boosterTimerDisplay = document.getElementById('booster-timer-display');
-
     if (!state.currentUser) {
-        boosterStatus.classList.add('hidden');
         clearInterval(state.boosterTimerInterval);
         return;
     }
-    
-    boosterStatus.classList.remove('hidden');
-    const now = Date.now();
 
-    if (state.currentUserData.boostersLeft < CONSTS.MAX_BOOSTERS) {
-        const timePassed = now - state.currentUserData.lastBoosterTime;
-        const boostersGained = Math.floor(timePassed / CONSTS.REGEN_TIME_MS);
+    document.getElementById('trainer-max-display').textContent = `/ ${state.trainerConfig.maxBoosters}`;
 
-        if (boostersGained > 0) {
-            state.currentUserData.boostersLeft = Math.min(CONSTS.MAX_BOOSTERS, state.currentUserData.boostersLeft + boostersGained);
-            if (state.currentUserData.boostersLeft === CONSTS.MAX_BOOSTERS) {
-                state.currentUserData.lastBoosterTime = now;
-            } else {
+    clearInterval(state.boosterTimerInterval);
+    state.boosterTimerInterval = setInterval(() => {
+        const now = Date.now();
+        let needsUpdate = false;
+
+        // 1. CALCUL POKÉMON
+        if (state.currentUserData.boostersLeft < CONSTS.MAX_BOOSTERS) {
+            const timePassed = now - state.currentUserData.lastBoosterTime;
+            if (timePassed >= CONSTS.REGEN_TIME_MS) {
+                const boostersGained = Math.floor(timePassed / CONSTS.REGEN_TIME_MS);
+                state.currentUserData.boostersLeft = Math.min(CONSTS.MAX_BOOSTERS, state.currentUserData.boostersLeft + boostersGained);
                 state.currentUserData.lastBoosterTime += boostersGained * CONSTS.REGEN_TIME_MS;
+                needsUpdate = true;
             }
+        }
+
+        // 2. CALCUL DRESSEUR
+        if (state.currentUserData.trainerBoostersLeft < state.trainerConfig.maxBoosters) {
+            const trainerTimePassed = now - state.currentUserData.lastTrainerBoosterTime;
+            if (trainerTimePassed >= state.trainerConfig.regenTimeMs) {
+                const trainerBoostersGained = Math.floor(trainerTimePassed / state.trainerConfig.regenTimeMs);
+                state.currentUserData.trainerBoostersLeft = Math.min(state.trainerConfig.maxBoosters, state.currentUserData.trainerBoostersLeft + trainerBoostersGained);
+                state.currentUserData.lastTrainerBoosterTime += trainerBoostersGained * state.trainerConfig.regenTimeMs;
+                needsUpdate = true;
+            }
+        }
+
+        // Sauvegarde silencieuse si un booster a été gagné
+        if (needsUpdate) {
             db.collection('users').doc(state.currentUser).update({
                 boostersLeft: state.currentUserData.boostersLeft,
-                lastBoosterTime: state.currentUserData.lastBoosterTime
+                lastBoosterTime: state.currentUserData.lastBoosterTime,
+                trainerBoostersLeft: state.currentUserData.trainerBoostersLeft,
+                lastTrainerBoosterTime: state.currentUserData.lastTrainerBoosterTime
             });
         }
-    } else {
-        state.currentUserData.lastBoosterTime = now;
-    }
 
-    renderBoosterStatus(boosterCountDisplay, boosterTimerText, boosterTimerDisplay);
-    updateSpecialBoosterUI();
-    
-    // --- TIMER DRESSEUR ---
-    const TRAINER_COOLDOWN = 4 * 60 * 60 * 1000;
-    const trainerStatus = document.getElementById('trainer-booster-status');
-    const trainerTimerContainer = document.getElementById('trainer-timer-container');
-    const trainerReadyText = document.getElementById('trainer-ready-text');
-    const trainerTimerDisplay = document.getElementById('trainer-booster-timer-display');
-    const lastTrainerBooster = state.currentUserData.lastTrainerBooster || 0;
-    
-    if (trainerStatus) {
-        trainerStatus.classList.remove('hidden');
-        trainerStatus.style.display = 'block'; // On force la boîte à rester visible
-
-        if (now - lastTrainerBooster >= TRAINER_COOLDOWN) {
-            // Le booster est PRÊT
-            if (trainerTimerContainer) trainerTimerContainer.style.display = 'none';
-            if (trainerReadyText) trainerReadyText.style.display = 'inline';
+        // 3. AFFICHAGE POKÉMON EN TEMPS RÉEL
+        document.getElementById('booster-count-display').textContent = state.currentUserData.boostersLeft;
+        const pkmTimerText = document.getElementById('booster-timer-text');
+        if (state.currentUserData.boostersLeft >= CONSTS.MAX_BOOSTERS) {
+            pkmTimerText.style.display = 'none';
         } else {
-            // Le booster est EN ATTENTE
-            if (trainerTimerContainer) trainerTimerContainer.style.display = 'inline';
-            if (trainerReadyText) trainerReadyText.style.display = 'none';
-            
-            const tLeft = TRAINER_COOLDOWN - (now - lastTrainerBooster);
+            pkmTimerText.style.display = 'block';
+            const timeLeft = CONSTS.REGEN_TIME_MS - (now - state.currentUserData.lastBoosterTime);
+            const minutes = Math.floor(timeLeft / 60000);
+            const seconds = Math.floor((timeLeft % 60000) / 1000);
+            document.getElementById('booster-timer-display').textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        // 4. AFFICHAGE DRESSEUR EN TEMPS RÉEL
+        document.getElementById('trainer-count-display').textContent = state.currentUserData.trainerBoostersLeft;
+        const trainerTimerText = document.getElementById('trainer-timer-text');
+        if (state.currentUserData.trainerBoostersLeft >= state.trainerConfig.maxBoosters) {
+            trainerTimerText.style.display = 'none';
+        } else {
+            trainerTimerText.style.display = 'block';
+            const tLeft = state.trainerConfig.regenTimeMs - (now - state.currentUserData.lastTrainerBoosterTime);
             const tHours = Math.floor(tLeft / 3600000);
             const tMins = Math.floor((tLeft % 3600000) / 60000);
             const tSecs = Math.floor((tLeft % 60000) / 1000);
-            if (trainerTimerDisplay) trainerTimerDisplay.textContent = `${String(tHours).padStart(2, '0')}:${String(tMins).padStart(2, '0')}:${String(tSecs).padStart(2, '0')}`;
+            document.getElementById('trainer-booster-timer-display').textContent = `${String(tHours).padStart(2, '0')}:${String(tMins).padStart(2, '0')}:${String(tSecs).padStart(2, '0')}`;
         }
-    }
-    clearInterval(state.boosterTimerInterval);
-    state.boosterTimerInterval = setInterval(() => {
-        if (state.currentUserData.boostersLeft < CONSTS.MAX_BOOSTERS) {
-            const currentNow = Date.now();
-            const timePassed = currentNow - state.currentUserData.lastBoosterTime;
-            
-            if (timePassed >= CONSTS.REGEN_TIME_MS) {
-                state.currentUserData.boostersLeft++;
-                if (state.currentUserData.boostersLeft === CONSTS.MAX_BOOSTERS) {
-                    state.currentUserData.lastBoosterTime = currentNow;
-                } else {
-                    state.currentUserData.lastBoosterTime += CONSTS.REGEN_TIME_MS;
-                }
-                db.collection('users').doc(state.currentUser).update({
-                    boostersLeft: state.currentUserData.boostersLeft,
-                    lastBoosterTime: state.currentUserData.lastBoosterTime
-                });
-            }
-            renderBoosterStatus(boosterCountDisplay, boosterTimerText, boosterTimerDisplay);
-        } else {
-            renderBoosterStatus(boosterCountDisplay, boosterTimerText, boosterTimerDisplay);
-        }
+
     }, 1000);
 }
 
@@ -173,6 +157,23 @@ export function initBooster() {
             if (unflippedCard) unflippedCard.click();
         }
     });
+
+    const btnPrev = document.getElementById('btn-prev-booster');
+    const btnNext = document.getElementById('btn-next-booster');
+    
+    function switchBoosterSlide() {
+        state.currentBoosterIndex = state.currentBoosterIndex === 0 ? 1 : 0;
+        if (state.currentBoosterIndex === 0) {
+            document.getElementById('slide-pokemon').style.display = 'flex';
+            document.getElementById('slide-trainer').style.display = 'none';
+        } else {
+            document.getElementById('slide-pokemon').style.display = 'none';
+            document.getElementById('slide-trainer').style.display = 'flex';
+        }
+    }
+
+    btnPrev.addEventListener('click', switchBoosterSlide);
+    btnNext.addEventListener('click', switchBoosterSlide);
 }
 
 function creerCarte(pokemonData, numeroPokedex, index) {
@@ -386,21 +387,33 @@ export function ouvrirBoosterDresseur() {
         return allerASection('section-auth'); 
     }
 
-    const TRAINER_COOLDOWN = 4 * 60 * 60 * 1000; // 4 heures
-    const now = Date.now();
-    const lastOpened = state.currentUserData.lastTrainerBooster || 0;
-
-    if (now - lastOpened < TRAINER_COOLDOWN) {
-        alert("Le Booster Dresseur n'est pas encore prêt !");
+    // 1. On vérifie le STOCK (au lieu du cooldown manuel)
+    if (state.currentUserData.trainerBoostersLeft <= 0) {
+        alert(state.currentLang==='en'?"You have no Trainer packs left!":"Vous n'avez plus de boosters Dresseur ! Revenez plus tard.");
         return;
     }
 
     if (state.isOpening) return; 
     state.isOpening = true;
     
-    // On masque les autres boosters
-    document.getElementById('booster-pack').classList.add('hidden');
-    document.getElementById('special-booster-pack').classList.add('hidden');
+    // 2. Décrémenter le stock
+    state.currentUserData.trainerBoostersLeft--;
+    
+    // Si on était au max (ex: 1/1), le fait d'ouvrir lance le chrono de régénération
+    if (state.currentUserData.trainerBoostersLeft === state.trainerConfig.maxBoosters - 1) {
+        state.currentUserData.lastTrainerBoosterTime = Date.now();
+    }
+
+    // Mise à jour de Firebase
+    db.collection('users').doc(state.currentUser).update({
+        trainerBoostersLeft: state.currentUserData.trainerBoostersLeft,
+        lastTrainerBoosterTime: state.currentUserData.lastTrainerBoosterTime
+    });
+
+    updateBoosterLogic();
+    
+    // On masque le carrousel complet pendant l'animation
+    document.getElementById('booster-carousel').classList.add('hidden');
     
     const trainerBoosterElement = document.getElementById('trainer-booster-pack');
     const cardsContainer = document.getElementById('cards-container');
@@ -411,7 +424,6 @@ export function ouvrirBoosterDresseur() {
 
     setTimeout(() => {
         trainerBoosterElement.classList.remove('booster-animating');
-        trainerBoosterElement.classList.add('hidden');
         
         cardsContainer.innerHTML = ''; 
         cardsContainer.classList.remove('hidden'); 
@@ -421,13 +433,6 @@ export function ouvrirBoosterDresseur() {
         state.currentPulls = [getRandomTrainer(), getRandomTrainer(), getRandomTrainer()];
         state.currentPullIndex = 0;
         
-        // Mise à jour du timer Firebase
-        state.currentUserData.lastTrainerBooster = now;
-        db.collection('users').doc(state.currentUser).update({
-            lastTrainerBooster: now
-        });
-        updateBoosterLogic();
-
         autoOpenBtn.classList.remove('hidden');
         autoOpenBtn.disabled = false;
         resetButton.classList.add('hidden');
