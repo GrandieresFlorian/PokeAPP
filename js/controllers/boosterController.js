@@ -41,20 +41,33 @@ export function updateBoosterLogic() {
     renderBoosterStatus(boosterCountDisplay, boosterTimerText, boosterTimerDisplay);
     updateSpecialBoosterUI();
     
+    // --- TIMER DRESSEUR ---
     const TRAINER_COOLDOWN = 4 * 60 * 60 * 1000;
     const trainerStatus = document.getElementById('trainer-booster-status');
+    const trainerTimerContainer = document.getElementById('trainer-timer-container');
+    const trainerReadyText = document.getElementById('trainer-ready-text');
     const trainerTimerDisplay = document.getElementById('trainer-booster-timer-display');
     const lastTrainerBooster = state.currentUserData.lastTrainerBooster || 0;
     
-    if (now - lastTrainerBooster >= TRAINER_COOLDOWN) {
-        trainerStatus.style.display = 'none'; // Prêt à ouvrir !
-    } else {
-        trainerStatus.style.display = 'block';
-        const tLeft = TRAINER_COOLDOWN - (now - lastTrainerBooster);
-        const tHours = Math.floor(tLeft / 3600000);
-        const tMins = Math.floor((tLeft % 3600000) / 60000);
-        const tSecs = Math.floor((tLeft % 60000) / 1000);
-        trainerTimerDisplay.textContent = `${String(tHours).padStart(2, '0')}:${String(tMins).padStart(2, '0')}:${String(tSecs).padStart(2, '0')}`;
+    if (trainerStatus) {
+        trainerStatus.classList.remove('hidden');
+        trainerStatus.style.display = 'block'; // On force la boîte à rester visible
+
+        if (now - lastTrainerBooster >= TRAINER_COOLDOWN) {
+            // Le booster est PRÊT
+            if (trainerTimerContainer) trainerTimerContainer.style.display = 'none';
+            if (trainerReadyText) trainerReadyText.style.display = 'inline';
+        } else {
+            // Le booster est EN ATTENTE
+            if (trainerTimerContainer) trainerTimerContainer.style.display = 'inline';
+            if (trainerReadyText) trainerReadyText.style.display = 'none';
+            
+            const tLeft = TRAINER_COOLDOWN - (now - lastTrainerBooster);
+            const tHours = Math.floor(tLeft / 3600000);
+            const tMins = Math.floor((tLeft % 3600000) / 60000);
+            const tSecs = Math.floor((tLeft % 60000) / 1000);
+            if (trainerTimerDisplay) trainerTimerDisplay.textContent = `${String(tHours).padStart(2, '0')}:${String(tMins).padStart(2, '0')}:${String(tSecs).padStart(2, '0')}`;
+        }
     }
     clearInterval(state.boosterTimerInterval);
     state.boosterTimerInterval = setInterval(() => {

@@ -69,8 +69,18 @@
                 <div id="cards-container" class="cards-container hidden"></div>
                 <button id="auto-open-btn" class="btn hidden translatable" data-fr="Tout révéler ✨" data-en="Reveal All ✨" style="background: linear-gradient(135deg, #a29bfe, #6c5ce7); margin-bottom: 10px;">Tout révéler ✨</button>
                 <button id="reset-button" class="btn btn-danger hidden translatable" data-fr="Fermer et retourner aux boosters" data-en="Close and return to packs">Fermer et retourner aux boosters</button>
-                <div id="trainer-booster-status" class="booster-status glass-panel hidden" style="margin-top: 10px;">
-                    <p><span class="translatable" data-fr="Booster Dresseur dans :" data-en="Trainer Pack in :">Booster Dresseur dans :</span> <span id="trainer-booster-timer-display" class="highlight">00:00</span></p>
+                <div id="trainer-booster-status" class="booster-status glass-panel" style="margin-top: 20px; margin-bottom: 10px;">
+                    <!-- Texte quand le booster est en cooldown -->
+                    <span id="trainer-timer-container" style="display:none;">
+                        <span class="translatable" data-fr="Booster Dresseur dans :" data-en="Trainer Pack in :">Booster Dresseur dans :</span> 
+                        <span id="trainer-booster-timer-display" class="highlight">00:00:00</span>
+                    </span>
+                    
+                    <!-- Texte quand le booster est prêt -->
+                    <span id="trainer-ready-text" style="display:none;">
+                        <span class="translatable" data-fr="Booster Dresseur :" data-en="Trainer Pack :">Booster Dresseur :</span> 
+                        <span class="highlight">1 / 1</span>
+                    </span>
                 </div>
 
                 <!-- Dans la div qui contient les boosters (flex-wrap) -->
