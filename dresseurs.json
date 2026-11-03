@@ -2,7 +2,7 @@
     {
         "id": "canon",
         "fr": "Canon",
-        "en": "Canon",
+        "en": "Beauty",
         "variants": [
             {
                 "id": "canon_g1",
@@ -29,6 +29,12 @@
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/beauty-gen6.png"
             },
             {
+                "id": "canon_masters",
+                "gen": "Masters",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/beauty-masters.png"
+            },
+            {
                 "id": "canon_moderne",
                 "gen": "Moderne",
                 "rarity": "E",
@@ -39,7 +45,7 @@
     {
         "id": "gamin",
         "fr": "Gamin",
-        "en": "Gamin",
+        "en": "Youngster",
         "variants": [
             {
                 "id": "gamin_g1",
@@ -72,6 +78,12 @@
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/youngster-gen6.png"
             },
             {
+                "id": "gamin_masters",
+                "gen": "Masters",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/youngster-masters.png"
+            },
+            {
                 "id": "gamin_moderne",
                 "gen": "Moderne",
                 "rarity": "E",
@@ -82,7 +94,7 @@
     {
         "id": "fillette",
         "fr": "Fillette",
-        "en": "Fillette",
+        "en": "Lass",
         "variants": [
             {
                 "id": "fillette_g1",
@@ -125,7 +137,7 @@
     {
         "id": "scout",
         "fr": "Scout",
-        "en": "Scout",
+        "en": "Bug Catcher",
         "variants": [
             {
                 "id": "scout_g1",
@@ -162,7 +174,7 @@
     {
         "id": "montagnard",
         "fr": "Montagnard",
-        "en": "Montagnard",
+        "en": "Hiker",
         "variants": [
             {
                 "id": "montagnard_g1",
@@ -205,7 +217,7 @@
     {
         "id": "campeur",
         "fr": "Campeur",
-        "en": "Campeur",
+        "en": "Camper",
         "variants": [
             {
                 "id": "campeur_g2",
@@ -236,7 +248,7 @@
     {
         "id": "piquenique",
         "fr": "Pique-Nique",
-        "en": "Pique-Nique",
+        "en": "Picnicker",
         "variants": [
             {
                 "id": "piquenique_g2",
@@ -267,7 +279,7 @@
     {
         "id": "nageur",
         "fr": "Nageur",
-        "en": "Nageur",
+        "en": "Swimmer M",
         "variants": [
             {
                 "id": "nageur_g1",
@@ -288,6 +300,12 @@
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/swimmer-gen6.png"
             },
             {
+                "id": "nageur_masters",
+                "gen": "Masters",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/swimmer-masters.png"
+            },
+            {
                 "id": "nageur_moderne",
                 "gen": "Moderne",
                 "rarity": "E",
@@ -298,7 +316,7 @@
     {
         "id": "nageuse",
         "fr": "Nageuse",
-        "en": "Nageuse",
+        "en": "Swimmer F",
         "variants": [
             {
                 "id": "nageuse_g2",
@@ -335,7 +353,7 @@
     {
         "id": "marin",
         "fr": "Marin",
-        "en": "Marin",
+        "en": "Sailor",
         "variants": [
             {
                 "id": "marin_g1",
@@ -372,7 +390,7 @@
     {
         "id": "pecheur",
         "fr": "Pêcheur",
-        "en": "Pêcheur",
+        "en": "Fisherman",
         "variants": [
             {
                 "id": "pecheur_g1",
@@ -409,7 +427,7 @@
     {
         "id": "topdresseurm",
         "fr": "Topdresseur ♂",
-        "en": "Topdresseur ♂",
+        "en": "Ace Trainer M",
         "variants": [
             {
                 "id": "topdresseurm_g1",
@@ -452,7 +470,7 @@
     {
         "id": "topdresseurf",
         "fr": "Topdresseur ♀",
-        "en": "Topdresseur ♀",
+        "en": "Ace Trainer F",
         "variants": [
             {
                 "id": "topdresseurf_g1",
@@ -495,7 +513,7 @@
     {
         "id": "richard",
         "fr": "Richard",
-        "en": "Richard",
+        "en": "Rich Boy",
         "variants": [
             {
                 "id": "richard_g3",
@@ -526,7 +544,7 @@
     {
         "id": "mademoiselle",
         "fr": "Mademoiselle",
-        "en": "Mademoiselle",
+        "en": "Lady",
         "variants": [
             {
                 "id": "mademoiselle_g3",
@@ -600,7 +618,7 @@
     {
         "id": "mystimaniac",
         "fr": "Mystimaniac",
-        "en": "Mystimaniac",
+        "en": "Hex Maniac",
         "variants": [
             {
                 "id": "mystimaniac_g3",
@@ -619,7 +637,7 @@
     {
         "id": "kinesiste",
         "fr": "Kinésiste",
-        "en": "Kinésiste",
+        "en": "Psychic",
         "variants": [
             {
                 "id": "kinesiste_g1",
@@ -662,7 +680,7 @@
     {
         "id": "karateka",
         "fr": "Karatéka",
-        "en": "Karatéka",
+        "en": "Black Belt",
         "variants": [
             {
                 "id": "karateka_g1",
@@ -705,7 +723,7 @@
     {
         "id": "ornithologue",
         "fr": "Ornithologue",
-        "en": "Ornithologue",
+        "en": "Bird Keeper",
         "variants": [
             {
                 "id": "ornithologue_g1",
@@ -742,7 +760,7 @@
     {
         "id": "motard",
         "fr": "Motard",
-        "en": "Motard",
+        "en": "Biker",
         "variants": [
             {
                 "id": "motard_g1",
@@ -779,7 +797,7 @@
     {
         "id": "loubard",
         "fr": "Loubard",
-        "en": "Loubard",
+        "en": "Cue Ball",
         "variants": [
             {
                 "id": "loubard_g1",
@@ -798,7 +816,7 @@
     {
         "id": "scientifique",
         "fr": "Scientifique",
-        "en": "Scientifique",
+        "en": "Scientist",
         "variants": [
             {
                 "id": "scientifique_g1",
@@ -841,7 +859,7 @@
     {
         "id": "sbirerocket",
         "fr": "Sbire Rocket",
-        "en": "Sbire Rocket",
+        "en": "Team Rocket Grunt",
         "variants": [
             {
                 "id": "sbirerocket_g2",
@@ -860,7 +878,7 @@
     {
         "id": "sbireaqua",
         "fr": "Sbire Aqua",
-        "en": "Sbire Aqua",
+        "en": "Team Aqua Grunt",
         "variants": [
             {
                 "id": "sbireaqua_moderne",
@@ -873,7 +891,7 @@
     {
         "id": "sbiremagma",
         "fr": "Sbire Magma",
-        "en": "Sbire Magma",
+        "en": "Team Magma Grunt",
         "variants": [
             {
                 "id": "sbiremagma_moderne",
@@ -886,7 +904,7 @@
     {
         "id": "sbiregalactique",
         "fr": "Sbire Galactique",
-        "en": "Sbire Galactique",
+        "en": "Team Galactic Grunt",
         "variants": [
             {
                 "id": "sbiregalactique_moderne",
@@ -899,7 +917,7 @@
     {
         "id": "sbireplasma",
         "fr": "Sbire Plasma",
-        "en": "Sbire Plasma",
+        "en": "Team Plasma Grunt",
         "variants": [
             {
                 "id": "sbireplasma_moderne",
@@ -912,7 +930,7 @@
     {
         "id": "sbireflare",
         "fr": "Sbire Flare",
-        "en": "Sbire Flare",
+        "en": "Team Flare Grunt",
         "variants": [
             {
                 "id": "sbireflare_moderne",
@@ -925,7 +943,7 @@
     {
         "id": "sbireskull",
         "fr": "Sbire Skull",
-        "en": "Sbire Skull",
+        "en": "Team Skull Grunt",
         "variants": [
             {
                 "id": "sbireskull_moderne",
@@ -938,7 +956,7 @@
     {
         "id": "eleveur",
         "fr": "Éleveur",
-        "en": "Éleveur",
+        "en": "Pokémon Breeder",
         "variants": [
             {
                 "id": "eleveur_g3",
@@ -969,7 +987,7 @@
     {
         "id": "guitariste",
         "fr": "Guitariste",
-        "en": "Guitariste",
+        "en": "Guitarist",
         "variants": [
             {
                 "id": "guitariste_g2",
@@ -1006,7 +1024,7 @@
     {
         "id": "randonneur",
         "fr": "Randonneur",
-        "en": "Randonneur",
+        "en": "Backpacker",
         "variants": [
             {
                 "id": "randonneur_g6",
@@ -1025,7 +1043,7 @@
     {
         "id": "croupier",
         "fr": "Croupier",
-        "en": "Croupier",
+        "en": "Gamer",
         "variants": [
             {
                 "id": "croupier_g3",
@@ -1038,7 +1056,7 @@
     {
         "id": "dompteur",
         "fr": "Dompteur",
-        "en": "Dompteur",
+        "en": "Tamer",
         "variants": [
             {
                 "id": "dompteur_g1",
@@ -1057,7 +1075,7 @@
     {
         "id": "exorciste",
         "fr": "Exorciste",
-        "en": "Exorciste",
+        "en": "Channeler",
         "variants": [
             {
                 "id": "exorciste_g1",
@@ -1076,7 +1094,7 @@
     {
         "id": "pokemaniac",
         "fr": "Pokémaniac",
-        "en": "Pokémaniac",
+        "en": "PokéManiac",
         "variants": [
             {
                 "id": "pokemaniac_g1",
@@ -1113,7 +1131,7 @@
     {
         "id": "intello",
         "fr": "Intello",
-        "en": "Intello",
+        "en": "Super Nerd",
         "variants": [
             {
                 "id": "intello_g1",
@@ -1144,7 +1162,7 @@
     {
         "id": "jongleur",
         "fr": "Jongleur",
-        "en": "Jongleur",
+        "en": "Juggler",
         "variants": [
             {
                 "id": "jongleur_g1",
@@ -1175,7 +1193,7 @@
     {
         "id": "mecano",
         "fr": "Mécano",
-        "en": "Mécano",
+        "en": "Engineer",
         "variants": [
             {
                 "id": "mecano_g1",
@@ -1207,6 +1225,3154 @@
                 "gen": "G3",
                 "rarity": "U",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/rocker-gen3.png"
+            }
+        ]
+    },
+    {
+        "id": "red",
+        "fr": "Red",
+        "en": "Red",
+        "variants": [
+            {
+                "id": "red_g1",
+                "gen": "G1",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/red-gen1rb.png"
+            },
+            {
+                "id": "red_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/red-gen2.png"
+            },
+            {
+                "id": "red_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/red-gen3.png"
+            },
+            {
+                "id": "red_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/red-masters.png"
+            },
+            {
+                "id": "red_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/red.png"
+            }
+        ]
+    },
+    {
+        "id": "blue",
+        "fr": "Blue",
+        "en": "Blue",
+        "variants": [
+            {
+                "id": "blue_g1",
+                "gen": "G1",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/blue-gen1rb.png"
+            },
+            {
+                "id": "blue_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/blue-gen2.png"
+            },
+            {
+                "id": "blue_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/blue-gen3.png"
+            },
+            {
+                "id": "blue_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/blue-masters.png"
+            },
+            {
+                "id": "blue_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/blue.png"
+            }
+        ]
+    },
+    {
+        "id": "leaf",
+        "fr": "Leaf",
+        "en": "Leaf",
+        "variants": [
+            {
+                "id": "leaf_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/leaf-gen3.png"
+            },
+            {
+                "id": "leaf_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/leaf-masters.png"
+            }
+        ]
+    },
+    {
+        "id": "luth",
+        "fr": "Luth",
+        "en": "Ethan",
+        "variants": [
+            {
+                "id": "luth_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/ethan-gen2.png"
+            },
+            {
+                "id": "luth_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/ethan-masters.png"
+            },
+            {
+                "id": "luth_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/ethan.png"
+            }
+        ]
+    },
+    {
+        "id": "celesta",
+        "fr": "Célesta",
+        "en": "Lyra",
+        "variants": [
+            {
+                "id": "celesta_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lyra-masters.png"
+            },
+            {
+                "id": "celesta_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lyra.png"
+            }
+        ]
+    },
+    {
+        "id": "kris",
+        "fr": "Christa",
+        "en": "Kris",
+        "variants": [
+            {
+                "id": "kris_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/kris-gen2.png"
+            },
+            {
+                "id": "kris_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/kris-masters.png"
+            },
+            {
+                "id": "kris_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/kris.png"
+            }
+        ]
+    },
+    {
+        "id": "silver",
+        "fr": "Silver",
+        "en": "Silver",
+        "variants": [
+            {
+                "id": "silver_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/silver-gen2.png"
+            },
+            {
+                "id": "silver_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/silver-masters.png"
+            },
+            {
+                "id": "silver_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/silver.png"
+            }
+        ]
+    },
+    {
+        "id": "brice",
+        "fr": "Brice",
+        "en": "Brendan",
+        "variants": [
+            {
+                "id": "brice_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/brendan-gen3.png"
+            },
+            {
+                "id": "brice_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/brendan-masters.png"
+            },
+            {
+                "id": "brice_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/brendan.png"
+            }
+        ]
+    },
+    {
+        "id": "flora",
+        "fr": "Flora",
+        "en": "May",
+        "variants": [
+            {
+                "id": "flora_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/may-gen3.png"
+            },
+            {
+                "id": "flora_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/may-masters.png"
+            },
+            {
+                "id": "flora_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/may.png"
+            }
+        ]
+    },
+    {
+        "id": "timmy",
+        "fr": "Timmy",
+        "en": "Wally",
+        "variants": [
+            {
+                "id": "timmy_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/wally-gen3.png"
+            },
+            {
+                "id": "timmy_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/wally-masters.png"
+            },
+            {
+                "id": "timmy_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/wally.png"
+            }
+        ]
+    },
+    {
+        "id": "louka",
+        "fr": "Louka",
+        "en": "Lucas",
+        "variants": [
+            {
+                "id": "louka_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lucas.png"
+            }
+        ]
+    },
+    {
+        "id": "aurore",
+        "fr": "Aurore",
+        "en": "Dawn",
+        "variants": [
+            {
+                "id": "aurore_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/dawn-masters.png"
+            },
+            {
+                "id": "aurore_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/dawn.png"
+            }
+        ]
+    },
+    {
+        "id": "rene",
+        "fr": "René",
+        "en": "Barry",
+        "variants": [
+            {
+                "id": "rene_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/barry-masters.png"
+            },
+            {
+                "id": "rene_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/barry.png"
+            }
+        ]
+    },
+    {
+        "id": "hilbert",
+        "fr": "Ludwig",
+        "en": "Hilbert",
+        "variants": [
+            {
+                "id": "hilbert_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/hilbert-masters.png"
+            },
+            {
+                "id": "hilbert_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/hilbert.png"
+            }
+        ]
+    },
+    {
+        "id": "hilda",
+        "fr": "Ludvina",
+        "en": "Hilda",
+        "variants": [
+            {
+                "id": "hilda_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/hilda-masters.png"
+            },
+            {
+                "id": "hilda_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/hilda.png"
+            }
+        ]
+    },
+    {
+        "id": "nate",
+        "fr": "Mélis",
+        "en": "Nate",
+        "variants": [
+            {
+                "id": "nate_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/nate-masters.png"
+            },
+            {
+                "id": "nate_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/nate.png"
+            }
+        ]
+    },
+    {
+        "id": "rosa",
+        "fr": "Écho",
+        "en": "Rosa",
+        "variants": [
+            {
+                "id": "rosa_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/rosa-masters.png"
+            },
+            {
+                "id": "rosa_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/rosa.png"
+            }
+        ]
+    },
+    {
+        "id": "tcheren",
+        "fr": "Tcheren",
+        "en": "Cheren",
+        "variants": [
+            {
+                "id": "tcheren_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/cheren-masters.png"
+            },
+            {
+                "id": "tcheren_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/cheren.png"
+            }
+        ]
+    },
+    {
+        "id": "bianca",
+        "fr": "Bianca",
+        "en": "Bianca",
+        "variants": [
+            {
+                "id": "bianca_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/bianca-masters.png"
+            },
+            {
+                "id": "bianca_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/bianca.png"
+            }
+        ]
+    },
+    {
+        "id": "matis",
+        "fr": "Matis",
+        "en": "Hugh",
+        "variants": [
+            {
+                "id": "matis_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/hugh-masters.png"
+            },
+            {
+                "id": "matis_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/hugh.png"
+            }
+        ]
+    },
+    {
+        "id": "calem",
+        "fr": "Kalem",
+        "en": "Calem",
+        "variants": [
+            {
+                "id": "calem_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/calem-masters.png"
+            },
+            {
+                "id": "calem_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/calem.png"
+            }
+        ]
+    },
+    {
+        "id": "serena",
+        "fr": "Serena",
+        "en": "Serena",
+        "variants": [
+            {
+                "id": "serena_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/serena-masters.png"
+            },
+            {
+                "id": "serena_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/serena.png"
+            }
+        ]
+    },
+    {
+        "id": "sannah",
+        "fr": "Sannah",
+        "en": "Shauna",
+        "variants": [
+            {
+                "id": "sannah_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/shauna-masters.png"
+            },
+            {
+                "id": "sannah_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/shauna.png"
+            }
+        ]
+    },
+    {
+        "id": "elio",
+        "fr": "Elio",
+        "en": "Elio",
+        "variants": [
+            {
+                "id": "elio_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/elio-masters.png"
+            },
+            {
+                "id": "elio_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/elio.png"
+            }
+        ]
+    },
+    {
+        "id": "selene",
+        "fr": "Selene",
+        "en": "Selene",
+        "variants": [
+            {
+                "id": "selene_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/selene-masters.png"
+            },
+            {
+                "id": "selene_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/selene.png"
+            }
+        ]
+    },
+    {
+        "id": "tili",
+        "fr": "Tili",
+        "en": "Hau",
+        "variants": [
+            {
+                "id": "tili_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/hau-masters.png"
+            },
+            {
+                "id": "tili_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/hau.png"
+            }
+        ]
+    },
+    {
+        "id": "gladie",
+        "fr": "Gladio",
+        "en": "Gladion",
+        "variants": [
+            {
+                "id": "gladie_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/gladion-masters.png"
+            },
+            {
+                "id": "gladie_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/gladion.png"
+            }
+        ]
+    },
+    {
+        "id": "lilie",
+        "fr": "Lilie",
+        "en": "Lillie",
+        "variants": [
+            {
+                "id": "lilie_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lillie-masters.png"
+            },
+            {
+                "id": "lilie_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lillie.png"
+            }
+        ]
+    },
+    {
+        "id": "victor",
+        "fr": "Victor",
+        "en": "Victor",
+        "variants": [
+            {
+                "id": "victor_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/victor-masters.png"
+            },
+            {
+                "id": "victor_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/victor.png"
+            }
+        ]
+    },
+    {
+        "id": "gloria",
+        "fr": "Gloria",
+        "en": "Gloria",
+        "variants": [
+            {
+                "id": "gloria_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/gloria-masters.png"
+            },
+            {
+                "id": "gloria_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/gloria.png"
+            }
+        ]
+    },
+    {
+        "id": "nabil",
+        "fr": "Nabil",
+        "en": "Hop",
+        "variants": [
+            {
+                "id": "nabil_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/hop-masters.png"
+            },
+            {
+                "id": "nabil_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/hop.png"
+            }
+        ]
+    },
+    {
+        "id": "rosemary",
+        "fr": "Rosemary",
+        "en": "Marnie",
+        "variants": [
+            {
+                "id": "rosemary_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/marnie-masters.png"
+            },
+            {
+                "id": "rosemary_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/marnie.png"
+            }
+        ]
+    },
+    {
+        "id": "travis",
+        "fr": "Travis",
+        "en": "Bede",
+        "variants": [
+            {
+                "id": "travis_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/bede-masters.png"
+            },
+            {
+                "id": "travis_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/bede.png"
+            }
+        ]
+    },
+    {
+        "id": "florian",
+        "fr": "Florian",
+        "en": "Florian",
+        "variants": [
+            {
+                "id": "florian_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/florian-masters.png"
+            }
+        ]
+    },
+    {
+        "id": "juliana",
+        "fr": "Juliana",
+        "en": "Juliana",
+        "variants": [
+            {
+                "id": "juliana_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/juliana-masters.png"
+            }
+        ]
+    },
+    {
+        "id": "menzi",
+        "fr": "Menzi",
+        "en": "Nemona",
+        "variants": [
+            {
+                "id": "menzi_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/nemona-masters.png"
+            }
+        ]
+    },
+    {
+        "id": "pepper",
+        "fr": "Pepper",
+        "en": "Arven",
+        "variants": [
+            {
+                "id": "pepper_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/arven-masters.png"
+            }
+        ]
+    },
+    {
+        "id": "pania",
+        "fr": "Pania",
+        "en": "Penny",
+        "variants": [
+            {
+                "id": "pania_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/penny.png"
+            }
+        ]
+    },
+    {
+        "id": "pierre",
+        "fr": "Pierre",
+        "en": "Brock",
+        "variants": [
+            {
+                "id": "pierre_g1",
+                "gen": "G1",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/brock-gen1rb.png"
+            },
+            {
+                "id": "pierre_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/brock-gen2.png"
+            },
+            {
+                "id": "pierre_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/brock-gen3.png"
+            },
+            {
+                "id": "pierre_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/brock-masters.png"
+            },
+            {
+                "id": "pierre_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/brock.png"
+            }
+        ]
+    },
+    {
+        "id": "ondine",
+        "fr": "Ondine",
+        "en": "Misty",
+        "variants": [
+            {
+                "id": "ondine_g1",
+                "gen": "G1",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/misty-gen1rb.png"
+            },
+            {
+                "id": "ondine_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/misty-gen2.png"
+            },
+            {
+                "id": "ondine_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/misty-gen3.png"
+            },
+            {
+                "id": "ondine_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/misty-masters.png"
+            },
+            {
+                "id": "ondine_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/misty.png"
+            }
+        ]
+    },
+    {
+        "id": "majorsurge",
+        "fr": "Major Bob",
+        "en": "Lt. Surge",
+        "variants": [
+            {
+                "id": "majorsurge_g1",
+                "gen": "G1",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/ltsurge-gen1rb.png"
+            },
+            {
+                "id": "majorsurge_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/ltsurge-gen2.png"
+            },
+            {
+                "id": "majorsurge_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/ltsurge-gen3.png"
+            },
+            {
+                "id": "majorsurge_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/ltsurge.png"
+            }
+        ]
+    },
+    {
+        "id": "erika",
+        "fr": "Erika",
+        "en": "Erika",
+        "variants": [
+            {
+                "id": "erika_g1",
+                "gen": "G1",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/erika-gen1rb.png"
+            },
+            {
+                "id": "erika_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/erika-gen2.png"
+            },
+            {
+                "id": "erika_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/erika-gen3.png"
+            },
+            {
+                "id": "erika_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/erika-masters.png"
+            },
+            {
+                "id": "erika_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/erika.png"
+            }
+        ]
+    },
+    {
+        "id": "koga",
+        "fr": "Koga",
+        "en": "Koga",
+        "variants": [
+            {
+                "id": "koga_g1",
+                "gen": "G1",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/koga-gen1rb.png"
+            },
+            {
+                "id": "koga_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/koga-gen2.png"
+            },
+            {
+                "id": "koga_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/koga-gen3.png"
+            },
+            {
+                "id": "koga_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/koga.png"
+            }
+        ]
+    },
+    {
+        "id": "morgane",
+        "fr": "Morgane",
+        "en": "Sabrina",
+        "variants": [
+            {
+                "id": "morgane_g1",
+                "gen": "G1",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/sabrina-gen1rb.png"
+            },
+            {
+                "id": "morgane_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/sabrina-gen2.png"
+            },
+            {
+                "id": "morgane_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/sabrina-gen3.png"
+            },
+            {
+                "id": "morgane_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/sabrina-masters.png"
+            },
+            {
+                "id": "morgane_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/sabrina.png"
+            }
+        ]
+    },
+    {
+        "id": "auguste",
+        "fr": "Auguste",
+        "en": "Blaine",
+        "variants": [
+            {
+                "id": "auguste_g1",
+                "gen": "G1",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/blaine-gen1rb.png"
+            },
+            {
+                "id": "auguste_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/blaine-gen2.png"
+            },
+            {
+                "id": "auguste_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/blaine-gen3.png"
+            },
+            {
+                "id": "auguste_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/blaine.png"
+            }
+        ]
+    },
+    {
+        "id": "giovanni",
+        "fr": "Giovanni",
+        "en": "Giovanni",
+        "variants": [
+            {
+                "id": "giovanni_g1",
+                "gen": "G1",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/giovanni-gen1rb.png"
+            },
+            {
+                "id": "giovanni_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/giovanni-gen3.png"
+            },
+            {
+                "id": "giovanni_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/giovanni-masters.png"
+            },
+            {
+                "id": "giovanni_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/giovanni.png"
+            }
+        ]
+    },
+    {
+        "id": "olga",
+        "fr": "Olga",
+        "en": "Lorelei",
+        "variants": [
+            {
+                "id": "olga_g1",
+                "gen": "G1",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lorelei-gen1rb.png"
+            },
+            {
+                "id": "olga_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lorelei-gen3.png"
+            }
+        ]
+    },
+    {
+        "id": "aldo",
+        "fr": "Aldo",
+        "en": "Bruno",
+        "variants": [
+            {
+                "id": "aldo_g1",
+                "gen": "G1",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/bruno-gen1rb.png"
+            },
+            {
+                "id": "aldo_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/bruno-gen2.png"
+            },
+            {
+                "id": "aldo_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/bruno-gen3.png"
+            },
+            {
+                "id": "aldo_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/bruno.png"
+            }
+        ]
+    },
+    {
+        "id": "agatha",
+        "fr": "Agatha",
+        "en": "Agatha",
+        "variants": [
+            {
+                "id": "agatha_g1",
+                "gen": "G1",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/agatha-gen1rb.png"
+            },
+            {
+                "id": "agatha_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/agatha-gen3.png"
+            }
+        ]
+    },
+    {
+        "id": "peter",
+        "fr": "Peter",
+        "en": "Lance",
+        "variants": [
+            {
+                "id": "peter_g1",
+                "gen": "G1",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lance-gen1rb.png"
+            },
+            {
+                "id": "peter_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lance-gen2.png"
+            },
+            {
+                "id": "peter_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lance-gen3.png"
+            },
+            {
+                "id": "peter_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lance-masters.png"
+            },
+            {
+                "id": "peter_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lance.png"
+            }
+        ]
+    },
+    {
+        "id": "albert",
+        "fr": "Albert",
+        "en": "Falkner",
+        "variants": [
+            {
+                "id": "albert_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/falkner-gen2.png"
+            },
+            {
+                "id": "albert_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/falkner.png"
+            }
+        ]
+    },
+    {
+        "id": "hector",
+        "fr": "Hector",
+        "en": "Bugsy",
+        "variants": [
+            {
+                "id": "hector_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/bugsy-gen2.png"
+            },
+            {
+                "id": "hector_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/bugsy-masters.png"
+            },
+            {
+                "id": "hector_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/bugsy.png"
+            }
+        ]
+    },
+    {
+        "id": "blanche",
+        "fr": "Blanche",
+        "en": "Whitney",
+        "variants": [
+            {
+                "id": "blanche_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/whitney-gen2.png"
+            },
+            {
+                "id": "blanche_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/whitney-masters.png"
+            },
+            {
+                "id": "blanche_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/whitney.png"
+            }
+        ]
+    },
+    {
+        "id": "mortimer",
+        "fr": "Mortimer",
+        "en": "Morty",
+        "variants": [
+            {
+                "id": "mortimer_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/morty-gen2.png"
+            },
+            {
+                "id": "mortimer_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/morty-masters.png"
+            },
+            {
+                "id": "mortimer_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/morty.png"
+            }
+        ]
+    },
+    {
+        "id": "chuck",
+        "fr": "Chuck",
+        "en": "Chuck",
+        "variants": [
+            {
+                "id": "chuck_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/chuck-gen2.png"
+            },
+            {
+                "id": "chuck_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/chuck.png"
+            }
+        ]
+    },
+    {
+        "id": "jasmine",
+        "fr": "Jasmine",
+        "en": "Jasmine",
+        "variants": [
+            {
+                "id": "jasmine_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/jasmine-gen2.png"
+            },
+            {
+                "id": "jasmine_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/jasmine-masters.png"
+            },
+            {
+                "id": "jasmine_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/jasmine.png"
+            }
+        ]
+    },
+    {
+        "id": "fredo",
+        "fr": "Frédo",
+        "en": "Pryce",
+        "variants": [
+            {
+                "id": "fredo_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/pryce-gen2.png"
+            },
+            {
+                "id": "fredo_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/pryce.png"
+            }
+        ]
+    },
+    {
+        "id": "sandra",
+        "fr": "Sandra",
+        "en": "Clair",
+        "variants": [
+            {
+                "id": "sandra_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/clair-gen2.png"
+            },
+            {
+                "id": "sandra_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/clair-masters.png"
+            },
+            {
+                "id": "sandra_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/clair.png"
+            }
+        ]
+    },
+    {
+        "id": "clement",
+        "fr": "Clément",
+        "en": "Will",
+        "variants": [
+            {
+                "id": "clement_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/will-gen2.png"
+            },
+            {
+                "id": "clement_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/will.png"
+            }
+        ]
+    },
+    {
+        "id": "marion",
+        "fr": "Marion",
+        "en": "Karen",
+        "variants": [
+            {
+                "id": "marion_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/karen-gen2.png"
+            },
+            {
+                "id": "marion_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/karen.png"
+            }
+        ]
+    },
+    {
+        "id": "roxanne",
+        "fr": "Roxanne",
+        "en": "Roxanne",
+        "variants": [
+            {
+                "id": "roxanne_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/roxanne-gen3.png"
+            },
+            {
+                "id": "roxanne_g6",
+                "gen": "G6",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/roxanne-gen6.png"
+            },
+            {
+                "id": "roxanne_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/roxanne-masters.png"
+            },
+            {
+                "id": "roxanne_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/roxanne.png"
+            }
+        ]
+    },
+    {
+        "id": "bastien",
+        "fr": "Bastien",
+        "en": "Brawly",
+        "variants": [
+            {
+                "id": "bastien_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/brawly-gen3.png"
+            },
+            {
+                "id": "bastien_g6",
+                "gen": "G6",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/brawly-gen6.png"
+            },
+            {
+                "id": "bastien_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/brawly.png"
+            }
+        ]
+    },
+    {
+        "id": "voltere",
+        "fr": "Voltère",
+        "en": "Wattson",
+        "variants": [
+            {
+                "id": "voltere_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/wattson-gen3.png"
+            },
+            {
+                "id": "voltere_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/wattson.png"
+            }
+        ]
+    },
+    {
+        "id": "adriane",
+        "fr": "Adriane",
+        "en": "Flannery",
+        "variants": [
+            {
+                "id": "adriane_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/flannery-gen3.png"
+            },
+            {
+                "id": "adriane_g6",
+                "gen": "G6",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/flannery-gen6.png"
+            },
+            {
+                "id": "adriane_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/flannery.png"
+            }
+        ]
+    },
+    {
+        "id": "norman",
+        "fr": "Norman",
+        "en": "Norman",
+        "variants": [
+            {
+                "id": "norman_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/norman-gen3.png"
+            },
+            {
+                "id": "norman_g6",
+                "gen": "G6",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/norman-gen6.png"
+            },
+            {
+                "id": "norman_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/norman.png"
+            }
+        ]
+    },
+    {
+        "id": "alizee",
+        "fr": "Alizée",
+        "en": "Winona",
+        "variants": [
+            {
+                "id": "alizee_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/winona-gen3.png"
+            },
+            {
+                "id": "alizee_g6",
+                "gen": "G6",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/winona-gen6.png"
+            },
+            {
+                "id": "alizee_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/winona.png"
+            }
+        ]
+    },
+    {
+        "id": "levy",
+        "fr": "Lévy",
+        "en": "Tate",
+        "variants": [
+            {
+                "id": "levy_g6",
+                "gen": "G6",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/tate-gen6.png"
+            },
+            {
+                "id": "levy_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/tate-masters.png"
+            },
+            {
+                "id": "levy_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/tate.png"
+            }
+        ]
+    },
+    {
+        "id": "tatia",
+        "fr": "Tatia",
+        "en": "Liza",
+        "variants": [
+            {
+                "id": "tatia_g6",
+                "gen": "G6",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/liza-gen6.png"
+            },
+            {
+                "id": "tatia_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/liza-masters.png"
+            },
+            {
+                "id": "tatia_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/liza.png"
+            }
+        ]
+    },
+    {
+        "id": "juan",
+        "fr": "Juan",
+        "en": "Juan",
+        "variants": [
+            {
+                "id": "juan_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/juan-gen3.png"
+            },
+            {
+                "id": "juan_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/juan.png"
+            }
+        ]
+    },
+    {
+        "id": "marc",
+        "fr": "Marc",
+        "en": "Wallace",
+        "variants": [
+            {
+                "id": "marc_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/wallace-gen3.png"
+            },
+            {
+                "id": "marc_g6",
+                "gen": "G6",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/wallace-gen6.png"
+            },
+            {
+                "id": "marc_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/wallace-masters.png"
+            },
+            {
+                "id": "marc_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/wallace.png"
+            }
+        ]
+    },
+    {
+        "id": "damien",
+        "fr": "Damien",
+        "en": "Sidney",
+        "variants": [
+            {
+                "id": "damien_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/sidney-gen3.png"
+            },
+            {
+                "id": "damien_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/sidney.png"
+            }
+        ]
+    },
+    {
+        "id": "spectra",
+        "fr": "Spectra",
+        "en": "Phoebe",
+        "variants": [
+            {
+                "id": "spectra_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/phoebe-gen3.png"
+            },
+            {
+                "id": "spectra_g6",
+                "gen": "G6",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/phoebe-gen6.png"
+            },
+            {
+                "id": "spectra_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/phoebe-masters.png"
+            }
+        ]
+    },
+    {
+        "id": "spectra2",
+        "fr": "Glacia",
+        "en": "Glacia",
+        "variants": [
+            {
+                "id": "spectra2_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/glacia-gen3.png"
+            },
+            {
+                "id": "spectra2_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/glacia.png"
+            }
+        ]
+    },
+    {
+        "id": "aragon",
+        "fr": "Aragon",
+        "en": "Drake",
+        "variants": [
+            {
+                "id": "aragon_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/drake-gen3.png"
+            }
+        ]
+    },
+    {
+        "id": "pierre_rochard",
+        "fr": "Pierre Rochard",
+        "en": "Steven",
+        "variants": [
+            {
+                "id": "pierre_rochard_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/steven-gen3.png"
+            },
+            {
+                "id": "pierre_rochard_g6",
+                "gen": "G6",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/steven-gen6.png"
+            },
+            {
+                "id": "pierre_rochard_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/steven-masters.png"
+            },
+            {
+                "id": "pierre_rochard_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/steven.png"
+            }
+        ]
+    },
+    {
+        "id": "max",
+        "fr": "Max",
+        "en": "Maxie",
+        "variants": [
+            {
+                "id": "max_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/maxie-gen3.png"
+            },
+            {
+                "id": "max_g6",
+                "gen": "G6",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/maxie-gen6.png"
+            }
+        ]
+    },
+    {
+        "id": "arthur",
+        "fr": "Arthur",
+        "en": "Archie",
+        "variants": [
+            {
+                "id": "arthur_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/archie-gen3.png"
+            },
+            {
+                "id": "arthur_g6",
+                "gen": "G6",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/archie-gen6.png"
+            }
+        ]
+    },
+    {
+        "id": "pierrick",
+        "fr": "Pierrick",
+        "en": "Roark",
+        "variants": [
+            {
+                "id": "pierrick_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/roark.png"
+            }
+        ]
+    },
+    {
+        "id": "flo",
+        "fr": "Flo",
+        "en": "Gardenia",
+        "variants": [
+            {
+                "id": "flo_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/gardenia-masters.png"
+            },
+            {
+                "id": "flo_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/gardenia.png"
+            }
+        ]
+    },
+    {
+        "id": "melina",
+        "fr": "Mélina",
+        "en": "Maylene",
+        "variants": [
+            {
+                "id": "melina_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/maylene.png"
+            }
+        ]
+    },
+    {
+        "id": "lovis",
+        "fr": "Lovis",
+        "en": "Crasher Wake",
+        "variants": [
+            {
+                "id": "lovis_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/crasherwake.png"
+            }
+        ]
+    },
+    {
+        "id": "kimera",
+        "fr": "Kiméra",
+        "en": "Fantina",
+        "variants": [
+            {
+                "id": "kimera_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/fantina.png"
+            }
+        ]
+    },
+    {
+        "id": "charles",
+        "fr": "Charles",
+        "en": "Byron",
+        "variants": [
+            {
+                "id": "charles_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/byron.png"
+            }
+        ]
+    },
+    {
+        "id": "gladys",
+        "fr": "Gladys",
+        "en": "Candice",
+        "variants": [
+            {
+                "id": "gladys_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/candice-masters.png"
+            },
+            {
+                "id": "gladys_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/candice.png"
+            }
+        ]
+    },
+    {
+        "id": "tanguy",
+        "fr": "Tanguy",
+        "en": "Volkner",
+        "variants": [
+            {
+                "id": "tanguy_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/volkner-masters.png"
+            },
+            {
+                "id": "tanguy_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/volkner.png"
+            }
+        ]
+    },
+    {
+        "id": "aaron",
+        "fr": "Aaron",
+        "en": "Aaron",
+        "variants": [
+            {
+                "id": "aaron_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/aaron.png"
+            }
+        ]
+    },
+    {
+        "id": "terry",
+        "fr": "Terry",
+        "en": "Bertha",
+        "variants": [
+            {
+                "id": "terry_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/bertha.png"
+            }
+        ]
+    },
+    {
+        "id": "adrien",
+        "fr": "Adrien",
+        "en": "Flint",
+        "variants": [
+            {
+                "id": "adrien_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/flint.png"
+            }
+        ]
+    },
+    {
+        "id": "lucio",
+        "fr": "Lucio",
+        "en": "Lucian",
+        "variants": [
+            {
+                "id": "lucio_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lucian.png"
+            }
+        ]
+    },
+    {
+        "id": "cynthia",
+        "fr": "Cynthia",
+        "en": "Cynthia",
+        "variants": [
+            {
+                "id": "cynthia_g4",
+                "gen": "G4",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/cynthia-gen4.png"
+            },
+            {
+                "id": "cynthia_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/cynthia-masters.png"
+            },
+            {
+                "id": "cynthia_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/cynthia.png"
+            }
+        ]
+    },
+    {
+        "id": "helio",
+        "fr": "Hélio",
+        "en": "Cyrus",
+        "variants": [
+            {
+                "id": "helio_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/cyrus-masters.png"
+            },
+            {
+                "id": "helio_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/cyrus.png"
+            }
+        ]
+    },
+    {
+        "id": "n",
+        "fr": "N",
+        "en": "N",
+        "variants": [
+            {
+                "id": "n_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/n-masters.png"
+            },
+            {
+                "id": "n_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/n.png"
+            }
+        ]
+    },
+    {
+        "id": "ghetsis",
+        "fr": "Ghetsis",
+        "en": "Ghetsis",
+        "variants": [
+            {
+                "id": "ghetsis_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/ghetsis.png"
+            }
+        ]
+    },
+    {
+        "id": "nikola",
+        "fr": "Nikolaï",
+        "en": "Colress",
+        "variants": [
+            {
+                "id": "nikola_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/colress.png"
+            }
+        ]
+    },
+    {
+        "id": "rachid",
+        "fr": "Rachid",
+        "en": "Cilan",
+        "variants": [
+            {
+                "id": "rachid_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/cilan.png"
+            }
+        ]
+    },
+    {
+        "id": "armani",
+        "fr": "Armando",
+        "en": "Chili",
+        "variants": [
+            {
+                "id": "armani_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/chili.png"
+            }
+        ]
+    },
+    {
+        "id": "noa",
+        "fr": "Noa",
+        "en": "Cress",
+        "variants": [
+            {
+                "id": "noa_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/cress.png"
+            }
+        ]
+    },
+    {
+        "id": "alo",
+        "fr": "Aloé",
+        "en": "Lenora",
+        "variants": [
+            {
+                "id": "alo_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lenora.png"
+            }
+        ]
+    },
+    {
+        "id": "strykna",
+        "fr": "Strykna",
+        "en": "Roxie",
+        "variants": [
+            {
+                "id": "strykna_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/roxie-masters.png"
+            },
+            {
+                "id": "strykna_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/roxie.png"
+            }
+        ]
+    },
+    {
+        "id": "artie",
+        "fr": "Artie",
+        "en": "Burgh",
+        "variants": [
+            {
+                "id": "artie_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/burgh-masters.png"
+            },
+            {
+                "id": "artie_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/burgh.png"
+            }
+        ]
+    },
+    {
+        "id": "inezia",
+        "fr": "Inezia",
+        "en": "Elesa",
+        "variants": [
+            {
+                "id": "inezia_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/elesa-masters.png"
+            },
+            {
+                "id": "inezia_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/elesa.png"
+            }
+        ]
+    },
+    {
+        "id": "bardane",
+        "fr": "Bardane",
+        "en": "Clay",
+        "variants": [
+            {
+                "id": "bardane_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/clay.png"
+            }
+        ]
+    },
+    {
+        "id": "carolina",
+        "fr": "Carolina",
+        "en": "Skyla",
+        "variants": [
+            {
+                "id": "carolina_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/skyla-masters.png"
+            },
+            {
+                "id": "carolina_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/skyla.png"
+            }
+        ]
+    },
+    {
+        "id": "zhu",
+        "fr": "Zhu",
+        "en": "Brycen",
+        "variants": [
+            {
+                "id": "zhu_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/brycen.png"
+            }
+        ]
+    },
+    {
+        "id": "watteau",
+        "fr": "Watson",
+        "en": "Drayden",
+        "variants": [
+            {
+                "id": "watteau_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/drayden.png"
+            }
+        ]
+    },
+    {
+        "id": "iris",
+        "fr": "Iris",
+        "en": "Iris",
+        "variants": [
+            {
+                "id": "iris_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/iris-masters.png"
+            },
+            {
+                "id": "iris_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/iris.png"
+            }
+        ]
+    },
+    {
+        "id": "ciprian",
+        "fr": "Ciprian",
+        "en": "Marlon",
+        "variants": [
+            {
+                "id": "ciprian_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/marlon.png"
+            }
+        ]
+    },
+    {
+        "id": "ancy",
+        "fr": "Anis",
+        "en": "Shauntal",
+        "variants": [
+            {
+                "id": "ancy_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/shauntal-masters.png"
+            },
+            {
+                "id": "ancy_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/shauntal.png"
+            }
+        ]
+    },
+    {
+        "id": "kuna",
+        "fr": "Keteleeria",
+        "en": "Marshal",
+        "variants": [
+            {
+                "id": "kuna_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/marshal.png"
+            }
+        ]
+    },
+    {
+        "id": "pieris",
+        "fr": "Pieris",
+        "en": "Grimsley",
+        "variants": [
+            {
+                "id": "pieris_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/grimsley-masters.png"
+            },
+            {
+                "id": "pieris_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/grimsley.png"
+            }
+        ]
+    },
+    {
+        "id": "percu",
+        "fr": "Percila",
+        "en": "Caitlin",
+        "variants": [
+            {
+                "id": "percu_g4",
+                "gen": "G4",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/caitlin-gen4.png"
+            },
+            {
+                "id": "percu_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/caitlin-masters.png"
+            },
+            {
+                "id": "percu_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/caitlin.png"
+            }
+        ]
+    },
+    {
+        "id": "goyah",
+        "fr": "Goyah",
+        "en": "Alder",
+        "variants": [
+            {
+                "id": "goyah_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/alder.png"
+            }
+        ]
+    },
+    {
+        "id": "violette",
+        "fr": "Violette",
+        "en": "Viola",
+        "variants": [
+            {
+                "id": "violette_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/viola-masters.png"
+            },
+            {
+                "id": "violette_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/viola.png"
+            }
+        ]
+    },
+    {
+        "id": "lino",
+        "fr": "Lino",
+        "en": "Grant",
+        "variants": [
+            {
+                "id": "lino_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/grant.png"
+            }
+        ]
+    },
+    {
+        "id": "cornelia",
+        "fr": "Cornélia",
+        "en": "Korrina",
+        "variants": [
+            {
+                "id": "cornelia_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/korrina-masters.png"
+            },
+            {
+                "id": "cornelia_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/korrina.png"
+            }
+        ]
+    },
+    {
+        "id": "amaro",
+        "fr": "Amaro",
+        "en": "Ramos",
+        "variants": [
+            {
+                "id": "amaro_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/ramos.png"
+            }
+        ]
+    },
+    {
+        "id": "lemo",
+        "fr": "Lem",
+        "en": "Clemont",
+        "variants": [
+            {
+                "id": "lemo_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/clemont.png"
+            }
+        ]
+    },
+    {
+        "id": "romant",
+        "fr": "Romantige",
+        "en": "Valerie",
+        "variants": [
+            {
+                "id": "romant_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/valerie.png"
+            }
+        ]
+    },
+    {
+        "id": "astrea",
+        "fr": "Astéra",
+        "en": "Olympia",
+        "variants": [
+            {
+                "id": "astrea_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/olympia.png"
+            }
+        ]
+    },
+    {
+        "id": "uruc",
+        "fr": "Urup",
+        "en": "Wulfric",
+        "variants": [
+            {
+                "id": "uruc_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/wulfric.png"
+            }
+        ]
+    },
+    {
+        "id": "malva",
+        "fr": "Malva",
+        "en": "Malva",
+        "variants": [
+            {
+                "id": "malva_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/malva.png"
+            }
+        ]
+    },
+    {
+        "id": "narcisse",
+        "fr": "Narcisse",
+        "en": "Siebold",
+        "variants": [
+            {
+                "id": "narcisse_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/siebold-masters.png"
+            },
+            {
+                "id": "narcisse_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/siebold.png"
+            }
+        ]
+    },
+    {
+        "id": "thym",
+        "fr": "Thyméo",
+        "en": "Wikstrom",
+        "variants": [
+            {
+                "id": "thym_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/wikstrom.png"
+            }
+        ]
+    },
+    {
+        "id": "drasna",
+        "fr": "Drasna",
+        "en": "Drasna",
+        "variants": [
+            {
+                "id": "drasna_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/drasna.png"
+            }
+        ]
+    },
+    {
+        "id": "dianthea",
+        "fr": "Dianthéa",
+        "en": "Diantha",
+        "variants": [
+            {
+                "id": "dianthea_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/diantha-masters.png"
+            },
+            {
+                "id": "dianthea_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/diantha.png"
+            }
+        ]
+    },
+    {
+        "id": "lysandre",
+        "fr": "Lysandre",
+        "en": "Lysandre",
+        "variants": [
+            {
+                "id": "lysandre_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lysandre-masters.png"
+            },
+            {
+                "id": "lysandre_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lysandre.png"
+            }
+        ]
+    },
+    {
+        "id": "euphorbe",
+        "fr": "Euphorbe",
+        "en": "Kukui",
+        "variants": [
+            {
+                "id": "euphorbe_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/kukui.png"
+            }
+        ]
+    },
+    {
+        "id": "pectorius",
+        "fr": "Pectorius",
+        "en": "Hala",
+        "variants": [
+            {
+                "id": "pectorius_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/hala.png"
+            }
+        ]
+    },
+    {
+        "id": "alyxia",
+        "fr": "Alyxia",
+        "en": "Olivia",
+        "variants": [
+            {
+                "id": "alyxia_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/olivia.png"
+            }
+        ]
+    },
+    {
+        "id": "dahn",
+        "fr": "Danh",
+        "en": "Nanu",
+        "variants": [
+            {
+                "id": "dahn_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/nanu.png"
+            }
+        ]
+    },
+    {
+        "id": "paulie",
+        "fr": "Paulie",
+        "en": "Hapu",
+        "variants": [
+            {
+                "id": "paulie_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/hapu.png"
+            }
+        ]
+    },
+    {
+        "id": "alizee",
+        "fr": "Althéo",
+        "en": "Ilima",
+        "variants": [
+            {
+                "id": "alizee_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/ilima.png"
+            }
+        ]
+    },
+    {
+        "id": "nephie",
+        "fr": "Néphie",
+        "en": "Lana",
+        "variants": [
+            {
+                "id": "nephie_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lana-masters.png"
+            },
+            {
+                "id": "nephie_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lana.png"
+            }
+        ]
+    },
+    {
+        "id": "kiawe",
+        "fr": "Kiawe",
+        "en": "Kiawe",
+        "variants": [
+            {
+                "id": "kiawe_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/kiawe.png"
+            }
+        ]
+    },
+    {
+        "id": "barbara",
+        "fr": "Barbara",
+        "en": "Mallow",
+        "variants": [
+            {
+                "id": "barbara_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/mallow-masters.png"
+            },
+            {
+                "id": "barbara_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/mallow.png"
+            }
+        ]
+    },
+    {
+        "id": "chrys",
+        "fr": "Chrys",
+        "en": "Sophocles",
+        "variants": [
+            {
+                "id": "chrys_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/sophocles.png"
+            }
+        ]
+    },
+    {
+        "id": "margie",
+        "fr": "Margie",
+        "en": "Acerola",
+        "variants": [
+            {
+                "id": "margie_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/acerola-masters.png"
+            },
+            {
+                "id": "margie_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/acerola.png"
+            }
+        ]
+    },
+    {
+        "id": "olena",
+        "fr": "Oléa",
+        "en": "Mina",
+        "variants": [
+            {
+                "id": "olena_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/mina-masters.png"
+            },
+            {
+                "id": "olena_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/mina.png"
+            }
+        ]
+    },
+    {
+        "id": "kahili",
+        "fr": "Kahili",
+        "en": "Kahili",
+        "variants": [
+            {
+                "id": "kahili_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/kahili.png"
+            }
+        ]
+    },
+    {
+        "id": "guzma",
+        "fr": "Guzma",
+        "en": "Guzma",
+        "variants": [
+            {
+                "id": "guzma_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/guzma-masters.png"
+            },
+            {
+                "id": "guzma_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/guzma.png"
+            }
+        ]
+    },
+    {
+        "id": "elsamina",
+        "fr": "Elsa-Mina",
+        "en": "Lusamine",
+        "variants": [
+            {
+                "id": "elsamina_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lusamine-masters.png"
+            },
+            {
+                "id": "elsamina_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lusamine.png"
+            }
+        ]
+    },
+    {
+        "id": "tarak",
+        "fr": "Tarak",
+        "en": "Leon",
+        "variants": [
+            {
+                "id": "tarak_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/leon-masters.png"
+            },
+            {
+                "id": "tarak_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/leon.png"
+            }
+        ]
+    },
+    {
+        "id": "shehroz",
+        "fr": "Shehroz",
+        "en": "Rose",
+        "variants": [
+            {
+                "id": "shehroz_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/rose.png"
+            }
+        ]
+    },
+    {
+        "id": "percy",
+        "fr": "Percy",
+        "en": "Milo",
+        "variants": [
+            {
+                "id": "percy_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/milo.png"
+            }
+        ]
+    },
+    {
+        "id": "donna",
+        "fr": "Donna",
+        "en": "Nessa",
+        "variants": [
+            {
+                "id": "donna_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/nessa-masters.png"
+            },
+            {
+                "id": "donna_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/nessa.png"
+            }
+        ]
+    },
+    {
+        "id": "kabu",
+        "fr": "Kabu",
+        "en": "Kabu",
+        "variants": [
+            {
+                "id": "kabu_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/kabu-masters.png"
+            },
+            {
+                "id": "kabu_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/kabu.png"
+            }
+        ]
+    },
+    {
+        "id": "fai",
+        "fr": "Faïza",
+        "en": "Bea",
+        "variants": [
+            {
+                "id": "fai_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/bea-masters.png"
+            },
+            {
+                "id": "fai_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/bea.png"
+            }
+        ]
+    },
+    {
+        "id": "alis",
+        "fr": "Alistair",
+        "en": "Allister",
+        "variants": [
+            {
+                "id": "alis_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/allister-masters.png"
+            },
+            {
+                "id": "alis_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/allister.png"
+            }
+        ]
+    },
+    {
+        "id": "sally",
+        "fr": "Sally",
+        "en": "Opal",
+        "variants": [
+            {
+                "id": "sally_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/opal.png"
+            }
+        ]
+    },
+    {
+        "id": "chaz",
+        "fr": "Chaz",
+        "en": "Gordie",
+        "variants": [
+            {
+                "id": "chaz_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/gordie.png"
+            }
+        ]
+    },
+    {
+        "id": "lona",
+        "fr": "Lona",
+        "en": "Melony",
+        "variants": [
+            {
+                "id": "lona_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/melony.png"
+            }
+        ]
+    },
+    {
+        "id": "peterson",
+        "fr": "Peterson",
+        "en": "Piers",
+        "variants": [
+            {
+                "id": "peterson_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/piers-masters.png"
+            },
+            {
+                "id": "peterson_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/piers.png"
+            }
+        ]
+    },
+    {
+        "id": "roy",
+        "fr": "Roy",
+        "en": "Raihan",
+        "variants": [
+            {
+                "id": "roy_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/raihan-masters.png"
+            },
+            {
+                "id": "roy_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/raihan.png"
+            }
+        ]
+    },
+    {
+        "id": "alisma",
+        "fr": "Alisma",
+        "en": "Geeta",
+        "variants": [
+            {
+                "id": "alisma_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/geeta.png"
+            }
+        ]
+    },
+    {
+        "id": "erable",
+        "fr": "Érable",
+        "en": "Katy",
+        "variants": [
+            {
+                "id": "erable_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/katy.png"
+            }
+        ]
+    },
+    {
+        "id": "colza",
+        "fr": "Colza",
+        "en": "Brassius",
+        "variants": [
+            {
+                "id": "colza_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/brassius.png"
+            }
+        ]
+    },
+    {
+        "id": "mashynn",
+        "fr": "Mashynn",
+        "en": "Iono",
+        "variants": [
+            {
+                "id": "mashynn_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/iono-masters.png"
+            },
+            {
+                "id": "mashynn_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/iono.png"
+            }
+        ]
+    },
+    {
+        "id": "kombu",
+        "fr": "Kombu",
+        "en": "Kofu",
+        "variants": [
+            {
+                "id": "kombu_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/kofu.png"
+            }
+        ]
+    },
+    {
+        "id": "okuba",
+        "fr": "Okuba",
+        "en": "Larry",
+        "variants": [
+            {
+                "id": "okuba_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/larry-masters.png"
+            },
+            {
+                "id": "okuba_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/larry.png"
+            }
+        ]
+    },
+    {
+        "id": "tully",
+        "fr": "Tully",
+        "en": "Tulip",
+        "variants": [
+            {
+                "id": "tully_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/tulip.png"
+            }
+        ]
+    },
+    {
+        "id": "grusha",
+        "fr": "Grusha",
+        "en": "Grusha",
+        "variants": [
+            {
+                "id": "grusha_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/grusha.png"
+            }
+        ]
+    },
+    {
+        "id": "laim",
+        "fr": "Laïm",
+        "en": "Ryme",
+        "variants": [
+            {
+                "id": "laim_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/ryme.png"
+            }
+        ]
+    },
+    {
+        "id": "sacha",
+        "fr": "Sacha",
+        "en": "Ash",
+        "variants": [
+            {
+                "id": "sacha_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/ash.png"
+            }
+        ]
+    },
+    {
+        "id": "profchen",
+        "fr": "Professeur Chen",
+        "en": "Professor Oak",
+        "variants": [
+            {
+                "id": "profchen_g1",
+                "gen": "G1",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/oak-gen1rb.png"
+            },
+            {
+                "id": "profchen_g2",
+                "gen": "G2",
+                "rarity": "E",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/oak-gen2.png"
+            },
+            {
+                "id": "profchen_g3",
+                "gen": "G3",
+                "rarity": "L",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/oak-gen3.png"
+            },
+            {
+                "id": "profchen_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/oak.png"
+            }
+        ]
+    },
+    {
+        "id": "profsorbier",
+        "fr": "Professeur Sorbier",
+        "en": "Professor Rowan",
+        "variants": [
+            {
+                "id": "profsorbier_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/rowan.png"
+            }
+        ]
+    },
+    {
+        "id": "profplatane",
+        "fr": "Professeur Platane",
+        "en": "Professor Sycamore",
+        "variants": [
+            {
+                "id": "profplatane_masters",
+                "gen": "Masters",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/sycamore-masters.png"
+            },
+            {
+                "id": "profplatane_moderne",
+                "gen": "Moderne",
+                "rarity": "M",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/sycamore.png"
             }
         ]
     }
