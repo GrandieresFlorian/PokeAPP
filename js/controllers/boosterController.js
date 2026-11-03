@@ -352,16 +352,20 @@ function ouvrirBooster(isSpecial = false) {
     const cardsContainer = document.getElementById('cards-container');
     const autoOpenBtn = document.getElementById('auto-open-btn');
     const resetButton = document.getElementById('reset-button');
+    const boosterCarousel = document.getElementById('booster-carousel');
 
-    activeBooster.classList.add('booster-animating');
+    if (activeBooster) activeBooster.classList.add('booster-animating');
 
     setTimeout(() => {
-        activeBooster.classList.remove('booster-animating');
-        normalBoosterElement.classList.add('hidden'); 
-        specialBoosterElement.classList.add('hidden');
+        if (activeBooster) activeBooster.classList.remove('booster-animating');
         
-        cardsContainer.innerHTML = ''; 
-        cardsContainer.classList.remove('hidden'); 
+        // On cache le carrousel complet au lieu des éléments individuels
+        if (boosterCarousel) boosterCarousel.classList.add('hidden');
+        
+        if (cardsContainer) {
+            cardsContainer.innerHTML = ''; 
+            cardsContainer.classList.remove('hidden'); 
+        }
         state.cartesRetournees = 0; 
         
         let cartesTirees = [];
@@ -386,9 +390,11 @@ function ouvrirBooster(isSpecial = false) {
         state.currentPulls = cartesTirees;
         state.currentPullIndex = 0;
         
-        autoOpenBtn.classList.remove('hidden');
-        autoOpenBtn.disabled = false;
-        resetButton.classList.add('hidden');
+        if (autoOpenBtn) {
+            autoOpenBtn.classList.remove('hidden');
+            autoOpenBtn.disabled = false;
+        }
+        if (resetButton) resetButton.classList.add('hidden');
 
         const firstItem = state.currentPulls[0];
         if (firstItem.isBaie) creerCarteBaie(firstItem.data, 0);
