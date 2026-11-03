@@ -9,6 +9,7 @@ export const state = {
     ] },
     pokemonDataList: [],
     movesData: { dictionary: {}, pokemonMoves: {} }, // NOUVEAU
+    dresseursData: [],
     currentLang: localStorage.getItem('pokeAppLang') || 'fr',
     collectionMode: 'normal',
     cartesRetournees: 0,

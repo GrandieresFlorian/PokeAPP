@@ -69,6 +69,16 @@
                 <div id="cards-container" class="cards-container hidden"></div>
                 <button id="auto-open-btn" class="btn hidden translatable" data-fr="Tout révéler ✨" data-en="Reveal All ✨" style="background: linear-gradient(135deg, #a29bfe, #6c5ce7); margin-bottom: 10px;">Tout révéler ✨</button>
                 <button id="reset-button" class="btn btn-danger hidden translatable" data-fr="Fermer et retourner aux boosters" data-en="Close and return to packs">Fermer et retourner aux boosters</button>
+                <div id="trainer-booster-status" class="booster-status glass-panel hidden" style="margin-top: 10px;">
+                    <p><span class="translatable" data-fr="Booster Dresseur dans :" data-en="Trainer Pack in :">Booster Dresseur dans :</span> <span id="trainer-booster-timer-display" class="highlight">00:00</span></p>
+                </div>
+
+                <!-- Dans la div qui contient les boosters (flex-wrap) -->
+                <div id="trainer-booster-pack" class="booster" style="background: linear-gradient(135deg, #3498db, #2980b9);">
+                    <h2 class="translatable" data-fr="Dresseurs" data-en="Trainers">Dresseurs</h2>
+                    <p class="translatable" data-fr="Cartes Personnages" data-en="Character Cards">Cartes Personnages</p>
+                    <div class="booster-text translatable" data-fr="Cliquez pour ouvrir" data-en="Click to open">Cliquez pour ouvrir</div>
+                </div>
             </section>
 
             <!-- SECTION COLLECTION -->
@@ -80,6 +90,7 @@
                     <button id="tab-mega" class="tab-btn">Méga 🧬</button>
                     <button id="tab-mega-shiny" class="tab-btn">Méga Shiny ✨🧬</button>
                     <button id="tab-baies" class="tab-btn translatable" data-fr="Baies 🍒" data-en="Berries 🍒">Baies 🍒</button>
+                    <button id="tab-dresseurs" class="tab-btn translatable" data-fr="Dresseurs 🧢" data-en="Trainers 🧢">Dresseurs 🧢</button>
                 </div>
                 <div class="collection-filters glass-panel">
                     <label for="filter-rarity" class="translatable" data-fr="Rareté :" data-en="Rarity :">Rareté :</label>

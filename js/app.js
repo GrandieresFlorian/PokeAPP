@@ -40,6 +40,11 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(r => r.json())
         .then(data => { state.movesData = data; })
         .catch(e => console.error("Fichier moves.json introuvable :", e));
+    
+    fetch('dresseurs.json')
+        .then(r => r.json())
+        .then(data => { state.dresseursData = data; })
+        .catch(e => console.error("Fichier dresseurs.json introuvable :", e));
 
     if (state.currentUser) {
         db.collection('users').doc(state.currentUser).get().then(doc => {

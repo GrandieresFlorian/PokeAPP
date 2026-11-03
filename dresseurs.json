@@ -1,0 +1,1912 @@
+[
+    {
+        "id": "canon",
+        "fr": "Canon",
+        "en": "Beauty",
+        "variants": [
+            {
+                "id": "canon_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Canon-RB.png"
+            },
+            {
+                "id": "canon_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Canon-OAC.png"
+            },
+            {
+                "id": "canon_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Canon-RS.png"
+            },
+            {
+                "id": "canon_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Canon-RFVF.png"
+            },
+            {
+                "id": "canon_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Canon-DP.png"
+            },
+            {
+                "id": "canon_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Canon-HGSS.png"
+            },
+            {
+                "id": "canon_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Canon-NB.png"
+            },
+            {
+                "id": "canon_xy",
+                "gen": "XY",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Canon-XY.png"
+            },
+            {
+                "id": "canon_rosa",
+                "gen": "ROSA",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Canon-ROSA.png"
+            },
+            {
+                "id": "canon_sl",
+                "gen": "SL",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Canon-SL.png"
+            }
+        ]
+    },
+    {
+        "id": "gamin",
+        "fr": "Gamin",
+        "en": "Youngster",
+        "variants": [
+            {
+                "id": "gamin_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gamin-RB.png"
+            },
+            {
+                "id": "gamin_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gamin-OAC.png"
+            },
+            {
+                "id": "gamin_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gamin-RS.png"
+            },
+            {
+                "id": "gamin_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gamin-RFVF.png"
+            },
+            {
+                "id": "gamin_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gamin-DP.png"
+            },
+            {
+                "id": "gamin_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gamin-HGSS.png"
+            },
+            {
+                "id": "gamin_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gamin-NB.png"
+            },
+            {
+                "id": "gamin_xy",
+                "gen": "XY",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gamin-XY.png"
+            },
+            {
+                "id": "gamin_rosa",
+                "gen": "ROSA",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gamin-ROSA.png"
+            },
+            {
+                "id": "gamin_sl",
+                "gen": "SL",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gamin-SL.png"
+            },
+            {
+                "id": "gamin_eb",
+                "gen": "EB",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gamin-EB.png"
+            },
+            {
+                "id": "gamin_ev",
+                "gen": "EV",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gamin-EV.png"
+            }
+        ]
+    },
+    {
+        "id": "fillette",
+        "fr": "Fillette",
+        "en": "Lass",
+        "variants": [
+            {
+                "id": "fillette_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Fillette-RB.png"
+            },
+            {
+                "id": "fillette_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Fillette-OAC.png"
+            },
+            {
+                "id": "fillette_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Fillette-RS.png"
+            },
+            {
+                "id": "fillette_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Fillette-RFVF.png"
+            },
+            {
+                "id": "fillette_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Fillette-DP.png"
+            },
+            {
+                "id": "fillette_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Fillette-HGSS.png"
+            },
+            {
+                "id": "fillette_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Fillette-NB.png"
+            },
+            {
+                "id": "fillette_xy",
+                "gen": "XY",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Fillette-XY.png"
+            },
+            {
+                "id": "fillette_rosa",
+                "gen": "ROSA",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Fillette-ROSA.png"
+            },
+            {
+                "id": "fillette_sl",
+                "gen": "SL",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Fillette-SL.png"
+            },
+            {
+                "id": "fillette_eb",
+                "gen": "EB",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Fillette-EB.png"
+            }
+        ]
+    },
+    {
+        "id": "scout",
+        "fr": "Scout",
+        "en": "Bug Catcher",
+        "variants": [
+            {
+                "id": "scout_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Scout-RB.png"
+            },
+            {
+                "id": "scout_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Scout-OAC.png"
+            },
+            {
+                "id": "scout_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Scout-RS.png"
+            },
+            {
+                "id": "scout_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Scout-RFVF.png"
+            },
+            {
+                "id": "scout_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Scout-DP.png"
+            },
+            {
+                "id": "scout_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Scout-HGSS.png"
+            }
+        ]
+    },
+    {
+        "id": "montagnard",
+        "fr": "Montagnard",
+        "en": "Hiker",
+        "variants": [
+            {
+                "id": "montagnard_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Montagnard-RB.png"
+            },
+            {
+                "id": "montagnard_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Montagnard-OAC.png"
+            },
+            {
+                "id": "montagnard_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Montagnard-RS.png"
+            },
+            {
+                "id": "montagnard_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Montagnard-RFVF.png"
+            },
+            {
+                "id": "montagnard_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Montagnard-DP.png"
+            },
+            {
+                "id": "montagnard_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Montagnard-HGSS.png"
+            },
+            {
+                "id": "montagnard_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Montagnard-NB.png"
+            },
+            {
+                "id": "montagnard_xy",
+                "gen": "XY",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Montagnard-XY.png"
+            },
+            {
+                "id": "montagnard_rosa",
+                "gen": "ROSA",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Montagnard-ROSA.png"
+            },
+            {
+                "id": "montagnard_sl",
+                "gen": "SL",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Montagnard-SL.png"
+            },
+            {
+                "id": "montagnard_eb",
+                "gen": "EB",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Montagnard-EB.png"
+            },
+            {
+                "id": "montagnard_ev",
+                "gen": "EV",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Montagnard-EV.png"
+            }
+        ]
+    },
+    {
+        "id": "campeur",
+        "fr": "Campeur",
+        "en": "Camper",
+        "variants": [
+            {
+                "id": "campeur_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Campeur-OAC.png"
+            },
+            {
+                "id": "campeur_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Campeur-RS.png"
+            },
+            {
+                "id": "campeur_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Campeur-RFVF.png"
+            },
+            {
+                "id": "campeur_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Campeur-DP.png"
+            },
+            {
+                "id": "campeur_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Campeur-HGSS.png"
+            },
+            {
+                "id": "campeur_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Campeur-NB.png"
+            },
+            {
+                "id": "campeur_xy",
+                "gen": "XY",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Campeur-XY.png"
+            },
+            {
+                "id": "campeur_rosa",
+                "gen": "ROSA",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Campeur-ROSA.png"
+            },
+            {
+                "id": "campeur_eb",
+                "gen": "EB",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Campeur-EB.png"
+            }
+        ]
+    },
+    {
+        "id": "piquenique",
+        "fr": "Pique-Nique",
+        "en": "Picnicker",
+        "variants": [
+            {
+                "id": "piquenique_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pique-Nique-OAC.png"
+            },
+            {
+                "id": "piquenique_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pique-Nique-RS.png"
+            },
+            {
+                "id": "piquenique_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pique-Nique-RFVF.png"
+            },
+            {
+                "id": "piquenique_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pique-Nique-DP.png"
+            },
+            {
+                "id": "piquenique_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pique-Nique-HGSS.png"
+            },
+            {
+                "id": "piquenique_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pique-Nique-NB.png"
+            },
+            {
+                "id": "piquenique_xy",
+                "gen": "XY",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pique-Nique-XY.png"
+            },
+            {
+                "id": "piquenique_rosa",
+                "gen": "ROSA",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pique-Nique-ROSA.png"
+            },
+            {
+                "id": "piquenique_eb",
+                "gen": "EB",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pique-Nique-EB.png"
+            }
+        ]
+    },
+    {
+        "id": "nageur",
+        "fr": "Nageur",
+        "en": "Swimmer M",
+        "variants": [
+            {
+                "id": "nageur_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Nageur-RB.png"
+            },
+            {
+                "id": "nageur_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Nageur-OAC.png"
+            },
+            {
+                "id": "nageur_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Nageur-RS.png"
+            },
+            {
+                "id": "nageur_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Nageur-RFVF.png"
+            },
+            {
+                "id": "nageur_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Nageur-DP.png"
+            },
+            {
+                "id": "nageur_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Nageur-HGSS.png"
+            },
+            {
+                "id": "nageur_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Nageur-NB.png"
+            },
+            {
+                "id": "nageur_xy",
+                "gen": "XY",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Nageur-XY.png"
+            },
+            {
+                "id": "nageur_rosa",
+                "gen": "ROSA",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Nageur-ROSA.png"
+            },
+            {
+                "id": "nageur_sl",
+                "gen": "SL",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Nageur-SL.png"
+            },
+            {
+                "id": "nageur_eb",
+                "gen": "EB",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Nageur-EB.png"
+            }
+        ]
+    },
+    {
+        "id": "nageuse",
+        "fr": "Nageuse",
+        "en": "Swimmer F",
+        "variants": [
+            {
+                "id": "nageuse_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Nageuse-OAC.png"
+            },
+            {
+                "id": "nageuse_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Nageuse-RS.png"
+            },
+            {
+                "id": "nageuse_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Nageuse-RFVF.png"
+            },
+            {
+                "id": "nageuse_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Nageuse-DP.png"
+            },
+            {
+                "id": "nageuse_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Nageuse-HGSS.png"
+            },
+            {
+                "id": "nageuse_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Nageuse-NB.png"
+            },
+            {
+                "id": "nageuse_xy",
+                "gen": "XY",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Nageuse-XY.png"
+            },
+            {
+                "id": "nageuse_rosa",
+                "gen": "ROSA",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Nageuse-ROSA.png"
+            },
+            {
+                "id": "nageuse_sl",
+                "gen": "SL",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Nageuse-SL.png"
+            },
+            {
+                "id": "nageuse_eb",
+                "gen": "EB",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Nageuse-EB.png"
+            }
+        ]
+    },
+    {
+        "id": "marin",
+        "fr": "Marin",
+        "en": "Sailor",
+        "variants": [
+            {
+                "id": "marin_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Marin-RB.png"
+            },
+            {
+                "id": "marin_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Marin-OAC.png"
+            },
+            {
+                "id": "marin_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Marin-RS.png"
+            },
+            {
+                "id": "marin_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Marin-RFVF.png"
+            },
+            {
+                "id": "marin_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Marin-DP.png"
+            },
+            {
+                "id": "marin_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Marin-HGSS.png"
+            }
+        ]
+    },
+    {
+        "id": "pecheur",
+        "fr": "Pêcheur",
+        "en": "Fisherman",
+        "variants": [
+            {
+                "id": "pecheur_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pêcheur-RB.png"
+            },
+            {
+                "id": "pecheur_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pêcheur-OAC.png"
+            },
+            {
+                "id": "pecheur_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pêcheur-RS.png"
+            },
+            {
+                "id": "pecheur_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pêcheur-RFVF.png"
+            },
+            {
+                "id": "pecheur_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pêcheur-DP.png"
+            },
+            {
+                "id": "pecheur_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pêcheur-HGSS.png"
+            },
+            {
+                "id": "pecheur_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pêcheur-NB.png"
+            },
+            {
+                "id": "pecheur_xy",
+                "gen": "XY",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pêcheur-XY.png"
+            },
+            {
+                "id": "pecheur_rosa",
+                "gen": "ROSA",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pêcheur-ROSA.png"
+            },
+            {
+                "id": "pecheur_sl",
+                "gen": "SL",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pêcheur-SL.png"
+            },
+            {
+                "id": "pecheur_eb",
+                "gen": "EB",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pêcheur-EB.png"
+            }
+        ]
+    },
+    {
+        "id": "topdresseurm",
+        "fr": "Topdresseur ♂",
+        "en": "Ace Trainer M",
+        "variants": [
+            {
+                "id": "topdresseurm_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Topdresseur_♂-RB.png"
+            },
+            {
+                "id": "topdresseurm_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Topdresseur_♂-OAC.png"
+            },
+            {
+                "id": "topdresseurm_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Topdresseur_♂-RS.png"
+            },
+            {
+                "id": "topdresseurm_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Topdresseur_♂-RFVF.png"
+            },
+            {
+                "id": "topdresseurm_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Topdresseur_♂-DP.png"
+            },
+            {
+                "id": "topdresseurm_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Topdresseur_♂-HGSS.png"
+            },
+            {
+                "id": "topdresseurm_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Topdresseur_♂-NB.png"
+            },
+            {
+                "id": "topdresseurm_xy",
+                "gen": "XY",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Topdresseur_♂-XY.png"
+            },
+            {
+                "id": "topdresseurm_rosa",
+                "gen": "ROSA",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Topdresseur_♂-ROSA.png"
+            },
+            {
+                "id": "topdresseurm_sl",
+                "gen": "SL",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Topdresseur_♂-SL.png"
+            }
+        ]
+    },
+    {
+        "id": "topdresseurf",
+        "fr": "Topdresseur ♀",
+        "en": "Ace Trainer F",
+        "variants": [
+            {
+                "id": "topdresseurf_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Topdresseur_♀-RB.png"
+            },
+            {
+                "id": "topdresseurf_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Topdresseur_♀-OAC.png"
+            },
+            {
+                "id": "topdresseurf_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Topdresseur_♀-RS.png"
+            },
+            {
+                "id": "topdresseurf_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Topdresseur_♀-RFVF.png"
+            },
+            {
+                "id": "topdresseurf_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Topdresseur_♀-DP.png"
+            },
+            {
+                "id": "topdresseurf_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Topdresseur_♀-HGSS.png"
+            },
+            {
+                "id": "topdresseurf_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Topdresseur_♀-NB.png"
+            },
+            {
+                "id": "topdresseurf_xy",
+                "gen": "XY",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Topdresseur_♀-XY.png"
+            },
+            {
+                "id": "topdresseurf_rosa",
+                "gen": "ROSA",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Topdresseur_♀-ROSA.png"
+            },
+            {
+                "id": "topdresseurf_sl",
+                "gen": "SL",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Topdresseur_♀-SL.png"
+            }
+        ]
+    },
+    {
+        "id": "richard",
+        "fr": "Richard",
+        "en": "Rich Boy",
+        "variants": [
+            {
+                "id": "richard_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Richard-RS.png"
+            },
+            {
+                "id": "richard_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Richard-DP.png"
+            },
+            {
+                "id": "richard_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Richard-HGSS.png"
+            },
+            {
+                "id": "richard_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Richard-NB.png"
+            },
+            {
+                "id": "richard_xy",
+                "gen": "XY",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Richard-XY.png"
+            },
+            {
+                "id": "richard_rosa",
+                "gen": "ROSA",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Richard-ROSA.png"
+            }
+        ]
+    },
+    {
+        "id": "mademoiselle",
+        "fr": "Mademoiselle",
+        "en": "Lady",
+        "variants": [
+            {
+                "id": "mademoiselle_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Mademoiselle-RS.png"
+            },
+            {
+                "id": "mademoiselle_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Mademoiselle-DP.png"
+            },
+            {
+                "id": "mademoiselle_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Mademoiselle-HGSS.png"
+            },
+            {
+                "id": "mademoiselle_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Mademoiselle-NB.png"
+            },
+            {
+                "id": "mademoiselle_xy",
+                "gen": "XY",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Mademoiselle-XY.png"
+            },
+            {
+                "id": "mademoiselle_rosa",
+                "gen": "ROSA",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Mademoiselle-ROSA.png"
+            }
+        ]
+    },
+    {
+        "id": "gentleman",
+        "fr": "Gentleman",
+        "en": "Gentleman",
+        "variants": [
+            {
+                "id": "gentleman_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gentleman-RB.png"
+            },
+            {
+                "id": "gentleman_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gentleman-OAC.png"
+            },
+            {
+                "id": "gentleman_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gentleman-RS.png"
+            },
+            {
+                "id": "gentleman_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gentleman-RFVF.png"
+            },
+            {
+                "id": "gentleman_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gentleman-DP.png"
+            },
+            {
+                "id": "gentleman_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gentleman-HGSS.png"
+            },
+            {
+                "id": "gentleman_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gentleman-NB.png"
+            },
+            {
+                "id": "gentleman_xy",
+                "gen": "XY",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gentleman-XY.png"
+            },
+            {
+                "id": "gentleman_rosa",
+                "gen": "ROSA",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gentleman-ROSA.png"
+            },
+            {
+                "id": "gentleman_sl",
+                "gen": "SL",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gentleman-SL.png"
+            },
+            {
+                "id": "gentleman_eb",
+                "gen": "EB",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Gentleman-EB.png"
+            }
+        ]
+    },
+    {
+        "id": "mystimaniac",
+        "fr": "Mystimaniac",
+        "en": "Hex Maniac",
+        "variants": [
+            {
+                "id": "mystimaniac_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Mystimaniac-RS.png"
+            },
+            {
+                "id": "mystimaniac_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Mystimaniac-DP.png"
+            },
+            {
+                "id": "mystimaniac_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Mystimaniac-HGSS.png"
+            },
+            {
+                "id": "mystimaniac_xy",
+                "gen": "XY",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Mystimaniac-XY.png"
+            },
+            {
+                "id": "mystimaniac_rosa",
+                "gen": "ROSA",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Mystimaniac-ROSA.png"
+            }
+        ]
+    },
+    {
+        "id": "kinesiste",
+        "fr": "Kinésiste",
+        "en": "Psychic",
+        "variants": [
+            {
+                "id": "kinesiste_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Kinésiste-RB.png"
+            },
+            {
+                "id": "kinesiste_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Kinésiste-OAC.png"
+            },
+            {
+                "id": "kinesiste_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Kinésiste-RS.png"
+            },
+            {
+                "id": "kinesiste_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Kinésiste-RFVF.png"
+            },
+            {
+                "id": "kinesiste_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Kinésiste-DP.png"
+            },
+            {
+                "id": "kinesiste_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Kinésiste-HGSS.png"
+            },
+            {
+                "id": "kinesiste_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Kinésiste-NB.png"
+            },
+            {
+                "id": "kinesiste_xy",
+                "gen": "XY",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Kinésiste-XY.png"
+            },
+            {
+                "id": "kinesiste_rosa",
+                "gen": "ROSA",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Kinésiste-ROSA.png"
+            }
+        ]
+    },
+    {
+        "id": "karateka",
+        "fr": "Karatéka",
+        "en": "Black Belt",
+        "variants": [
+            {
+                "id": "karateka_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Karatéka-RB.png"
+            },
+            {
+                "id": "karateka_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Karatéka-OAC.png"
+            },
+            {
+                "id": "karateka_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Karatéka-RS.png"
+            },
+            {
+                "id": "karateka_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Karatéka-RFVF.png"
+            },
+            {
+                "id": "karateka_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Karatéka-DP.png"
+            },
+            {
+                "id": "karateka_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Karatéka-HGSS.png"
+            },
+            {
+                "id": "karateka_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Karatéka-NB.png"
+            },
+            {
+                "id": "karateka_xy",
+                "gen": "XY",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Karatéka-XY.png"
+            },
+            {
+                "id": "karateka_rosa",
+                "gen": "ROSA",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Karatéka-ROSA.png"
+            },
+            {
+                "id": "karateka_sl",
+                "gen": "SL",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Karatéka-SL.png"
+            },
+            {
+                "id": "karateka_eb",
+                "gen": "EB",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Karatéka-EB.png"
+            }
+        ]
+    },
+    {
+        "id": "ornithologue",
+        "fr": "Ornithologue",
+        "en": "Bird Keeper",
+        "variants": [
+            {
+                "id": "ornithologue_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Ornithologue-RB.png"
+            },
+            {
+                "id": "ornithologue_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Ornithologue-OAC.png"
+            },
+            {
+                "id": "ornithologue_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Ornithologue-RS.png"
+            },
+            {
+                "id": "ornithologue_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Ornithologue-RFVF.png"
+            },
+            {
+                "id": "ornithologue_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Ornithologue-DP.png"
+            },
+            {
+                "id": "ornithologue_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Ornithologue-HGSS.png"
+            }
+        ]
+    },
+    {
+        "id": "motard",
+        "fr": "Motard",
+        "en": "Biker",
+        "variants": [
+            {
+                "id": "motard_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Motard-RB.png"
+            },
+            {
+                "id": "motard_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Motard-OAC.png"
+            },
+            {
+                "id": "motard_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Motard-RFVF.png"
+            },
+            {
+                "id": "motard_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Motard-DP.png"
+            },
+            {
+                "id": "motard_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Motard-HGSS.png"
+            },
+            {
+                "id": "motard_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Motard-NB.png"
+            }
+        ]
+    },
+    {
+        "id": "loubard",
+        "fr": "Loubard",
+        "en": "Cue Ball",
+        "variants": [
+            {
+                "id": "loubard_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Loubard-RB.png"
+            },
+            {
+                "id": "loubard_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Loubard-OAC.png"
+            },
+            {
+                "id": "loubard_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Loubard-RFVF.png"
+            },
+            {
+                "id": "loubard_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Loubard-DP.png"
+            },
+            {
+                "id": "loubard_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Loubard-HGSS.png"
+            },
+            {
+                "id": "loubard_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Loubard-NB.png"
+            }
+        ]
+    },
+    {
+        "id": "scientifique",
+        "fr": "Scientifique",
+        "en": "Scientist",
+        "variants": [
+            {
+                "id": "scientifique_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Scientifique-RB.png"
+            },
+            {
+                "id": "scientifique_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Scientifique-OAC.png"
+            },
+            {
+                "id": "scientifique_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Scientifique-RFVF.png"
+            },
+            {
+                "id": "scientifique_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Scientifique-DP.png"
+            },
+            {
+                "id": "scientifique_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Scientifique-HGSS.png"
+            },
+            {
+                "id": "scientifique_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Scientifique-NB.png"
+            },
+            {
+                "id": "scientifique_xy",
+                "gen": "XY",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Scientifique-XY.png"
+            },
+            {
+                "id": "scientifique_rosa",
+                "gen": "ROSA",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Scientifique-ROSA.png"
+            },
+            {
+                "id": "scientifique_sl",
+                "gen": "SL",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Scientifique-SL.png"
+            }
+        ]
+    },
+    {
+        "id": "sbirerocket",
+        "fr": "Sbire Rocket",
+        "en": "Team Rocket Grunt",
+        "variants": [
+            {
+                "id": "sbirerocket_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Sbire_Rocket-RB.png"
+            },
+            {
+                "id": "sbirerocket_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Sbire_Rocket-OAC.png"
+            },
+            {
+                "id": "sbirerocket_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Sbire_Rocket-RFVF.png"
+            },
+            {
+                "id": "sbirerocket_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Sbire_Rocket-HGSS.png"
+            }
+        ]
+    },
+    {
+        "id": "sbireaqua",
+        "fr": "Sbire Aqua",
+        "en": "Team Aqua Grunt",
+        "variants": [
+            {
+                "id": "sbireaqua_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Sbire_Aqua-RS.png"
+            },
+            {
+                "id": "sbireaqua_e",
+                "gen": "E",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Sbire_Aqua-E.png"
+            },
+            {
+                "id": "sbireaqua_rosa",
+                "gen": "ROSA",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Sbire_Aqua-ROSA.png"
+            }
+        ]
+    },
+    {
+        "id": "sbiremagma",
+        "fr": "Sbire Magma",
+        "en": "Team Magma Grunt",
+        "variants": [
+            {
+                "id": "sbiremagma_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Sbire_Magma-RS.png"
+            },
+            {
+                "id": "sbiremagma_e",
+                "gen": "E",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Sbire_Magma-E.png"
+            },
+            {
+                "id": "sbiremagma_rosa",
+                "gen": "ROSA",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Sbire_Magma-ROSA.png"
+            }
+        ]
+    },
+    {
+        "id": "sbiregalactique",
+        "fr": "Sbire Galactique",
+        "en": "Team Galactic Grunt",
+        "variants": [
+            {
+                "id": "sbiregalactique_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Sbire_Galactique-DP.png"
+            },
+            {
+                "id": "sbiregalactique_pt",
+                "gen": "Pt",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Sbire_Galactique-Pt.png"
+            }
+        ]
+    },
+    {
+        "id": "sbireplasma",
+        "fr": "Sbire Plasma",
+        "en": "Team Plasma Grunt",
+        "variants": [
+            {
+                "id": "sbireplasma_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Sbire_Plasma-NB.png"
+            },
+            {
+                "id": "sbireplasma_n2b2",
+                "gen": "N2B2",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Sbire_Plasma-N2B2.png"
+            }
+        ]
+    },
+    {
+        "id": "sbireflare",
+        "fr": "Sbire Flare",
+        "en": "Team Flare Grunt",
+        "variants": [
+            {
+                "id": "sbireflare_xy",
+                "gen": "XY",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Sbire_Flare-XY.png"
+            }
+        ]
+    },
+    {
+        "id": "sbireskull",
+        "fr": "Sbire Skull",
+        "en": "Team Skull Grunt",
+        "variants": [
+            {
+                "id": "sbireskull_sl",
+                "gen": "SL",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Sbire_Skull-SL.png"
+            },
+            {
+                "id": "sbireskull_usul",
+                "gen": "USUL",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Sbire_Skull-USUL.png"
+            }
+        ]
+    },
+    {
+        "id": "policier",
+        "fr": "Policier",
+        "en": "Police Officer",
+        "variants": [
+            {
+                "id": "policier_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Policier-OAC.png"
+            },
+            {
+                "id": "policier_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Policier-DP.png"
+            },
+            {
+                "id": "policier_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Policier-HGSS.png"
+            },
+            {
+                "id": "policier_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Policier-NB.png"
+            },
+            {
+                "id": "policier_eb",
+                "gen": "EB",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Policier-EB.png"
+            }
+        ]
+    },
+    {
+        "id": "eleveur",
+        "fr": "Éleveur",
+        "en": "Pokémon Breeder",
+        "variants": [
+            {
+                "id": "eleveur_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Éleveur-RS.png"
+            },
+            {
+                "id": "eleveur_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Éleveur-DP.png"
+            },
+            {
+                "id": "eleveur_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Éleveur-HGSS.png"
+            },
+            {
+                "id": "eleveur_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Éleveur-NB.png"
+            },
+            {
+                "id": "eleveur_xy",
+                "gen": "XY",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Éleveur-XY.png"
+            },
+            {
+                "id": "eleveur_rosa",
+                "gen": "ROSA",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Éleveur-ROSA.png"
+            },
+            {
+                "id": "eleveur_eb",
+                "gen": "EB",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Éleveur-EB.png"
+            }
+        ]
+    },
+    {
+        "id": "guitariste",
+        "fr": "Guitariste",
+        "en": "Guitarist",
+        "variants": [
+            {
+                "id": "guitariste_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Guitariste-OAC.png"
+            },
+            {
+                "id": "guitariste_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Guitariste-RS.png"
+            },
+            {
+                "id": "guitariste_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Guitariste-HGSS.png"
+            },
+            {
+                "id": "guitariste_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Guitariste-NB.png"
+            }
+        ]
+    },
+    {
+        "id": "randonneur",
+        "fr": "Randonneur",
+        "en": "Backpacker",
+        "variants": [
+            {
+                "id": "randonneur_nb",
+                "gen": "NB",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Randonneur-NB.png"
+            },
+            {
+                "id": "randonneur_xy",
+                "gen": "XY",
+                "rarity": "R",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Randonneur-XY.png"
+            },
+            {
+                "id": "randonneur_sl",
+                "gen": "SL",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Randonneur-SL.png"
+            },
+            {
+                "id": "randonneur_eb",
+                "gen": "EB",
+                "rarity": "E",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Randonneur-EB.png"
+            }
+        ]
+    },
+    {
+        "id": "croupier",
+        "fr": "Croupier",
+        "en": "Gamer",
+        "variants": [
+            {
+                "id": "croupier_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Croupier-RB.png"
+            },
+            {
+                "id": "croupier_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Croupier-RFVF.png"
+            }
+        ]
+    },
+    {
+        "id": "dompteur",
+        "fr": "Dompteur",
+        "en": "Tamer",
+        "variants": [
+            {
+                "id": "dompteur_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Dompteur-RB.png"
+            },
+            {
+                "id": "dompteur_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Dompteur-RFVF.png"
+            }
+        ]
+    },
+    {
+        "id": "exorciste",
+        "fr": "Exorciste",
+        "en": "Channeler",
+        "variants": [
+            {
+                "id": "exorciste_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Exorciste-RB.png"
+            },
+            {
+                "id": "exorciste_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Exorciste-RFVF.png"
+            }
+        ]
+    },
+    {
+        "id": "dresseurjrm",
+        "fr": "Dresseur Jr ♂",
+        "en": "Jr Trainer M",
+        "variants": [
+            {
+                "id": "dresseurjrm_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Dresseur_Jr♂-RB.png"
+            },
+            {
+                "id": "dresseurjrm_j",
+                "gen": "J",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Dresseur_Jr♂-J.png"
+            }
+        ]
+    },
+    {
+        "id": "dresseurjrf",
+        "fr": "Dresseur Jr ♀",
+        "en": "Jr Trainer F",
+        "variants": [
+            {
+                "id": "dresseurjrf_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Dresseur_Jr♀-RB.png"
+            },
+            {
+                "id": "dresseurjrf_j",
+                "gen": "J",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Dresseur_Jr♀-J.png"
+            }
+        ]
+    },
+    {
+        "id": "pokemaniac",
+        "fr": "Pokémaniac",
+        "en": "PokéManiac",
+        "variants": [
+            {
+                "id": "pokemaniac_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pokémaniac-RB.png"
+            },
+            {
+                "id": "pokemaniac_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pokémaniac-OAC.png"
+            },
+            {
+                "id": "pokemaniac_rs",
+                "gen": "RS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pokémaniac-RS.png"
+            },
+            {
+                "id": "pokemaniac_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pokémaniac-RFVF.png"
+            },
+            {
+                "id": "pokemaniac_dp",
+                "gen": "DP",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pokémaniac-DP.png"
+            },
+            {
+                "id": "pokemaniac_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Pokémaniac-HGSS.png"
+            }
+        ]
+    },
+    {
+        "id": "intello",
+        "fr": "Intello",
+        "en": "Super Nerd",
+        "variants": [
+            {
+                "id": "intello_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Intello-RB.png"
+            },
+            {
+                "id": "intello_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Intello-OAC.png"
+            },
+            {
+                "id": "intello_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Intello-RFVF.png"
+            },
+            {
+                "id": "intello_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Intello-HGSS.png"
+            }
+        ]
+    },
+    {
+        "id": "jongleur",
+        "fr": "Jongleur",
+        "en": "Juggler",
+        "variants": [
+            {
+                "id": "jongleur_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Jongleur-RB.png"
+            },
+            {
+                "id": "jongleur_oac",
+                "gen": "OAC",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Jongleur-OAC.png"
+            },
+            {
+                "id": "jongleur_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Jongleur-RFVF.png"
+            },
+            {
+                "id": "jongleur_hgss",
+                "gen": "HGSS",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Jongleur-HGSS.png"
+            }
+        ]
+    },
+    {
+        "id": "mecano",
+        "fr": "Mécano",
+        "en": "Engineer",
+        "variants": [
+            {
+                "id": "mecano_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Mécano-RB.png"
+            },
+            {
+                "id": "mecano_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Mécano-RFVF.png"
+            }
+        ]
+    },
+    {
+        "id": "rocker",
+        "fr": "Rocker",
+        "en": "Rocker",
+        "variants": [
+            {
+                "id": "rocker_rb",
+                "gen": "RB",
+                "rarity": "C",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Rocker-RB.png"
+            },
+            {
+                "id": "rocker_rfvf",
+                "gen": "RFVF",
+                "rarity": "U",
+                "img": "https://www.pokepedia.fr/wiki/Spécial:CheminFichier/Rocker-RFVF.png"
+            }
+        ]
+    }
+]

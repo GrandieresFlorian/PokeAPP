@@ -41,6 +41,21 @@ export function updateBoosterLogic() {
     renderBoosterStatus(boosterCountDisplay, boosterTimerText, boosterTimerDisplay);
     updateSpecialBoosterUI();
     
+    const TRAINER_COOLDOWN = 4 * 60 * 60 * 1000;
+    const trainerStatus = document.getElementById('trainer-booster-status');
+    const trainerTimerDisplay = document.getElementById('trainer-booster-timer-display');
+    const lastTrainerBooster = state.currentUserData.lastTrainerBooster || 0;
+    
+    if (now - lastTrainerBooster >= TRAINER_COOLDOWN) {
+        trainerStatus.style.display = 'none'; // Prêt à ouvrir !
+    } else {
+        trainerStatus.style.display = 'block';
+        const tLeft = TRAINER_COOLDOWN - (now - lastTrainerBooster);
+        const tHours = Math.floor(tLeft / 3600000);
+        const tMins = Math.floor((tLeft % 3600000) / 60000);
+        const tSecs = Math.floor((tLeft % 60000) / 1000);
+        trainerTimerDisplay.textContent = `${String(tHours).padStart(2, '0')}:${String(tMins).padStart(2, '0')}:${String(tSecs).padStart(2, '0')}`;
+    }
     clearInterval(state.boosterTimerInterval);
     state.boosterTimerInterval = setInterval(() => {
         if (state.currentUserData.boostersLeft < CONSTS.MAX_BOOSTERS) {
@@ -100,13 +115,16 @@ export function updateSpecialBoosterUI() {
 export function initBooster() {
     const boosterElement = document.getElementById('booster-pack');
     const specialBoosterElement = document.getElementById('special-booster-pack');
+    const trainerBoosterElement = document.getElementById('trainer-booster-pack');
     const resetButton = document.getElementById('reset-button');
     const autoOpenBtn = document.getElementById('auto-open-btn');
     const cardsContainer = document.getElementById('cards-container');
     const sectionBoosters = document.getElementById('section-boosters');
+    
 
     boosterElement.addEventListener('click', () => ouvrirBooster(false));
     specialBoosterElement.addEventListener('click', () => ouvrirBooster(true));
+    trainerBoosterElement.addEventListener('click', ouvrirBoosterDresseur);
 
     resetButton.addEventListener('click', () => { 
         cardsContainer.innerHTML = ''; 
@@ -114,6 +132,7 @@ export function initBooster() {
         resetButton.classList.add('hidden');
         
         boosterElement.classList.remove('hidden'); 
+        trainerBoosterElement.classList.remove('hidden');
         updateSpecialBoosterUI(); 
     });
 
@@ -348,6 +367,62 @@ function ouvrirBooster(isSpecial = false) {
     }, 600); 
 }
 
+export function ouvrirBoosterDresseur() {
+    if (!state.currentUser) { 
+        alert(state.currentLang==='en'?"You must be logged in to open packs!":"Vous devez être connecté pour ouvrir des boosters !"); 
+        return allerASection('section-auth'); 
+    }
+
+    const TRAINER_COOLDOWN = 4 * 60 * 60 * 1000; // 4 heures
+    const now = Date.now();
+    const lastOpened = state.currentUserData.lastTrainerBooster || 0;
+
+    if (now - lastOpened < TRAINER_COOLDOWN) {
+        alert("Le Booster Dresseur n'est pas encore prêt !");
+        return;
+    }
+
+    if (state.isOpening) return; 
+    state.isOpening = true;
+    
+    // On masque les autres boosters
+    document.getElementById('booster-pack').classList.add('hidden');
+    document.getElementById('special-booster-pack').classList.add('hidden');
+    
+    const trainerBoosterElement = document.getElementById('trainer-booster-pack');
+    const cardsContainer = document.getElementById('cards-container');
+    const autoOpenBtn = document.getElementById('auto-open-btn');
+    const resetButton = document.getElementById('reset-button');
+
+    trainerBoosterElement.classList.add('booster-animating');
+
+    setTimeout(() => {
+        trainerBoosterElement.classList.remove('booster-animating');
+        trainerBoosterElement.classList.add('hidden');
+        
+        cardsContainer.innerHTML = ''; 
+        cardsContainer.classList.remove('hidden'); 
+        state.cartesRetournees = 0; 
+        
+        // Tirage de 3 cartes Dresseur
+        state.currentPulls = [getRandomTrainer(), getRandomTrainer(), getRandomTrainer()];
+        state.currentPullIndex = 0;
+        
+        // Mise à jour du timer Firebase
+        state.currentUserData.lastTrainerBooster = now;
+        db.collection('users').doc(state.currentUser).update({
+            lastTrainerBooster: now
+        });
+        updateBoosterLogic();
+
+        autoOpenBtn.classList.remove('hidden');
+        autoOpenBtn.disabled = false;
+        resetButton.classList.add('hidden');
+
+        creerCarteDresseur(state.currentPulls[0], 0);
+        state.isOpening = false; 
+    }, 600);
+}
 export function creerCarteBaie(baieData, index) {
     let nomAffiche = state.currentLang === 'en' ? baieData.en : baieData.fr;
     let enName = baieData.en.toLowerCase().replace(/\s+/g, '-');
@@ -391,6 +466,71 @@ export function creerCarteBaie(baieData, index) {
                     const nextItem = state.currentPulls[state.currentPullIndex];
                     if (nextItem.isBaie) creerCarteBaie(nextItem.data, state.currentPullIndex);
                     else creerCarte(nextItem.data, nextItem.pokedexNumber, state.currentPullIndex);
+                }, 150); 
+            }
+
+            if (state.cartesRetournees === state.currentPulls.length) {
+                setTimeout(() => {
+                    const resetButton = document.getElementById('reset-button');
+                    const autoOpenBtn = document.getElementById('auto-open-btn');
+                    resetButton.classList.remove('hidden');
+                    resetButton.disabled = false;
+                    autoOpenBtn.classList.add('hidden'); 
+                }, 200);
+            }
+        }
+    });
+    document.getElementById('cards-container').appendChild(nouvelleCarte);
+}
+
+export function creerCarteDresseur(trainerData, index) {
+    let nomAffiche = state.currentLang === 'en' ? trainerData.en : trainerData.fr;
+
+    const cardHTML = `
+        <div class="card">
+            <div class="card-inner">
+                <div class="card-back"><div class="card-back-design">PokéApp</div></div>
+                <div class="card-front" style="background-color: #3498db; border-color: #2980b9;">
+                    <div class="card-header"><h1 class="pokemon-name">${nomAffiche}</h1><div class="icon" style="background: white; color: #2980b9;">${trainerData.rarity}</div></div>
+                    <div class="image-wrapper" style="background-color: #ecf0f1;"><img class="pokemon-image" src="${trainerData.img}" alt="Dresseur" style="object-fit: contain; height: 160px; padding: 10px; image-rendering: pixelated;"></div>
+                    <div class="card-subtext" style="justify-content:center;">Dresseur ${trainerData.gen}</div>
+                    <div class="stats-bar" style="justify-content:center; background-color:#2c3e50;"><span style="font-weight:bold; color: white;">CARTE DRESSEUR</span></div>
+                </div>
+            </div>
+        </div>`;
+
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = cardHTML;
+    const nouvelleCarte = tempDiv.firstElementChild;
+
+    nouvelleCarte.addEventListener('click', () => {
+        if (!nouvelleCarte.classList.contains('flipped')) {
+            // Logique de doublon et d'ajout à l'inventaire
+            if (!state.currentUserData.collection) state.currentUserData.collection = [];
+            
+            let existing = state.currentUserData.collection.find(c => c.isTrainer && c.variantId === trainerData.variantId);
+            const estDoublon = !!existing;
+
+            if (existing) {
+                existing.quantity = (existing.quantity || 1) + 1;
+            } else {
+                state.currentUserData.collection.push(trainerData);
+            }
+            db.collection('users').doc(state.currentUser).update({ collection: state.currentUserData.collection });
+
+            const badge = document.createElement('div');
+            badge.className = `badge-status ${estDoublon ? 'badge-doublon' : 'badge-nouveau'}`;
+            let lbl = estDoublon ? (state.currentLang === 'en' ? 'Duplicate' : 'Doublon') : (state.currentLang === 'en' ? 'New!' : 'Nouveau !');
+            badge.textContent = lbl;
+            nouvelleCarte.querySelector('.card-front').appendChild(badge);
+
+            nouvelleCarte.classList.add('flipped'); 
+            state.cartesRetournees++; 
+            
+            if (state.currentPullIndex < state.currentPulls.length - 1) {
+                state.currentPullIndex++;
+                setTimeout(() => {
+                    creerCarteDresseur(state.currentPulls[state.currentPullIndex], state.currentPullIndex);
                 }, 150); 
             }
 

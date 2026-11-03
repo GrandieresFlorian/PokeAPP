@@ -215,6 +215,55 @@ export const TOUTES_LES_BAIES = [
     { id: "selro", fr: "Baie Selro", en: "Roseli Berry" }, { id: "rangma", fr: "Baie Rangma", en: "Maranga Berry" }
 ];
 
+export const TOUS_LES_DRESSEURS = [
+    {
+        id: "canon", fr: "Canon", en: "Beauty",
+        variants: [
+            { id: "canon_g1", gen: "G1", rarity: "C", img: "URL_POKEPEDIA_CANON_G1.png" },
+            { id: "canon_g2", gen: "G2", rarity: "U", img: "URL_POKEPEDIA_CANON_G2.png" },
+            { id: "canon_g3", gen: "G3", rarity: "R", img: "URL_POKEPEDIA_CANON_G3.png" }
+        ]
+    },
+    {
+        id: "croupier", fr: "Croupier", en: "Gamer",
+        variants: [
+            { id: "croupier_g1", gen: "G1", rarity: "C", img: "URL_POKEPEDIA_CROUPIER_G1.png" }
+        ]
+    },
+    {
+        id: "gamin", fr: "Gamin", en: "Youngster",
+        variants: [
+            { id: "gamin_g1", gen: "G1", rarity: "C", img: "URL_POKEPEDIA_GAMIN_G1.png" },
+            { id: "gamin_g2", gen: "G2", rarity: "C", img: "URL_POKEPEDIA_GAMIN_G2.png" }
+        ]
+    },
+    // Ajoute ici le reste : Dompteur, Exorciste, Fillette, Gentleman, Intello, Rocket, etc.
+];
+
+// Fonction utilitaire pour tirer un dresseur au hasard
+export function getRandomTrainer() {
+    // On pioche dans les données chargées depuis dresseurs.json
+    const list = state.dresseursData;
+    if (!list || list.length === 0) return null;
+    
+    // 1. Choisir une classe au hasard (Canon, Gamin...)
+    const trainerClass = list[Math.floor(Math.random() * list.length)];
+    // 2. Choisir une variante de génération au hasard pour cette classe
+    const variant = trainerClass.variants[Math.floor(Math.random() * trainerClass.variants.length)];
+    
+    return {
+        isTrainer: true,
+        baseId: trainerClass.id,
+        variantId: variant.id,
+        fr: trainerClass.fr,
+        en: trainerClass.en,
+        gen: variant.gen,
+        rarity: variant.rarity,
+        img: variant.img,
+        quantity: 1,
+        date: Date.now()
+    };
+}
 export const BAIES_BOOSTERS = [
     { id: "ceriz", fr: "Baie Ceriz", en: "Cheri Berry" }, { id: "pecha", fr: "Baie Pêcha", en: "Pecha Berry" },
     { id: "oran", fr: "Baie Oran", en: "Oran Berry" }, { id: "sitrus", fr: "Baie Sitrus", en: "Sitrus Berry" },

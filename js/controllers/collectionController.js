@@ -237,14 +237,16 @@ export function initCollection() {
     const tabBaies = document.getElementById('tab-baies'); 
     const filterRarity = document.getElementById('filter-rarity');
     const filterOwned = document.getElementById('filter-owned');
+    const tabDresseurs = document.getElementById('tab-dresseurs');
 
     function setTabActive(activeTab) {
-        [tabNormal, tabShiny, tabMega, tabMegaShiny, tabBaies].forEach(tab => { if(tab) tab.classList.remove('active'); });
+        [tabNormal, tabShiny, tabMega, tabMegaShiny, tabBaies, tabDresseurs].forEach(tab => { if(tab) tab.classList.remove('active'); });
         if (activeTab) activeTab.classList.add('active');
         if (activeTab === tabMega || activeTab === tabMegaShiny || activeTab === tabBaies) {
             filterRarity.value = "all"; filterRarity.disabled = true;
         } else filterRarity.disabled = false;
     }
+    if(tabDresseurs) tabDresseurs.addEventListener('click', () => { state.collectionMode = 'dresseurs'; setTabActive(tabDresseurs); afficherCollection(); });
 
     if(tabNormal) tabNormal.addEventListener('click', () => { state.collectionMode = 'normal'; setTabActive(tabNormal); afficherCollection(); });
     if(tabShiny) tabShiny.addEventListener('click', () => { state.collectionMode = 'shiny'; setTabActive(tabShiny); afficherCollection(); });
@@ -319,6 +321,7 @@ export function afficherCollection() {
     if (!collectionContainer || !collectionCount) return;
 
     if (state.collectionMode === 'baies') { afficherBaies(collectionContainer, collectionCount, filterOwned ? filterOwned.checked : false); return; }
+    if (state.collectionMode === 'dresseurs') { afficherDresseurs(collectionContainer, collectionCount, filterOwnedVal); return; }
     if (!state.currentUser) { collectionContainer.innerHTML = "<p>Veuillez vous connecter.</p>"; collectionCount.textContent = `0 / ${CONSTS.MAX_POKEMON}`; return; }
     if (state.pokemonDataList.length === 0) { collectionContainer.innerHTML = "<p>Chargement des données...</p>"; return; }
 
@@ -516,4 +519,70 @@ function afficherBaies(container, countDisplay, ownedOnlyVal) {
         }
     });
     container.innerHTML = htmlContent; countDisplay.textContent = `${uniquesCount} / ${maxAffiche}`;
+}
+
+function afficherDresseurs(container, countDisplay, ownedOnlyVal) {
+    const mesDresseurs = (state.currentUserData.collection || []).filter(c => c.isTrainer);
+    
+    const dresseursMap = {}; 
+    mesDresseurs.forEach(d => { 
+        const q = Number(d.quantity || 1);
+        dresseursMap[d.variantId] = (dresseursMap[d.variantId] || 0) + q; 
+    });
+
+    let maxAffiche = 0; let uniquesCount = 0; let htmlContent = "";
+
+    // On utilise state.dresseursData directement
+    const TOUS_LES_DRESSEURS = state.dresseursData || [];
+    
+    TOUS_LES_DRESSEURS.forEach(trainerClass => {
+        trainerClass.variants.forEach(variant => {
+            const quantite = dresseursMap[variant.id] || 0; 
+            const possede = quantite > 0;
+            
+            if (ownedOnlyVal && !possede) return;
+
+            maxAffiche++; if (possede) uniquesCount++;
+            let nomAffiche = state.currentLang === 'en' ? trainerClass.en : trainerClass.fr;
+
+            if (possede) {
+                let badgeQuantite = quantite > 1 ? `<div class="badge-quantite">X${quantite}</div>` : "";
+                htmlContent += `
+                    <div class="card flipped" style="cursor: default;">
+                        <div class="card-inner">
+                            <div class="card-front" style="background-color: #3498db; border-color: #2980b9; position: relative;">
+                                ${badgeQuantite}
+                                <div class="card-header">
+                                    <h1 class="pokemon-name">${nomAffiche}</h1>
+                                    <div class="icon" style="background-color: white; color: #2980b9;">${variant.rarity}</div>
+                                </div>
+                                <div class="image-wrapper" style="background-color: #ecf0f1;">
+                                    <img class="pokemon-image" src="${variant.img}" alt="Dresseur" style="object-fit: contain; height: 160px; padding: 10px; image-rendering: pixelated;" loading="lazy">
+                                </div>
+                                <div class="card-subtext" style="justify-content:center;">Dresseur ${variant.gen}</div>
+                                <div class="stats-bar" style="justify-content:center; background-color:#2c3e50;">
+                                    <span style="font-weight:bold; color: white;">CARTE DRESSEUR</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+            } else {
+                htmlContent += `
+                    <div class="card flipped">
+                        <div class="card-inner">
+                            <div class="card-front locked-card" style="background-color: #1a1a1a;">
+                                <div class="card-header"><h1 class="pokemon-name" style="color: #555;">???</h1></div>
+                                <div class="image-wrapper" style="background-color: #222;">
+                                    <img class="pokemon-image silhouette" src="${variant.img}" style="object-fit: contain; height: 160px; padding: 10px; image-rendering: pixelated;" loading="lazy">
+                                </div>
+                                <div class="card-subtext" style="color: #555; justify-content:center;">Inconnu</div>
+                                <div class="stats-bar" style="background-color: #111; justify-content:center;"><span style="color:#555;">DRESSEUR</span></div>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+        });
+    });
+    container.innerHTML = htmlContent; 
+    countDisplay.textContent = `${uniquesCount} / ${maxAffiche}`;
 }
