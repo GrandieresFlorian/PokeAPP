@@ -9,6 +9,11 @@ export function updateBoosterLogic() {
         return;
     }
 
+    const maxDisplay = document.getElementById('trainer-max-display');
+    if (maxDisplay) {
+        maxDisplay.textContent = `/ ${state.trainerConfig.maxBoosters}`;
+    }
+
     document.getElementById('trainer-max-display').textContent = `/ ${state.trainerConfig.maxBoosters}`;
 
     clearInterval(state.boosterTimerInterval);
