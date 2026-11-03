@@ -2,13 +2,31 @@
     {
         "id": "canon",
         "fr": "Canon",
-        "en": "Beauty",
+        "en": "Canon",
         "variants": [
             {
-                "id": "canon_retro",
-                "gen": "Retro",
-                "rarity": "U",
+                "id": "canon_g1",
+                "gen": "G1",
+                "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/beauty-gen1rb.png"
+            },
+            {
+                "id": "canon_g2",
+                "gen": "G2",
+                "rarity": "C",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/beauty-gen2.png"
+            },
+            {
+                "id": "canon_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/beauty-gen3.png"
+            },
+            {
+                "id": "canon_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/beauty-gen6.png"
             },
             {
                 "id": "canon_moderne",
@@ -21,13 +39,37 @@
     {
         "id": "gamin",
         "fr": "Gamin",
-        "en": "Youngster",
+        "en": "Gamin",
         "variants": [
             {
-                "id": "gamin_retro",
-                "gen": "Retro",
-                "rarity": "U",
+                "id": "gamin_g1",
+                "gen": "G1",
+                "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/youngster-gen1rb.png"
+            },
+            {
+                "id": "gamin_g2",
+                "gen": "G2",
+                "rarity": "C",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/youngster-gen2.png"
+            },
+            {
+                "id": "gamin_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/youngster-gen3.png"
+            },
+            {
+                "id": "gamin_g4",
+                "gen": "G4",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/youngster-gen4.png"
+            },
+            {
+                "id": "gamin_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/youngster-gen6.png"
             },
             {
                 "id": "gamin_moderne",
@@ -40,18 +82,42 @@
     {
         "id": "fillette",
         "fr": "Fillette",
-        "en": "Lass",
+        "en": "Fillette",
         "variants": [
             {
-                "id": "fillette_retro",
-                "gen": "Retro",
-                "rarity": "U",
+                "id": "fillette_g1",
+                "gen": "G1",
+                "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/lass-gen1rb.png"
+            },
+            {
+                "id": "fillette_g2",
+                "gen": "G2",
+                "rarity": "C",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lass-gen2.png"
+            },
+            {
+                "id": "fillette_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lass-gen3.png"
+            },
+            {
+                "id": "fillette_g4",
+                "gen": "G4",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lass-gen4.png"
+            },
+            {
+                "id": "fillette_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lass-gen6.png"
             },
             {
                 "id": "fillette_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/lass.png"
             }
         ]
@@ -59,18 +125,36 @@
     {
         "id": "scout",
         "fr": "Scout",
-        "en": "Bug Catcher",
+        "en": "Scout",
         "variants": [
             {
-                "id": "scout_retro",
-                "gen": "Retro",
-                "rarity": "U",
+                "id": "scout_g1",
+                "gen": "G1",
+                "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/bugcatcher-gen1rb.png"
+            },
+            {
+                "id": "scout_g2",
+                "gen": "G2",
+                "rarity": "C",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/bugcatcher-gen2.png"
+            },
+            {
+                "id": "scout_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/bugcatcher-gen3.png"
+            },
+            {
+                "id": "scout_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/bugcatcher-gen6.png"
             },
             {
                 "id": "scout_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/bugcatcher.png"
             }
         ]
@@ -78,18 +162,42 @@
     {
         "id": "montagnard",
         "fr": "Montagnard",
-        "en": "Hiker",
+        "en": "Montagnard",
         "variants": [
             {
-                "id": "montagnard_retro",
-                "gen": "Retro",
+                "id": "montagnard_g1",
+                "gen": "G1",
                 "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/hiker-gen1rb.png"
             },
             {
+                "id": "montagnard_g2",
+                "gen": "G2",
+                "rarity": "C",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/hiker-gen2.png"
+            },
+            {
+                "id": "montagnard_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/hiker-gen3.png"
+            },
+            {
+                "id": "montagnard_g4",
+                "gen": "G4",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/hiker-gen4.png"
+            },
+            {
+                "id": "montagnard_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/hiker-gen6.png"
+            },
+            {
                 "id": "montagnard_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/hiker.png"
             }
         ]
@@ -97,18 +205,30 @@
     {
         "id": "campeur",
         "fr": "Campeur",
-        "en": "Camper",
+        "en": "Campeur",
         "variants": [
             {
-                "id": "campeur_retro",
-                "gen": "Retro",
+                "id": "campeur_g2",
+                "gen": "G2",
+                "rarity": "C",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/camper-gen2.png"
+            },
+            {
+                "id": "campeur_g3",
+                "gen": "G3",
                 "rarity": "U",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/camper-gen1rb.png"
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/camper-gen3.png"
+            },
+            {
+                "id": "campeur_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/camper-gen6.png"
             },
             {
                 "id": "campeur_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/camper.png"
             }
         ]
@@ -116,13 +236,25 @@
     {
         "id": "piquenique",
         "fr": "Pique-Nique",
-        "en": "Picnicker",
+        "en": "Pique-Nique",
         "variants": [
             {
-                "id": "piquenique_retro",
-                "gen": "Retro",
+                "id": "piquenique_g2",
+                "gen": "G2",
+                "rarity": "C",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/picnicker-gen2.png"
+            },
+            {
+                "id": "piquenique_g3",
+                "gen": "G3",
                 "rarity": "U",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/picnicker-gen1rb.png"
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/picnicker-gen3.png"
+            },
+            {
+                "id": "piquenique_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/picnicker-gen6.png"
             },
             {
                 "id": "piquenique_moderne",
@@ -135,18 +267,30 @@
     {
         "id": "nageur",
         "fr": "Nageur",
-        "en": "Swimmer M",
+        "en": "Nageur",
         "variants": [
             {
-                "id": "nageur_retro",
-                "gen": "Retro",
+                "id": "nageur_g1",
+                "gen": "G1",
                 "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/swimmer-gen1rb.png"
             },
             {
+                "id": "nageur_g4",
+                "gen": "G4",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/swimmer-gen4.png"
+            },
+            {
+                "id": "nageur_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/swimmer-gen6.png"
+            },
+            {
                 "id": "nageur_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/swimmer.png"
             }
         ]
@@ -154,18 +298,36 @@
     {
         "id": "nageuse",
         "fr": "Nageuse",
-        "en": "Swimmer F",
+        "en": "Nageuse",
         "variants": [
             {
-                "id": "nageuse_retro",
-                "gen": "Retro",
+                "id": "nageuse_g2",
+                "gen": "G2",
+                "rarity": "C",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/swimmerf-gen2.png"
+            },
+            {
+                "id": "nageuse_g3",
+                "gen": "G3",
                 "rarity": "U",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/swimmerf-gen1rb.png"
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/swimmerf-gen3.png"
+            },
+            {
+                "id": "nageuse_g4",
+                "gen": "G4",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/swimmerf-gen4.png"
+            },
+            {
+                "id": "nageuse_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/swimmerf-gen6.png"
             },
             {
                 "id": "nageuse_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/swimmerf.png"
             }
         ]
@@ -173,18 +335,36 @@
     {
         "id": "marin",
         "fr": "Marin",
-        "en": "Sailor",
+        "en": "Marin",
         "variants": [
             {
-                "id": "marin_retro",
-                "gen": "Retro",
+                "id": "marin_g1",
+                "gen": "G1",
                 "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/sailor-gen1rb.png"
             },
             {
+                "id": "marin_g2",
+                "gen": "G2",
+                "rarity": "C",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/sailor-gen2.png"
+            },
+            {
+                "id": "marin_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/sailor-gen3.png"
+            },
+            {
+                "id": "marin_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/sailor-gen6.png"
+            },
+            {
                 "id": "marin_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/sailor.png"
             }
         ]
@@ -192,18 +372,36 @@
     {
         "id": "pecheur",
         "fr": "Pêcheur",
-        "en": "Fisherman",
+        "en": "Pêcheur",
         "variants": [
             {
-                "id": "pecheur_retro",
-                "gen": "Retro",
+                "id": "pecheur_g1",
+                "gen": "G1",
                 "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/fisherman-gen1rb.png"
             },
             {
+                "id": "pecheur_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/fisherman-gen3.png"
+            },
+            {
+                "id": "pecheur_g4",
+                "gen": "G4",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/fisherman-gen4.png"
+            },
+            {
+                "id": "pecheur_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/fisherman-gen6.png"
+            },
+            {
                 "id": "pecheur_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/fisherman.png"
             }
         ]
@@ -211,18 +409,42 @@
     {
         "id": "topdresseurm",
         "fr": "Topdresseur ♂",
-        "en": "Ace Trainer M",
+        "en": "Topdresseur ♂",
         "variants": [
             {
-                "id": "topdresseurm_retro",
-                "gen": "Retro",
+                "id": "topdresseurm_g1",
+                "gen": "G1",
                 "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/acetrainer-gen1rb.png"
             },
             {
+                "id": "topdresseurm_g2",
+                "gen": "G2",
+                "rarity": "C",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/acetrainer-gen2.png"
+            },
+            {
+                "id": "topdresseurm_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/acetrainer-gen3.png"
+            },
+            {
+                "id": "topdresseurm_g4",
+                "gen": "G4",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/acetrainer-gen4.png"
+            },
+            {
+                "id": "topdresseurm_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/acetrainer-gen6.png"
+            },
+            {
                 "id": "topdresseurm_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/acetrainer.png"
             }
         ]
@@ -230,18 +452,42 @@
     {
         "id": "topdresseurf",
         "fr": "Topdresseur ♀",
-        "en": "Ace Trainer F",
+        "en": "Topdresseur ♀",
         "variants": [
             {
-                "id": "topdresseurf_retro",
-                "gen": "Retro",
+                "id": "topdresseurf_g1",
+                "gen": "G1",
                 "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/acetrainerf-gen1rb.png"
             },
             {
+                "id": "topdresseurf_g2",
+                "gen": "G2",
+                "rarity": "C",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/acetrainerf-gen2.png"
+            },
+            {
+                "id": "topdresseurf_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/acetrainerf-gen3.png"
+            },
+            {
+                "id": "topdresseurf_g4",
+                "gen": "G4",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/acetrainerf-gen4.png"
+            },
+            {
+                "id": "topdresseurf_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/acetrainerf-gen6.png"
+            },
+            {
                 "id": "topdresseurf_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/acetrainerf.png"
             }
         ]
@@ -249,18 +495,30 @@
     {
         "id": "richard",
         "fr": "Richard",
-        "en": "Rich Boy",
+        "en": "Richard",
         "variants": [
             {
-                "id": "richard_retro",
-                "gen": "Retro",
+                "id": "richard_g3",
+                "gen": "G3",
                 "rarity": "U",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/richboy-gen1rb.png"
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/richboy-gen3.png"
+            },
+            {
+                "id": "richard_g4",
+                "gen": "G4",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/richboy-gen4.png"
+            },
+            {
+                "id": "richard_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/richboy-gen6.png"
             },
             {
                 "id": "richard_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/richboy.png"
             }
         ]
@@ -268,18 +526,30 @@
     {
         "id": "mademoiselle",
         "fr": "Mademoiselle",
-        "en": "Lady",
+        "en": "Mademoiselle",
         "variants": [
             {
-                "id": "mademoiselle_retro",
-                "gen": "Retro",
+                "id": "mademoiselle_g3",
+                "gen": "G3",
                 "rarity": "U",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/lady-gen1rb.png"
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lady-gen3.png"
+            },
+            {
+                "id": "mademoiselle_g4",
+                "gen": "G4",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lady-gen4.png"
+            },
+            {
+                "id": "mademoiselle_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/lady-gen6.png"
             },
             {
                 "id": "mademoiselle_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/lady.png"
             }
         ]
@@ -290,15 +560,39 @@
         "en": "Gentleman",
         "variants": [
             {
-                "id": "gentleman_retro",
-                "gen": "Retro",
+                "id": "gentleman_g1",
+                "gen": "G1",
                 "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/gentleman-gen1rb.png"
             },
             {
+                "id": "gentleman_g2",
+                "gen": "G2",
+                "rarity": "C",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/gentleman-gen2.png"
+            },
+            {
+                "id": "gentleman_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/gentleman-gen3.png"
+            },
+            {
+                "id": "gentleman_g4",
+                "gen": "G4",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/gentleman-gen4.png"
+            },
+            {
+                "id": "gentleman_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/gentleman-gen6.png"
+            },
+            {
                 "id": "gentleman_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/gentleman.png"
             }
         ]
@@ -306,37 +600,61 @@
     {
         "id": "mystimaniac",
         "fr": "Mystimaniac",
-        "en": "Hex Maniac",
+        "en": "Mystimaniac",
         "variants": [
             {
-                "id": "mystimaniac_retro",
-                "gen": "Retro",
+                "id": "mystimaniac_g3",
+                "gen": "G3",
                 "rarity": "U",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/hexmaniac-gen1rb.png"
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/hexmaniac-gen3.png"
             },
             {
-                "id": "mystimaniac_moderne",
-                "gen": "Moderne",
+                "id": "mystimaniac_g6",
+                "gen": "G6",
                 "rarity": "R",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/hexmaniac.png"
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/hexmaniac-gen6.png"
             }
         ]
     },
     {
         "id": "kinesiste",
         "fr": "Kinésiste",
-        "en": "Psychic",
+        "en": "Kinésiste",
         "variants": [
             {
-                "id": "kinesiste_retro",
-                "gen": "Retro",
+                "id": "kinesiste_g1",
+                "gen": "G1",
                 "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/psychic-gen1rb.png"
             },
             {
+                "id": "kinesiste_g2",
+                "gen": "G2",
+                "rarity": "C",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/psychic-gen2.png"
+            },
+            {
+                "id": "kinesiste_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/psychic-gen3.png"
+            },
+            {
+                "id": "kinesiste_g4",
+                "gen": "G4",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/psychic-gen4.png"
+            },
+            {
+                "id": "kinesiste_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/psychic-gen6.png"
+            },
+            {
                 "id": "kinesiste_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/psychic.png"
             }
         ]
@@ -344,18 +662,42 @@
     {
         "id": "karateka",
         "fr": "Karatéka",
-        "en": "Black Belt",
+        "en": "Karatéka",
         "variants": [
             {
-                "id": "karateka_retro",
-                "gen": "Retro",
+                "id": "karateka_g1",
+                "gen": "G1",
                 "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/blackbelt-gen1rb.png"
             },
             {
+                "id": "karateka_g2",
+                "gen": "G2",
+                "rarity": "C",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/blackbelt-gen2.png"
+            },
+            {
+                "id": "karateka_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/blackbelt-gen3.png"
+            },
+            {
+                "id": "karateka_g4",
+                "gen": "G4",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/blackbelt-gen4.png"
+            },
+            {
+                "id": "karateka_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/blackbelt-gen6.png"
+            },
+            {
                 "id": "karateka_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/blackbelt.png"
             }
         ]
@@ -363,18 +705,36 @@
     {
         "id": "ornithologue",
         "fr": "Ornithologue",
-        "en": "Bird Keeper",
+        "en": "Ornithologue",
         "variants": [
             {
-                "id": "ornithologue_retro",
-                "gen": "Retro",
-                "rarity": "U",
+                "id": "ornithologue_g1",
+                "gen": "G1",
+                "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/birdkeeper-gen1rb.png"
+            },
+            {
+                "id": "ornithologue_g2",
+                "gen": "G2",
+                "rarity": "C",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/birdkeeper-gen2.png"
+            },
+            {
+                "id": "ornithologue_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/birdkeeper-gen3.png"
+            },
+            {
+                "id": "ornithologue_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/birdkeeper-gen6.png"
             },
             {
                 "id": "ornithologue_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/birdkeeper.png"
             }
         ]
@@ -382,18 +742,36 @@
     {
         "id": "motard",
         "fr": "Motard",
-        "en": "Biker",
+        "en": "Motard",
         "variants": [
             {
-                "id": "motard_retro",
-                "gen": "Retro",
+                "id": "motard_g1",
+                "gen": "G1",
                 "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/biker-gen1rb.png"
             },
             {
+                "id": "motard_g2",
+                "gen": "G2",
+                "rarity": "C",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/biker-gen2.png"
+            },
+            {
+                "id": "motard_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/biker-gen3.png"
+            },
+            {
+                "id": "motard_g4",
+                "gen": "G4",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/biker-gen4.png"
+            },
+            {
                 "id": "motard_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/biker.png"
             }
         ]
@@ -401,32 +779,56 @@
     {
         "id": "loubard",
         "fr": "Loubard",
-        "en": "Cue Ball",
+        "en": "Loubard",
         "variants": [
             {
-                "id": "loubard_retro",
-                "gen": "Retro",
-                "rarity": "U",
+                "id": "loubard_g1",
+                "gen": "G1",
+                "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/cueball-gen1rb.png"
             },
             {
-                "id": "loubard_moderne",
-                "gen": "Moderne",
-                "rarity": "R",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/cueball.png"
+                "id": "loubard_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/cueball-gen3.png"
             }
         ]
     },
     {
         "id": "scientifique",
         "fr": "Scientifique",
-        "en": "Scientist",
+        "en": "Scientifique",
         "variants": [
             {
-                "id": "scientifique_retro",
-                "gen": "Retro",
+                "id": "scientifique_g1",
+                "gen": "G1",
                 "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/scientist-gen1rb.png"
+            },
+            {
+                "id": "scientifique_g2",
+                "gen": "G2",
+                "rarity": "C",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/scientist-gen2.png"
+            },
+            {
+                "id": "scientifique_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/scientist-gen3.png"
+            },
+            {
+                "id": "scientifique_g4",
+                "gen": "G4",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/scientist-gen4.png"
+            },
+            {
+                "id": "scientifique_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/scientist-gen6.png"
             },
             {
                 "id": "scientifique_moderne",
@@ -439,18 +841,18 @@
     {
         "id": "sbirerocket",
         "fr": "Sbire Rocket",
-        "en": "Team Rocket Grunt",
+        "en": "Sbire Rocket",
         "variants": [
             {
-                "id": "sbirerocket_retro",
-                "gen": "Retro",
-                "rarity": "U",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/rocketgrunt-gen1rb.png"
+                "id": "sbirerocket_g2",
+                "gen": "G2",
+                "rarity": "C",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/rocketgrunt-gen2.png"
             },
             {
                 "id": "sbirerocket_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/rocketgrunt.png"
             }
         ]
@@ -458,14 +860,8 @@
     {
         "id": "sbireaqua",
         "fr": "Sbire Aqua",
-        "en": "Team Aqua Grunt",
+        "en": "Sbire Aqua",
         "variants": [
-            {
-                "id": "sbireaqua_retro",
-                "gen": "Retro",
-                "rarity": "C",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/aquagrunt-gen1rb.png"
-            },
             {
                 "id": "sbireaqua_moderne",
                 "gen": "Moderne",
@@ -477,18 +873,12 @@
     {
         "id": "sbiremagma",
         "fr": "Sbire Magma",
-        "en": "Team Magma Grunt",
+        "en": "Sbire Magma",
         "variants": [
-            {
-                "id": "sbiremagma_retro",
-                "gen": "Retro",
-                "rarity": "U",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/magmagrunt-gen1rb.png"
-            },
             {
                 "id": "sbiremagma_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/magmagrunt.png"
             }
         ]
@@ -496,14 +886,8 @@
     {
         "id": "sbiregalactique",
         "fr": "Sbire Galactique",
-        "en": "Team Galactic Grunt",
+        "en": "Sbire Galactique",
         "variants": [
-            {
-                "id": "sbiregalactique_retro",
-                "gen": "Retro",
-                "rarity": "U",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/galacticgrunt-gen1rb.png"
-            },
             {
                 "id": "sbiregalactique_moderne",
                 "gen": "Moderne",
@@ -515,18 +899,12 @@
     {
         "id": "sbireplasma",
         "fr": "Sbire Plasma",
-        "en": "Team Plasma Grunt",
+        "en": "Sbire Plasma",
         "variants": [
-            {
-                "id": "sbireplasma_retro",
-                "gen": "Retro",
-                "rarity": "U",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/plasmagrunt-gen1rb.png"
-            },
             {
                 "id": "sbireplasma_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/plasmagrunt.png"
             }
         ]
@@ -534,18 +912,12 @@
     {
         "id": "sbireflare",
         "fr": "Sbire Flare",
-        "en": "Team Flare Grunt",
+        "en": "Sbire Flare",
         "variants": [
-            {
-                "id": "sbireflare_retro",
-                "gen": "Retro",
-                "rarity": "C",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/flaregrunt-gen1rb.png"
-            },
             {
                 "id": "sbireflare_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/flaregrunt.png"
             }
         ]
@@ -553,56 +925,43 @@
     {
         "id": "sbireskull",
         "fr": "Sbire Skull",
-        "en": "Team Skull Grunt",
+        "en": "Sbire Skull",
         "variants": [
-            {
-                "id": "sbireskull_retro",
-                "gen": "Retro",
-                "rarity": "U",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/skullgrunt-gen1rb.png"
-            },
             {
                 "id": "sbireskull_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/skullgrunt.png"
-            }
-        ]
-    },
-    {
-        "id": "policier",
-        "fr": "Policier",
-        "en": "Police Officer",
-        "variants": [
-            {
-                "id": "policier_retro",
-                "gen": "Retro",
-                "rarity": "U",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/policeofficer-gen1rb.png"
-            },
-            {
-                "id": "policier_moderne",
-                "gen": "Moderne",
-                "rarity": "R",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/policeofficer.png"
             }
         ]
     },
     {
         "id": "eleveur",
         "fr": "Éleveur",
-        "en": "Pokémon Breeder",
+        "en": "Éleveur",
         "variants": [
             {
-                "id": "eleveur_retro",
-                "gen": "Retro",
-                "rarity": "C",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/pokemonbreeder-gen1rb.png"
+                "id": "eleveur_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/pokemonbreeder-gen3.png"
+            },
+            {
+                "id": "eleveur_g4",
+                "gen": "G4",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/pokemonbreeder-gen4.png"
+            },
+            {
+                "id": "eleveur_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/pokemonbreeder-gen6.png"
             },
             {
                 "id": "eleveur_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/pokemonbreeder.png"
             }
         ]
@@ -610,18 +969,36 @@
     {
         "id": "guitariste",
         "fr": "Guitariste",
-        "en": "Guitarist",
+        "en": "Guitariste",
         "variants": [
             {
-                "id": "guitariste_retro",
-                "gen": "Retro",
+                "id": "guitariste_g2",
+                "gen": "G2",
+                "rarity": "C",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/guitarist-gen2.png"
+            },
+            {
+                "id": "guitariste_g3",
+                "gen": "G3",
                 "rarity": "U",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/guitarist-gen1rb.png"
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/guitarist-gen3.png"
+            },
+            {
+                "id": "guitariste_g4",
+                "gen": "G4",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/guitarist-gen4.png"
+            },
+            {
+                "id": "guitariste_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/guitarist-gen6.png"
             },
             {
                 "id": "guitariste_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/guitarist.png"
             }
         ]
@@ -629,18 +1006,18 @@
     {
         "id": "randonneur",
         "fr": "Randonneur",
-        "en": "Backpacker",
+        "en": "Randonneur",
         "variants": [
             {
-                "id": "randonneur_retro",
-                "gen": "Retro",
-                "rarity": "C",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/backpacker-gen1rb.png"
+                "id": "randonneur_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/backpacker-gen6.png"
             },
             {
                 "id": "randonneur_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/backpacker.png"
             }
         ]
@@ -648,70 +1025,82 @@
     {
         "id": "croupier",
         "fr": "Croupier",
-        "en": "Gamer",
+        "en": "Croupier",
         "variants": [
             {
-                "id": "croupier_retro",
-                "gen": "Retro",
+                "id": "croupier_g3",
+                "gen": "G3",
                 "rarity": "U",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/gamer-gen1rb.png"
-            },
-            {
-                "id": "croupier_moderne",
-                "gen": "Moderne",
-                "rarity": "R",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/gamer.png"
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/gamer-gen3.png"
             }
         ]
     },
     {
         "id": "dompteur",
         "fr": "Dompteur",
-        "en": "Tamer",
+        "en": "Dompteur",
         "variants": [
             {
-                "id": "dompteur_retro",
-                "gen": "Retro",
+                "id": "dompteur_g1",
+                "gen": "G1",
                 "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/tamer-gen1rb.png"
             },
             {
-                "id": "dompteur_moderne",
-                "gen": "Moderne",
-                "rarity": "R",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/tamer.png"
+                "id": "dompteur_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/tamer-gen3.png"
             }
         ]
     },
     {
         "id": "exorciste",
         "fr": "Exorciste",
-        "en": "Channeler",
+        "en": "Exorciste",
         "variants": [
             {
-                "id": "exorciste_retro",
-                "gen": "Retro",
-                "rarity": "U",
+                "id": "exorciste_g1",
+                "gen": "G1",
+                "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/channeler-gen1rb.png"
             },
             {
-                "id": "exorciste_moderne",
-                "gen": "Moderne",
-                "rarity": "E",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/channeler.png"
+                "id": "exorciste_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/channeler-gen3.png"
             }
         ]
     },
     {
         "id": "pokemaniac",
         "fr": "Pokémaniac",
-        "en": "PokéManiac",
+        "en": "Pokémaniac",
         "variants": [
             {
-                "id": "pokemaniac_retro",
-                "gen": "Retro",
+                "id": "pokemaniac_g1",
+                "gen": "G1",
                 "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/pokemaniac-gen1rb.png"
+            },
+            {
+                "id": "pokemaniac_g2",
+                "gen": "G2",
+                "rarity": "C",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/pokemaniac-gen2.png"
+            },
+            {
+                "id": "pokemaniac_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/pokemaniac-gen3.png"
+            },
+            {
+                "id": "pokemaniac_g6",
+                "gen": "G6",
+                "rarity": "R",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/pokemaniac-gen6.png"
             },
             {
                 "id": "pokemaniac_moderne",
@@ -724,18 +1113,30 @@
     {
         "id": "intello",
         "fr": "Intello",
-        "en": "Super Nerd",
+        "en": "Intello",
         "variants": [
             {
-                "id": "intello_retro",
-                "gen": "Retro",
+                "id": "intello_g1",
+                "gen": "G1",
                 "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/supernerd-gen1rb.png"
             },
             {
+                "id": "intello_g2",
+                "gen": "G2",
+                "rarity": "C",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/supernerd-gen2.png"
+            },
+            {
+                "id": "intello_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/supernerd-gen3.png"
+            },
+            {
                 "id": "intello_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/supernerd.png"
             }
         ]
@@ -743,18 +1144,30 @@
     {
         "id": "jongleur",
         "fr": "Jongleur",
-        "en": "Juggler",
+        "en": "Jongleur",
         "variants": [
             {
-                "id": "jongleur_retro",
-                "gen": "Retro",
-                "rarity": "U",
+                "id": "jongleur_g1",
+                "gen": "G1",
+                "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/juggler-gen1rb.png"
+            },
+            {
+                "id": "jongleur_g2",
+                "gen": "G2",
+                "rarity": "C",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/juggler-gen2.png"
+            },
+            {
+                "id": "jongleur_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/juggler-gen3.png"
             },
             {
                 "id": "jongleur_moderne",
                 "gen": "Moderne",
-                "rarity": "R",
+                "rarity": "E",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/juggler.png"
             }
         ]
@@ -762,19 +1175,19 @@
     {
         "id": "mecano",
         "fr": "Mécano",
-        "en": "Engineer",
+        "en": "Mécano",
         "variants": [
             {
-                "id": "mecano_retro",
-                "gen": "Retro",
+                "id": "mecano_g1",
+                "gen": "G1",
                 "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/engineer-gen1rb.png"
             },
             {
-                "id": "mecano_moderne",
-                "gen": "Moderne",
-                "rarity": "E",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/engineer.png"
+                "id": "mecano_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/engineer-gen3.png"
             }
         ]
     },
@@ -784,16 +1197,16 @@
         "en": "Rocker",
         "variants": [
             {
-                "id": "rocker_retro",
-                "gen": "Retro",
+                "id": "rocker_g1",
+                "gen": "G1",
                 "rarity": "C",
                 "img": "https://play.pokemonshowdown.com/sprites/trainers/rocker-gen1rb.png"
             },
             {
-                "id": "rocker_moderne",
-                "gen": "Moderne",
-                "rarity": "E",
-                "img": "https://play.pokemonshowdown.com/sprites/trainers/rocker.png"
+                "id": "rocker_g3",
+                "gen": "G3",
+                "rarity": "U",
+                "img": "https://play.pokemonshowdown.com/sprites/trainers/rocker-gen3.png"
             }
         ]
     }
