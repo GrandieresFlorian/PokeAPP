@@ -241,28 +241,58 @@ export const TOUS_LES_DRESSEURS = [
 ];
 
 // Fonction utilitaire pour tirer un dresseur au hasard
+// Fonction de tirage des dresseurs basée sur les probabilités globales
 export function getRandomTrainer() {
-    // On pioche dans les données chargées depuis dresseurs.json
     const list = state.dresseursData;
     if (!list || list.length === 0) return null;
     
-    // 1. Choisir une classe au hasard (Canon, Gamin...)
-    const trainerClass = list[Math.floor(Math.random() * list.length)];
-    // 2. Choisir une variante de génération au hasard pour cette classe
-    const variant = trainerClass.variants[Math.floor(Math.random() * trainerClass.variants.length)];
+    // 1. On tire d'abord une rareté selon les pourcentages globaux du jeu (C, U, R, E, L, M)[cite: 26]
+    const rarityCible = tirerRarete();
     
-    return {
-        isTrainer: true,
-        baseId: trainerClass.id,
-        variantId: variant.id,
-        fr: trainerClass.fr,
-        en: trainerClass.en,
-        gen: variant.gen,
-        rarity: variant.rarity,
-        img: variant.img,
-        quantity: 1,
-        date: Date.now()
-    };
+    // 2. On rassemble toutes les variantes de tous les dresseurs qui correspondent à cette rareté
+    let poolCorrespondant = [];
+    
+    list.forEach(trainerClass => {
+        if (trainerClass.variants) {
+            trainerClass.variants.forEach(variant => {
+                if (variant.rarity === rarityCible) {
+                    poolCorrespondant.push({
+                        isTrainer: true,
+                        baseId: trainerClass.id,
+                        variantId: variant.id,
+                        fr: trainerClass.fr,
+                        en: trainerClass.en,
+                        gen: variant.gen,
+                        rarity: variant.rarity,
+                        img: variant.img,
+                        quantity: 1,
+                        date: Date.now()
+                    });
+                }
+            });
+        }
+    });
+    
+    // 3. Si aucune variante ne correspond exactement à la rareté tirée (sécurité), on prend un dresseur totalement aléatoire
+    if (poolCorrespondant.length === 0) {
+        const trainerClass = list[Math.floor(Math.random() * list.length)];
+        const variant = trainerClass.variants[Math.floor(Math.random() * trainerClass.variants.length)];
+        return {
+            isTrainer: true,
+            baseId: trainerClass.id,
+            variantId: variant.id,
+            fr: trainerClass.fr,
+            en: trainerClass.en,
+            gen: variant.gen,
+            rarity: variant.rarity,
+            img: variant.img,
+            quantity: 1,
+            date: Date.now()
+        };
+    }
+    
+    // 4. On pioche un dresseur au hasard parmi ceux qui ont la bonne rareté
+    return poolCorrespondant[Math.floor(Math.random() * poolCorrespondant.length)];
 }
 export const BAIES_BOOSTERS = [
     { id: "ceriz", fr: "Baie Ceriz", en: "Cheri Berry" }, { id: "pecha", fr: "Baie Pêcha", en: "Pecha Berry" },
