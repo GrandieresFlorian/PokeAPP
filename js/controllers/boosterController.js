@@ -119,17 +119,19 @@ export function initBooster() {
     const sectionBoosters = document.getElementById('section-boosters');
     
 
-    boosterElement.addEventListener('click', () => ouvrirBooster(false));
-    specialBoosterElement.addEventListener('click', () => ouvrirBooster(true));
-    trainerBoosterElement.addEventListener('click', ouvrirBoosterDresseur);
+    if (boosterElement) boosterElement.addEventListener('click', () => ouvrirBooster(false));
+    if (specialBoosterElement) specialBoosterElement.addEventListener('click', () => ouvrirBooster(true));
+    if (trainerBoosterElement) trainerBoosterElement.addEventListener('click', ouvrirBoosterDresseur);
 
     resetButton.addEventListener('click', () => { 
         cardsContainer.innerHTML = ''; 
         cardsContainer.classList.add('hidden');
         resetButton.classList.add('hidden');
         
-        boosterElement.classList.remove('hidden'); 
-        trainerBoosterElement.classList.remove('hidden');
+        // --- MODIFICATION ICI : On réaffiche le carrousel au lieu des éléments individuels ---
+        const boosterCarousel = document.getElementById('booster-carousel');
+        if (boosterCarousel) boosterCarousel.classList.remove('hidden');
+        
         updateSpecialBoosterUI(); 
     });
 
@@ -172,8 +174,8 @@ export function initBooster() {
         }
     }
 
-    btnPrev.addEventListener('click', switchBoosterSlide);
-    btnNext.addEventListener('click', switchBoosterSlide);
+    if (btnPrev) btnPrev.addEventListener('click', switchBoosterSlide);
+    if (btnNext) btnNext.addEventListener('click', switchBoosterSlide);
 }
 
 function creerCarte(pokemonData, numeroPokedex, index) {
