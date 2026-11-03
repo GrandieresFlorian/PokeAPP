@@ -176,16 +176,32 @@ export function initBooster() {
     const btnNext = document.getElementById('btn-next-booster');
     
     function switchBoosterSlide() {
+        // Alterne entre 0 (Pokémon) et 1 (Dresseur)
         state.currentBoosterIndex = state.currentBoosterIndex === 0 ? 1 : 0;
+        
         const slidePokemon = document.getElementById('slide-pokemon');
         const slideTrainer = document.getElementById('slide-trainer');
         
         if (state.currentBoosterIndex === 0) {
-            if (slidePokemon) slidePokemon.style.display = 'flex';
-            if (slideTrainer) slideTrainer.style.display = 'none';
+            // Afficher Pokémon, cacher Dresseur
+            if (slidePokemon) {
+                slidePokemon.style.display = 'flex';
+                slidePokemon.classList.remove('hidden');
+            }
+            if (slideTrainer) {
+                slideTrainer.style.display = 'none';
+                slideTrainer.classList.add('hidden');
+            }
         } else {
-            if (slidePokemon) slidePokemon.style.display = 'none';
-            if (slideTrainer) slideTrainer.style.display = 'flex';
+            // Cacher Pokémon, afficher Dresseur
+            if (slidePokemon) {
+                slidePokemon.style.display = 'none';
+                slidePokemon.classList.add('hidden');
+            }
+            if (slideTrainer) {
+                slideTrainer.style.display = 'flex';
+                slideTrainer.classList.remove('hidden');
+            }
         }
     }
 
