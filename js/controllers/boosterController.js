@@ -123,54 +123,65 @@ export function initBooster() {
     if (specialBoosterElement) specialBoosterElement.addEventListener('click', () => ouvrirBooster(true));
     if (trainerBoosterElement) trainerBoosterElement.addEventListener('click', ouvrirBoosterDresseur);
 
-    resetButton.addEventListener('click', () => { 
-        cardsContainer.innerHTML = ''; 
-        cardsContainer.classList.add('hidden');
-        resetButton.classList.add('hidden');
-        
-        // --- MODIFICATION ICI : On réaffiche le carrousel au lieu des éléments individuels ---
-        const boosterCarousel = document.getElementById('booster-carousel');
-        if (boosterCarousel) boosterCarousel.classList.remove('hidden');
-        
-        updateSpecialBoosterUI(); 
-    });
-
-    autoOpenBtn.addEventListener('click', () => {
-        autoOpenBtn.disabled = true; 
-        
-        function flipNextAutomatically() {
-            const unflippedCard = cardsContainer.querySelector('.card:not(.flipped)');
-            
-            if (unflippedCard) {
-                unflippedCard.click(); 
-                setTimeout(flipNextAutomatically, 200); 
-            } else if (state.cartesRetournees < state.currentPulls.length) {
-                setTimeout(flipNextAutomatically, 100);
+    // --- SÉCURISATION DE RESETBUTTON ---
+    if (resetButton) {
+        resetButton.addEventListener('click', () => { 
+            if (cardsContainer) {
+                cardsContainer.innerHTML = ''; 
+                cardsContainer.classList.add('hidden');
             }
-        }
-        
-        flipNextAutomatically();
-    });
+            resetButton.classList.add('hidden');
+            
+            const boosterCarousel = document.getElementById('booster-carousel');
+            if (boosterCarousel) boosterCarousel.classList.remove('hidden');
+            
+            updateSpecialBoosterUI(); 
+        });
+    }
 
-    sectionBoosters.addEventListener('click', (e) => {
-        if (e.target.closest('.btn') || e.target.closest('.booster') || e.target.closest('.card')) return;
-        if (!cardsContainer.classList.contains('hidden')) {
-            const unflippedCard = cardsContainer.querySelector('.card:not(.flipped)');
-            if (unflippedCard) unflippedCard.click();
-        }
-    });
+    if (autoOpenBtn) {
+        autoOpenBtn.addEventListener('click', () => {
+            autoOpenBtn.disabled = true; 
+            
+            function flipNextAutomatically() {
+                const unflippedCard = cardsContainer ? cardsContainer.querySelector('.card:not(.flipped)') : null;
+                
+                if (unflippedCard) {
+                    unflippedCard.click(); 
+                    setTimeout(flipNextAutomatically, 200); 
+                } else if (state.cartesRetournees < state.currentPulls.length) {
+                    setTimeout(flipNextAutomatically, 100);
+                }
+            }
+            
+            flipNextAutomatically();
+        });
+    }
+
+    if (sectionBoosters) {
+        sectionBoosters.addEventListener('click', (e) => {
+            if (e.target.closest('.btn') || e.target.closest('.booster') || e.target.closest('.card')) return;
+            if (cardsContainer && !cardsContainer.classList.contains('hidden')) {
+                const unflippedCard = cardsContainer.querySelector('.card:not(.flipped)');
+                if (unflippedCard) unflippedCard.click();
+            }
+        });
+    }
 
     const btnPrev = document.getElementById('btn-prev-booster');
     const btnNext = document.getElementById('btn-next-booster');
     
     function switchBoosterSlide() {
         state.currentBoosterIndex = state.currentBoosterIndex === 0 ? 1 : 0;
+        const slidePokemon = document.getElementById('slide-pokemon');
+        const slideTrainer = document.getElementById('slide-trainer');
+        
         if (state.currentBoosterIndex === 0) {
-            document.getElementById('slide-pokemon').style.display = 'flex';
-            document.getElementById('slide-trainer').style.display = 'none';
+            if (slidePokemon) slidePokemon.style.display = 'flex';
+            if (slideTrainer) slideTrainer.style.display = 'none';
         } else {
-            document.getElementById('slide-pokemon').style.display = 'none';
-            document.getElementById('slide-trainer').style.display = 'flex';
+            if (slidePokemon) slidePokemon.style.display = 'none';
+            if (slideTrainer) slideTrainer.style.display = 'flex';
         }
     }
 
