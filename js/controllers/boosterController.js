@@ -569,27 +569,25 @@ export function creerCarteDresseur(trainerData, index) {
 
     nouvelleCarte.addEventListener('click', () => {
         if (!nouvelleCarte.classList.contains('flipped')) {
-            // Logique de doublon et d'ajout à l'inventaire
-            if (!state.currentUserData.collection) state.currentUserData.collection = [];
             
+            // 1. On vérifie SI c'est un doublon AVANT de sauvegarder
+            if (!state.currentUserData.collection) state.currentUserData.collection = [];
             let existing = state.currentUserData.collection.find(c => c.isTrainer && c.variantId === trainerData.variantId);
             const estDoublon = !!existing;
 
-            if (existing) {
-                existing.quantity = (existing.quantity || 1) + 1;
-            } else {
-                state.currentUserData.collection.push(trainerData);
-            }
-            db.collection('users').doc(state.currentUser).update({ collection: state.currentUserData.collection });
-
+            // 2. On affiche le badge
             const badge = document.createElement('div');
             badge.className = `badge-status ${estDoublon ? 'badge-doublon' : 'badge-nouveau'}`;
             let lbl = estDoublon ? (state.currentLang === 'en' ? 'Duplicate' : 'Doublon') : (state.currentLang === 'en' ? 'New!' : 'Nouveau !');
             badge.textContent = lbl;
             nouvelleCarte.querySelector('.card-front').appendChild(badge);
 
+            // 3. On retourne la carte et on LA SAUVEGARDE MAINTENANT
             nouvelleCarte.classList.add('flipped'); 
             state.cartesRetournees++; 
+            
+            // --- MODIFICATION ICI : On utilise la fonction de sauvegarde dédiée au moment du clic ---
+            sauvegarderDresseur(trainerData);
             
             if (state.currentPullIndex < state.currentPulls.length - 1) {
                 state.currentPullIndex++;
@@ -602,13 +600,16 @@ export function creerCarteDresseur(trainerData, index) {
                 setTimeout(() => {
                     const resetButton = document.getElementById('reset-button');
                     const autoOpenBtn = document.getElementById('auto-open-btn');
-                    resetButton.classList.remove('hidden');
-                    resetButton.disabled = false;
-                    autoOpenBtn.classList.add('hidden'); 
+                    if (resetButton) {
+                        resetButton.classList.remove('hidden');
+                        resetButton.disabled = false;
+                    }
+                    if (autoOpenBtn) autoOpenBtn.classList.add('hidden'); 
                 }, 200);
             }
         }
     });
+    
     document.getElementById('cards-container').appendChild(nouvelleCarte);
-    sauvegarderDresseur(trainerData);
+    // (J'ai supprimé l'appel à sauvegarderDresseur qui traînait ici par erreur)
 }
