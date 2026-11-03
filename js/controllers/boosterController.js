@@ -9,6 +9,11 @@ export function updateBoosterLogic() {
         return;
     }
 
+    const maxDisplay = document.getElementById('trainer-max-display');
+    if (maxDisplay) {
+        maxDisplay.textContent = `/ ${state.trainerConfig.maxBoosters}`;
+    }
+
     document.getElementById('trainer-max-display').textContent = `/ ${state.trainerConfig.maxBoosters}`;
 
     clearInterval(state.boosterTimerInterval);
@@ -97,13 +102,17 @@ function renderBoosterStatus(countDisplay, textDisplay, timerDisplay) {
 export function updateSpecialBoosterUI() {
     const sbPack = document.getElementById('special-booster-pack');
     const sbCount = document.getElementById('special-booster-count');
+    
+    // Si l'élément n'existe pas dans le HTML actuel, on arrête tout simplement
+    if (!sbPack) return; 
+
     if (!state.currentUser || state.currentUserData.specialBoostersLeft === undefined) {
-        if(sbPack) sbPack.classList.add('hidden');
+        sbPack.classList.add('hidden');
         return;
     }
     if (state.currentUserData.specialBoostersLeft > 0) {
         if(!state.isOpening) sbPack.classList.remove('hidden');
-        sbCount.textContent = `${state.currentUserData.specialBoostersLeft} disponible(s)`;
+        if(sbCount) sbCount.textContent = `${state.currentUserData.specialBoostersLeft} disponible(s)`;
     } else {
         sbPack.classList.add('hidden');
     }
@@ -123,54 +132,81 @@ export function initBooster() {
     if (specialBoosterElement) specialBoosterElement.addEventListener('click', () => ouvrirBooster(true));
     if (trainerBoosterElement) trainerBoosterElement.addEventListener('click', ouvrirBoosterDresseur);
 
-    resetButton.addEventListener('click', () => { 
-        cardsContainer.innerHTML = ''; 
-        cardsContainer.classList.add('hidden');
-        resetButton.classList.add('hidden');
-        
-        // --- MODIFICATION ICI : On réaffiche le carrousel au lieu des éléments individuels ---
-        const boosterCarousel = document.getElementById('booster-carousel');
-        if (boosterCarousel) boosterCarousel.classList.remove('hidden');
-        
-        updateSpecialBoosterUI(); 
-    });
-
-    autoOpenBtn.addEventListener('click', () => {
-        autoOpenBtn.disabled = true; 
-        
-        function flipNextAutomatically() {
-            const unflippedCard = cardsContainer.querySelector('.card:not(.flipped)');
-            
-            if (unflippedCard) {
-                unflippedCard.click(); 
-                setTimeout(flipNextAutomatically, 200); 
-            } else if (state.cartesRetournees < state.currentPulls.length) {
-                setTimeout(flipNextAutomatically, 100);
+    // --- SÉCURISATION DE RESETBUTTON ---
+    if (resetButton) {
+        resetButton.addEventListener('click', () => { 
+            if (cardsContainer) {
+                cardsContainer.innerHTML = ''; 
+                cardsContainer.classList.add('hidden');
             }
-        }
-        
-        flipNextAutomatically();
-    });
+            resetButton.classList.add('hidden');
+            
+            const boosterCarousel = document.getElementById('booster-carousel');
+            if (boosterCarousel) boosterCarousel.classList.remove('hidden');
+            
+            updateSpecialBoosterUI(); 
+        });
+    }
 
-    sectionBoosters.addEventListener('click', (e) => {
-        if (e.target.closest('.btn') || e.target.closest('.booster') || e.target.closest('.card')) return;
-        if (!cardsContainer.classList.contains('hidden')) {
-            const unflippedCard = cardsContainer.querySelector('.card:not(.flipped)');
-            if (unflippedCard) unflippedCard.click();
-        }
-    });
+    if (autoOpenBtn) {
+        autoOpenBtn.addEventListener('click', () => {
+            autoOpenBtn.disabled = true; 
+            
+            function flipNextAutomatically() {
+                const unflippedCard = cardsContainer ? cardsContainer.querySelector('.card:not(.flipped)') : null;
+                
+                if (unflippedCard) {
+                    unflippedCard.click(); 
+                    setTimeout(flipNextAutomatically, 200); 
+                } else if (state.cartesRetournees < state.currentPulls.length) {
+                    setTimeout(flipNextAutomatically, 100);
+                }
+            }
+            
+            flipNextAutomatically();
+        });
+    }
+
+    if (sectionBoosters) {
+        sectionBoosters.addEventListener('click', (e) => {
+            if (e.target.closest('.btn') || e.target.closest('.booster') || e.target.closest('.card')) return;
+            if (cardsContainer && !cardsContainer.classList.contains('hidden')) {
+                const unflippedCard = cardsContainer.querySelector('.card:not(.flipped)');
+                if (unflippedCard) unflippedCard.click();
+            }
+        });
+    }
 
     const btnPrev = document.getElementById('btn-prev-booster');
     const btnNext = document.getElementById('btn-next-booster');
     
     function switchBoosterSlide() {
+        // Alterne entre 0 (Pokémon) et 1 (Dresseur)
         state.currentBoosterIndex = state.currentBoosterIndex === 0 ? 1 : 0;
+        
+        const slidePokemon = document.getElementById('slide-pokemon');
+        const slideTrainer = document.getElementById('slide-trainer');
+        
         if (state.currentBoosterIndex === 0) {
-            document.getElementById('slide-pokemon').style.display = 'flex';
-            document.getElementById('slide-trainer').style.display = 'none';
+            // Afficher Pokémon, cacher Dresseur
+            if (slidePokemon) {
+                slidePokemon.style.display = 'flex';
+                slidePokemon.classList.remove('hidden');
+            }
+            if (slideTrainer) {
+                slideTrainer.style.display = 'none';
+                slideTrainer.classList.add('hidden');
+            }
         } else {
-            document.getElementById('slide-pokemon').style.display = 'none';
-            document.getElementById('slide-trainer').style.display = 'flex';
+            // Cacher Pokémon, afficher Dresseur
+            if (slidePokemon) {
+                slidePokemon.style.display = 'none';
+                slidePokemon.classList.add('hidden');
+            }
+            if (slideTrainer) {
+                slideTrainer.style.display = 'flex';
+                slideTrainer.classList.remove('hidden');
+            }
         }
     }
 
@@ -337,16 +373,20 @@ function ouvrirBooster(isSpecial = false) {
     const cardsContainer = document.getElementById('cards-container');
     const autoOpenBtn = document.getElementById('auto-open-btn');
     const resetButton = document.getElementById('reset-button');
+    const boosterCarousel = document.getElementById('booster-carousel');
 
-    activeBooster.classList.add('booster-animating');
+    if (activeBooster) activeBooster.classList.add('booster-animating');
 
     setTimeout(() => {
-        activeBooster.classList.remove('booster-animating');
-        normalBoosterElement.classList.add('hidden'); 
-        specialBoosterElement.classList.add('hidden');
+        if (activeBooster) activeBooster.classList.remove('booster-animating');
         
-        cardsContainer.innerHTML = ''; 
-        cardsContainer.classList.remove('hidden'); 
+        // On cache le carrousel complet au lieu des éléments individuels
+        if (boosterCarousel) boosterCarousel.classList.add('hidden');
+        
+        if (cardsContainer) {
+            cardsContainer.innerHTML = ''; 
+            cardsContainer.classList.remove('hidden'); 
+        }
         state.cartesRetournees = 0; 
         
         let cartesTirees = [];
@@ -371,9 +411,11 @@ function ouvrirBooster(isSpecial = false) {
         state.currentPulls = cartesTirees;
         state.currentPullIndex = 0;
         
-        autoOpenBtn.classList.remove('hidden');
-        autoOpenBtn.disabled = false;
-        resetButton.classList.add('hidden');
+        if (autoOpenBtn) {
+            autoOpenBtn.classList.remove('hidden');
+            autoOpenBtn.disabled = false;
+        }
+        if (resetButton) resetButton.classList.add('hidden');
 
         const firstItem = state.currentPulls[0];
         if (firstItem.isBaie) creerCarteBaie(firstItem.data, 0);
@@ -433,6 +475,7 @@ export function ouvrirBoosterDresseur() {
         
         // Tirage de 3 cartes Dresseur
         state.currentPulls = [getRandomTrainer(), getRandomTrainer(), getRandomTrainer()];
+        state.currentPulls.sort((a, b) => CONSTS.poidsRarete[a.rarity] - CONSTS.poidsRarete[b.rarity]);
         state.currentPullIndex = 0;
         
         autoOpenBtn.classList.remove('hidden');
@@ -505,16 +548,18 @@ export function creerCarteBaie(baieData, index) {
 
 export function creerCarteDresseur(trainerData, index) {
     let nomAffiche = state.currentLang === 'en' ? trainerData.en : trainerData.fr;
+    const bgColor = CONSTS.couleursRarete[trainerData.rarity] || "#3498db";
 
     const cardHTML = `
         <div class="card">
             <div class="card-inner">
                 <div class="card-back"><div class="card-back-design">PokéApp</div></div>
-                <div class="card-front" style="background-color: #3498db; border-color: #2980b9;">
-                    <div class="card-header"><h1 class="pokemon-name">${nomAffiche}</h1><div class="icon" style="background: white; color: #2980b9;">${trainerData.rarity}</div></div>
+                <!-- Application de la couleur de fond de rareté dynamique -->
+                <div class="card-front" style="background-color: ${bgColor}; border-color: rgba(0,0,0,0.2);">
+                    <div class="card-header"><h1 class="pokemon-name">${nomAffiche}</h1><div class="icon" style="background: white; color: #333;">${trainerData.rarity}</div></div>
                     <div class="image-wrapper" style="background-color: #ecf0f1;"><img class="pokemon-image" src="${trainerData.img}" alt="Dresseur" style="object-fit: contain; height: 160px; padding: 10px; image-rendering: pixelated;"></div>
                     <div class="card-subtext" style="justify-content:center;">Dresseur ${trainerData.gen}</div>
-                    <div class="stats-bar" style="justify-content:center; background-color:#2c3e50;"><span style="font-weight:bold; color: white;">CARTE DRESSEUR</span></div>
+                    <div class="stats-bar" style="justify-content:center; background-color:rgba(0,0,0,0.3);"><span style="font-weight:bold; color: white;">CARTE DRESSEUR</span></div>
                 </div>
             </div>
         </div>`;

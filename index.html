@@ -52,18 +52,18 @@
             <section id="section-boosters" class="view-section">
                 <div id="booster-carousel" style="display: flex; align-items: center; justify-content: center; gap: 30px; margin-top: 20px;">
                     <!-- Flèche Gauche -->
-                    <button id="btn-prev-booster" class="btn btn-icon" style="font-size: 2rem; background: transparent; color: white;">◀</button>
+                    <button id="btn-prev-booster" class="btn btn-icon" style="font-size: 2rem; background: transparent; color: white; cursor: pointer;">◀</button>
 
                     <!-- Conteneur Central -->
-                    <div id="carousel-content" style="display: flex; flex-direction: column; align-items: center; min-height: 400px; min-width: 250px;">
+                    <div id="carousel-content" style="display: flex; flex-direction: column; align-items: center; min-height: 400px; min-width: 280px;">
                         
                         <!-- SLIDE 1 : POKÉMON -->
-                        <div id="slide-pokemon" class="booster-slide" style="display: flex; flex-direction: column; align-items: center;">
-                            <div id="booster-status" class="booster-status glass-panel" style="margin-bottom: 20px;">
+                        <div id="slide-pokemon" class="booster-slide" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+                            <div id="booster-status" class="booster-status glass-panel" style="margin-bottom: 20px; text-align: center; width: 100%;">
                                 <p><span class="translatable" data-fr="Boosters disponibles :" data-en="Available packs :">Boosters disponibles :</span> <span id="booster-count-display" class="highlight">0</span> <span style="color:#aaa;">/ 10</span></p>
                                 <p id="booster-timer-text" style="font-size: 0.9rem; color: #aaa;"><span class="translatable" data-fr="Prochain booster dans :" data-en="Next pack in :">Prochain booster dans :</span> <span id="booster-timer-display" style="color: #f39c12;">00:00</span></p>
                             </div>
-                            <div id="booster-pack" class="booster">
+                            <div id="booster-pack" class="booster" style="cursor: pointer;">
                                 <h2 class="translatable" data-fr="POKÉMON" data-en="POKÉMON">POKÉMON</h2>
                                 <p class="translatable" data-fr="ÉDITION COMPLÈTE" data-en="COMPLETE EDITION">ÉDITION COMPLÈTE</p>
                                 <div class="booster-text translatable" data-fr="CLIQUEZ POUR OUVRIR" data-en="CLICK TO OPEN">CLIQUEZ POUR OUVRIR</div>
@@ -71,12 +71,12 @@
                         </div>
 
                         <!-- SLIDE 2 : DRESSEUR -->
-                        <div id="slide-trainer" class="booster-slide hidden" style="display: none; flex-direction: column; align-items: center;">
-                            <div id="trainer-booster-status" class="booster-status glass-panel" style="margin-bottom: 20px;">
+                        <div id="slide-trainer" class="booster-slide hidden" style="display: none; flex-direction: column; align-items: center; width: 100%;">
+                            <div id="trainer-booster-status" class="booster-status glass-panel" style="margin-bottom: 20px; text-align: center; width: 100%;">
                                 <p><span class="translatable" data-fr="Boosters Dresseur :" data-en="Trainer Packs :">Boosters Dresseur :</span> <span id="trainer-count-display" class="highlight">0</span> <span style="color:#aaa;" id="trainer-max-display">/ 1</span></p>
                                 <p id="trainer-timer-text" style="font-size: 0.9rem; color: #aaa;"><span class="translatable" data-fr="Prochain dans :" data-en="Next in :">Prochain dans :</span> <span id="trainer-booster-timer-display" style="color: #f39c12;">00:00:00</span></p>
                             </div>
-                            <div id="trainer-booster-pack" class="booster" style="background: linear-gradient(135deg, #3498db, #2980b9);">
+                            <div id="trainer-booster-pack" class="booster" style="background: linear-gradient(135deg, #3498db, #2980b9); cursor: pointer;">
                                 <h2 class="translatable" data-fr="DRESSEURS" data-en="TRAINERS">DRESSEURS</h2>
                                 <p class="translatable" data-fr="CARTES PERSONNAGES" data-en="CHARACTER CARDS">CARTES PERSONNAGES</p>
                                 <div class="booster-text translatable" data-fr="CLIQUEZ POUR OUVRIR" data-en="CLICK TO OPEN">CLIQUEZ POUR OUVRIR</div>
@@ -86,7 +86,14 @@
                     </div>
 
                     <!-- Flèche Droite -->
-                    <button id="btn-next-booster" class="btn btn-icon" style="font-size: 2rem; background: transparent; color: white;">▶</button>
+                    <button id="btn-next-booster" class="btn btn-icon" style="font-size: 2rem; background: transparent; color: white; cursor: pointer;">▶</button>
+                </div>
+
+                <!-- Conteneur d'ouverture des cartes (caché par défaut) -->
+                <div style="text-align: center; margin-top: 20px;">
+                    <div id="cards-container" class="cards-container hidden"></div>
+                    <button id="auto-open-btn" class="btn btn-secondary hidden translatable" data-fr="Ouvrir tout automatiquement" data-en="Open all automatically" style="margin-top: 20px;">Ouvrir tout automatiquement</button>
+                    <button id="reset-button" class="btn hidden translatable" data-fr="Retour aux boosters" data-en="Back to packs" style="margin-top: 20px;">Retour aux boosters</button>
                 </div>
             </section>
 

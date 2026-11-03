@@ -29,6 +29,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     db.collection('settings').doc('trainerConfig').get().then(doc => {
         if (doc.exists) state.trainerConfig = { ...state.trainerConfig, ...doc.data() };
+        const maxDisplay = document.getElementById('trainer-max-display');
+            if (maxDisplay) {
+                maxDisplay.textContent = `/ ${state.trainerConfig.maxBoosters}`;
+            }
     }).catch(e => console.error(e));
 
     db.collection('settings').doc('berries').get().then(doc => {
