@@ -97,13 +97,17 @@ function renderBoosterStatus(countDisplay, textDisplay, timerDisplay) {
 export function updateSpecialBoosterUI() {
     const sbPack = document.getElementById('special-booster-pack');
     const sbCount = document.getElementById('special-booster-count');
+    
+    // Si l'élément n'existe pas dans le HTML actuel, on arrête tout simplement
+    if (!sbPack) return; 
+
     if (!state.currentUser || state.currentUserData.specialBoostersLeft === undefined) {
-        if(sbPack) sbPack.classList.add('hidden');
+        sbPack.classList.add('hidden');
         return;
     }
     if (state.currentUserData.specialBoostersLeft > 0) {
         if(!state.isOpening) sbPack.classList.remove('hidden');
-        sbCount.textContent = `${state.currentUserData.specialBoostersLeft} disponible(s)`;
+        if(sbCount) sbCount.textContent = `${state.currentUserData.specialBoostersLeft} disponible(s)`;
     } else {
         sbPack.classList.add('hidden');
     }
