@@ -470,6 +470,7 @@ export function ouvrirBoosterDresseur() {
         
         // Tirage de 3 cartes Dresseur
         state.currentPulls = [getRandomTrainer(), getRandomTrainer(), getRandomTrainer()];
+        state.currentPulls.sort((a, b) => CONSTS.poidsRarete[a.rarity] - CONSTS.poidsRarete[b.rarity]);
         state.currentPullIndex = 0;
         
         autoOpenBtn.classList.remove('hidden');
@@ -542,16 +543,18 @@ export function creerCarteBaie(baieData, index) {
 
 export function creerCarteDresseur(trainerData, index) {
     let nomAffiche = state.currentLang === 'en' ? trainerData.en : trainerData.fr;
+    const bgColor = CONSTS.couleursRarete[trainerData.rarity] || "#3498db";
 
     const cardHTML = `
         <div class="card">
             <div class="card-inner">
                 <div class="card-back"><div class="card-back-design">PokéApp</div></div>
-                <div class="card-front" style="background-color: #3498db; border-color: #2980b9;">
-                    <div class="card-header"><h1 class="pokemon-name">${nomAffiche}</h1><div class="icon" style="background: white; color: #2980b9;">${trainerData.rarity}</div></div>
+                <!-- Application de la couleur de fond de rareté dynamique -->
+                <div class="card-front" style="background-color: ${bgColor}; border-color: rgba(0,0,0,0.2);">
+                    <div class="card-header"><h1 class="pokemon-name">${nomAffiche}</h1><div class="icon" style="background: white; color: #333;">${trainerData.rarity}</div></div>
                     <div class="image-wrapper" style="background-color: #ecf0f1;"><img class="pokemon-image" src="${trainerData.img}" alt="Dresseur" style="object-fit: contain; height: 160px; padding: 10px; image-rendering: pixelated;"></div>
                     <div class="card-subtext" style="justify-content:center;">Dresseur ${trainerData.gen}</div>
-                    <div class="stats-bar" style="justify-content:center; background-color:#2c3e50;"><span style="font-weight:bold; color: white;">CARTE DRESSEUR</span></div>
+                    <div class="stats-bar" style="justify-content:center; background-color:rgba(0,0,0,0.3);"><span style="font-weight:bold; color: white;">CARTE DRESSEUR</span></div>
                 </div>
             </div>
         </div>`;
