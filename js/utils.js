@@ -306,3 +306,31 @@ export function sauvegarderBaie(baieData) {
         }).catch(err => console.error(err));
     });
 }
+
+export function sauvegarderDresseur(trainerData) {
+    if (!state.currentUserData.collection) state.currentUserData.collection = [];
+    
+    // On cherche si le dresseur exact (même variante) existe déjà
+    let existing = state.currentUserData.collection.find(c => c.isTrainer && c.variantId === trainerData.variantId);
+    
+    if (existing) {
+        existing.quantity = (existing.quantity || 1) + 1;
+    } else {
+        // On s'assure qu'il a bien l'attribut isTrainer à true
+        const nouveauDresseur = {
+            ...trainerData,
+            isTrainer: true,
+            quantity: 1,
+            date: Date.now()
+        };
+        state.currentUserData.collection.push(nouveauDresseur);
+    }
+
+    // Sauvegarde dans Firebase
+    import('./firebase-config.js').then(({db}) => {
+        if (!state.currentUser) return; 
+        db.collection('users').doc(state.currentUser).update({ 
+            collection: state.currentUserData.collection 
+        }).catch(err => console.error(err));
+    });
+}

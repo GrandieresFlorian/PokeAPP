@@ -566,4 +566,5 @@ export function creerCarteDresseur(trainerData, index) {
         }
     });
     document.getElementById('cards-container').appendChild(nouvelleCarte);
+    sauvegarderDresseur(trainerData);
 }

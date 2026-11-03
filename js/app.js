@@ -61,6 +61,18 @@ document.addEventListener("DOMContentLoaded", () => {
                     
                     let groupedMap = {};
                     state.currentUserData.collection.forEach(card => {
+                        // --- SÉCURITÉ : Si c'est un dresseur, on le garde tel quel sans le supprimer ---
+                        if (card.isTrainer) {
+                            const key = `trainer_${card.variantId}`;
+                            if (!groupedMap[key]) {
+                                groupedMap[key] = { ...card, quantity: Number(card.quantity || 1) };
+                            } else {
+                                groupedMap[key].quantity += Number(card.quantity || 1);
+                            }
+                            return;
+                        }
+
+                        // Sinon, c'est un Pokémon classique :
                         const num = Number(card.pokedexNumber || card.data?.pokedexNumber || 1);
                         const isShiny = card.shiny ? "1" : "0";
                         const isMega = card.mega ? "1" : "0";
