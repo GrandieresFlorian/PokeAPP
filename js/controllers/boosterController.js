@@ -1,8 +1,7 @@
 import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
 import { allerASection } from './navController.js';
-import { tirerRarete, formatMegaName, sauvegarderCarte, getCardImageUrl, getPokemonDetails, generateTypeBadgesHTML, BAIES_BOOSTERS, sauvegarderBaie, getRandomTrainer } from '../utils.js';
-
+import { tirerRarete, formatMegaName, sauvegarderCarte, getCardImageUrl, getPokemonDetails, generateTypeBadgesHTML, BAIES_BOOSTERS, sauvegarderBaie, getRandomTrainer, sauvegarderDresseur } from '../utils.js';
 export function updateBoosterLogic() {
     if (!state.currentUser) {
         clearInterval(state.boosterTimerInterval);
