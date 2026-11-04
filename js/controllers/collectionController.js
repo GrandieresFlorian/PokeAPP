@@ -388,6 +388,10 @@ export function afficherCollection() {
     const filterRarity = document.getElementById('filter-rarity');
     const filterOwned = document.getElementById('filter-owned');
     const filterOwnedVal = filterOwned ? filterOwned.checked : false;
+    const filterDupes = document.getElementById('filter-duplicates');
+    const filterDupesVal = filterDupes ? filterDupes.checked : false;
+    const searchInput = document.getElementById('search-collection');
+    const searchVal = searchInput ? searchInput.value.toLowerCase() : "";
 
     if (!collectionContainer || !collectionCount) return;
 
@@ -430,6 +434,8 @@ export function afficherCollection() {
 
         if (rarityVal !== 'all' && pokemonRarity !== rarityVal) return; 
         if (ownedOnlyVal && !possedeLaCarte) return; 
+        if (filterDupesVal && quantite <= 1) return;
+        if (searchVal && !dataOrigine.fr.toLowerCase().includes(searchVal) && !dataOrigine.en.toLowerCase().includes(searchVal)) return;
 
         maxAffiche++; if (possedeLaCarte) uniquesCount++;
 
