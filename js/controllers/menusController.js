@@ -107,6 +107,9 @@ export function renderSac() {
 // ==========================================
 // RECHERCHE (PALIERS)
 // ==========================================
+// ==========================================
+// RECHERCHE (PALIERS)
+// ==========================================
 export function renderRecherche() {
     const container = document.getElementById('recherche-container');
     container.innerHTML = "";
@@ -120,10 +123,41 @@ export function renderRecherche() {
     const collectionIds = (state.currentUserData?.collection || []).map(c => c.pokedexNumber);
     const knownIds = new Set([...seen, ...collectionIds]);
     
+    // Seuils des 10 paliers
+    const KO_THRESHOLDS = [10, 25, 50, 100, 200, 350, 500, 750, 1000, 1500];
+    const CATCH_THRESHOLDS = [2, 5, 10, 20, 40, 70, 110, 160, 220, 300];
+
+    // Fonction pour calculer la progression vers le prochain palier (en pourcentage)
+    function getProgressDetails(currentVal, thresholds) {
+        let currentTier = 0;
+        for (let i = 0; i < thresholds.length; i++) {
+            if (currentVal >= thresholds[i]) currentTier = i + 1;
+            else break;
+        }
+
+        // Si le palier max (10) est atteint
+        if (currentTier >= 10) {
+            return { tier: 10, percent: 100, text: "MAX" };
+        }
+
+        // Seuil du palier précédent (ou 0 pour le premier palier)
+        let prevThreshold = currentTier === 0 ? 0 : thresholds[currentTier - 1];
+        // Seuil du palier suivant à atteindre
+        let nextThreshold = thresholds[currentTier];
+
+        let currentProgress = currentVal - prevThreshold;
+        let totalNeeded = nextThreshold - prevThreshold;
+        let percent = Math.min(100, Math.max(0, Math.floor((currentProgress / totalNeeded) * 100)));
+
+        return { tier: currentTier, percent: percent, text: `${currentVal}/${nextThreshold}` };
+    }
+    
     let html = "";
     
     for (let i = 1; i <= 1025; i++) {
-        if (!knownIds.has(i)) continue; 
+        let koCount = state.currentUserData.mastery?.ko?.[i] || 0;
+        let catchCount = state.currentUserData.mastery?.catch?.[i] || 0;
+        if (koCount === 0 && catchCount === 0) continue;
         
         const pkmnData = state.pokemonDataList[i - 1];
         if (!pkmnData) continue;
@@ -133,33 +167,36 @@ export function renderRecherche() {
         let displayName = state.currentLang === 'en' ? nameEn : nameFr;
         
         if (searchVal && !nameFr.toLowerCase().includes(searchVal) && !nameEn.toLowerCase().includes(searchVal)) continue;
-        
-        let koTier = getKOMastery(i);
-        let catchTier = getCatchMastery(i);
+
+        let koProg = getProgressDetails(koCount, KO_THRESHOLDS);
+        let catchProg = getProgressDetails(catchCount, CATCH_THRESHOLDS);
+
         let sprite = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${i}.png`;
         
         html += `
-            <div class="glass-panel" style="width: 220px; padding: 15px; display: flex; flex-direction: column; align-items: center; background: rgba(0,0,0,0.4);">
+            <div class="glass-panel" style="width: 240px; padding: 15px; display: flex; flex-direction: column; align-items: center; background: rgba(0,0,0,0.4);">
                 <img src="${sprite}" style="width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));">
                 <h4 style="margin: 5px 0; font-size:1.1rem;">${displayName} <span style="font-size:0.8rem; color:#777;">#${i}</span></h4>
                 
+                <!-- Barre de Progression K.O. -->
                 <div style="width: 100%; margin-top: 15px; font-size: 0.85rem;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span>⚔️ K.O.</span>
-                        <span style="color: ${koTier === 10 ? '#f1c40f' : '#fff'}; font-weight:bold;">Palier ${koTier}/10</span>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                        <span>⚔️ K.O. (${koProg.text})</span>
+                        <span style="color: ${koProg.tier === 10 ? '#f1c40f' : '#fff'}; font-weight:bold;">Palier ${koProg.tier}/10</span>
                     </div>
-                    <div style="background: #222; height: 8px; border-radius: 4px; width: 100%; border: 1px solid #444;">
-                        <div style="background: linear-gradient(90deg, #c0392b, #e74c3c); height: 100%; width: ${koTier * 10}%; border-radius: 3px; transition: 0.5s;"></div>
+                    <div style="background: #222; height: 8px; border-radius: 4px; width: 100%; border: 1px solid #444; overflow:hidden;">
+                        <div style="background: linear-gradient(90deg, #c0392b, #e74c3c); height: 100%; width: ${koProg.percent}%; border-radius: 3px; transition: 0.5s;"></div>
                     </div>
                 </div>
                 
+                <!-- Barre de Progression Capture -->
                 <div style="width: 100%; margin-top: 15px; font-size: 0.85rem;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span>🎯 Capture</span>
-                        <span style="color: ${catchTier === 10 ? '#f1c40f' : '#fff'}; font-weight:bold;">Palier ${catchTier}/10</span>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                        <span>🎯 Capture (${catchProg.text})</span>
+                        <span style="color: ${catchProg.tier === 10 ? '#f1c40f' : '#fff'}; font-weight:bold;">Palier ${catchProg.tier}/10</span>
                     </div>
-                    <div style="background: #222; height: 8px; border-radius: 4px; width: 100%; border: 1px solid #444;">
-                        <div style="background: linear-gradient(90deg, #27ae60, #2ecc71); height: 100%; width: ${catchTier * 10}%; border-radius: 3px; transition: 0.5s;"></div>
+                    <div style="background: #222; height: 8px; border-radius: 4px; width: 100%; border: 1px solid #444; overflow:hidden;">
+                        <div style="background: linear-gradient(90deg, #27ae60, #2ecc71); height: 100%; width: ${catchProg.percent}%; border-radius: 3px; transition: 0.5s;"></div>
                     </div>
                 </div>
             </div>
