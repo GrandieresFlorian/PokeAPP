@@ -153,6 +153,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (state.currentUserData.pokeDollars === undefined) {
                     state.currentUserData.pokeDollars = 0;
                 }
+                if (state.currentUserData.pokePts === undefined) {
+                    state.currentUserData.pokePts = 0;
+                }
+                if (!state.currentUserData.mastery) {
+                    state.currentUserData.mastery = { ko: {}, catch: {} };
+                }
                 if (state.currentUserData.trainerBoostersLeft === undefined) {
                     state.currentUserData.trainerBoostersLeft = state.trainerConfig.maxBoosters;
                     state.currentUserData.lastTrainerBoosterTime = Date.now();

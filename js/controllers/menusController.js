@@ -113,6 +113,10 @@ export function renderSac() {
 export function renderRecherche() {
     const container = document.getElementById('recherche-container');
     container.innerHTML = "";
+
+    if (!state.currentUserData.mastery) {
+        state.currentUserData.mastery = { ko: {}, catch: {} };
+    }
     
     const pokePtsDisplay = document.getElementById('recherche-pokepts');
     if (pokePtsDisplay) pokePtsDisplay.textContent = state.currentUserData?.pokePts || 0;
