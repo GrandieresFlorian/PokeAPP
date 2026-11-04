@@ -110,6 +110,9 @@ export function renderSac() {
 // ==========================================
 // RECHERCHE (PALIERS)
 // ==========================================
+// ==========================================
+// RECHERCHE (PALIERS)
+// ==========================================
 export function renderRecherche() {
     const container = document.getElementById('recherche-container');
     container.innerHTML = "";
@@ -123,15 +126,10 @@ export function renderRecherche() {
     
     const searchVal = document.getElementById('search-recherche').value.toLowerCase();
     
-    const seen = state.currentUserData?.seen || [];
-    const collectionIds = (state.currentUserData?.collection || []).map(c => c.pokedexNumber);
-    const knownIds = new Set([...seen, ...collectionIds]);
-    
     // Seuils des 10 paliers
     const KO_THRESHOLDS = [10, 25, 50, 100, 200, 350, 500, 750, 1000, 1500];
     const CATCH_THRESHOLDS = [2, 5, 10, 20, 40, 70, 110, 160, 220, 300];
 
-    // Fonction pour calculer la progression vers le prochain palier (en pourcentage)
     function getProgressDetails(currentVal, thresholds) {
         let currentTier = 0;
         for (let i = 0; i < thresholds.length; i++) {
@@ -139,14 +137,11 @@ export function renderRecherche() {
             else break;
         }
 
-        // Si le palier max (10) est atteint
         if (currentTier >= 10) {
             return { tier: 10, percent: 100, text: "MAX" };
         }
 
-        // Seuil du palier précédent (ou 0 pour le premier palier)
         let prevThreshold = currentTier === 0 ? 0 : thresholds[currentTier - 1];
-        // Seuil du palier suivant à atteindre
         let nextThreshold = thresholds[currentTier];
 
         let currentProgress = currentVal - prevThreshold;
@@ -157,30 +152,37 @@ export function renderRecherche() {
     }
     
     let html = "";
+    const masteryKo = state.currentUserData.mastery.ko || {};
+    const masteryCatch = state.currentUserData.mastery.catch || {};
     
-    for (let i = 1; i <= 1025; i++) {
-        let koCount = (state.currentUserData.mastery?.ko?.[i]) || (state.currentUserData.mastery?.ko?.[String(i)]) || 0;
-        let catchCount = (state.currentUserData.mastery?.catch?.[i]) || (state.currentUserData.mastery?.catch?.[String(i)]) || 0;
-        if (koCount === 0 && catchCount === 0) continue;
+    // On parcourt directement toutes les clés enregistrées dans le K.O ou les Captures
+    const recordedIds = new Set([...Object.keys(masteryKo), ...Object.keys(masteryCatch)]);
+
+    recordedIds.forEach(idStr => {
+        let koCount = Number(masteryKo[idStr] || 0);
+        let catchCount = Number(masteryCatch[idStr] || 0);
         
-        const pkmnData = state.pokemonDataList[i - 1];
-        if (!pkmnData) continue;
+        if (koCount === 0 && catchCount === 0) return;
+        
+        let pokedexNum = Number(idStr);
+        const pkmnData = state.pokemonDataList[pokedexNum - 1];
+        if (!pkmnData) return;
         
         let nameFr = pkmnData.fr || "";
         let nameEn = pkmnData.en || "";
         let displayName = state.currentLang === 'en' ? nameEn : nameFr;
         
-        if (searchVal && !nameFr.toLowerCase().includes(searchVal) && !nameEn.toLowerCase().includes(searchVal)) continue;
+        if (searchVal && !nameFr.toLowerCase().includes(searchVal) && !nameEn.toLowerCase().includes(searchVal)) return;
 
         let koProg = getProgressDetails(koCount, KO_THRESHOLDS);
         let catchProg = getProgressDetails(catchCount, CATCH_THRESHOLDS);
 
-        let sprite = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${i}.png`;
+        let sprite = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokedexNum}.png`;
         
         html += `
             <div class="glass-panel" style="width: 240px; padding: 15px; display: flex; flex-direction: column; align-items: center; background: rgba(0,0,0,0.4);">
                 <img src="${sprite}" style="width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));">
-                <h4 style="margin: 5px 0; font-size:1.1rem;">${displayName} <span style="font-size:0.8rem; color:#777;">#${i}</span></h4>
+                <h4 style="margin: 5px 0; font-size:1.1rem;">${displayName} <span style="font-size:0.8rem; color:#777;">#${pokedexNum}</span></h4>
                 
                 <!-- Barre de Progression K.O. -->
                 <div style="width: 100%; margin-top: 15px; font-size: 0.85rem;">
@@ -205,7 +207,7 @@ export function renderRecherche() {
                 </div>
             </div>
         `;
-    }
+    });
     
     if (html === "") container.innerHTML = `<p style='color: #aaa; width:100%; text-align:center;'>Aucun Pokémon trouvé. Partez en explorer d'autres !</p>`;
     else container.innerHTML = html;
