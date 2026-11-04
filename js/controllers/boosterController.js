@@ -99,21 +99,28 @@ function renderBoosterStatus(countDisplay, textDisplay, timerDisplay) {
 }
 
 export function updateSpecialBoosterUI() {
-    const sbPack = document.getElementById('special-booster-pack');
     const sbCount = document.getElementById('special-booster-count');
+    const sbPack = document.getElementById('special-booster-pack');
     
-    // Si l'élément n'existe pas dans le HTML actuel, on arrête tout simplement
     if (!sbPack) return; 
 
     if (!state.currentUser || state.currentUserData.specialBoostersLeft === undefined) {
-        sbPack.classList.add('hidden');
+        if (sbCount) sbCount.textContent = '0';
+        sbPack.style.opacity = '0.5';
+        sbPack.style.filter = 'grayscale(100%)';
         return;
     }
+    
+    if (sbCount) sbCount.textContent = state.currentUserData.specialBoostersLeft;
+    
     if (state.currentUserData.specialBoostersLeft > 0) {
-        if(!state.isOpening) sbPack.classList.remove('hidden');
-        if(sbCount) sbCount.textContent = `${state.currentUserData.specialBoostersLeft} disponible(s)`;
+        // Booster disponible : couleur normale
+        sbPack.style.opacity = '1';
+        sbPack.style.filter = 'none';
     } else {
-        sbPack.classList.add('hidden');
+        // Aucun booster : grisé
+        sbPack.style.opacity = '0.5';
+        sbPack.style.filter = 'grayscale(100%)';
     }
 }
 
@@ -179,38 +186,35 @@ export function initBooster() {
     const btnPrev = document.getElementById('btn-prev-booster');
     const btnNext = document.getElementById('btn-next-booster');
     
-    function switchBoosterSlide() {
-        // Alterne entre 0 (Pokémon) et 1 (Dresseur)
-        state.currentBoosterIndex = state.currentBoosterIndex === 0 ? 1 : 0;
+    function switchBoosterSlide(direction) {
+        const slides = [
+            document.getElementById('slide-pokemon'),
+            document.getElementById('slide-trainer'),
+            document.getElementById('slide-special') // Le nouveau slide !
+        ];
         
-        const slidePokemon = document.getElementById('slide-pokemon');
-        const slideTrainer = document.getElementById('slide-trainer');
-        
-        if (state.currentBoosterIndex === 0) {
-            // Afficher Pokémon, cacher Dresseur
-            if (slidePokemon) {
-                slidePokemon.style.display = 'flex';
-                slidePokemon.classList.remove('hidden');
-            }
-            if (slideTrainer) {
-                slideTrainer.style.display = 'none';
-                slideTrainer.classList.add('hidden');
-            }
+        // 1. Cacher le slide actuel
+        if (slides[state.currentBoosterIndex]) {
+            slides[state.currentBoosterIndex].style.display = 'none';
+            slides[state.currentBoosterIndex].classList.add('hidden');
+        }
+
+        // 2. Calculer le prochain index (modulo 3)
+        if (direction === 'next') {
+            state.currentBoosterIndex = (state.currentBoosterIndex + 1) % 3;
         } else {
-            // Cacher Pokémon, afficher Dresseur
-            if (slidePokemon) {
-                slidePokemon.style.display = 'none';
-                slidePokemon.classList.add('hidden');
-            }
-            if (slideTrainer) {
-                slideTrainer.style.display = 'flex';
-                slideTrainer.classList.remove('hidden');
-            }
+            state.currentBoosterIndex = (state.currentBoosterIndex - 1 + 3) % 3;
+        }
+        
+        // 3. Afficher le nouveau slide
+        if (slides[state.currentBoosterIndex]) {
+            slides[state.currentBoosterIndex].style.display = 'flex';
+            slides[state.currentBoosterIndex].classList.remove('hidden');
         }
     }
 
-    if (btnPrev) btnPrev.addEventListener('click', switchBoosterSlide);
-    if (btnNext) btnNext.addEventListener('click', switchBoosterSlide);
+    if (btnPrev) btnPrev.onclick = () => switchBoosterSlide('prev');
+    if (btnNext) btnNext.onclick = () => switchBoosterSlide('next');
 }
 
 function creerCarte(pokemonData, numeroPokedex, index) {

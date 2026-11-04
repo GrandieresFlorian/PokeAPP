@@ -77,7 +77,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
 
                         // Sinon, c'est un Pokémon classique :
-                        const num = Number(card.pokedexNumber || card.data?.pokedexNumber || 1);
+                        const rawNum = card.pokedexNumber || (card.data && card.data.pokedexNumber);
+                        if (!rawNum) return; // SÉCURITÉ : On ignore les cartes corrompues sans ID
+                        
+                        const num = Number(rawNum);
                         const isShiny = card.shiny ? "1" : "0";
                         const isMega = card.mega ? "1" : "0";
                         const megaForm = card.megaForm || "none";
@@ -144,6 +147,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 if (state.currentUserData.pokeBerrys === undefined) {
                     state.currentUserData.pokeBerrys = 0;
+                }
+                if (state.currentUserData.pokeDollars === undefined) {
+                    state.currentUserData.pokeDollars = 0;
                 }
                 if (state.currentUserData.trainerBoostersLeft === undefined) {
                     state.currentUserData.trainerBoostersLeft = state.trainerConfig.maxBoosters;

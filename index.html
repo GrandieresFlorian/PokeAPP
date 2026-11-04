@@ -17,6 +17,12 @@
                     <img id="sidebar-avatar" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/0.png" style="display:none;">
                 </div>
                 <span id="user-name-display" class="translatable" data-fr="Non connecté" data-en="Not connected">Non connecté</span>
+                
+                <!-- NOUVEAU : Affichage des PokéDollars -->
+                <div id="pokedollar-display-container" style="display:none; margin-top: 5px; font-weight: bold; color: #f1c40f;">
+                    💰 <span id="pokedollar-display">0</span> PD$
+                </div>
+                
                 <button id="auth-nav-btn" class="auth-btn-small translatable" data-target="section-auth" data-fr="Se connecter" data-en="Login">Se connecter</button>
             </div>
             <ul class="nav-links">
@@ -79,6 +85,18 @@
                             <div id="trainer-booster-pack" class="booster" style="background: linear-gradient(135deg, #3498db, #2980b9); cursor: pointer;">
                                 <h2 class="translatable" data-fr="DRESSEURS" data-en="TRAINERS">DRESSEURS</h2>
                                 <p class="translatable" data-fr="CARTES PERSONNAGES" data-en="CHARACTER CARDS">CARTES PERSONNAGES</p>
+                                <div class="booster-text translatable" data-fr="CLIQUEZ POUR OUVRIR" data-en="CLICK TO OPEN">CLIQUEZ POUR OUVRIR</div>
+                            </div>
+                        </div>
+
+                        <div id="slide-special" class="booster-slide hidden" style="display: none; flex-direction: column; align-items: center; width: 100%;">
+                            <div id="special-booster-status" class="booster-status glass-panel" style="margin-bottom: 20px; text-align: center; width: 100%;">
+                                <p><span class="translatable" data-fr="Boosters Shiny :" data-en="Shiny Packs :">Boosters Shiny :</span> <span id="special-booster-count" class="highlight">0</span></p>
+                                <p style="font-size: 0.9rem; color: #aaa;">Récompense d'Arène Multijoueur</p>
+                            </div>
+                            <div id="special-booster-pack" class="booster" style="background: linear-gradient(135deg, #f1c40f, #e67e22); border-color: #f39c12; cursor: pointer; transition: 0.3s;">
+                                <h2 class="translatable" data-fr="SHINY" data-en="SHINY">SHINY</h2>
+                                <p class="translatable" data-fr="ÉDITION SPÉCIALE" data-en="SPECIAL EDITION">ÉDITION SPÉCIALE</p>
                                 <div class="booster-text translatable" data-fr="CLIQUEZ POUR OUVRIR" data-en="CLICK TO OPEN">CLIQUEZ POUR OUVRIR</div>
                             </div>
                         </div>

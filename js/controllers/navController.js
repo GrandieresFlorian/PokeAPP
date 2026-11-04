@@ -63,6 +63,8 @@ export function updateAuthUI() {
     const authNavBtn = document.getElementById('auth-nav-btn');
     const debugTools = document.getElementById('debug-tools');
     const debugDenied = document.getElementById('debug-denied');
+    const pdContainer = document.getElementById('pokedollar-display-container');
+    const pdDisplay = document.getElementById('pokedollar-display');
 
     if (state.currentUser) {
         const displayName = state.currentUserData.displayName || state.currentUser;
@@ -80,6 +82,10 @@ export function updateAuthUI() {
         authNavBtn.setAttribute('data-en', 'Logout');
         authNavBtn.textContent = state.currentLang === 'en' ? 'Logout' : 'Se déconnecter';
         authNavBtn.style.backgroundColor = "#e74c3c"; 
+        if (pdContainer) {
+        pdContainer.style.display = 'block';
+        pdDisplay.textContent = state.currentUserData.pokeDollars || 0;
+        }
     } else {
         userNameDisplay.textContent = state.currentLang === 'en' ? "Not connected" : "Non connecté";
         userNameDisplay.setAttribute('data-fr', 'Non connecté');
@@ -91,6 +97,7 @@ export function updateAuthUI() {
         authNavBtn.setAttribute('data-en', 'Login');
         authNavBtn.textContent = state.currentLang === 'en' ? 'Login' : 'Se connecter';
         authNavBtn.style.backgroundColor = "#3498db"; 
+        if (pdContainer) pdContainer.style.display = 'none';
     }
 
     if (debugTools && debugDenied) {

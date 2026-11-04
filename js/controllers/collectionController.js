@@ -1,6 +1,9 @@
 import { state, CONSTS } from '../state.js';
 import { getPokemonDetails, formatMegaName, getCardImageUrl, generateTypeBadgesHTML, TOUTES_LES_BAIES, BAIES_BOOSTERS, MUTATION_RECIPES } from '../utils.js';
 
+const PRIX_VENTE = {
+    "C": 1, "U": 2, "R": 4, "E": 7, "L": 13, "M": 20, "MG": 20
+};
 // ==========================================
 // FICHE DÉTAILLÉE DU POKÉMON (100% LOCAL)
 // ==========================================
@@ -264,6 +267,8 @@ export function initCollection() {
         containerCol.addEventListener('click', (e) => {
             const btnUpgrade = e.target.closest('.btn-card-upgrade');
             const btnInfo = e.target.closest('.btn-card-info');
+            const btnSell = e.target.closest('.btn-card-sell');
+            const btnSellTrainer = e.target.closest('.btn-card-sell-trainer');
 
             if (btnUpgrade) {
                 e.stopPropagation();
@@ -273,9 +278,56 @@ export function initCollection() {
                 const cardDate = Number(btnInfo.dataset.date);
                 const carteTrouvee = state.currentUserData.collection.find(c => c.date === cardDate);
                 if(carteTrouvee) openCardDetails(carteTrouvee);
+            } else if (btnSell) {
+                e.stopPropagation();
+                vendreDoublonPokemon(Number(btnSell.dataset.date));
+            } else if (btnSellTrainer) {
+                e.stopPropagation();
+                vendreDoublonDresseur(btnSellTrainer.dataset.variant, btnSellTrainer.dataset.rarity);
             }
         });
     }
+}
+
+function vendreDoublonPokemon(cardDate) {
+    const mainCard = state.currentUserData.collection.find(c => c.date === cardDate);
+    if (!mainCard || (mainCard.quantity || 1) <= 1) return;
+
+    let rarity = mainCard.mega ? "MG" : (mainCard.data ? mainCard.data.rarity : "C");
+    let price = PRIX_VENTE[rarity] || 1;
+
+    mainCard.quantity--;
+    state.currentUserData.pokeDollars = (state.currentUserData.pokeDollars || 0) + price;
+
+    updateFirebaseAfterSale();
+}
+
+function vendreDoublonDresseur(variantId, rarity) {
+    const mainCard = state.currentUserData.collection.find(c => c.isTrainer && c.variantId === variantId);
+    if (!mainCard || (mainCard.quantity || 1) <= 1) return;
+
+    let price = PRIX_VENTE[rarity] || 1;
+
+    mainCard.quantity--;
+    state.currentUserData.pokeDollars = (state.currentUserData.pokeDollars || 0) + price;
+
+    updateFirebaseAfterSale();
+}
+
+function updateFirebaseAfterSale() {
+    // Met à l'écran
+    const pdDisplay = document.getElementById('pokedollar-display');
+    if (pdDisplay) pdDisplay.textContent = state.currentUserData.pokeDollars;
+
+    // Sauvegarde en base de données
+    import('../firebase-config.js').then(({db}) => {
+        db.collection('users').doc(state.currentUser).update({ 
+            collection: state.currentUserData.collection,
+            pokeDollars: state.currentUserData.pokeDollars 
+        })
+        .then(() => afficherCollection())
+        .catch(err => console.error("Erreur de vente:", err));
+    });
 }
 
 export function upgradeCard(cardDate) {
@@ -395,6 +447,9 @@ export function afficherCollection() {
 
             let niveauDisplayHtml = `<div style="font-size: 0.75rem; color: #f1c40f; margin-top: 4px; font-weight: bold;">Niv. ${currentLevel} / ${maxLevel}</div>`;
 
+            let sellPrice = PRIX_VENTE[pokemonRarity] || 1;
+            let sellButtonHtml = doublons > 0 ? `<button class="btn-card-action btn-card-sell" data-date="${mainCard.date}" style="background-color:#e74c3c;">💰 Vendre Doublon (+${sellPrice} PD$)</button>` : '';
+
             let overlayHtml = `
                 <div class="card-hover-actions">
                     <button class="btn-card-action btn-card-info" data-date="${mainCard.date}">👁️ Voir la Fiche</button>
@@ -402,6 +457,7 @@ export function afficherCollection() {
                         (canUpgrade ? `<button class="btn-card-action btn-card-upgrade" data-date="${mainCard.date}">⭐ Améliorer <br><span style="font-size:0.7rem; font-weight:normal;">(-${cost} doublon${cost>1?'s':''})</span></button>` : `<div class="upgrade-hint"><span class="translatable" data-fr="Manque ${cost - doublons} doublon(s)<br>pour le rang${maxLevel + 20}" data-en="Need ${cost - doublons} duplicate(s)<br>for rank${maxLevel + 20}">Manque ${cost - doublons} doublon(s)<br>pour le rang${maxLevel + 20}</span></div>`) 
                         : `<div class="upgrade-max">✨ RANG MAX ✨</div>`
                     }
+                    ${sellButtonHtml}
                     ${niveauDisplayHtml}
                 </div>`;
 
@@ -554,12 +610,22 @@ function afficherDresseurs(container, countDisplay, ownedOnlyVal) {
 
             if (possede) {
                 let badgeQuantite = quantite > 1 ? `<div class="badge-quantite">X${quantite}</div>` : "";
+                let sellPrice = PRIX_VENTE[variant.rarity] || 1;
+                let doublons = quantite - 1;
+                let sellButtonHtml = doublons > 0 ? `<button class="btn-card-action btn-card-sell-trainer" data-variant="${variant.id}" data-rarity="${variant.rarity}" style="background-color:#e74c3c;">💰 Vendre (+${sellPrice} PD$)</button>` : '';
+                
+                let hoverOverlay = `
+                    <div class="card-hover-actions">
+                        ${sellButtonHtml}
+                    </div>`;
+
                 htmlContent += `
                     <div class="card flipped" style="cursor: default;">
                         <div class="card-inner">
-                            <!-- Application du bgColor ici -->
                             <div class="card-front" style="background-color: ${bgColor}; border-color: rgba(0,0,0,0.2); position: relative;">
+                                ${hoverOverlay}
                                 ${badgeQuantite}
+                                <!-- Reste du HTML de la carte dresseur -->
                                 <div class="card-header">
                                     <h1 class="pokemon-name">${nomAffiche}</h1>
                                     <div class="icon" style="background-color: white; color: #333;">${variant.rarity}</div>
