@@ -1,5 +1,4 @@
 import { state, CONSTS } from '../state.js';
-
 export function initNav() {
     const navLinks = document.querySelectorAll('.nav-links li');
     navLinks.forEach(link => { 
@@ -109,4 +108,37 @@ export function updateAuthUI() {
             debugDenied.classList.remove('hidden');
         }
     }
+}
+
+export function startNotificationListener() {
+    if (!state.currentUser) return;
+    
+    import('../firebase-config.js').then(({db}) => {
+        // onSnapshot permet d'écouter les changements en temps réel
+        db.collection('users').doc(state.currentUser).onSnapshot(doc => {
+            if (doc.exists) {
+                const data = doc.data();
+                
+                // Vérifie s'il y a des demandes dans la base de données 
+                // (Modifie les noms "friendRequests", "tradeRequests", "battleRequests" si tu les as nommés autrement dans Firebase)
+                const hasFriendReq = data.friendRequests && data.friendRequests.length > 0;
+                const hasTradeReq = data.tradeRequests && data.tradeRequests.length > 0;
+                const hasBattleReq = data.battleRequests && data.battleRequests.length > 0;
+
+                // Affichage du point rouge pour les Amis/Échanges
+                const badgeAmis = document.getElementById('badge-amis');
+                if (badgeAmis) {
+                    if (hasFriendReq || hasTradeReq) badgeAmis.classList.remove('hidden');
+                    else badgeAmis.classList.add('hidden');
+                }
+
+                // Affichage du point rouge pour les Combats
+                const badgeCombat = document.getElementById('badge-combat');
+                if (badgeCombat) {
+                    if (hasBattleReq) badgeCombat.classList.remove('hidden');
+                    else badgeCombat.classList.add('hidden');
+                }
+            }
+        });
+    });
 }

@@ -225,3 +225,40 @@
     contain-intrinsic-size: 200px 300px; /* Taille approximative d'une carte pour garder la barre de défilement fluide */
     will-change: transform;
 }
+
+/* PASTILLE DE NOTIFICATION ROUGE */
+.nav-badge {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: #e74c3c;
+    border-radius: 50%;
+    margin-left: 8px;
+    box-shadow: 0 0 8px #e74c3c;
+    vertical-align: middle;
+}
+
+/* RENDRE LA BARRE LATÉRALE DÉFILABLE */
+.sidebar {
+    overflow-y: auto;
+    /* Assure-toi que la hauteur est bien délimitée, par exemple 100vh si elle prend tout l'écran */
+    max-height: 100vh; 
+}
+
+/* Personnalisation de la barre de défilement (discrète et esthétique) */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+}

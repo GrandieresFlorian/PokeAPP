@@ -164,56 +164,68 @@ export function afficherQuetes() {
 
     const isEn = state.currentLang === 'en';
     
+    // NOUVEAU : Utilisation de Flexbox pour mettre les colonnes côte à côte
     let html = `
-        <h3 class="text-primary" style="border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-top: 0;">
-            ${isEn ? "Daily Quests (Resets at midnight)" : "Quêtes Journalières (Reset à minuit)"}
-        </h3>
-        <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 40px;">
-            ${genererHtmlListeQuetes(state.currentUserData.dailyQuests, 'daily')}
-        </div>
+        <div style="display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; width: 100%;">
+            
+            <!-- COLONNE JOURNALIÈRES -->
+            <div style="flex: 1; min-width: 320px;">
+                <h3 class="text-primary" style="border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-top: 0;">
+                    ${isEn ? "Daily Quests (Resets at midnight)" : "Quêtes Journalières (Reset à minuit)"}
+                </h3>
+                <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 40px;">
+                    ${genererHtmlListeQuetes(state.currentUserData.dailyQuests, 'daily')}
+                </div>
+            </div>
 
-        <h3 class="text-accent" style="border-bottom: 2px solid #f39c12; padding-bottom: 10px;">
-            ${isEn ? "Weekly Quests (Resets on Monday)" : "Quêtes Hebdomadaires (Reset le lundi)"}
-        </h3>
-        <div style="display: flex; flex-direction: column; gap: 15px;">
-            ${genererHtmlListeQuetes(state.currentUserData.weeklyQuests, 'weekly')}
+            <!-- COLONNE HEBDOMADAIRES -->
+            <div style="flex: 1; min-width: 320px;">
+                <h3 class="text-accent" style="border-bottom: 2px solid #f39c12; padding-bottom: 10px; margin-top: 0;">
+                    ${isEn ? "Weekly Quests (Resets on Monday)" : "Quêtes Hebdomadaires (Reset le lundi)"}
+                </h3>
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    ${genererHtmlListeQuetes(state.currentUserData.weeklyQuests, 'weekly')}
+                </div>
+            </div>
+            
         </div>
     `;
 
     container.innerHTML = html;
 
-    // Ajouter les écouteurs de clics pour les récompenses
     container.querySelectorAll('.btn-claim-quest').forEach(btn => {
         btn.addEventListener('click', (e) => validerQuete(e.target.dataset.type, e.target.dataset.index));
     });
 }
 
 function genererHtmlListeQuetes(liste, listType) {
-    if (!liste || liste.length === 0) return "<p>Aucune quête en cours.</p>";
+    if (!liste || liste.length === 0) return "<p style='color:#aaa;'>Aucune quête en cours.</p>";
     const isEn = state.currentLang === 'en';
 
     return liste.map((quete, index) => {
         const desc = isEn ? quete.en : quete.fr;
         const isCompleted = quete.progress >= quete.target;
         const progressPercent = Math.min((quete.progress / quete.target) * 100, 100);
+        
+        // CORRECTION : On force la valeur à 1 si elle est indéfinie (anciennes sauvegardes)
+        const reward = quete.reward || 1; 
 
         let actionHtml = '';
         if (quete.claimed) {
             actionHtml = `<span style="color: #2ecc71; font-weight: bold;">✅ ${isEn ? "Claimed" : "Validée"}</span>`;
         } else if (isCompleted) {
-            actionHtml = `<button class="btn btn-secondary btn-claim-quest" data-type="${listType}" data-index="${index}" style="margin: 0; padding: 8px 15px; background: #e67e22; border-color: #d35400;">🎁 +${quete.reward} Shiny</button>`;
+            actionHtml = `<button class="btn btn-secondary btn-claim-quest" data-type="${listType}" data-index="${index}" style="margin: 0; padding: 8px 15px; background: #e67e22; border-color: #d35400;">🎁 +${reward} Shiny</button>`;
         } else {
             actionHtml = `<span style="color: #aaa;">${quete.progress} / ${quete.target}</span>`;
         }
 
-        // Couleur de la barre : Bleu pour journalier, Doré pour hebdo
         const barColor = listType === 'weekly' ? '#f39c12' : '#3498db'; 
         const barFilledColor = isCompleted ? '#2ecc71' : barColor;
 
         return `
             <div class="glass-panel" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; border-left: 5px solid ${barColor};">
                 <div style="flex: 1; padding-right: 20px;">
-                    <h4 style="margin: 0 0 10px 0;">${desc} <span style="font-size:0.8rem; color:#f1c40f;">(🎁 x${quete.reward})</span></h4>
+                    <h4 style="margin: 0 0 10px 0;">${desc} <span style="font-size:0.8rem; color:#f1c40f;">(🎁 x${reward})</span></h4>
                     <div style="background: #222; border-radius: 10px; height: 10px; width: 100%; overflow: hidden; max-width: 350px;">
                         <div style="background: ${barFilledColor}; height: 100%; width: ${progressPercent}%; transition: width 0.3s;"></div>
                     </div>
@@ -264,8 +276,9 @@ function validerQuete(listType, index) {
 
     quete.claimed = true;
     
-    // On ajoute le nombre de boosters défini par la récompense de la quête
-    state.currentUserData.specialBoostersLeft = (state.currentUserData.specialBoostersLeft || 0) + quete.reward;
+    // CORRECTION : Même sécurité ici pour le gain réel
+    const reward = quete.reward || 1;
+    state.currentUserData.specialBoostersLeft = (state.currentUserData.specialBoostersLeft || 0) + reward;
 
     db.collection('users').doc(state.currentUser).update({
         dailyQuests: state.currentUserData.dailyQuests,
@@ -273,7 +286,7 @@ function validerQuete(listType, index) {
         specialBoostersLeft: state.currentUserData.specialBoostersLeft
     }).then(() => {
         afficherQuetes();
-        updateSpecialBoosterUI();
-        alert(state.currentLang === 'en' ? `Quest completed! +${quete.reward} Shiny Pack(s) ✨` : `Quête validée ! +${quete.reward} Booster(s) Shiny ✨`);
+        import('./boosterController.js').then(({ updateSpecialBoosterUI }) => updateSpecialBoosterUI());
+        alert(state.currentLang === 'en' ? `Quest completed! +${reward} Shiny Pack(s) ✨` : `Quête validée ! +${reward} Booster(s) Shiny ✨`);
     });
 }

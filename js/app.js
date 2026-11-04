@@ -1,6 +1,6 @@
 import { db } from './firebase-config.js';
 import { state, CONSTS } from './state.js';
-import { initNav, updateAuthUI } from './controllers/navController.js';
+import { initNav, updateAuthUI,startNotificationListener } from './controllers/navController.js';
 import { initAuth } from './controllers/authController.js';
 import { initBooster, updateBoosterLogic } from './controllers/boosterController.js';
 import { initCollection } from './controllers/collectionController.js';
@@ -11,7 +11,6 @@ import { initProfile } from './controllers/profileController.js';
 import { initGarden } from './controllers/gardenController.js';
 import { initCampagne } from './controllers/campagneController.js';
 import { initQuests } from './controllers/questController.js';
-
 document.addEventListener("DOMContentLoaded", () => {
     initNav(); 
     initAuth(); 
@@ -160,6 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 initQuests();
                 updateAuthUI(); 
                 updateBoosterLogic(); 
+                startNotificationListener();
                 startFriendsListener();
             } else {
                 state.currentUser = null; 
