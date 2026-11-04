@@ -531,7 +531,6 @@ function afficherDresseurs(container, countDisplay, ownedOnlyVal) {
         dresseursMap[d.variantId] = (dresseursMap[d.variantId] || 0) + q; 
     });
 
-    // 1. On récupère la valeur actuelle du filtre de rareté
     const filterRarity = document.getElementById('filter-rarity');
     const raritySelected = filterRarity ? filterRarity.value : 'all';
 
@@ -544,31 +543,32 @@ function afficherDresseurs(container, countDisplay, ownedOnlyVal) {
             const quantite = dresseursMap[variant.id] || 0; 
             const possede = quantite > 0;
             
-            // 2. On applique le filtre "Uniquement possédées"
             if (ownedOnlyVal && !possede) return;
-
-            // 3. NOUVEAU : On applique le filtre de Rareté
             if (raritySelected !== 'all' && variant.rarity !== raritySelected) return;
 
             maxAffiche++; if (possede) uniquesCount++;
             let nomAffiche = state.currentLang === 'en' ? trainerClass.en : trainerClass.fr;
+            
+            // --- NOUVEAU : Récupération de la couleur dynamique ---
+            const bgColor = CONSTS.couleursRarete[variant.rarity] || "#3498db";
 
             if (possede) {
                 let badgeQuantite = quantite > 1 ? `<div class="badge-quantite">X${quantite}</div>` : "";
                 htmlContent += `
                     <div class="card flipped" style="cursor: default;">
                         <div class="card-inner">
-                            <div class="card-front" style="background-color: #3498db; border-color: #2980b9; position: relative;">
+                            <!-- Application du bgColor ici -->
+                            <div class="card-front" style="background-color: ${bgColor}; border-color: rgba(0,0,0,0.2); position: relative;">
                                 ${badgeQuantite}
                                 <div class="card-header">
                                     <h1 class="pokemon-name">${nomAffiche}</h1>
-                                    <div class="icon" style="background-color: white; color: #2980b9;">${variant.rarity}</div>
+                                    <div class="icon" style="background-color: white; color: #333;">${variant.rarity}</div>
                                 </div>
                                 <div class="image-wrapper" style="background-color: #ecf0f1;">
                                     <img class="pokemon-image" src="${variant.img}" alt="Dresseur" style="object-fit: contain; height: 160px; padding: 10px; image-rendering: pixelated;" loading="lazy">
                                 </div>
                                 <div class="card-subtext" style="justify-content:center;">Dresseur ${variant.gen}</div>
-                                <div class="stats-bar" style="justify-content:center; background-color:#2c3e50;">
+                                <div class="stats-bar" style="justify-content:center; background-color:rgba(0,0,0,0.3);">
                                     <span style="font-weight:bold; color: white;">CARTE DRESSEUR</span>
                                 </div>
                             </div>

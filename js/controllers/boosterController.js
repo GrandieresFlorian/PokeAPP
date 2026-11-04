@@ -289,7 +289,11 @@ function creerCarte(pokemonData, numeroPokedex, index) {
             nouvelleCarte.querySelector('.card-front').appendChild(badge);
 
             nouvelleCarte.classList.add('flipped'); 
-            state.cartesRetournees++; 
+            
+            state.cartesRetournees++;
+            if (pokemonRarity === "E") nouvelleCarte.classList.add('anim-epic');
+            else if (pokemonRarity === "L") nouvelleCarte.classList.add('anim-legendary');
+            else if (pokemonRarity === "M" || pokemonRarity === "MG") nouvelleCarte.classList.add('anim-mythic');
             sauvegarderCarte(pokemonData, numeroPokedex, isShiny, isMega, selectedMegaForm);
             
             if (state.currentPullIndex < state.currentPulls.length - 1) {
@@ -585,6 +589,9 @@ export function creerCarteDresseur(trainerData, index) {
             // 3. On retourne la carte et on LA SAUVEGARDE MAINTENANT
             nouvelleCarte.classList.add('flipped'); 
             state.cartesRetournees++; 
+            if (trainerData.rarity === "E") nouvelleCarte.classList.add('anim-epic');
+            else if (trainerData.rarity === "L") nouvelleCarte.classList.add('anim-legendary');
+            else if (trainerData.rarity === "M") nouvelleCarte.classList.add('anim-mythic');
             
             // --- MODIFICATION ICI : On utilise la fonction de sauvegarde dédiée au moment du clic ---
             sauvegarderDresseur(trainerData);

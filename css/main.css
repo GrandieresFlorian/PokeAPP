@@ -167,3 +167,54 @@
     right: auto;
     margin-left: -6px;
 }
+
+/* =========================================
+   ANIMATIONS DE RARETÉ (BOOSTERS)
+   ========================================= */
+
+/* 🟣 ÉPIQUE : Pulsation violette douce */
+.anim-epic .card-front {
+    animation: glow-epic 1.5s infinite alternate;
+}
+@keyframes glow-epic {
+    0% { box-shadow: 0 0 10px 2px rgba(125, 60, 152, 0.5); }
+    100% { box-shadow: 0 0 25px 8px rgba(125, 60, 152, 0.9); }
+}
+
+/* 🟡 LÉGENDAIRE : Aura dorée intense et carte plus lumineuse */
+.anim-legendary .card-front {
+    animation: glow-legendary 1s infinite alternate;
+}
+@keyframes glow-legendary {
+    0% { box-shadow: 0 0 15px 5px rgba(241, 196, 15, 0.6); filter: brightness(1); }
+    100% { box-shadow: 0 0 40px 15px rgba(241, 196, 15, 1); filter: brightness(1.15); }
+}
+
+/* 🔴 MYTHIQUE (Fou) : Explosion de lumière au retournement + Aura surpuissante multicolore */
+.anim-mythic .card-front {
+    animation: glow-mythic 0.5s infinite alternate;
+}
+.anim-mythic {
+    position: relative;
+}
+/* Le flash blanc qui explose quand la carte se retourne */
+.anim-mythic::after {
+    content: "";
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 300%; height: 300%;
+    background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 60%);
+    transform: translate(-50%, -50%) scale(0);
+    animation: flash-mythic 1s ease-out forwards;
+    pointer-events: none;
+    z-index: 100;
+}
+@keyframes glow-mythic {
+    0% { box-shadow: 0 0 20px 5px rgba(231, 76, 60, 0.8), 0 0 40px 10px rgba(155, 89, 182, 0.6); filter: brightness(1.1); }
+    100% { box-shadow: 0 0 50px 20px rgba(231, 76, 60, 1), 0 0 80px 25px rgba(241, 196, 15, 0.9); filter: brightness(1.3); }
+}
+@keyframes flash-mythic {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    30% { opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+}
