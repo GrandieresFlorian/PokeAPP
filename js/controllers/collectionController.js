@@ -654,10 +654,21 @@ function afficherDresseurs(container, countDisplay, ownedOnlyVal) {
             if (ownedOnlyVal && !possede) return;
             if (raritySelected !== 'all' && variant.rarity !== raritySelected) return;
 
-            maxAffiche++; if (possede) uniquesCount++;
+            // --- NOUVEAUX FILTRES DRESSEURS (CORRIGÉS) ---
+            // 1. Filtre Doublons
+            const onlyDupes = document.getElementById('filter-duplicates') ? document.getElementById('filter-duplicates').checked : false;
+            const carteDresseur = state.currentUserData.collection.find(c => c.isTrainer && c.variantId === variant.id);
+            const vraieQuantite = carteDresseur ? (carteDresseur.quantity || 1) : 0;
+            if (onlyDupes && vraieQuantite <= 1) return;
+
+            // 2. Filtre de Recherche Texte
             let nomAffiche = state.currentLang === 'en' ? trainerClass.en : trainerClass.fr;
+            const searchVal = document.getElementById('search-collection') ? document.getElementById('search-collection').value.toLowerCase() : "";
+            if (searchVal && !nomAffiche.toLowerCase().includes(searchVal)) return;
+            // ---------------------------------------------
+
+            maxAffiche++; if (possede) uniquesCount++;
             
-            // --- NOUVEAU : Récupération de la couleur dynamique ---
             const bgColor = CONSTS.couleursRarete[variant.rarity] || "#3498db";
 
             if (possede) {
@@ -677,7 +688,6 @@ function afficherDresseurs(container, countDisplay, ownedOnlyVal) {
                             <div class="card-front" style="background-color: ${bgColor}; border-color: rgba(0,0,0,0.2); position: relative;">
                                 ${hoverOverlay}
                                 ${badgeQuantite}
-                                <!-- Reste du HTML de la carte dresseur -->
                                 <div class="card-header">
                                     <h1 class="pokemon-name">${nomAffiche}</h1>
                                     <div class="icon" style="background-color: white; color: #333;">${variant.rarity}</div>

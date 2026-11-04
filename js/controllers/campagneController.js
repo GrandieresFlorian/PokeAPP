@@ -2,8 +2,9 @@ import { state, CONSTS } from '../state.js';
 import { getCardImageUrl, formatMegaName } from '../utils.js';
 import { allerASection, applyTranslation } from './navController.js';
 import { ZONES } from '../data/campagneData.js';
-import { startBattle, fleeBattle } from './campagneBattleController.js';
+import { startBattle, fleeBattle, openBag } from './campagneBattleController.js';
 import { updateQuestProgress } from './questController.js';
+
 
 let activeFighter = null;
 
@@ -21,6 +22,10 @@ export function initCampagne() {
     document.getElementById('campagne-sort')?.addEventListener('change', renderTeamSelection);
     
     document.getElementById('btn-battle-flee').addEventListener('click', () => fleeBattle(false));
+    document.getElementById('btn-battle-bag').addEventListener('click', () => openBag());
+    document.getElementById('btn-close-bag').addEventListener('click', () => {
+        document.getElementById('battle-bag-modal').classList.add('hidden');
+    });
 }
 
 function openCampagne() {

@@ -17,6 +17,16 @@ let skillsDB = {};
 fetch('skill.json').then(r => r.json()).then(d => skillsDB = d).catch(() => console.log("skill.json introuvable"));
 
 // --- NOUVELLES MÉCANIQUES ---
+export const ITEMS_DB = {
+    "pokeball": { 
+        id: "pokeball", nameFr: "Poké Ball", nameEn: "Poké Ball", type: "ball", catchMult: 1.0, 
+        icon: "🔴", desc: "Une balle standard. (x1.0)", 
+        price: 10, img: "https://www.pokepedia.fr//images/0/07/Miniature_Pok%C3%A9_Ball_HOME.png?20220601171615" 
+    },
+    "superball": { id: "superball", nameFr: "Super Ball", nameEn: "Great Ball", type: "ball", catchMult: 1.5, icon: "🔵", desc: "Une balle plus performante. (x1.5)" },
+    "hyperball": { id: "hyperball", nameFr: "Hyper Ball", nameEn: "Ultra Ball", type: "ball", catchMult: 2.0, icon: "🟡", desc: "Une balle très performante. (x2.0)" },
+    "masterball": { id: "masterball", nameFr: "Master Ball", nameEn: "Master Ball", type: "ball", catchMult: 100.0, icon: "🟣", desc: "Capture à coup sûr." }
+};
 const PROTECT_MOVES_LIST = ["protect", "detect"];
 const SEED_MOVES_LIST = ["leech-seed"];
 const ACCURACY_DROPS = ["smokescreen", "sand-attack", "flash", "kinesis", "mud-slap"];
@@ -888,6 +898,35 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
         let isCrit = dmgInfo.isCrit;
         let mult = dmgInfo.mult;
 
+        if (isPlayer) {
+            let koTier = getKOMastery(defender.data.id);
+            
+            // Bonus de Critique (Paliers 7 et 10)
+            let critBonus = (koTier >= 10) ? 0.10 : (koTier >= 7 ? 0.05 : 0);
+            if (critBonus > 0 && !isCrit && Math.random() < critBonus) { isCrit = true; damage = Math.floor(damage * 1.5); }
+            
+            // Bonus de Dégâts infligés (Paliers 2, 4, 6, 9)
+            let dmgMult = 1;
+            if (koTier >= 9) dmgMult = 1.20;
+            else if (koTier >= 6) dmgMult = 1.15;
+            else if (koTier >= 4) dmgMult = 1.10;
+            else if (koTier >= 2) dmgMult = 1.05;
+            
+            damage = Math.floor(damage * dmgMult);
+        } else {
+            let catchTier = getCatchMastery(attacker.data.id);
+            
+            // Réduction des Dégâts subis (Paliers 2, 4, 6, 8, 10)
+            let defMult = 1;
+            if (catchTier >= 10) defMult = 0.70;
+            else if (catchTier >= 8) defMult = 0.80;
+            else if (catchTier >= 6) defMult = 0.85;
+            else if (catchTier >= 4) defMult = 0.90;
+            else if (catchTier >= 2) defMult = 0.95;
+            
+            damage = Math.floor(damage * defMult);
+        }
+
         // APPLICATION DES ÉCRANS (Dégâts divisés par 2)
         if (move.damageClass === 'physical' && opTeamState.screens.reflect > 0) damage = Math.floor(damage / 2);
         if (move.damageClass === 'special' && opTeamState.screens.lightScreen > 0) damage = Math.floor(damage / 2);
@@ -972,6 +1011,49 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
     return { flinched, forceFlee: false };
 }
 
+export function openBag() {
+    if (isAnimating || !currentEnemy || currentEnemy.battleStats.hp <= 0) return;
+    
+    // Si l'inventaire n'existe pas, on le crée (pour les tests, on donne 5 Pokéball gratuites)
+    if (!state.currentUserData.inventory) {
+        state.currentUserData.inventory = { "pokeball": 5 };
+        db.collection('users').doc(state.currentUser).update({ inventory: state.currentUserData.inventory });
+    }
+
+    const modal = document.getElementById('battle-bag-modal');
+    const list = document.getElementById('bag-items-list');
+    const emptyMsg = document.getElementById('bag-empty-msg');
+    list.innerHTML = "";
+
+    const items = Object.keys(state.currentUserData.inventory);
+    let hasItems = false;
+
+    items.forEach(itemId => {
+        let quantity = state.currentUserData.inventory[itemId];
+        if (quantity > 0 && ITEMS_DB[itemId]) {
+            hasItems = true;
+            let itemDef = ITEMS_DB[itemId];
+            const btn = document.createElement('button');
+            btn.className = "btn btn-secondary";
+            btn.style.cssText = "display: flex; justify-content: space-between; align-items: center; text-align: left;";
+            
+            let itemName = state.currentLang === 'en' ? itemDef.nameEn : itemDef.nameFr;
+            btn.innerHTML = `
+                <span>${itemDef.icon} <b>${itemName}</b> <span style="font-size:0.8rem; color:#aaa; display:block;">${itemDef.desc}</span></span>
+                <span class="badge-quantite" style="position:static; transform:none; font-size:1rem;">x${quantity}</span>
+            `;
+            
+            btn.onclick = () => {
+                modal.classList.add('hidden');
+                attemptCapture(itemId); // On lance la fonction avec l'ID de la balle
+            };
+            list.appendChild(btn);
+        }
+    });
+
+    emptyMsg.style.display = hasItems ? "none" : "block";
+    modal.classList.remove('hidden');
+}
 export async function processTurn(playerMove) {
     if (isAnimating || !currentEnemy || currentEnemy.battleStats.hp <= 0 || activeFighter.battleStats.hp <= 0) return;
     isAnimating = true;
@@ -1216,8 +1298,51 @@ async function handleLevelUpMoves(oldLvl, newLvl) {
     }
 }
 
-async function winBattle() {
-    logMessage(`<b style="color:#2ecc71;">Le Pokémon sauvage est vaincu !</b>`);
+async function winBattle(isCapture = false) {
+    if (isCapture) logMessage(`<b style="color:#2ecc71;">Le Pokémon a été envoyé au Professeur !</b>`);
+    else logMessage(`<b style="color:#2ecc71;">Le Pokémon sauvage est vaincu !</b>`);
+
+    // --- INITIALISATION PROPRE DES OBJETS ---
+    if (!state.currentUserData.mastery) state.currentUserData.mastery = { ko: {}, catch: {} };
+    if (!state.currentUserData.mastery.ko) state.currentUserData.mastery.ko = {};
+    if (!state.currentUserData.mastery.catch) state.currentUserData.mastery.catch = {};
+    if (!state.currentUserData.pokePts) state.currentUserData.pokePts = 0; // Monnaie PokePts
+
+    let pkmnId = currentEnemy.data.id;
+    let msg = "";
+    let gainedPokePt = false;
+
+    // --- GESTION DES POINTS ET DES PALIERS ---
+    if (isCapture) {
+        let oldTier = getCatchMastery(pkmnId);
+        state.currentUserData.mastery.catch[pkmnId] = (state.currentUserData.mastery.catch[pkmnId] || 0) + 1;
+        let c = state.currentUserData.mastery.catch[pkmnId];
+        let newTier = getCatchMastery(pkmnId);
+        
+        msg = `Statistiques de Capture : ${c}`;
+        if (newTier > oldTier) {
+            gainedPokePt = true;
+            msg += `<br>🎯 <b style="color:#f1c40f">Palier de Capture ${newTier}/10 atteint !</b>`;
+        }
+    } else {
+        let oldTier = getKOMastery(pkmnId);
+        state.currentUserData.mastery.ko[pkmnId] = (state.currentUserData.mastery.ko[pkmnId] || 0) + 1;
+        let k = state.currentUserData.mastery.ko[pkmnId];
+        let newTier = getKOMastery(pkmnId);
+        
+        msg = `Statistiques de KO : ${k}`;
+        if (newTier > oldTier) {
+            gainedPokePt = true;
+            msg += `<br>⚔️ <b style="color:#f1c40f">Palier de KO ${newTier}/10 atteint !</b>`;
+        }
+    }
+    
+    if (gainedPokePt) {
+        state.currentUserData.pokePts += 1;
+        msg += `<br>✨ <b style="color:#3498db">Vous obtenez 1 PokePt !</b> (Total: ${state.currentUserData.pokePts})`;
+    }
+    
+    logMessage(`<span style="color:#bdc3c7; font-size:0.9rem;">${msg}</span>`);
 
     if (currentZone && currentZone.name === "Grotte Sombre" && (currentEnemy.data.id === 95 || currentEnemy.nameEn.toLowerCase() === "onix")) {
         if (!state.currentUserData.berries) state.currentUserData.berries = [];
@@ -1258,7 +1383,16 @@ async function winBattle() {
         }
     }
 
+    // Calcul du bonus d'XP (Paliers 1, 3, 5, 8)
     let xpGained = currentEnemy.level * 15;
+    let koTier = getKOMastery(pkmnId);
+    let xpMult = 1;
+    if (koTier >= 8) xpMult = 1.30;
+    else if (koTier >= 5) xpMult = 1.20;
+    else if (koTier >= 3) xpMult = 1.10;
+    else if (koTier >= 1) xpMult = 1.05;
+    
+    xpGained = Math.floor(xpGained * xpMult);
     logMessage(`Vous gagnez <span class="text-accent">${xpGained} XP</span> !`);
     
     let oldLvl = activeFighter.level || 1;
@@ -1289,9 +1423,102 @@ async function winBattle() {
     try { 
         await db.collection('users').doc(state.currentUser).update({ 
             collection: state.currentUserData.collection,
-            berries: state.currentUserData.berries || [] // <--- Sauvegarde des baies ajoutée
+            berries: state.currentUserData.berries || [],
+            mastery: state.currentUserData.mastery, 
+            pokePts: state.currentUserData.pokePts 
         }); 
     } catch(e) {}
     updateQuestProgress('play_battle', 1);
     setTimeout(() => { if(onBattleEndCallback) onBattleEndCallback(); }, 4000);
+}
+
+const KO_THRESHOLDS = [10, 25, 50, 100, 200, 350, 500, 750, 1000, 1500];
+const CATCH_THRESHOLDS = [2, 5, 10, 20, 40, 70, 110, 160, 220, 300];
+
+export function getKOMastery(pokemonId) {
+    let ko = state.currentUserData.mastery?.ko?.[pokemonId] || 0;
+    let tier = 0;
+    for (let i = 0; i < KO_THRESHOLDS.length; i++) {
+        if (ko >= KO_THRESHOLDS[i]) tier = i + 1;
+        else break;
+    }
+    return tier;
+}
+
+export function getCatchMastery(pokemonId) {
+    let catches = state.currentUserData.mastery?.catch?.[pokemonId] || 0;
+    let tier = 0;
+    for (let i = 0; i < CATCH_THRESHOLDS.length; i++) {
+        if (catches >= CATCH_THRESHOLDS[i]) tier = i + 1;
+        else break;
+    }
+    return tier;
+}
+
+// Modifie la signature pour accepter l'ID de la balle
+export async function attemptCapture(ballId = "pokeball") {
+    if (isAnimating || !currentEnemy || currentEnemy.battleStats.hp <= 0 || activeFighter.battleStats.hp <= 0) return;
+    
+    let ballDef = ITEMS_DB[ballId];
+    if (!ballDef || !state.currentUserData.inventory || state.currentUserData.inventory[ballId] <= 0) return;
+
+    isAnimating = true;
+    toggleMoves(true);
+
+    // Consommation de l'objet
+    state.currentUserData.inventory[ballId] -= 1;
+    db.collection('users').doc(state.currentUser).update({ inventory: state.currentUserData.inventory });
+
+    let bName = state.currentLang === 'en' ? ballDef.nameEn : ballDef.nameFr;
+    logMessage(`Vous lancez une ${bName} !`);
+    playAnimation('enemy-sprite', 'anim-damage'); // Petite animation temporaire pour le lancer
+    await new Promise(r => setTimeout(r, 1500));
+
+    // Calcul des chances avec le multiplicateur de la Ball
+    let hpRatio = currentEnemy.battleStats.hp / currentEnemy.battleStats.maxHp;
+    let baseChance = (1 - hpRatio) * 0.5; 
+    if (currentEnemy.status) baseChance += 0.2; 
+    if (currentEnemy.level < activeFighter.level) baseChance += 0.1;
+
+    let catchTier = getCatchMastery(currentEnemy.data.id);
+    let catchBonus = 0;
+    if (catchTier >= 9) catchBonus = 0.25;
+    else if (catchTier >= 7) catchBonus = 0.20;
+    else if (catchTier >= 5) catchBonus = 0.15;
+    else if (catchTier >= 3) catchBonus = 0.10;
+    else if (catchTier >= 1) catchBonus = 0.05;
+    
+    // Application du multiplicateur (Masterball = x100)
+    let finalCatchChance = (baseChance + catchBonus) * ballDef.catchMult;
+
+    if (Math.random() < finalCatchChance) {
+        logMessage(`<b style="color:#2ecc71">1... 2... 3... Clic !</b>`);
+        await winBattle(true); 
+        isAnimating = false;
+        return;
+    } else {
+        logMessage(`<span style="color:#e74c3c">Oh non ! Le Pokémon s'est libéré !</span>`);
+        await new Promise(r => setTimeout(r, 800));
+    }
+
+    // L'ennemi riposte...
+    // (Conserve le reste de ton code existing pour la riposte de l'ennemi ici)
+    let eMoves = currentEnemy.battleMoves || currentEnemy.moves;
+    let bestEnemyMove = eMoves[Math.floor(Math.random() * eMoves.length)];
+    let eResult = await executeMove(currentEnemy, activeFighter, bestEnemyMove, false);
+    
+    if (eResult && eResult.forceFlee) { fleeBattle(true); return; }
+    await applyEndTurnEffects(currentEnemy, activeFighter, false);
+    await applyEndTurnEffects(activeFighter, currentEnemy, true);
+    
+    updateBattleUI();
+
+    if (activeFighter.battleStats.hp <= 0) {
+        logMessage(`<span class="text-danger">${activeFighter.data.fr} est K.O. ! Vous fuyez en urgence...</span>`);
+        setTimeout(() => { if (onBattleEndCallback) onBattleEndCallback(); }, 2500);
+    } else {
+        toggleMoves(false);
+        renderMovesUI();
+    }
+    isAnimating = false;
 }

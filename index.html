@@ -41,6 +41,9 @@
 
                 <!-- Bouton pour l'Aventure -->
                 <li data-target="section-campagne" id="nav-campagne" class="translatable" data-fr="Campagne 🗺️" data-en="Campaign 🗺️">Campagne 🗺️</li>
+                <li data-target="section-boutique" id="nav-boutique" class="translatable" data-fr="Boutique 🛒" data-en="Shop 🛒">Boutique 🛒</li>
+                <li data-target="section-sac" id="nav-sac" class="translatable" data-fr="Sac 🎒" data-en="Bag 🎒">Sac 🎒</li>
+                <li data-target="section-recherche" id="nav-recherche" class="translatable" data-fr="Recherche 🔬" data-en="Research 🔬">Recherche 🔬</li>
                 <li data-target="section-profil" id="nav-profil" class="translatable" data-fr="Profil 👤" data-en="Profile 👤">Profil 👤</li>
                 <li data-target="section-settings" class="translatable" data-fr="Paramètres" data-en="Settings">Paramètres</li>
             </ul>
@@ -412,7 +415,11 @@
                         <div id="battle-log" class="battle-log translatable" data-fr="Un Pokémon sauvage apparaît !" data-en="A wild Pokémon appears!">Un Pokémon sauvage apparaît !</div>
                         <div class="battle-actions-wrapper">
                             <div id="moves-container" class="battle-moves-grid"></div>
-                            <button id="btn-battle-flee" class="btn btn-danger translatable" data-fr="Fuir 🏃" data-en="Flee 🏃" style="width:100%;">Fuir 🏃</button>
+                            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                <!-- NOUVEAU : Bouton Sac -->
+                                <button id="btn-battle-bag" class="btn btn-secondary translatable" data-fr="Sac 🎒" data-en="Bag 🎒" style="flex: 1; background: #3498db; border-color: #2980b9;">Sac 🎒</button>
+                                <button id="btn-battle-flee" class="btn btn-danger translatable" data-fr="Fuir 🏃" data-en="Flee 🏃" style="flex: 1;">Fuir 🏃</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -481,6 +488,42 @@
                     </div>
                 </div>
             </section>
+            <!-- SECTION SAC -->
+            <section id="section-sac" class="view-section hidden">
+                <h2 class="section-title translatable" data-fr="Mon Sac à Dos" data-en="My Bag">Mon Sac à Dos</h2>
+                <div id="sac-container" style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-top:20px;">
+                    <!-- Les objets seront générés ici -->
+                </div>
+            </section>
+
+            <!-- SECTION RECHERCHE -->
+            <section id="section-recherche" class="view-section hidden">
+                <h2 class="section-title translatable" data-fr="Laboratoire de Recherche" data-en="Research Lab">Laboratoire de Recherche</h2>
+                
+                <div class="glass-panel" style="text-align:center; margin-bottom:20px; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    <h3 style="margin:0; color:#f1c40f;">PokePts : <span id="recherche-pokepts" class="text-accent" style="font-size:1.5rem;">0</span> ✨</h3>
+                    <p style="color:#aaa; font-size:0.9rem; margin-top:5px;" class="translatable" data-fr="Battez ou capturez des Pokémon pour monter en palier et gagner des PokePts !" data-en="Defeat or catch Pokémon to increase your mastery tiers and earn PokePts!">Battez ou capturez des Pokémon pour monter en palier et gagner des PokePts !</p>
+                </div>
+                
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <input type="text" id="search-recherche" class="auth-input" placeholder="Rechercher un Pokémon..." style="width: 100%; max-width: 400px; padding: 10px;">
+                </div>
+                
+                <!-- Conteneur avec un défilement interne pour ne pas surcharger la page -->
+                <div id="recherche-container" style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; max-height: 60vh; overflow-y: auto; padding-right: 10px;">
+                    <!-- Les fiches de maîtrise seront générées ici -->
+                </div>
+            </section>
+            <!-- SECTION BOUTIQUE -->
+            <section id="section-boutique" class="view-section hidden">
+                <h2 class="section-title translatable" data-fr="Boutique Pokémon" data-en="Pokémon Shop">Boutique Pokémon</h2>
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <span style="font-size: 1.2rem; color: #f1c40f; font-weight: bold;">Vos fonds : <span id="boutique-pd-display" class="text-accent">0</span> PD$</span>
+                </div>
+                <div id="boutique-container" style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-top:20px;">
+                    <!-- Les articles en vente apparaîtront ici -->
+                </div>
+            </section>
         </main>
     </div>
 
@@ -533,6 +576,18 @@
             <p id="move-learn-text" style="margin-bottom: 20px;">...</p>
             <div id="current-moves-list" class="battle-moves-grid" style="margin-bottom:20px;"></div>
             <button id="btn-skip-move" class="btn btn-danger translatable" data-fr="Ne pas l'apprendre" data-en="Don't learn">Ne pas l'apprendre</button>
+        </div>
+    </div>
+
+    <!-- MODAL INVENTAIRE DE COMBAT -->
+    <div id="battle-bag-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel" style="max-width: 400px;">
+            <h3 class="text-accent translatable" data-fr="Votre Sac" data-en="Your Bag" style="margin-top:0;">Votre Sac</h3>
+            <p id="bag-empty-msg" style="color: #aaa; display: none;">Votre sac est vide.</p>
+            <div id="bag-items-list" style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px; max-height: 300px; overflow-y: auto;">
+                <!-- Les objets seront générés ici -->
+            </div>
+            <button id="btn-close-bag" class="btn btn-danger translatable" data-fr="Fermer" data-en="Close" style="margin-top:15px; width:100%;">Fermer</button>
         </div>
     </div>
 
