@@ -1303,7 +1303,7 @@ async function winBattle(isCapture = false) {
     if (isCapture) logMessage(`<b style="color:#2ecc71;">Le Pokémon a été envoyé au Professeur !</b>`);
     else logMessage(`<b style="color:#2ecc71;">Le Pokémon sauvage est vaincu !</b>`);
 
-    // --- INITIALISATION PROPRE DES OBJETS ---
+    // --- IENITIALISATION PROPRE DES OBJETS ---
     if (!state.currentUserData.mastery) state.currentUserData.mastery = { ko: {}, catch: {} };
     if (!state.currentUserData.mastery.ko) state.currentUserData.mastery.ko = {};
     if (!state.currentUserData.mastery.catch) state.currentUserData.mastery.catch = {};
