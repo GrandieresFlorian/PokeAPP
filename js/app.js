@@ -11,7 +11,7 @@ import { initProfile } from './controllers/profileController.js';
 import { initGarden } from './controllers/gardenController.js';
 import { initCampagne } from './controllers/campagneController.js';
 import { initQuests } from './controllers/questController.js';
-import { initMenus } from './menusController.js';
+import { initMenus } from './controllers/menusController.js';
 document.addEventListener("DOMContentLoaded", () => {
     initNav(); 
     initMenus();
