@@ -181,7 +181,13 @@ function renderMovesUI() {
     container.innerHTML = "";
 
     if (activeFighter.chargingMove) {
-        container.innerHTML = `<button class="move-btn type-normal" disabled style="grid-column: span 2;">En attente d'attaque...</button>`;
+        // CORRECTION : On crée un vrai bouton cliquable au lieu d'un bouton "disabled"
+        const btn = document.createElement('button');
+        btn.className = `move-btn type-${activeFighter.chargingMove.type || 'normal'}`;
+        btn.style.gridColumn = "span 2";
+        btn.innerHTML = `<span class="move-name">Relâcher ${activeFighter.chargingMove.nameFr} !</span>`;
+        btn.onclick = () => processTurn(activeFighter.chargingMove);
+        container.appendChild(btn);
         return;
     }
 
@@ -891,6 +897,10 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
         totalDamage += damage;
         playAnimation(isPlayer ? 'enemy-sprite' : 'player-sprite', 'anim-damage');
 
+        if (defender.battleStats.hp <= 0 && move.nameEn === "fell-stinger") {
+            attacker.modifiers.atk = Math.min(6, (attacker.modifiers.atk || 0) + 3);
+            logMessage(`<span style="color:#e74c3c">L'Attaque de ${aName} augmente drastiquement grâce à Dard Mortel !</span>`);
+        }
         if (damage > 0 && isCrit && hitCount === 1) logMessage(`<span style="color:#f39c12">Coup critique !</span>`);
         
         if (i === hitCount - 1) { 

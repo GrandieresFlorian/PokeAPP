@@ -38,6 +38,7 @@ async function afficherClassement() {
     const totalContainer = document.getElementById('leaderboard-total');
     if (!uniqueContainer || !totalContainer) return;
 
+    const BANNED_NAMES = ["test", "hacker-copie" ,"OriKage"];
     try {
         // On récupère tous les utilisateurs
         const snapshot = await db.collection('users').get();
@@ -55,6 +56,10 @@ async function afficherClassement() {
                 
                 // On récupère le pseudo (ou le nom d'utilisateur, ou l'ID par défaut)
                 const pseudo = data.pseudo || data.username || doc.id.substring(0, 8);
+
+                if (BANNED_NAMES.includes(pseudo.toLowerCase())) {
+                    return; // Si banni, on passe au joueur suivant sans l'ajouter
+                }
                 
                 usersData.push({ pseudo, uniqueCount, totalCount });
             }
