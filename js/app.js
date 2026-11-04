@@ -12,6 +12,7 @@ import { initGarden } from './controllers/gardenController.js';
 import { initCampagne } from './controllers/campagneController.js';
 import { initQuests } from './controllers/questController.js';
 import { initMenus } from './controllers/menusController.js';
+window.debugState = state;
 document.addEventListener("DOMContentLoaded", () => {
     initNav(); 
     initMenus();
