@@ -1299,6 +1299,7 @@ async function handleLevelUpMoves(oldLvl, newLvl) {
 }
 
 async function winBattle(isCapture = false) {
+    console.log("DEBUG ENNEMI ACTUEL :", currentEnemy);
     if (isCapture) logMessage(`<b style="color:#2ecc71;">Le Pokémon a été envoyé au Professeur !</b>`);
     else logMessage(`<b style="color:#2ecc71;">Le Pokémon sauvage est vaincu !</b>`);
 
