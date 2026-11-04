@@ -325,25 +325,32 @@ async function createBattleRoom(req, team1, team2) {
 
 async function formatTeam(rawTeam) {
     return await Promise.all(rawTeam.map(async pkmn => {
-        const d = await getPokemonDetails(pkmn);
-        let maxHp = Math.floor(((2 * d.baseStats.hp) * (pkmn.level || 1)) / 100) + (pkmn.level || 1) + 10;
+        
+        // --- CORRECTION : Failsafe ultime pour forcer un ID valide (Bulbizarre par défaut) ---
+        let safeId = Number(pkmn.pokedexNumber) || 1;
+        let safePkmn = { ...pkmn, pokedexNumber: safeId };
+        
+        const d = await getPokemonDetails(safePkmn);
+        let maxHp = Math.floor(((2 * d.baseStats.hp) * (safePkmn.level || 1)) / 100) + (safePkmn.level || 1) + 10;
         let baseStatsObj = { 
-            atk: Math.floor(((2 * d.baseStats.atk) * (pkmn.level||1)) / 100) + 5,
-            def: Math.floor(((2 * d.baseStats.def) * (pkmn.level||1)) / 100) + 5,
-            spatk: Math.floor(((2 * d.baseStats.spatk) * (pkmn.level||1)) / 100) + 5,
-            spdef: Math.floor(((2 * d.baseStats.spdef) * (pkmn.level||1)) / 100) + 5,
-            speed: Math.floor(((2 * d.baseStats.speed) * (pkmn.level||1)) / 100) + 5,
+            atk: Math.floor(((2 * d.baseStats.atk) * (safePkmn.level||1)) / 100) + 5,
+            def: Math.floor(((2 * d.baseStats.def) * (safePkmn.level||1)) / 100) + 5,
+            spatk: Math.floor(((2 * d.baseStats.spatk) * (safePkmn.level||1)) / 100) + 5,
+            spdef: Math.floor(((2 * d.baseStats.spdef) * (safePkmn.level||1)) / 100) + 5,
+            speed: Math.floor(((2 * d.baseStats.speed) * (safePkmn.level||1)) / 100) + 5,
             types: d.types
         };
         
-        // --- CORRECTION ICI : On utilise les attaques sauvegardées du Pokémon s'il en a ! ---
-        let initialMoves = (pkmn.moves && pkmn.moves.length > 0) 
-            ? pkmn.moves 
-            : await getMovesForLevel(pkmn.pokedexNumber, pkmn.level || 1);
+        let initialMoves = (safePkmn.moves && safePkmn.moves.length > 0) 
+            ? safePkmn.moves 
+            : await getMovesForLevel(safeId, safePkmn.level || 1);
+
+        // --- CORRECTION : On sécurise la récupération de 'data' pour que .fr ne crashe jamais ---
+        let safeData = safePkmn.data || state.pokemonDataList[safeId - 1] || state.pokemonDataList[0];
 
         return {
-            ...pkmn,
-            data: pkmn.data || state.pokemonDataList[pkmn.pokedexNumber - 1],
+            ...safePkmn,
+            data: safeData,
             moves: JSON.parse(JSON.stringify(initialMoves)),
             maxHp: maxHp, currentHp: maxHp,
             stats: JSON.parse(JSON.stringify(baseStatsObj)),
@@ -445,7 +452,7 @@ function renderTeamSelectionGrid(selectedArray, onSelectCallback) {
     grid.innerHTML = "";
     document.getElementById('pvp-selection-counter').classList.remove('hidden');
     
-    let rawCollection = (state.currentUserData.collection || []).filter(c => !c.isBaie);
+    let rawCollection = (state.currentUserData.collection || []).filter(c => !c.isBaie && c.pokedexNumber > 0);
     
     // --- 1. DÉDUPLICATION DES POKÉMON (Garder le plus haut niveau) ---
     let uniqueMap = {};
