@@ -155,8 +155,8 @@ export function renderRecherche() {
     let html = "";
     
     for (let i = 1; i <= 1025; i++) {
-        let koCount = state.currentUserData.mastery?.ko?.[i] || 0;
-        let catchCount = state.currentUserData.mastery?.catch?.[i] || 0;
+        let koCount = (state.currentUserData.mastery?.ko?.[i]) || (state.currentUserData.mastery?.ko?.[String(i)]) || 0;
+        let catchCount = (state.currentUserData.mastery?.catch?.[i]) || (state.currentUserData.mastery?.catch?.[String(i)]) || 0;
         if (koCount === 0 && catchCount === 0) continue;
         
         const pkmnData = state.pokemonDataList[i - 1];
