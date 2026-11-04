@@ -1326,7 +1326,8 @@ async function winBattle(isCapture = false) {
         }
     } else {
         let oldTier = getKOMastery(pkmnId);
-        state.currentUserData.mastery.ko[pkmnId] = (state.currentUserData.mastery.ko[pkmnId] || 0) + 1;
+        let currentKo = state.currentUserData.mastery.ko[pkmnId] || 0;
+        state.currentUserData.mastery.ko[pkmnId] = currentKo + 1;
         let k = state.currentUserData.mastery.ko[pkmnId];
         let newTier = getKOMastery(pkmnId);
         

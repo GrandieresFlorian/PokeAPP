@@ -136,7 +136,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 // --- 3. SAUVEGARDE GLOBALE VERS FIREBASE ---
                 db.collection('users').doc(state.currentUser).update({
                     collection: state.currentUserData.collection || [],
-                    berries: state.currentUserData.berries || []
+                    berries: state.currentUserData.berries || [],
+                    mastery: state.currentUserData.mastery || { ko: {}, catch: {} }, // <--- AJOUTÉ ICI
+                    pokePts: state.currentUserData.pokePts || 0
                 }).then(() => {
                     console.log("🔥 SUCCÈS : Firebase a reçu les données compressées (Cartes + Baies) !");
                 }).catch(err => {
