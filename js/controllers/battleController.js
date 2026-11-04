@@ -294,7 +294,10 @@ async function accepterCombat(req) {
 
 async function createBattleRoom(req, team1, team2) {
     const battleRef = db.collection('active_battles').doc();
-    await battleRef.set({
+    
+    // --- CORRECTION : Nettoyage strict des données pour Firebase ---
+    // Cette manipulation détruit toutes les valeurs "undefined" cachées
+    const battleData = JSON.parse(JSON.stringify({
         p1: req.from, 
         p2: state.currentUser, 
         team1: await formatTeam(team1), 
@@ -308,7 +311,10 @@ async function createBattleRoom(req, team1, team2) {
         hazards2: { stealthRock: false, spikes: 0, toxicSpikes: 0, stickyWeb: false },
         log: [`<b style="color:#f39c12;">Le combat ${req.type === 'ranked' ? 'Classé' : 'Amical'} commence !</b>`],
         status: 'playing', mode: req.type, winner: null
-    });
+    }));
+
+    // Sauvegarde de l'objet nettoyé
+    await battleRef.set(battleData);
 
     await db.collection('users').doc(req.from).update({ activeBattle: battleRef.id });
     await db.collection('users').doc(state.currentUser).update({ 
