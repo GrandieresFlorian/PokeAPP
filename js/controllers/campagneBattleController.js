@@ -1308,7 +1308,7 @@ async function winBattle(isCapture = false) {
     if (!state.currentUserData.mastery.catch) state.currentUserData.mastery.catch = {};
     if (!state.currentUserData.pokePts) state.currentUserData.pokePts = 0; // Monnaie PokePts
 
-    let pkmnId = currentEnemy.data.id;
+    let pkmnId = currentEnemy?.data?.id || currentEnemy?.pokedexNumber || currentEnemy?.id;
     let msg = "";
     let gainedPokePt = false;
 
