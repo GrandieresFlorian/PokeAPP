@@ -3,6 +3,7 @@ import { getCardImageUrl, formatMegaName } from '../utils.js';
 import { allerASection, applyTranslation } from './navController.js';
 import { ZONES } from '../data/campagneData.js';
 import { startBattle, fleeBattle } from './campagneBattleController.js';
+import { updateQuestProgress } from './questController.js';
 
 let activeFighter = null;
 

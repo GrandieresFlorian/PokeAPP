@@ -11,6 +11,7 @@ import {
     COUNTER_MOVES, MIRROR_COAT_MOVES, BIDE_MOVES, ENCORE_MOVES, DISABLE_MOVES, WISH_MOVES
 } from '../data/campagneData.js';
 import { calcStats, getEffectiveStat, checkMoveHit, calculateDamage } from '../battleEngine.js';
+import { updateQuestProgress } from './questController.js';
 
 let skillsDB = {};
 fetch('skill.json').then(r => r.json()).then(d => skillsDB = d).catch(() => console.log("skill.json introuvable"));
@@ -170,6 +171,7 @@ export function fleeBattle(forced = false) {
         }
         logMessage(state.currentLang === 'en' ? "You fled... 🏃" : "Vous prenez la fuite... 🏃");
     }
+    updateQuestProgress('play_battle', 1);
     toggleMoves(true);
     setTimeout(() => { if(onBattleEndCallback) onBattleEndCallback(); }, forced ? 2000 : 1500);
 }
@@ -1280,5 +1282,6 @@ async function winBattle() {
             berries: state.currentUserData.berries || [] // <--- Sauvegarde des baies ajoutée
         }); 
     } catch(e) {}
+    updateQuestProgress('play_battle', 1);
     setTimeout(() => { if(onBattleEndCallback) onBattleEndCallback(); }, 4000);
 }

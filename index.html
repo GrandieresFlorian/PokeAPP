@@ -123,6 +123,25 @@
                 <div id="quests-container" style="display: flex; flex-direction: column; gap: 15px; max-width: 800px; margin: 0 auto;">
                     <!-- Les quêtes seront générées ici en JS -->
                 </div>
+                <h2 class="section-title translatable" data-fr="Classement Mondial 🏆" data-en="Global Leaderboard 🏆" style="margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px;">Classement Mondial 🏆</h2>
+                
+                <div id="leaderboard-container" style="display: flex; gap: 20px; max-width: 900px; margin: 0 auto; flex-wrap: wrap; justify-content: center;">
+                    <!-- TOP 10 Cartes Différentes -->
+                    <div class="glass-panel" style="flex: 1; min-width: 300px; padding: 20px;">
+                        <h3 class="text-accent" style="margin-top:0; border-bottom: 2px solid #f39c12; padding-bottom:10px;">🥇 Cartes Différentes</h3>
+                        <ul id="leaderboard-unique" class="friend-ul" style="padding:0; margin-top:15px; list-style:none;">
+                            <li style="text-align:center; color:#aaa;">Chargement du classement...</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- TOP 10 Total des Cartes -->
+                    <div class="glass-panel" style="flex: 1; min-width: 300px; padding: 20px;">
+                        <h3 class="text-primary" style="margin-top:0; border-bottom: 2px solid #3498db; padding-bottom:10px;">🥇 Cartes Totales</h3>
+                        <ul id="leaderboard-total" class="friend-ul" style="padding:0; margin-top:15px; list-style:none;">
+                            <li style="text-align:center; color:#aaa;">Chargement du classement...</li>
+                        </ul>
+                    </div>
+                </div>
             </section>
 
             <!-- SECTION COLLECTION -->

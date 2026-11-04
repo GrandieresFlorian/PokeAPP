@@ -1,6 +1,7 @@
 import { db } from '../firebase-config.js';
 import { state } from '../state.js';
 import { TOUTES_LES_BAIES, MUTATION_RECIPES } from '../utils.js';
+import { updateQuestProgress } from './questController.js';
 
 let selectedPlot = null;
 let mutationTick = 0; 
@@ -418,6 +419,8 @@ function plantSelectedSeed(index, berryId) {
                 state.currentUserData.berries.splice(indexInArray, 1);
             }
         }
+
+        updateQuestProgress('plant_berry', 1);
         
         const plot = state.currentUserData.garden[index];
         plot.berryId = berryId;
@@ -849,7 +852,7 @@ function harvestPlot(index) {
     plot.berryId = null;
     plot.plantedAt = 0;
     plot.lastWatered = 0;
-    
+    updateQuestProgress('harvest_berry', yieldAmount);
     saveGardenData();
     renderGardenGrid();
     showDefaultTools(); // Maintient les outils affichés en permanence sans message
