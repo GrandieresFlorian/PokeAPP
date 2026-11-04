@@ -28,6 +28,7 @@
             <ul class="nav-links">
                 <li class="active translatable" data-target="section-boosters" data-fr="Boosters" data-en="Packs">Boosters</li>
                 <li data-target="section-collection" id="nav-collection" class="translatable" data-fr="Collection" data-en="Collection">Collection</li>
+                <li data-target="section-quetes" id="nav-quetes" class="translatable" data-fr="Quêtes 📜" data-en="Quests 📜">Quêtes 📜</li>
                 <li data-target="section-amis" id="nav-amis" class="translatable" data-fr="Amis 🤝" data-en="Friends 🤝">Amis 🤝</li>
                 <li data-target="section-combats" id="nav-combats" class="translatable" data-fr="Combats ⚔️" data-en="Battles ⚔️">Combats ⚔️</li>
                 <li data-target="section-jardin" id="nav-jardin" class="translatable" data-fr="Jardin 🌱" data-en="Garden 🌱">Jardin 🌱</li>
@@ -112,6 +113,15 @@
                     <div id="cards-container" class="cards-container hidden"></div>
                     <button id="auto-open-btn" class="btn btn-secondary hidden translatable" data-fr="Ouvrir tout automatiquement" data-en="Open all automatically" style="margin-top: 20px;">Ouvrir tout automatiquement</button>
                     <button id="reset-button" class="btn hidden translatable" data-fr="Retour aux boosters" data-en="Back to packs" style="margin-top: 20px;">Retour aux boosters</button>
+                </div>
+            </section>
+
+            <section id="section-quetes" class="view-section hidden">
+                <h2 class="section-title translatable" data-fr="Quêtes Journalières" data-en="Daily Quests">Quêtes Journalières</h2>
+                <p style="text-align: center; color: var(--text-muted); margin-bottom: 30px;" class="translatable" data-fr="Accomplissez ces quêtes pour gagner des Boosters Shiny ! (Réinitialisation chaque jour)" data-en="Complete these quests to earn Shiny Packs! (Resets daily)">Accomplissez ces quêtes pour gagner des Boosters Shiny ! (Réinitialisation chaque jour)</p>
+                
+                <div id="quests-container" style="display: flex; flex-direction: column; gap: 15px; max-width: 800px; margin: 0 auto;">
+                    <!-- Les quêtes seront générées ici en JS -->
                 </div>
             </section>
 

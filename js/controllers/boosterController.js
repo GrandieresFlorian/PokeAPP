@@ -2,6 +2,7 @@ import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
 import { allerASection } from './navController.js';
 import { tirerRarete, formatMegaName, sauvegarderCarte, getCardImageUrl, getPokemonDetails, generateTypeBadgesHTML, BAIES_BOOSTERS, sauvegarderBaie, getRandomTrainer, sauvegarderDresseur } from '../utils.js';
+import { updateQuestProgress } from './questController.js';
 export function updateBoosterLogic() {
     if (!state.currentUser) {
         clearInterval(state.boosterTimerInterval);
@@ -370,6 +371,7 @@ function ouvrirBooster(isSpecial = false) {
             lastBoosterTime: state.currentUserData.lastBoosterTime
         });
     }
+    if (!isSpecial) updateQuestProgress('open_boosters', 1);
     
     updateBoosterLogic();
 
@@ -449,6 +451,8 @@ export function ouvrirBoosterDresseur() {
     
     // 2. Décrémenter le stock
     state.currentUserData.trainerBoostersLeft--;
+
+    updateQuestProgress('open_trainer', 1);
     
     // Si on était au max (ex: 1/1), le fait d'ouvrir lance le chrono de régénération
     if (state.currentUserData.trainerBoostersLeft === state.trainerConfig.maxBoosters - 1) {

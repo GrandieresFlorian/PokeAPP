@@ -218,3 +218,10 @@
     30% { opacity: 1; }
     100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
 }
+
+/* OPTIMISATION DES PERFORMANCES (COLLECTION) */
+#collection-container .card {
+    content-visibility: auto;
+    contain-intrinsic-size: 200px 300px; /* Taille approximative d'une carte pour garder la barre de défilement fluide */
+    will-change: transform;
+}

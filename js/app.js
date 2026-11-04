@@ -10,6 +10,7 @@ import { initCheats } from './controllers/cheatController.js';
 import { initProfile } from './controllers/profileController.js';
 import { initGarden } from './controllers/gardenController.js';
 import { initCampagne } from './controllers/campagneController.js';
+import { initQuests } from './controllers/questController.js';
 
 document.addEventListener("DOMContentLoaded", () => {
     initNav(); 
@@ -156,6 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     state.currentUserData.lastTrainerBoosterTime = Date.now();
                 }
                 
+                initQuests();
                 updateAuthUI(); 
                 updateBoosterLogic(); 
                 startFriendsListener();

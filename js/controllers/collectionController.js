@@ -1,6 +1,6 @@
 import { state, CONSTS } from '../state.js';
 import { getPokemonDetails, formatMegaName, getCardImageUrl, generateTypeBadgesHTML, TOUTES_LES_BAIES, BAIES_BOOSTERS, MUTATION_RECIPES } from '../utils.js';
-
+import { updateQuestProgress } from './questController.js';
 const PRIX_VENTE = {
     "C": 1, "U": 2, "R": 4, "E": 7, "L": 13, "M": 20, "MG": 20
 };
@@ -299,6 +299,7 @@ function vendreDoublonPokemon(cardDate) {
     mainCard.quantity--;
     state.currentUserData.pokeDollars = (state.currentUserData.pokeDollars || 0) + price;
 
+    updateQuestProgress('recycle_pokemon', 1);
     updateFirebaseAfterSale();
 }
 
@@ -311,6 +312,7 @@ function vendreDoublonDresseur(variantId, rarity) {
     mainCard.quantity--;
     state.currentUserData.pokeDollars = (state.currentUserData.pokeDollars || 0) + price;
 
+    updateQuestProgress('recycle_trainer', 1);
     updateFirebaseAfterSale();
 }
 
@@ -488,11 +490,39 @@ export function afficherCollection() {
         }
     };
 
-    if (state.collectionMode === 'mega' || state.collectionMode === 'mega-shiny') Object.keys(CONSTS.megaIds).map(Number).sort((a,b)=>a-b).forEach(i => CONSTS.megaIds[i].forEach(form => renderCard(i, form)));
-    else for (let i = 1; i <= CONSTS.MAX_POKEMON; i++) renderCard(i);
+    let itemsToRender = [];
+    if (state.collectionMode === 'mega' || state.collectionMode === 'mega-shiny') {
+        Object.keys(CONSTS.megaIds).map(Number).sort((a,b)=>a-b).forEach(i => {
+            CONSTS.megaIds[i].forEach(form => itemsToRender.push({i, form}));
+        });
+    } else {
+        for (let i = 1; i <= CONSTS.MAX_POKEMON; i++) itemsToRender.push({i, form: null});
+    }
+
+    collectionContainer.innerHTML = ''; // On vide l'écran avant de commencer
+    let currentIndex = 0;
+    const chunkSize = 50; // Afficher 50 cartes à la fois pour ne pas faire lagger le PC/Tel
+
+    function renderChunk() {
+        htmlContent = ""; // On vide le tampon HTML pour ce paquet
+        const end = Math.min(currentIndex + chunkSize, itemsToRender.length);
+        
+        for (; currentIndex < end; currentIndex++) {
+            const item = itemsToRender[currentIndex];
+            renderCard(item.i, item.form);
+        }
+        
+        // On insère le paquet sans écraser le reste
+        collectionContainer.insertAdjacentHTML('beforeend', htmlContent);
+        collectionCount.textContent = `${uniquesCount} / ${maxAffiche}`;
+
+        if (currentIndex < itemsToRender.length) {
+            // Demande au navigateur de rendre le prochain paquet dès qu'il a le temps (zéro lag)
+            requestAnimationFrame(renderChunk); 
+        }
+    }
     
-    collectionContainer.innerHTML = htmlContent; 
-    collectionCount.textContent = `${uniquesCount} / ${maxAffiche}`;
+    renderChunk();
 }
 
 function getBerryHint(baieId) {
