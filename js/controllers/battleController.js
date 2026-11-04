@@ -217,7 +217,13 @@ function renderSynchronousUI(data) {
                 };
                 
                 if (pActive.chargingMove) {
-                    container.innerHTML = `<button class="move-btn type-normal" disabled style="grid-column:span 2;">En attente d'attaque...</button>`;
+                    // CORRECTION : On crée un vrai bouton cliquable qui envoie l'action au serveur
+                    const btn = document.createElement('button');
+                    btn.className = `move-btn type-${pActive.chargingMove.type || 'normal'}`;
+                    btn.style.gridColumn = "span 2";
+                    btn.innerHTML = `<span class="move-name">Relâcher ${pActive.chargingMove.nameFr} !</span>`;
+                    btn.onclick = () => submitAction({ type: 'move', move: pActive.chargingMove });
+                    container.appendChild(btn);
                 } else if (pActive.rolloutCount > 0) {
                     // -- FORCER ROULADE --
                     let rMove = pActive.moves.find(m => ROLLOUT_MOVES.includes(m.nameEn));

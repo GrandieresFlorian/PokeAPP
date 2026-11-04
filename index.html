@@ -164,6 +164,7 @@
                     <button id="tab-dresseurs" class="tab-btn translatable" data-fr="Dresseurs 🧢" data-en="Trainers 🧢">Dresseurs 🧢</button>
                 </div>
                 <div class="collection-filters glass-panel">
+                    <input type="text" id="search-collection" class="auth-input" placeholder="Rechercher..." style="width: 150px; padding: 5px 10px; margin-right: 15px; margin-bottom: 0;">
                     <label for="filter-rarity" class="translatable" data-fr="Rareté :" data-en="Rarity :">Rareté :</label>
                     <select id="filter-rarity" class="filter-select">
                         <option value="all" class="translatable" data-fr="Toutes" data-en="All">Toutes</option>
@@ -176,6 +177,9 @@
                     </select>
                     <label class="filter-checkbox">
                         <input type="checkbox" id="filter-owned"> <span class="translatable" data-fr="Uniquement possédées" data-en="Owned only">Uniquement possédées</span>
+                    </label>
+                    <label class="filter-checkbox" style="margin-left: 10px;">
+                        <input type="checkbox" id="filter-duplicates"> <span class="translatable" data-fr="Doublons" data-en="Duplicates">Doublons</span>
                     </label>
                 </div>
                 <div id="collection-container" class="cards-container"></div>

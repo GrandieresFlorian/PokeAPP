@@ -241,6 +241,22 @@ export function initCollection() {
     const filterRarity = document.getElementById('filter-rarity');
     const filterOwned = document.getElementById('filter-owned');
     const tabDresseurs = document.getElementById('tab-dresseurs');
+    const searchInput = document.getElementById('search-collection');
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            if (state.collectionMode === 'dresseurs') afficherDresseurs(document.getElementById('collection-container'), document.getElementById('collection-count'), document.getElementById('filter-owned').checked);
+            else afficherCollection();
+        });
+    }
+
+    // Écouteur pour la case "Doublons"
+    const filterDupes = document.getElementById('filter-duplicates');
+    if (filterDupes) {
+        filterDupes.addEventListener('change', () => {
+            if (state.collectionMode === 'dresseurs') afficherDresseurs(document.getElementById('collection-container'), document.getElementById('collection-count'), document.getElementById('filter-owned').checked);
+            else afficherCollection();
+        });
+    }
 
     function setTabActive(activeTab) {
         [tabNormal, tabShiny, tabMega, tabMegaShiny, tabBaies, tabDresseurs].forEach(tab => { if(tab) tab.classList.remove('active'); });
