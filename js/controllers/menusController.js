@@ -244,16 +244,46 @@ export function renderRecherche() {
         infoPanel = document.createElement('div');
         infoPanel.id = 'recherche-info-panel';
         infoPanel.className = 'glass-panel';
-        infoPanel.style.cssText = "max-width: 600px; margin: 30px auto 10px auto; padding: 15px; font-size: 0.85rem; color: #ccc; text-align: left;";
+        infoPanel.style.cssText = "max-width: 650px; margin: 30px auto 10px auto; padding: 15px; font-size: 0.8rem; color: #ccc; text-align: left;";
         container.parentNode.appendChild(infoPanel);
     }
     infoPanel.innerHTML = `
-        <h4 style="color: #f1c40f; margin-top: 0; text-align: center;">📖 Guide des Bonus de Maîtrise</h4>
-        <p style="margin-bottom: 8px;">Chaque palier atteint donne <b>1 PokePt</b> lorsque vous cliquez sur "Récupérer" ! De plus, les paliers confèrent de puissants bonus passifs permanents :</p>
-        <ul style="padding-left: 20px; line-height: 1.4;">
-            <li><b>Bonus K.O. :</b> Augmente l'XP gagnée, confère des bonus de dégâts et des chances de coups critiques accrus sur cette espèce.</li>
-            <li><b>Bonus Capture :</b> Réduit les dégâts subis face à cette espèce et augmente considérablement le taux de réussite des captures.</li>
-        </ul>
+        <h4 style="color: #f1c40f; margin-top: 0; text-align: center;">📖 Guide détaillé des Bonus de Maîtrise</h4>
+        <p style="margin-bottom: 10px; text-align: center;">Chaque palier validé rapporte <b>1 PokePt</b> via le bouton "Récupérer". Les bonus s'appliquent spécifiquement à chaque espèce :</p>
+        
+        <div style="display: flex; gap: 15px; justify-content: space-between; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 260px; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 6px; border-left: 3px solid #e74c3c;">
+                <strong style="color: #e74c3c;">⚔️ Paliers K.O. :</strong>
+                <ul style="padding-left: 15px; margin: 5px 0 0 0; line-height: 1.4; font-size: 0.75rem;">
+                    <li><b>Palier 1 :</b> +5% d'XP gagnée</li>
+                    <li><b>Palier 2 :</b> +5% de dégâts infligés</li>
+                    <li><b>Palier 3 :</b> +10% d'XP gagnée</li>
+                    <li><b>Palier 4 :</b> +10% de dégâts infligés</li>
+                    <li><b>Palier 5 :</b> +20% d'XP gagnée</li>
+                    <li><b>Palier 6 :</b> +15% de dégâts infligés</li>
+                    <li><b>Palier 7 :</b> +5% de chances de coup critique</li>
+                    <li><b>Palier 8 :</b> +30% d'XP gagnée</li>
+                    <li><b>Palier 9 :</b> +20% de dégâts infligés</li>
+                    <li><b>Palier 10 :</b> +10% de chances de coup critique</li>
+                </ul>
+            </div>
+            
+            <div style="flex: 1; min-width: 260px; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 6px; border-left: 3px solid #2ecc71;">
+                <strong style="color: #2ecc71;">🎯 Paliers Capture :</strong>
+                <ul style="padding-left: 15px; margin: 5px 0 0 0; line-height: 1.4; font-size: 0.75rem;">
+                    <li><b>Palier 1 :</b> +5% de bonus de capture</li>
+                    <li><b>Palier 2 :</b> Réduction de 5% des dégâts subis</li>
+                    <li><b>Palier 3 :</b> +10% de bonus de capture</li>
+                    <li><b>Palier 4 :</b> Réduction de 10% des dégâts subis</li>
+                    <li><b>Palier 5 :</b> +15% de bonus de capture</li>
+                    <li><b>Palier 6 :</b> Réduction de 15% des dégâts subis</li>
+                    <li><b>Palier 7 :</b> +20% de bonus de capture</li>
+                    <li><b>Palier 8 :</b> Réduction de 20% des dégâts subis</li>
+                    <li><b>Palier 9 :</b> +25% de bonus de capture</li>
+                    <li><b>Palier 10 :</b> Réduction de 30% des dégâts subis</li>
+                </ul>
+            </div>
+        </div>
     `;
 }
 
