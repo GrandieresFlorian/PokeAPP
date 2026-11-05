@@ -26,17 +26,17 @@ export const ITEMS_DB = {
     "superball": { 
         id: "superball", nameFr: "Super Ball", nameEn: "Great Ball", type: "ball", catchMult: 1.5, 
         icon: "🔵", desc: "Une balle plus performante. (x1.5)",
-        price: 30, img: "https://www.pokepedia.fr/images/8/87/Miniature_Super_Ball_HOME.png" 
+        price: 30, img: "https://www.pokepedia.fr/images/2/23/Miniature_Super_Ball_HOME.png" 
     },
     "hyperball": { 
         id: "hyperball", nameFr: "Hyper Ball", nameEn: "Ultra Ball", type: "ball", catchMult: 2.0, 
         icon: "🟡", desc: "Une balle très performante. (x2.0)",
-        price: 80, img: "https://www.pokepedia.fr/images/1/12/Miniature_Hyper_Ball_HOME.png" 
+        price: 80, img: "https://www.pokepedia.fr/images/a/a2/Miniature_Hyper_Ball_HOME.png" 
     },
     "masterball": { 
         id: "masterball", nameFr: "Master Ball", nameEn: "Master Ball", type: "ball", catchMult: 100.0, 
         icon: "🟣", desc: "Capture à coup sûr.",
-        price: 1000000, img: "https://www.pokepedia.fr/images/5/53/Miniature_Master_Ball_HOME.png" 
+        price: 1000000, img: "https://www.pokepedia.fr/images/3/34/Miniature_Master_Ball_HOME.png" 
     }
 };
 const PROTECT_MOVES_LIST = ["protect", "detect"];
