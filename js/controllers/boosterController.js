@@ -403,11 +403,26 @@ function ouvrirBooster(isSpecial = false) {
         
         for(let i = 0; i < 5; i++) {
             const rareteCible = tirerRarete();
-            const pokemonsPossibles = pokemonListAvecIndex.filter(p => p.donnees.rarity === rareteCible);
+            // On s'assure que p.donnees existe avant de lire la rareté
+            const pokemonsPossibles = pokemonListAvecIndex.filter(p => p.donnees && p.donnees.rarity === rareteCible);
+            
             if (pokemonsPossibles.length === 0) { i--; continue; }
 
             const randomPossibiliteIndex = Math.floor(Math.random() * pokemonsPossibles.length);
-            cartesTirees.push({ isBaie: false, data: pokemonsPossibles[randomPossibiliteIndex].donnees, pokedexNumber: pokemonsPossibles[randomPossibiliteIndex].vraiNumero });
+            const carteChoisie = pokemonsPossibles[randomPossibiliteIndex];
+
+            // --- LA SÉCURITÉ ANTI-BULBIZARRE ---
+            if (!carteChoisie || !carteChoisie.donnees || !carteChoisie.vraiNumero) {
+                console.error("⚠️ Faille d'ouverture évitée, génération annulée pour cette carte.");
+                i--; // On relance le tirage pour ne pas avoir de trou
+                continue;
+            }
+
+            cartesTirees.push({ 
+                isBaie: false, 
+                data: carteChoisie.donnees, 
+                pokedexNumber: Number(carteChoisie.vraiNumero) // Forcer en vrai nombre
+            });
         }
         
         cartesTirees.sort((a, b) => CONSTS.poidsRarete[a.data.rarity] - CONSTS.poidsRarete[b.data.rarity]);

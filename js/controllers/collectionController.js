@@ -306,13 +306,24 @@ export function initCollection() {
 }
 
 function vendreDoublonPokemon(cardDate) {
-    const mainCard = state.currentUserData.collection.find(c => c.date === cardDate);
-    if (!mainCard || (mainCard.quantity || 1) <= 1) return;
+    // 1. On trouve la carte dans la collection
+    const index = state.currentUserData.collection.findIndex(c => c.date === cardDate);
+    if (index === -1) return;
 
+    const mainCard = state.currentUserData.collection[index];
+    
+    // 2. On s'assure que la quantité existe bien et qu'elle est supérieure à 1
+    let quantiteActuelle = Number(mainCard.quantity);
+    if (isNaN(quantiteActuelle) || quantiteActuelle <= 1) return;
+
+    // 3. Calcul du prix
     let rarity = mainCard.mega ? "MG" : (mainCard.data ? mainCard.data.rarity : "C");
     let price = PRIX_VENTE[rarity] || 1;
 
-    mainCard.quantity--;
+    // 4. On décrémente la vraie quantité
+    state.currentUserData.collection[index].quantity = quantiteActuelle - 1;
+    
+    // 5. On ajoute l'argent
     state.currentUserData.pokeDollars = (state.currentUserData.pokeDollars || 0) + price;
 
     updateQuestProgress('recycle_pokemon', 1);

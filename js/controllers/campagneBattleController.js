@@ -184,7 +184,7 @@ export function fleeBattle(forced = false) {
     }
     updateQuestProgress('play_battle', 1);
     toggleMoves(true);
-    setTimeout(() => { if(onBattleEndCallback) onBattleEndCallback(); }, forced ? 2000 : 1500);
+    setTimeout(() => { if(onBattleEndCallback) onBattleEndCallback(); }, forced ? 1000 : 500);
 }
 
 function renderMovesUI() {
@@ -1432,7 +1432,7 @@ async function winBattle(isCapture = false) {
         }); 
     } catch(e) {}
     updateQuestProgress('play_battle', 1);
-    setTimeout(() => { if(onBattleEndCallback) onBattleEndCallback(); }, 4000);
+    setTimeout(() => { if(onBattleEndCallback) onBattleEndCallback(); }, 1500);
 }
 
 const KO_THRESHOLDS = [10, 25, 50, 100, 200, 350, 500, 750, 1000, 1500];
