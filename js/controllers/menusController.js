@@ -1,13 +1,13 @@
 import { state } from '../state.js';
-import { ITEMS_DB, getKOMastery, getCatchMastery } from './campagneBattleController.js';
-import { db } from '../firebase-config.js'; // Nécessaire pour sauvegarder les achats
+import { ITEMS_DB } from './campagneBattleController.js';
+import { db } from '../firebase-config.js';
 
 export function initMenus() {
-    document.getElementById('nav-sac').addEventListener('click', renderSac);
-    document.getElementById('nav-recherche').addEventListener('click', renderRecherche);
-    document.getElementById('nav-boutique').addEventListener('click', renderBoutique);
+    document.getElementById('nav-sac')?.addEventListener('click', renderSac);
+    document.getElementById('nav-recherche')?.addEventListener('click', renderRecherche);
+    document.getElementById('nav-boutique')?.addEventListener('click', renderBoutique);
     
-    document.getElementById('search-recherche').addEventListener('input', renderRecherche);
+    document.getElementById('search-recherche')?.addEventListener('input', renderRecherche);
 }
 
 // ==========================================
@@ -15,6 +15,7 @@ export function initMenus() {
 // ==========================================
 export function renderBoutique() {
     const container = document.getElementById('boutique-container');
+    if (!container) return;
     container.innerHTML = "";
     
     const pdDisplay = document.getElementById('boutique-pd-display');
@@ -22,7 +23,7 @@ export function renderBoutique() {
     
     for (let itemId in ITEMS_DB) {
         let item = ITEMS_DB[itemId];
-        if (!item.price) continue; // On n'affiche que les objets qui ont un prix
+        if (!item.price) continue;
         
         let name = state.currentLang === 'en' ? item.nameEn : item.nameFr;
         let imgHtml = item.img ? `<img src="${item.img}" style="width: 60px; height: 60px; object-fit: contain;">` : `<div style="font-size: 3rem;">${item.icon}</div>`;
@@ -37,7 +38,6 @@ export function renderBoutique() {
         `;
     }
     
-    // Attacher les événements d'achat après avoir généré le HTML
     for (let itemId in ITEMS_DB) {
         let btn = document.getElementById(`buy-${itemId}`);
         if (btn) btn.onclick = () => buyItem(itemId);
@@ -52,18 +52,15 @@ function buyItem(itemId) {
         return alert(state.currentLang === 'en' ? "Not enough PokéDollars!" : "Fonds insuffisants !");
     }
     
-    // On déduit l'argent et on ajoute l'objet
     state.currentUserData.pokeDollars -= item.price;
     if (!state.currentUserData.inventory) state.currentUserData.inventory = {};
     state.currentUserData.inventory[itemId] = (state.currentUserData.inventory[itemId] || 0) + 1;
     
-    // Mise à jour de l'affichage global de l'argent
     const mainPdDisplay = document.getElementById('pokedollar-display');
     if (mainPdDisplay) mainPdDisplay.textContent = state.currentUserData.pokeDollars;
     
-    renderBoutique(); // On rafraîchit la boutique
+    renderBoutique();
     
-    // Sauvegarde en base de données
     db.collection('users').doc(state.currentUser).update({
         pokeDollars: state.currentUserData.pokeDollars,
         inventory: state.currentUserData.inventory
@@ -75,6 +72,7 @@ function buyItem(itemId) {
 // ==========================================
 export function renderSac() {
     const container = document.getElementById('sac-container');
+    if (!container) return;
     container.innerHTML = "";
     
     const inventory = state.currentUserData?.inventory || {};
@@ -105,41 +103,40 @@ export function renderSac() {
 }
 
 // ==========================================
-// RECHERCHE (PALIERS)
-// ==========================================
-// ==========================================
-// RECHERCHE (PALIERS)
-// ==========================================
-// ==========================================
-// RECHERCHE (PALIERS)
+// RECHERCHE & PALIERS (AVEC RÉCUPÉRATION & INFOS)
 // ==========================================
 export function renderRecherche() {
     const container = document.getElementById('recherche-container');
+    if (!container) return;
     container.innerHTML = "";
 
     if (!state.currentUserData.mastery) {
-        state.currentUserData.mastery = { ko: {}, catch: {} };
+        state.currentUserData.mastery = { ko: {}, catch: {}, claimed: {} };
+    }
+    if (!state.currentUserData.mastery.claimed) {
+        state.currentUserData.mastery.claimed = { ko: {}, catch: {} };
     }
     
     const pokePtsDisplay = document.getElementById('recherche-pokepts');
     if (pokePtsDisplay) pokePtsDisplay.textContent = state.currentUserData?.pokePts || 0;
     
-    const searchVal = document.getElementById('search-recherche').value.toLowerCase();
+    const searchVal = document.getElementById('search-recherche')?.value.toLowerCase() || "";
     
-    // Seuils des 10 paliers
     const KO_THRESHOLDS = [10, 25, 50, 100, 200, 350, 500, 750, 1000, 1500];
     const CATCH_THRESHOLDS = [2, 5, 10, 20, 40, 70, 110, 160, 220, 300];
 
-    function getProgressDetails(currentVal, thresholds) {
-        let currentTier = 0;
+    function getTier(val, thresholds) {
+        let tier = 0;
         for (let i = 0; i < thresholds.length; i++) {
-            if (currentVal >= thresholds[i]) currentTier = i + 1;
+            if (val >= thresholds[i]) tier = i + 1;
             else break;
         }
+        return tier;
+    }
 
-        if (currentTier >= 10) {
-            return { tier: 10, percent: 100, text: "MAX" };
-        }
+    function getProgressDetails(currentVal, thresholds) {
+        let currentTier = getTier(currentVal, thresholds);
+        if (currentTier >= 10) return { tier: 10, percent: 100, text: "MAX" };
 
         let prevThreshold = currentTier === 0 ? 0 : thresholds[currentTier - 1];
         let nextThreshold = thresholds[currentTier];
@@ -154,8 +151,10 @@ export function renderRecherche() {
     let html = "";
     const masteryKo = state.currentUserData.mastery.ko || {};
     const masteryCatch = state.currentUserData.mastery.catch || {};
-    
-    // On parcourt directement toutes les clés enregistrées dans le K.O ou les Captures
+    const claimed = state.currentUserData.mastery.claimed || { ko: {}, catch: {} };
+    if (!claimed.ko) claimed.ko = {};
+    if (!claimed.catch) claimed.catch = {};
+
     const recordedIds = new Set([...Object.keys(masteryKo), ...Object.keys(masteryCatch)]);
 
     recordedIds.forEach(idStr => {
@@ -174,41 +173,124 @@ export function renderRecherche() {
         
         if (searchVal && !nameFr.toLowerCase().includes(searchVal) && !nameEn.toLowerCase().includes(searchVal)) return;
 
+        let koTier = getTier(koCount, KO_THRESHOLDS);
+        let catchTier = getTier(catchCount, CATCH_THRESHOLDS);
+
+        let koClaimedCount = Number(claimed.ko[idStr] || 0);
+        let catchClaimedCount = Number(claimed.catch[idStr] || 0);
+
+        let koClaimable = koTier > koClaimedCount;
+        let catchClaimable = catchTier > catchClaimedCount;
+
         let koProg = getProgressDetails(koCount, KO_THRESHOLDS);
         let catchProg = getProgressDetails(catchCount, CATCH_THRESHOLDS);
-
         let sprite = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokedexNum}.png`;
         
         html += `
-            <div class="glass-panel" style="width: 240px; padding: 15px; display: flex; flex-direction: column; align-items: center; background: rgba(0,0,0,0.4);">
+            <div class="glass-panel" style="width: 250px; padding: 15px; display: flex; flex-direction: column; align-items: center; background: rgba(0,0,0,0.5);">
                 <img src="${sprite}" style="width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));">
                 <h4 style="margin: 5px 0; font-size:1.1rem;">${displayName} <span style="font-size:0.8rem; color:#777;">#${pokedexNum}</span></h4>
                 
-                <!-- Barre de Progression K.O. -->
-                <div style="width: 100%; margin-top: 15px; font-size: 0.85rem;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                <!-- K.O. Section -->
+                <div style="width: 100%; margin-top: 12px; font-size: 0.85rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
                         <span>⚔️ K.O. (${koProg.text})</span>
-                        <span style="color: ${koProg.tier === 10 ? '#f1c40f' : '#fff'}; font-weight:bold;">Palier ${koProg.tier}/10</span>
+                        <div style="display:flex; align-items:center; gap:5px;">
+                            <span style="color: ${koTier === 10 ? '#f1c40f' : '#fff'}; font-weight:bold;">Palier ${koTier}/10</span>
+                            ${koClaimable ? `<button id="claim-ko-${pokedexNum}" class="btn" style="padding: 2px 6px; font-size: 0.7rem; background: #f1c40f; color: #000; font-weight: bold; border-radius: 4px; cursor: pointer;">Récupérer</button>` : ''}
+                        </div>
                     </div>
                     <div style="background: #222; height: 8px; border-radius: 4px; width: 100%; border: 1px solid #444; overflow:hidden;">
-                        <div style="background: linear-gradient(90deg, #c0392b, #e74c3c); height: 100%; width: ${koProg.percent}%; border-radius: 3px; transition: 0.5s;"></div>
+                        <div style="background: linear-gradient(90deg, #c0392b, #e74c3c); height: 100%; width: ${koProg.percent}%; border-radius: 3px;"></div>
                     </div>
                 </div>
                 
-                <!-- Barre de Progression Capture -->
-                <div style="width: 100%; margin-top: 15px; font-size: 0.85rem;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                <!-- Capture Section -->
+                <div style="width: 100%; margin-top: 12px; font-size: 0.85rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
                         <span>🎯 Capture (${catchProg.text})</span>
-                        <span style="color: ${catchProg.tier === 10 ? '#f1c40f' : '#fff'}; font-weight:bold;">Palier ${catchProg.tier}/10</span>
+                        <div style="display:flex; align-items:center; gap:5px;">
+                            <span style="color: ${catchTier === 10 ? '#f1c40f' : '#fff'}; font-weight:bold;">Palier ${catchTier}/10</span>
+                            ${catchClaimable ? `<button id="claim-catch-${pokedexNum}" class="btn" style="padding: 2px 6px; font-size: 0.7rem; background: #2ecc71; color: #fff; font-weight: bold; border-radius: 4px; cursor: pointer;">Récupérer</button>` : ''}
+                        </div>
                     </div>
                     <div style="background: #222; height: 8px; border-radius: 4px; width: 100%; border: 1px solid #444; overflow:hidden;">
-                        <div style="background: linear-gradient(90deg, #27ae60, #2ecc71); height: 100%; width: ${catchProg.percent}%; border-radius: 3px; transition: 0.5s;"></div>
+                        <div style="background: linear-gradient(90deg, #27ae60, #2ecc71); height: 100%; width: ${catchProg.percent}%; border-radius: 3px;"></div>
                     </div>
                 </div>
             </div>
         `;
     });
     
-    if (html === "") container.innerHTML = `<p style='color: #aaa; width:100%; text-align:center;'>Aucun Pokémon trouvé. Partez en explorer d'autres !</p>`;
-    else container.innerHTML = html;
+    if (html === "") {
+        container.innerHTML = `<p style='color: #aaa; width:100%; text-align:center;'>Aucun Pokémon trouvé. Partez en explorer d'autres !</p>`;
+    } else {
+        container.innerHTML = html;
+        
+        // Attacher les clics sur les boutons de récupération
+        recordedIds.forEach(idStr => {
+            let pokedexNum = Number(idStr);
+            let btnKo = document.getElementById(`claim-ko-${pokedexNum}`);
+            if (btnKo) btnKo.onclick = () => claimReward(pokedexNum, 'ko');
+            
+            let btnCatch = document.getElementById(`claim-catch-${pokedexNum}`);
+            if (btnCatch) btnCatch.onclick = () => claimReward(pokedexNum, 'catch');
+        });
+    }
+
+    // Affichage de l'aide sur les bonus de paliers en bas du labo
+    let infoPanel = document.getElementById('recherche-info-panel');
+    if (!infoPanel) {
+        infoPanel = document.createElement('div');
+        infoPanel.id = 'recherche-info-panel';
+        infoPanel.className = 'glass-panel';
+        infoPanel.style.cssText = "max-width: 600px; margin: 30px auto 10px auto; padding: 15px; font-size: 0.85rem; color: #ccc; text-align: left;";
+        container.parentNode.appendChild(infoPanel);
+    }
+    infoPanel.innerHTML = `
+        <h4 style="color: #f1c40f; margin-top: 0; text-align: center;">📖 Guide des Bonus de Maîtrise</h4>
+        <p style="margin-bottom: 8px;">Chaque palier atteint donne <b>1 PokePt</b> lorsque vous cliquez sur "Récupérer" ! De plus, les paliers confèrent de puissants bonus passifs permanents :</p>
+        <ul style="padding-left: 20px; line-height: 1.4;">
+            <li><b>Bonus K.O. :</b> Augmente l'XP gagnée, confère des bonus de dégâts et des chances de coups critiques accrus sur cette espèce.</li>
+            <li><b>Bonus Capture :</b> Réduit les dégâts subis face à cette espèce et augmente considérablement le taux de réussite des captures.</li>
+        </ul>
+    `;
+}
+
+function claimReward(pokedexNum, type) {
+    if (!state.currentUserData.mastery) state.currentUserData.mastery = { ko: {}, catch: {}, claimed: {} };
+    if (!state.currentUserData.mastery.claimed) state.currentUserData.mastery.claimed = { ko: {}, catch: {} };
+    
+    let claimed = state.currentUserData.mastery.claimed;
+    if (!claimed.ko) claimed.ko = {};
+    if (!claimed.catch) claimed.catch = {};
+
+    let currentCount = type === 'ko' ? (state.currentUserData.mastery.ko[pokedexNum] || 0) : (state.currentUserData.mastery.catch[pokedexNum] || 0);
+    let thresholds = type === 'ko' ? [10, 25, 50, 100, 200, 350, 500, 750, 1000, 1500] : [2, 5, 10, 20, 40, 70, 110, 160, 220, 300];
+    
+    let currentTier = 0;
+    for (let i = 0; i < thresholds.length; i++) {
+        if (currentCount >= thresholds[i]) currentTier = i + 1;
+        else break;
+    }
+
+    let alreadyClaimed = Number(claimed[type][pokedexNum] || 0);
+    let diff = currentTier - alreadyClaimed;
+
+    if (diff > 0) {
+        claimed[type][pokedexNum] = currentTier;
+        state.currentUserData.pokePts = (state.currentUserData.pokePts || 0) + diff;
+
+        // Mise à jour de l'affichage des PokePts
+        const pokePtsDisplay = document.getElementById('recherche-pokepts');
+        if (pokePtsDisplay) pokePtsDisplay.textContent = state.currentUserData.pokePts;
+
+        // Sauvegarde Firebase
+        db.collection('users').doc(state.currentUser).update({
+            mastery: state.currentUserData.mastery,
+            pokePts: state.currentUserData.pokePts
+        }).then(() => {
+            renderRecherche(); // On rafraîchit l'interface pour faire disparaître le bouton récupéré
+        }).catch(e => console.error("Erreur de récupération des PokePts :", e));
+    }
 }
