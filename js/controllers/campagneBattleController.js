@@ -105,6 +105,7 @@ export async function startBattle(zone, fighter, onEnd) {
     const pDetails = await getPokemonDetails(activeFighter);
 
     currentEnemy = {
+        id: wId,
         nameEn: wData.en, nameFr: wData.fr, data: wData, level: wLevel,
         baseStats: wDetails.baseStats, battleStats: calcStats(wDetails.baseStats, wLevel),
         modifiers: { atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0, accuracy: 0, evasion: 0 },
@@ -1309,7 +1310,7 @@ async function winBattle(isCapture = false) {
     if (!state.currentUserData.mastery.catch) state.currentUserData.mastery.catch = {};
     if (!state.currentUserData.pokePts) state.currentUserData.pokePts = 0; // Monnaie PokePts
 
-    let pkmnId = currentEnemy?.data?.id || currentEnemy?.pokedexNumber || currentEnemy?.id;
+    let pkmnId = currentEnemy.id;
     let msg = "";
     let gainedPokePt = false;
 
