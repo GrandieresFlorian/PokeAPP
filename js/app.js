@@ -138,8 +138,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 db.collection('users').doc(state.currentUser).update({
                     collection: state.currentUserData.collection || [],
                     berries: state.currentUserData.berries || [],
-                    mastery: state.currentUserData.mastery || { ko: {}, catch: {} }, // <--- AJOUTÉ ICI
-                    pokePts: state.currentUserData.pokePts || 0
+                    mastery: state.currentUserData.mastery || { ko: {}, catch: {}, claimed: {} },
+                    pokePts: state.currentUserData.pokePts || 0,
+                    shards: state.currentUserData.shards || {}
                 }).then(() => {
                     console.log("🔥 SUCCÈS : Firebase a reçu les données compressées (Cartes + Baies) !");
                 }).catch(err => {
@@ -160,7 +161,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     state.currentUserData.pokePts = 0;
                 }
                 if (!state.currentUserData.mastery) {
-                    state.currentUserData.mastery = { ko: {}, catch: {} };
+                    state.currentUserData.mastery = { ko: {}, catch: {}, claimed: {} };
+                }
+                if (!state.currentUserData.shards) { // <--- AJOUT ICI
+                    state.currentUserData.shards = {};
                 }
                 if (state.currentUserData.trainerBoostersLeft === undefined) {
                     state.currentUserData.trainerBoostersLeft = state.trainerConfig.maxBoosters;

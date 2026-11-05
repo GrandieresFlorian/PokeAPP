@@ -144,9 +144,13 @@ export function initQuests() {
             questsWeek: userData.questsWeek,
             dailyQuests: userData.dailyQuests,
             weeklyQuests: userData.weeklyQuests
-        }).then(() => afficherQuetes());
+        }).then(() => {
+            afficherQuetes();
+            updateQuestBadge(); // <--- AJOUT
+        });
     } else {
         afficherQuetes();
+        updateQuestBadge(); // <--- AJOUT
     }
     afficherClassement();
 }
@@ -270,6 +274,7 @@ export function updateQuestProgress(actionType, amount = 1) {
             weeklyQuests: state.currentUserData.weeklyQuests
         });
         afficherQuetes(); // Mettre à jour l'UI
+        updateQuestBadge(); // <--- AJOUT (Allume le point rouge en direct si une quête est terminée)
     }
 }
 
@@ -292,6 +297,64 @@ function validerQuete(listType, index) {
     }).then(() => {
         afficherQuetes();
         import('./boosterController.js').then(({ updateSpecialBoosterUI }) => updateSpecialBoosterUI());
-        alert(state.currentLang === 'en' ? `Quest completed! +${reward} Shiny Pack(s) ✨` : `Quête validée ! +${reward} Booster(s) Shiny ✨`);
+        
+        // --- NOUVEAU SYSTÈME VISUEL ---
+        updateQuestBadge(); // Éteint le point rouge si on a tout récupéré
+        showToast(state.currentLang === 'en' ? `Quest completed! +${reward} Shiny Pack(s) ✨` : `Quête validée ! +${reward} Booster(s) Shiny ✨`);
     });
+}
+
+// ==========================================
+// NOTIFICATIONS ET BADGES (NOUVEAU)
+// ==========================================
+export function updateQuestBadge() {
+    if (!state.currentUser || !state.currentUserData) return;
+    
+    let hasClaimable = false;
+    
+    // On cherche si une quête est terminée mais non récupérée
+    const checkList = (list) => {
+        if (!list) return;
+        for (let q of list) {
+            if (q.progress >= q.target && !q.claimed) {
+                hasClaimable = true;
+                break;
+            }
+        }
+    };
+    
+    checkList(state.currentUserData.dailyQuests);
+    if (!hasClaimable) checkList(state.currentUserData.weeklyQuests);
+    
+    // ⚠️ Assure-toi que l'ID correspond bien à ton bouton Quêtes dans ton index.html (souvent 'nav-quetes' ou 'nav-quests')
+    const navQuetes = document.getElementById('nav-quetes') || document.getElementById('nav-quests'); 
+    
+    if (navQuetes) {
+        // Nettoie l'ancien point rouge s'il y en a un
+        let existingBadge = navQuetes.querySelector('.quest-badge');
+        if (existingBadge) existingBadge.remove();
+        
+        // S'il y a une récompense, on crée le point rouge
+        if (hasClaimable) {
+            navQuetes.style.position = 'relative'; // Nécessaire pour accrocher le point
+            const badge = document.createElement('span');
+            badge.className = 'quest-badge';
+            badge.style.cssText = 'position: absolute; top: 0px; right: 0px; width: 12px; height: 12px; background-color: #e74c3c; border-radius: 50%; border: 2px solid #2c3e50; pointer-events: none;';
+            navQuetes.appendChild(badge);
+        }
+    }
+}
+
+function showToast(message) {
+    let toast = document.createElement('div');
+    toast.innerHTML = message;
+    // Style de la petite notification discrète et élégante
+    toast.style.cssText = "position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.9); color: white; padding: 12px 24px; border-radius: 8px; z-index: 9999; font-weight: bold; border-left: 4px solid #f1c40f; box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: opacity 0.5s ease; pointer-events: none;";
+    document.body.appendChild(toast);
+    
+    // Disparaît doucement après 3 secondes
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 500);
+    }, 3000);
 }

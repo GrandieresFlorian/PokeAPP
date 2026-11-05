@@ -21,11 +21,23 @@ export const ITEMS_DB = {
     "pokeball": { 
         id: "pokeball", nameFr: "Poké Ball", nameEn: "Poké Ball", type: "ball", catchMult: 1.0, 
         icon: "🔴", desc: "Une balle standard. (x1.0)", 
-        price: 10, img: "https://www.pokepedia.fr//images/0/07/Miniature_Pok%C3%A9_Ball_HOME.png?20220601171615" 
+        price: 10, img: "https://www.pokepedia.fr/images/0/07/Miniature_Pok%C3%A9_Ball_HOME.png" 
     },
-    "superball": { id: "superball", nameFr: "Super Ball", nameEn: "Great Ball", type: "ball", catchMult: 1.5, icon: "🔵", desc: "Une balle plus performante. (x1.5)" },
-    "hyperball": { id: "hyperball", nameFr: "Hyper Ball", nameEn: "Ultra Ball", type: "ball", catchMult: 2.0, icon: "🟡", desc: "Une balle très performante. (x2.0)" },
-    "masterball": { id: "masterball", nameFr: "Master Ball", nameEn: "Master Ball", type: "ball", catchMult: 100.0, icon: "🟣", desc: "Capture à coup sûr." }
+    "superball": { 
+        id: "superball", nameFr: "Super Ball", nameEn: "Great Ball", type: "ball", catchMult: 1.5, 
+        icon: "🔵", desc: "Une balle plus performante. (x1.5)",
+        price: 30, img: "https://www.pokepedia.fr/images/8/87/Miniature_Super_Ball_HOME.png" 
+    },
+    "hyperball": { 
+        id: "hyperball", nameFr: "Hyper Ball", nameEn: "Ultra Ball", type: "ball", catchMult: 2.0, 
+        icon: "🟡", desc: "Une balle très performante. (x2.0)",
+        price: 80, img: "https://www.pokepedia.fr/images/1/12/Miniature_Hyper_Ball_HOME.png" 
+    },
+    "masterball": { 
+        id: "masterball", nameFr: "Master Ball", nameEn: "Master Ball", type: "ball", catchMult: 100.0, 
+        icon: "🟣", desc: "Capture à coup sûr.",
+        price: 1000000, img: "https://www.pokepedia.fr/images/5/53/Miniature_Master_Ball_HOME.png" 
+    }
 };
 const PROTECT_MOVES_LIST = ["protect", "detect"];
 const SEED_MOVES_LIST = ["leech-seed"];
@@ -1309,6 +1321,7 @@ async function winBattle(isCapture = false) {
     if (!state.currentUserData.mastery.ko) state.currentUserData.mastery.ko = {};
     if (!state.currentUserData.mastery.catch) state.currentUserData.mastery.catch = {};
     if (!state.currentUserData.pokePts) state.currentUserData.pokePts = 0; // Monnaie PokePts
+    if (!state.currentUserData.shards) state.currentUserData.shards = {};
 
     let pkmnId = currentEnemy.id;
     let msg = "";
@@ -1318,10 +1331,14 @@ async function winBattle(isCapture = false) {
     if (isCapture) {
         let oldTier = getCatchMastery(pkmnId);
         state.currentUserData.mastery.catch[pkmnId] = (state.currentUserData.mastery.catch[pkmnId] || 0) + 1;
+        state.currentUserData.shards[pkmnId] = (state.currentUserData.shards[pkmnId] || 0) + 1;
         let c = state.currentUserData.mastery.catch[pkmnId];
         let newTier = getCatchMastery(pkmnId);
         
         msg = `Statistiques de Capture : ${c}`;
+        // Message stylé dans le chat pour prévenir le joueur du loot
+        msg += `<br>💎 <b style="color:#9b59b6">Vous avez obtenu 1 Fragment de ${currentEnemy.nameFr || currentEnemy.data.fr} !</b>`;
+
         if (newTier > oldTier) {
             gainedPokePt = true;
             msg += `<br>🎯 <b style="color:#f1c40f">Palier de Capture ${newTier}/10 atteint !</b>`;
@@ -1428,11 +1445,12 @@ async function winBattle(isCapture = false) {
             collection: state.currentUserData.collection,
             berries: state.currentUserData.berries || [],
             mastery: state.currentUserData.mastery, 
-            pokePts: state.currentUserData.pokePts 
+            pokePts: state.currentUserData.pokePts,
+            shards: state.currentUserData.shards 
         }); 
     } catch(e) {}
     updateQuestProgress('play_battle', 1);
-    setTimeout(() => { if(onBattleEndCallback) onBattleEndCallback(); }, 1500);
+    setTimeout(() => { if(onBattleEndCallback) onBattleEndCallback(); }, 500);
 }
 
 const KO_THRESHOLDS = [10, 25, 50, 100, 200, 350, 500, 750, 1000, 1500];
@@ -1478,12 +1496,31 @@ export async function attemptCapture(ballId = "pokeball") {
     await new Promise(r => setTimeout(r, 1500));
 
     // Calcul des chances avec le multiplicateur de la Ball
-    let hpRatio = currentEnemy.battleStats.hp / currentEnemy.battleStats.maxHp;
-    let baseChance = (1 - hpRatio) * 0.5; 
-    if (currentEnemy.status) baseChance += 0.2; 
-    if (currentEnemy.level < activeFighter.level) baseChance += 0.1;
+    let rarity = currentEnemy.data.rarity || "C";
+    let baseCatchRate = 255; // Commun (facile)
+    if (rarity === "U") baseCatchRate = 120; // Peu commun
+    else if (rarity === "R") baseCatchRate = 45; // Rare
+    else if (rarity === "E") baseCatchRate = 30; // Épique
+    else if (rarity === "L" || rarity === "M" || rarity === "MG") baseCatchRate = 3; // Légendaire/Mythique (très dur)
 
-    let catchTier = getCatchMastery(currentEnemy.data.id);
+    let hpMax = currentEnemy.battleStats.maxHp;
+    let hpCurrent = currentEnemy.battleStats.hp;
+
+    // 2. Formule de calcul "a" des jeux Pokémon : ((3Max - 2Actuel) * Taux * Ball) / (3Max)
+    let a = ((3 * hpMax - 2 * hpCurrent) * baseCatchRate * ballDef.catchMult) / (3 * hpMax);
+
+    // 3. Multiplicateur des altérations de statut
+    if (currentEnemy.status === 'SLP' || currentEnemy.status === 'FRZ') {
+        a = a * 2.5; // Sommeil ou Gel = énorme bonus
+    } else if (currentEnemy.status === 'PAR' || currentEnemy.status === 'PSN' || currentEnemy.status === 'TOX' || currentEnemy.status === 'BRN') {
+        a = a * 1.5; // Autres statuts = léger bonus
+    }
+
+    // Le pourcentage de chance de base (sans la maîtrise) est a / 255
+    let baseChance = a / 255;
+
+    // 4. On ajoute tes bonus de Paliers de Maîtrise par dessus
+    let catchTier = getCatchMastery(currentEnemy.id || currentEnemy.data.id || currentEnemy.pokedexNumber);
     let catchBonus = 0;
     if (catchTier >= 9) catchBonus = 0.25;
     else if (catchTier >= 7) catchBonus = 0.20;
@@ -1491,10 +1528,11 @@ export async function attemptCapture(ballId = "pokeball") {
     else if (catchTier >= 3) catchBonus = 0.10;
     else if (catchTier >= 1) catchBonus = 0.05;
     
-    // Application du multiplicateur (Masterball = x100)
-    let finalCatchChance = (baseChance + catchBonus) * ballDef.catchMult;
+    // Chance de capture finale
+    let finalCatchChance = baseChance + catchBonus;
 
-    if (Math.random() < finalCatchChance) {
+    // Tirage (Masterball capture toujours à 100% (a >= 255))
+    if (Math.random() < finalCatchChance || a >= 255 || ballDef.id === "masterball") {
         logMessage(`<b style="color:#2ecc71">1... 2... 3... Clic !</b>`);
         await winBattle(true); 
         isAnimating = false;
