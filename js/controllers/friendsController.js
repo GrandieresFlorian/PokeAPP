@@ -4,15 +4,27 @@ import { initierEchange, accepterEchange, refuserEchange } from './tradeControll
 import { proposerCombat, renderBattleUI, initPvPListener } from './battleController.js';
 import { getCardImageUrl } from '../utils.js';
 import { updateSpecialBoosterUI } from './boosterController.js';
-import { allerASection } from './navController.js'; // Ajoutez cet import tout en haut si ce n'est pas déjà fait
+import { allerASection } from './navController.js';
+import { afficherCollection } from './collectionController.js'; // Ajoutez cet import tout en haut si ce n'est pas déjà fait
 
 let friendsListener = null;
 
 export function startFriendsListener() {
     if (!state.currentUser) return;
     if (friendsListener) friendsListener();
+    let firstSnapshot = true;
     friendsListener = db.collection('users').doc(state.currentUser).onSnapshot(doc => {
         if (doc.exists) {
+            // Modification venue d'ailleurs (échange accepté par l'autre joueur, autre onglet...) :
+            // on resynchronise la collection locale, sinon la prochaine sauvegarde l'écraserait.
+            // (Ignoré pour le 1er snapshot et pour nos propres écritures en attente.)
+            const remoteCol = doc.data().collection;
+            if (!firstSnapshot && !doc.metadata.hasPendingWrites && Array.isArray(remoteCol)) {
+                state.currentUserData.collection = remoteCol;
+                const sec = document.getElementById('section-collection');
+                if (sec && !sec.classList.contains('hidden')) afficherCollection();
+            }
+            firstSnapshot = false;
             state.currentUserData.friends = doc.data().friends || [];
             state.currentUserData.friendRequests = doc.data().friendRequests || [];
             state.currentUserData.trades = doc.data().trades || [];

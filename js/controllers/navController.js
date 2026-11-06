@@ -110,35 +110,32 @@ export function updateAuthUI() {
     }
 }
 
+let notificationUnsub = null;
+
+export function stopNotificationListener() {
+    if (notificationUnsub) { notificationUnsub(); notificationUnsub = null; }
+}
+
 export function startNotificationListener() {
+    stopNotificationListener(); // un seul listener actif, même après plusieurs connexions
     if (!state.currentUser) return;
-    
+
     import('../firebase-config.js').then(({db}) => {
-        // onSnapshot permet d'écouter les changements en temps réel
-        db.collection('users').doc(state.currentUser).onSnapshot(doc => {
-            if (doc.exists) {
-                const data = doc.data();
-                
-                // Vérifie s'il y a des demandes dans la base de données 
-                // (Modifie les noms "friendRequests", "tradeRequests", "battleRequests" si tu les as nommés autrement dans Firebase)
-                const hasFriendReq = data.friendRequests && data.friendRequests.length > 0;
-                const hasTradeReq = data.tradeRequests && data.tradeRequests.length > 0;
-                const hasBattleReq = data.battleRequests && data.battleRequests.length > 0;
+        if (!state.currentUser) return;
+        stopNotificationListener();
+        notificationUnsub = db.collection('users').doc(state.currentUser).onSnapshot(doc => {
+            if (!doc.exists) return;
+            const data = doc.data();
 
-                // Affichage du point rouge pour les Amis/Échanges
-                const badgeAmis = document.getElementById('badge-amis');
-                if (badgeAmis) {
-                    if (hasFriendReq || hasTradeReq) badgeAmis.classList.remove('hidden');
-                    else badgeAmis.classList.add('hidden');
-                }
+            const hasFriendReq = data.friendRequests && data.friendRequests.length > 0;
+            const hasTradeReq = data.trades && data.trades.length > 0; // le champ s'appelle "trades"
+            const hasBattleReq = data.battleRequests && data.battleRequests.length > 0;
 
-                // Affichage du point rouge pour les Combats
-                const badgeCombat = document.getElementById('badge-combat');
-                if (badgeCombat) {
-                    if (hasBattleReq) badgeCombat.classList.remove('hidden');
-                    else badgeCombat.classList.add('hidden');
-                }
-            }
+            const badgeAmis = document.getElementById('badge-amis');
+            if (badgeAmis) badgeAmis.classList.toggle('hidden', !(hasFriendReq || hasTradeReq));
+
+            const badgeCombat = document.getElementById('badge-combat');
+            if (badgeCombat) badgeCombat.classList.toggle('hidden', !hasBattleReq);
         });
     });
 }

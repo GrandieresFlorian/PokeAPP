@@ -2,6 +2,7 @@ import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
 import { getCardImageUrl } from '../utils.js';
 import { allerASection } from './navController.js';
+import { variantKey, addToCollection } from '../cardUtils.js';
 
 let currentTradeTarget = null;
 let targetCollectionCache = [];
@@ -20,17 +21,19 @@ export function initTrade() {
 
         try {
             const targetRef = db.collection('users').doc(currentTradeTarget);
-            const doc = await targetRef.get();
-            let targetTrades = doc.data().trades || [];
-            
-            targetTrades.push({
-                id: Date.now().toString(),
+            const tradeEntry = {
+                id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
                 from: state.currentUser,
                 offer: myOfferSelection,
                 request: theirOfferSelection
+            };
+            // Transaction : deux propositions simultanées ne s'écrasent plus
+            await db.runTransaction(async tx => {
+                const snap = await tx.get(targetRef);
+                if (!snap.exists) throw new Error('target-missing');
+                const targetTrades = snap.data().trades || [];
+                tx.update(targetRef, { trades: [...targetTrades, tradeEntry] });
             });
-
-            await targetRef.update({ trades: targetTrades });
             tradeMsg.textContent = "Proposition envoyée !"; tradeMsg.style.color = "#2ecc71";
             setTimeout(() => { document.getElementById('send-trade-btn').disabled = false; allerASection('section-amis'); }, 1500);
         } catch (e) {
@@ -147,46 +150,80 @@ function renderTradeGrids() {
 
 export async function refuserEchange(tradeId) {
     if (!state.currentUser) return;
-    let myTrades = (state.currentUserData.trades || []).filter(t => t.id !== tradeId);
-    await db.collection('users').doc(state.currentUser).update({ trades: myTrades });
+    const myRef = db.collection('users').doc(state.currentUser);
+    try {
+        const trades = await db.runTransaction(async tx => {
+            const snap = await tx.get(myRef);
+            const remaining = (snap.data().trades || []).filter(t => t.id !== tradeId);
+            tx.update(myRef, { trades: remaining });
+            return remaining;
+        });
+        state.currentUserData.trades = trades;
+    } catch (e) { console.error(e); alert("Erreur lors du refus de l'échange."); }
 }
 
+// Échange ATOMIQUE : lecture des deux documents, vérification des cartes
+// (par date ET par variante) dans les données ACTUELLES, puis écriture des deux
+// collections dans la même transaction. On déplace les cartes réelles, pas
+// l'instantané enregistré dans la proposition.
 export async function accepterEchange(tradeId, senderId) {
     if (!state.currentUser) return;
-    const trade = state.currentUserData.trades.find(t => t.id === tradeId);
-    if (!trade) return;
+    const myRef = db.collection('users').doc(state.currentUser);
+    const senderRef = db.collection('users').doc(senderId);
 
     try {
-        const senderRef = db.collection('users').doc(senderId);
-        const senderDoc = await senderRef.get();
-        if (!senderDoc.exists) return alert("Le joueur n'existe plus.");
-        
-        let senderData = senderDoc.data();
-        let myCollection = [...state.currentUserData.collection];
-        let senderCollection = [...(senderData.collection || [])];
+        const result = await db.runTransaction(async tx => {
+            const [mySnap, senderSnap] = await Promise.all([tx.get(myRef), tx.get(senderRef)]);
+            if (!senderSnap.exists) return { status: 'no-sender' };
 
-        const iHaveCards = trade.request.every(reqCard => myCollection.some(c => c.date === reqCard.date));
-        const senderHasCards = trade.offer.every(offCard => senderCollection.some(c => c.date === offCard.date));
+            const myData = mySnap.data();
+            const trade = (myData.trades || []).find(t => t.id === tradeId);
+            if (!trade) return { status: 'no-trade' };
 
-        if (!iHaveCards || !senderHasCards) {
-            alert("Échange impossible : Une ou plusieurs cartes ne sont plus possédées.");
-            return refuserEchange(tradeId); 
+            const myTrades = myData.trades.filter(t => t.id !== tradeId);
+            const myCol = (myData.collection || []).map(c => ({ ...c }));
+            const senderCol = (senderSnap.data().collection || []).map(c => ({ ...c }));
+
+            // Retire de `col` la carte réellement possédée qui correspond à la référence
+            const take = (col, ref) => {
+                const i = col.findIndex(c => c && c.date === ref.date && variantKey(c) === variantKey(ref));
+                return i === -1 ? null : col.splice(i, 1)[0];
+            };
+
+            const toSender = [];
+            const toMe = [];
+            for (const ref of (trade.request || [])) {
+                const card = take(myCol, ref);
+                if (!card) { tx.update(myRef, { trades: myTrades }); return { status: 'invalid', trades: myTrades }; }
+                toSender.push(card);
+            }
+            for (const ref of (trade.offer || [])) {
+                const card = take(senderCol, ref);
+                if (!card) { tx.update(myRef, { trades: myTrades }); return { status: 'invalid', trades: myTrades }; }
+                toMe.push(card);
+            }
+
+            toSender.forEach(c => addToCollection(senderCol, c));
+            toMe.forEach(c => addToCollection(myCol, c));
+
+            tx.update(myRef, { collection: myCol, trades: myTrades });
+            tx.update(senderRef, { collection: senderCol });
+            return { status: 'ok', collection: myCol, trades: myTrades };
+        });
+
+        if (result.trades) state.currentUserData.trades = result.trades;
+
+        if (result.status === 'ok') {
+            // État local synchronisé : sans ça, la prochaine sauvegarde annulerait l'échange
+            state.currentUserData.collection = result.collection;
+            alert("Échange réussi !");
+        } else if (result.status === 'invalid') {
+            alert("Échange impossible : une ou plusieurs cartes ne sont plus possédées. La proposition a été supprimée.");
+        } else if (result.status === 'no-sender') {
+            alert("Le joueur n'existe plus.");
         }
-
-        trade.request.forEach(reqCard => {
-            myCollection = myCollection.filter(c => c.date !== reqCard.date);
-            senderCollection.push(reqCard);
-        });
-
-        trade.offer.forEach(offCard => {
-            senderCollection = senderCollection.filter(c => c.date !== offCard.date);
-            myCollection.push(offCard);
-        });
-
-        let myTrades = state.currentUserData.trades.filter(t => t.id !== tradeId);
-        await db.collection('users').doc(state.currentUser).update({ collection: myCollection, trades: myTrades });
-        await senderRef.update({ collection: senderCollection });
-        
-        alert("Échange réussi !");
-    } catch(e) { alert("Erreur lors de la transaction."); }
+    } catch (e) {
+        console.error(e);
+        alert("Erreur lors de la transaction. Rien n'a été modifié, réessayez.");
+    }
 }

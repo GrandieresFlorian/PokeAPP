@@ -1,6 +1,6 @@
 import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
-import { getPokemonPow, getPokemonDetails, getCardImageUrl, getMovesForLevel } from '../utils.js';
+import { getPokemonPow, getPokemonDetails, getCardImageUrl, getMovesForLevel, getEffectiveness } from '../utils.js';
 import { allerASection } from './navController.js';
 import { 
     USELESS_MOVES, PRIORITY_MOVES, HEAL_MOVES, DRAIN_MOVES, RECOIL_MOVES, MULTI_HIT_2_5, MULTI_HIT_2, 

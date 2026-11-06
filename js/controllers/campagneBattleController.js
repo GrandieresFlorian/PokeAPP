@@ -1,6 +1,6 @@
 import { db } from '../firebase-config.js';
 import { state } from '../state.js';
-import { getCardImageUrl, getPokemonDetails, formatMegaName, getMovesForLevel, getMoveDetails, TOUTES_LES_BAIES } from '../utils.js';
+import { getCardImageUrl, getPokemonDetails, formatMegaName, getMovesForLevel, getMoveDetails, TOUTES_LES_BAIES, getEffectiveness } from '../utils.js';
 import { applyTranslation } from './navController.js';
 import { 
     USELESS_MOVES, PRIORITY_MOVES, HEAL_MOVES, DRAIN_MOVES, RECOIL_MOVES, MULTI_HIT_2_5, MULTI_HIT_2, 

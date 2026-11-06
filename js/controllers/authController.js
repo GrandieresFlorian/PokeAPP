@@ -1,8 +1,9 @@
 import { db } from '../firebase-config.js';
-import { state, CONSTS } from '../state.js';
-import { updateAuthUI, allerASection } from './navController.js';
+import { state } from '../state.js';
+import { updateAuthUI, allerASection, stopNotificationListener } from './navController.js';
 import { updateBoosterLogic } from './boosterController.js';
-import { startFriendsListener, stopFriendsListener } from './friendsController.js';
+import { stopFriendsListener } from './friendsController.js';
+import { loadUser, normalizeUserData } from '../userService.js';
 
 export function initAuth() {
     const loginBtn = document.getElementById('login-btn');
@@ -19,14 +20,12 @@ export function initAuth() {
         try {
             const doc = await db.collection('users').doc(user).get();
             if (doc.exists && doc.data().password === pass) {
-                state.currentUser = user;
-                state.currentUserData = doc.data();
-                localStorage.setItem('pokeAppCurrentUser', user);
+                // Même chemin que le chargement de page : valeurs par défaut, migration, quêtes, listeners
+                await loadUser(user, doc.data());
                 authMessage.textContent = "";
-                updateAuthUI(); updateBoosterLogic(); startFriendsListener();
                 allerASection('section-boosters');
             } else { authMessage.textContent = "Identifiants incorrects."; }
-        } catch (e) { authMessage.textContent = "Erreur serveur."; }
+        } catch (e) { console.error(e); authMessage.textContent = "Erreur serveur."; }
     });
 
     signupBtn.addEventListener('click', async () => {
@@ -36,18 +35,19 @@ export function initAuth() {
             const docRef = db.collection('users').doc(user);
             const doc = await docRef.get();
             if (doc.exists) { authMessage.textContent = "Nom pris."; return; }
-            state.currentUserData = { password: pass, collection: [], boostersLeft: CONSTS.MAX_BOOSTERS, lastBoosterTime: Date.now(), friends: [], friendRequests: [], trades: [] };
-            await docRef.set(state.currentUserData);
-            state.currentUser = user;
-            localStorage.setItem('pokeAppCurrentUser', user);
-            updateAuthUI(); updateBoosterLogic(); startFriendsListener();
+
+            // Document de départ complet : plus aucun champ "undefined" (ex: trainerBoostersLeft)
+            const { data } = normalizeUserData({ password: pass });
+            await docRef.set(data);
+            await loadUser(user, data);
             allerASection('section-boosters');
-        } catch (e) { authMessage.textContent = "Erreur."; }
+        } catch (e) { console.error(e); authMessage.textContent = "Erreur."; }
     });
 
     authNavBtn.addEventListener('click', () => {
         if (state.currentUser) {
             stopFriendsListener();
+            stopNotificationListener();
             state.currentUser = null;
             state.currentUserData = { collection: [] };
             localStorage.removeItem('pokeAppCurrentUser');
