@@ -2,6 +2,7 @@ import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
 import { getPokemonPow, getPokemonDetails, getCardImageUrl, getMovesForLevel, getEffectiveness } from '../utils.js';
 import { allerASection } from './navController.js';
+import { isPlayablePokemon } from '../cardUtils.js';
 import { 
     USELESS_MOVES, PRIORITY_MOVES, HEAL_MOVES, DRAIN_MOVES, RECOIL_MOVES, MULTI_HIT_2_5, MULTI_HIT_2, 
     FLINCH_MOVES, SECONDARY_EFFECTS, ROLLOUT_MOVES, STATUS_MOVES, STAT_NAMES, 
@@ -57,15 +58,34 @@ function updateBarColor(id, hp, maxHp) {
     el.style.backgroundColor = ratio > 0.5 ? "#2ecc71" : (ratio > 0.2 ? "#f39c12" : "#e74c3c");
 }
 
-export function initPvPListener() {
-    if(!state.currentUser) return;
-    db.collection('users').doc(state.currentUser).onSnapshot(doc => {
+let pvpUserUnsub = null;
+
+// Démarré par loadUser() (chargement de page ET connexion). Un seul listener, lié à l'utilisateur courant.
+export function startPvPListener() {
+    if (pvpUserUnsub) { pvpUserUnsub(); pvpUserUnsub = null; }
+    if (!state.currentUser) return;
+    const me = state.currentUser;
+    pvpUserUnsub = db.collection('users').doc(me).onSnapshot(doc => {
+        if (state.currentUser !== me) return; // le compte a changé entre-temps
         const data = doc.data();
-        if(data && data.activeBattle && data.activeBattle !== currentBattleId) {
+        if (data && data.activeBattle && data.activeBattle !== currentBattleId) {
             joinRealTimeBattle(data.activeBattle);
         }
     });
 }
+
+// À appeler à la déconnexion : coupe le listener ET quitte proprement le combat affiché
+export function stopPvPListener() {
+    if (pvpUserUnsub) { pvpUserUnsub(); pvpUserUnsub = null; }
+    leaveBattleLocally();
+    const arena = document.getElementById('pvp-battle-arena');
+    const menus = document.getElementById('pvp-menus');
+    if (arena) arena.classList.add('hidden');
+    if (menus) menus.classList.remove('hidden');
+}
+
+// Conservé pour compatibilité (friendsController l'appelle) : le démarrage est fait par loadUser()
+export function initPvPListener() {}
 
 export function proposerCombat(friendId) {
     if (!state.currentUser) return;
@@ -108,11 +128,11 @@ export function renderBattleUI() {
         history.slice().reverse().forEach(bat => {
             const li = document.createElement('li');
             li.className = "friend-item";
-            let color = bat.winner === state.currentUser ? '#2ecc71' : '#e74c3c';
+            let color = bat.winner === 'draw' ? '#f1c40f' : (bat.winner === state.currentUser ? '#2ecc71' : '#e74c3c');
             li.innerHTML = `<div style="display:flex; flex-direction:column; gap:5px; width:100%;">
                     <div style="display:flex; justify-content:space-between;">
                         <span><b>${bat.player1}</b> vs <b>${bat.player2}</b> <span style="font-size:0.7rem;">(${bat.mode})</span></span>
-                        <span style="color:${color}; font-weight:bold;">${bat.winner === state.currentUser ? 'Victoire 🏆' : 'Défaite 💀'}</span>
+                        <span style="color:${color}; font-weight:bold;">${bat.winner === 'draw' ? 'Égalité 🤝' : (bat.winner === state.currentUser ? 'Victoire 🏆' : 'Défaite 💀')}</span>
                     </div>
                     <span style="font-size:0.8rem; color:#aaa;">${new Date(bat.timestamp).toLocaleString()}</span>
                 </div>`;
@@ -134,8 +154,8 @@ async function sendChallenge(friendId, mode, team = null) {
         let requests = friendDoc.data().battleRequests || [];
         if (requests.some(req => req.from === state.currentUser)) return alert("Défi déjà envoyé !");
 
-        let myCol = (state.currentUserData.collection || []).filter(c => !c.isBaie);
-        let theirCol = (friendDoc.data().collection || []).filter(c => !c.isBaie);
+        let myCol = (state.currentUserData.collection || []).filter(isPlayablePokemon);
+        let theirCol = (friendDoc.data().collection || []).filter(isPlayablePokemon);
 
         if (myCol.length < 4 || theirCol.length < 4) return alert("Les deux joueurs doivent avoir au moins 4 Pokémon !");
 
@@ -277,8 +297,8 @@ async function accepterCombat(req) {
         const challengerDoc = await db.collection('users').doc(req.from).get();
         if (!challengerDoc.exists) return;
         
-        let myCol = (state.currentUserData.collection || []).filter(c => !c.isBaie);
-        let theirCol = (challengerDoc.data().collection || []).filter(c => !c.isBaie);
+        let myCol = (state.currentUserData.collection || []).filter(isPlayablePokemon);
+        let theirCol = (challengerDoc.data().collection || []).filter(isPlayablePokemon);
 
         if (req.type === 'ranked') {
             let best1 = theirCol.slice(0,4), best2 = myCol.slice(0,4), minDiff = Infinity;
@@ -298,7 +318,15 @@ async function accepterCombat(req) {
     } catch (e) { console.error(e); }
 }
 
+let creatingRoom = false;
 async function createBattleRoom(req, team1, team2) {
+    if (creatingRoom) return; // évite deux salles si on double-clique sur "Accepter"
+    creatingRoom = true;
+    try { await createBattleRoomInner(req, team1, team2); }
+    finally { creatingRoom = false; }
+}
+
+async function createBattleRoomInner(req, team1, team2) {
     const battleRef = db.collection('active_battles').doc();
     
     // --- CORRECTION : Nettoyage strict des données pour Firebase ---
@@ -316,7 +344,8 @@ async function createBattleRoom(req, team1, team2) {
         hazards1: { stealthRock: false, spikes: 0, toxicSpikes: 0, stickyWeb: false },
         hazards2: { stealthRock: false, spikes: 0, toxicSpikes: 0, stickyWeb: false },
         log: [`<b style="color:#f39c12;">Le combat ${req.type === 'ranked' ? 'Classé' : 'Amical'} commence !</b>`],
-        status: 'playing', mode: req.type, winner: null
+        status: 'playing', mode: req.type, winner: null,
+        turn: 0, turnStartedAt: Date.now()
     }));
 
     // Sauvegarde de l'objet nettoyé
@@ -458,7 +487,7 @@ function renderTeamSelectionGrid(selectedArray, onSelectCallback) {
     grid.innerHTML = "";
     document.getElementById('pvp-selection-counter').classList.remove('hidden');
     
-    let rawCollection = (state.currentUserData.collection || []).filter(c => !c.isBaie && c.pokedexNumber > 0);
+    let rawCollection = (state.currentUserData.collection || []).filter(isPlayablePokemon);
     
     // --- 1. DÉDUPLICATION DES POKÉMON (Garder le plus haut niveau) ---
     let uniqueMap = {};
@@ -534,6 +563,8 @@ function renderTeamSelectionGrid(selectedArray, onSelectCallback) {
 }
 
 function joinRealTimeBattle(battleId) {
+    if (unsubscribeBattle) { unsubscribeBattle(); unsubscribeBattle = null; }
+    clearWatchdog();
     currentBattleId = battleId;
     allerASection('section-combats');
     document.getElementById('pvp-team-selection').classList.add('hidden');
@@ -554,7 +585,10 @@ function joinRealTimeBattle(battleId) {
         myRole = (data.p1 === state.currentUser) ? 'p1' : 'p2';
         renderSynchronousUI(data);
 
-        if (myRole === 'p1' && data.action1 && data.action2 && data.status === 'playing') resolveSynchronousTurn(data, doc.ref);
+        if (myRole === 'p1' && data.action1 && data.action2 && data.status === 'playing') {
+            resolveSynchronousTurn(data, doc.ref).catch(err => console.error('Erreur de résolution du tour :', err));
+        }
+        armWatchdog(data);
         if (data.status === 'finished') endRealTimeBattle(data);
     });
 
@@ -653,6 +687,10 @@ function openSynchronousSwitchMenu(forced = false) {
         let myActiveIdx = myRole === 'p1' ? data.active1 : data.active2;
         let activePkmn = myTeam[myActiveIdx];
 
+        if (!forced && activePkmn.chargingMove) {
+            logMessage(`<b>${activePkmn.data.fr} est en pleine attaque et ne peut pas être retiré !</b>`);
+            return;
+        }
         if (!forced && (activePkmn.trapped || (activePkmn.bound && activePkmn.bound.turns > 0))) {
             logMessage(`<b>${activePkmn.data.fr} est piégé et ne peut pas être retiré !</b>`);
             return;
@@ -883,8 +921,10 @@ function triggerEntryAbilitySync(entity, opponent, data, logs) {
 
 async function resolveSynchronousTurn(data, battleRef) {
     let t1 = data.team1; let t2 = data.team2;
-    let a1 = data.action1; let a2 = data.action2;
     let active1 = data.active1; let active2 = data.active2;
+    // Les actions viennent des clients : on les revalide contre l'état réel du combat
+    let a1 = sanitizeAction(data.action1, t1, active1, t2[active2]);
+    let a2 = sanitizeAction(data.action2, t2, active2, t1[active1]);
     let turnLogs = ["<hr>"];
 
     let p1 = t1[active1]; let p2 = t2[active2];
@@ -910,7 +950,7 @@ async function resolveSynchronousTurn(data, battleRef) {
         }
     } else {
         if (a1.type === 'switch') { 
-            revertTransformation(p1); 
+            revertTransformation(p1); clearVolatile(p1); 
             // 🧹 NETTOYAGE DU POKÉMON SORTANT (P1)
             for(let s in p1.modifiers) p1.modifiers[s] = 0;
             p1.isSeeded = false; p1.confusion = 0; p1.toxCount = 0; p1.rolloutCount = 0;
@@ -926,7 +966,7 @@ async function resolveSynchronousTurn(data, battleRef) {
             triggerEntryAbilitySync(p1, p2, data, turnLogs);
         }
         if (a2.type === 'switch') { 
-            revertTransformation(p2); 
+            revertTransformation(p2); clearVolatile(p2); 
             // 🧹 NETTOYAGE DU POKÉMON SORTANT (P2)
             for(let s in p2.modifiers) p2.modifiers[s] = 0;
             p2.isSeeded = false; p2.confusion = 0; p2.toxCount = 0; p2.rolloutCount = 0;
@@ -1069,16 +1109,25 @@ async function resolveSynchronousTurn(data, battleRef) {
     else if (!p1Alive) { status = 'finished'; winner = 'p2'; turnLogs.push(`<b>Le Joueur 2 gagne le combat !</b>`); }
     else if (!p2Alive) { status = 'finished'; winner = 'p1'; turnLogs.push(`<b>Le Joueur 1 gagne le combat !</b>`); }
 
-    await battleRef.update({
-        team1: t1, team2: t2,
-        active1: active1, active2: active2,
-        action1: null, action2: null,
-        weather: data.weather, weatherTurns: data.weatherTurns,
-        trickRoom: data.trickRoom, terrain: data.terrain, terrainTurns: data.terrainTurns, delayedAttacks: data.delayedAttacks,
-        screens1: data.screens1, screens2: data.screens2, hazards1: data.hazards1, hazards2: data.hazards2,
-        wish1: data.wish1 || null, wish2: data.wish2 || null,
-        log: data.log.concat(turnLogs),
-        status: status, winner: winner
+    // Écriture atomique : si le tour a déjà été résolu (doublon de snapshot, relais p2...), on abandonne.
+    const expectedTurn = data.turn || 0;
+    await db.runTransaction(async tx => {
+        const snap = await tx.get(battleRef);
+        if (!snap.exists) return;
+        const cur = snap.data();
+        if ((cur.turn || 0) !== expectedTurn || cur.status !== 'playing' || !cur.action1 || !cur.action2) return;
+        tx.update(battleRef, {
+            team1: t1, team2: t2,
+            active1: active1, active2: active2,
+            action1: null, action2: null,
+            weather: data.weather, weatherTurns: data.weatherTurns,
+            trickRoom: data.trickRoom, terrain: data.terrain, terrainTurns: data.terrainTurns, delayedAttacks: data.delayedAttacks,
+            screens1: data.screens1, screens2: data.screens2, hazards1: data.hazards1, hazards2: data.hazards2,
+            wish1: data.wish1 || null, wish2: data.wish2 || null,
+            log: data.log.concat(turnLogs),
+            status: status, winner: winner,
+            turn: expectedTurn + 1, turnStartedAt: Date.now()
+        });
     });
 }
 
@@ -1434,6 +1483,7 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
 
 async function endRealTimeBattle(data) {
     if (unsubscribeBattle) { unsubscribeBattle(); unsubscribeBattle = null; }
+    clearWatchdog();
     
     let isWin = false;
     if (data.winner === myRole) {
@@ -1455,7 +1505,7 @@ async function endRealTimeBattle(data) {
     let oppId = myRole === 'p1' ? data.p2 : data.p1;
     let record = {
         player1: oppId, player2: state.currentUser,
-        winner: data.winner === myRole ? state.currentUser : oppId,
+        winner: data.winner === 'draw' ? 'draw' : (data.winner === myRole ? state.currentUser : oppId),
         mode: data.mode, timestamp: Date.now()
     };
     
@@ -1474,4 +1524,130 @@ async function endRealTimeBattle(data) {
         document.getElementById('pvp-menus').classList.remove('hidden');
         renderBattleUI();
     }, 5000);
+}
+
+// ==========================================
+// VALIDATION DES ACTIONS (côté hôte)
+// ==========================================
+function clearVolatile(p) {
+    p.chargingMove = null; p.invulnerable = false; p.taunted = 0; p.disabledMove = null;
+    p.bound = { name: null, turns: 0 }; p.trapped = false; p.perishCount = 0; p.destinyBond = false;
+    p.protectCount = 0; p.isProtected = false; p.flinched = false;
+}
+
+// Reconstruit une action SÛRE à partir de ce que le client a envoyé :
+// l'attaque est retrouvée dans la liste réelle du Pokémon (puissance forgée impossible),
+// les index de changement sont vérifiés, "wait" n'est accepté que si l'adversaire est K.O.
+function sanitizeAction(action, team, activeIdx, opponentActive) {
+    const me = team[activeIdx];
+    const act = (action && typeof action === 'object') ? action : {};
+    const validIndex = i => Number.isInteger(i) && i >= 0 && i < team.length && i !== activeIdx && team[i].currentHp > 0;
+    const firstBench = () => team.findIndex((p, i) => i !== activeIdx && p.currentHp > 0);
+
+    // Mon Pokémon est K.O. : la seule action possible est d'envoyer un remplaçant
+    if (me.currentHp <= 0) {
+        const idx = (act.type === 'force_switch' && validIndex(act.index)) ? act.index : firstBench();
+        return idx === -1 ? { type: 'wait' } : { type: 'force_switch', index: idx };
+    }
+    // L'adversaire est K.O. : j'attends son remplaçant
+    if (opponentActive.currentHp <= 0) return { type: 'wait' };
+
+    // Changement volontaire (interdit pendant une charge ou si piégé)
+    const trapped = me.trapped || (me.bound && me.bound.turns > 0);
+    if (act.type === 'switch' && !me.chargingMove && !trapped && validIndex(act.index)) {
+        return { type: 'switch', index: act.index };
+    }
+
+    // Sinon : une attaque, retrouvée dans la liste réelle
+    if (me.chargingMove) return { type: 'move', move: me.chargingMove };
+    const pool = me.moves || [];
+    if (me.rolloutCount > 0) {
+        const r = pool.find(m => ROLLOUT_MOVES.includes(m.nameEn));
+        if (r) return { type: 'move', move: r };
+    }
+    const allowed = m => !(me.taunted > 0 && m.damageClass === 'status')
+        && !(me.disabledMove && me.disabledMove.turns > 0 && me.disabledMove.name === m.nameEn);
+    const wanted = (act.type === 'move' && act.move) ? pool.find(m => m.nameEn === act.move.nameEn) : null;
+    if (wanted && allowed(wanted)) return { type: 'move', move: wanted };
+    const fallback = pool.find(allowed) || pool[0];
+    return fallback ? { type: 'move', move: fallback } : { type: 'wait' };
+}
+
+// ==========================================
+// CHIEN DE GARDE : inactivité et tours bloqués
+// ==========================================
+const IDLE_MS = 90 * 1000;      // adversaire qui ne joue pas : forfait
+const TAKEOVER_MS = 15 * 1000;  // tour complet non résolu : p2 prend le relais
+const STALL_MS = 60 * 1000;     // toujours bloqué : match nul
+
+let watchdogTimer = null;
+let watchdogKey = null;
+
+function clearWatchdog() {
+    if (watchdogTimer) clearTimeout(watchdogTimer);
+    watchdogTimer = null; watchdogKey = null;
+}
+
+function leaveBattleLocally() {
+    if (unsubscribeBattle) { unsubscribeBattle(); unsubscribeBattle = null; }
+    clearWatchdog();
+    currentBattleId = null; myRole = null;
+}
+
+async function finishBattleGuarded(battleId, turn, winner, message, predicate) {
+    const ref = db.collection('active_battles').doc(battleId);
+    await db.runTransaction(async tx => {
+        const snap = await tx.get(ref);
+        if (!snap.exists) return;
+        const cur = snap.data();
+        if (cur.status !== 'playing' || (cur.turn || 0) !== turn || !predicate(cur)) return;
+        tx.update(ref, {
+            status: 'finished', winner: winner,
+            log: firebase.firestore.FieldValue.arrayUnion(message)
+        });
+    });
+}
+
+function armWatchdog(data) {
+    const turn = data.turn || 0;
+    const key = `${currentBattleId}|${turn}|${!!data.action1}|${!!data.action2}|${data.status}`;
+    if (key === watchdogKey) return;
+    clearWatchdog();
+    watchdogKey = key;
+    if (data.status !== 'playing' || !currentBattleId) return;
+
+    const battleId = currentBattleId;
+    const role = myRole;
+    const ref = db.collection('active_battles').doc(battleId);
+    const myAct = role === 'p1' ? data.action1 : data.action2;
+    const oppAct = role === 'p1' ? data.action2 : data.action1;
+
+    if (data.action1 && data.action2) {
+        // Les deux ont joué mais personne n'a résolu (hôte déconnecté ou erreur)
+        watchdogTimer = setTimeout(async () => {
+            try {
+                const snap = await ref.get();
+                if (!snap.exists) return;
+                let cur = snap.data();
+                const stuck = c => c.status === 'playing' && (c.turn || 0) === turn && c.action1 && c.action2;
+                if (!stuck(cur)) return;
+
+                if (role === 'p2') { // p2 prend le relais ; la transaction empêche toute double résolution
+                    try { await resolveSynchronousTurn(cur, ref); } catch (e) { console.error('Relais de résolution échoué :', e); }
+                    await new Promise(r => setTimeout(r, STALL_MS - TAKEOVER_MS));
+                }
+                await finishBattleGuarded(battleId, turn, 'draw',
+                    `<b style="color:#f1c40f;">Le combat est bloqué : match nul.</b>`, stuck);
+            } catch (e) { console.error(e); }
+        }, role === 'p2' ? TAKEOVER_MS : STALL_MS);
+    } else if (myAct && !oppAct) {
+        // J'ai joué, l'adversaire ne répond pas : forfait par inactivité
+        watchdogTimer = setTimeout(async () => {
+            try {
+                await finishBattleGuarded(battleId, turn, role,
+                    `<b style="color:#e74c3c;">L'adversaire est inactif : forfait !</b>`,
+                    c => role === 'p1' ? (c.action1 && !c.action2) : (c.action2 && !c.action1));
+            } catch (e) { console.error(e); }
+        }, IDLE_MS);
+    }
 }

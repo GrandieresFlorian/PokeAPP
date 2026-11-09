@@ -1,9 +1,10 @@
 import { db } from './firebase-config.js';
 import { state, CONSTS } from './state.js';
-import { variantKey, mergeCardInto } from './cardUtils.js';
+import { variantKey, mergeCardInto, hasBattleFields, stripBattleFields } from './cardUtils.js';
 import { updateAuthUI, startNotificationListener } from './controllers/navController.js';
 import { updateBoosterLogic } from './controllers/boosterController.js';
 import { startFriendsListener } from './controllers/friendsController.js';
+import { startPvPListener } from './controllers/battleController.js';
 import { initQuests } from './controllers/questController.js';
 
 // Promesse "données du jeu chargées" (settings + JSON), fournie par app.js.
@@ -21,7 +22,7 @@ export function compressCollection(collection) {
         if (!card || typeof card !== 'object') return;
         if (!card.isTrainer && !(card.pokedexNumber || (card.data && card.data.pokedexNumber))) return; // carte corrompue
 
-        const clean = { ...card, quantity: Number(card.quantity || 1) };
+        const clean = stripBattleFields({ ...card, quantity: Number(card.quantity || 1) }); // purge des champs de combat hérités
         if (!card.isTrainer) clean.pokedexNumber = Number(card.pokedexNumber || card.data.pokedexNumber);
 
         const key = variantKey(clean);
@@ -74,7 +75,7 @@ export function normalizeUserData(raw) {
     // Compression des cartes / baies (réécrite seulement si quelque chose change)
     const oldCol = data.collection;
     const newCol = compressCollection(oldCol);
-    if (newCol.length !== oldCol.length || oldCol.some(c => c && !isNum(c.quantity))) {
+    if (newCol.length !== oldCol.length || oldCol.some(c => c && (!isNum(c.quantity) || hasBattleFields(c)))) {
         data.collection = newCol;
         patch.collection = newCol;
     }
@@ -117,5 +118,6 @@ export async function loadUser(userId, prefetchedData = null) {
     updateBoosterLogic();
     startNotificationListener();
     startFriendsListener();
+    startPvPListener();
     return true;
 }

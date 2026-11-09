@@ -1,5 +1,6 @@
 import { state, CONSTS } from '../state.js';
 import { getCardImageUrl, formatMegaName } from '../utils.js';
+import { isPlayablePokemon } from '../cardUtils.js';
 import { allerASection, applyTranslation } from './navController.js';
 import { ZONES } from '../data/campagneData.js';
 import { startBattle, fleeBattle, openBag } from './campagneBattleController.js';
@@ -48,7 +49,7 @@ function renderTeamSelection() {
     grid.innerHTML = "";
     document.getElementById('campagne-select-pokemon').classList.remove('hidden');
 
-    const myCollection = (state.currentUserData.collection || []).filter(c => !c.isBaie);
+    const myCollection = (state.currentUserData.collection || []).filter(isPlayablePokemon);
     if (myCollection.length === 0) {
         grid.innerHTML = "<p style='color:#ccc;'>Vous n'avez aucun Pokémon. Ouvrez des boosters !</p>";
         return;

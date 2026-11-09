@@ -3,6 +3,7 @@ import { state } from '../state.js';
 import { updateAuthUI, allerASection, stopNotificationListener } from './navController.js';
 import { updateBoosterLogic } from './boosterController.js';
 import { stopFriendsListener } from './friendsController.js';
+import { stopPvPListener } from './battleController.js';
 import { loadUser, normalizeUserData } from '../userService.js';
 
 export function initAuth() {
@@ -48,6 +49,7 @@ export function initAuth() {
         if (state.currentUser) {
             stopFriendsListener();
             stopNotificationListener();
+            stopPvPListener();
             state.currentUser = null;
             state.currentUserData = { collection: [] };
             localStorage.removeItem('pokeAppCurrentUser');

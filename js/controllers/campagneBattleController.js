@@ -12,6 +12,7 @@ import {
 } from '../data/campagneData.js';
 import { calcStats, getEffectiveStat, checkMoveHit, calculateDamage } from '../battleEngine.js';
 import { updateQuestProgress } from './questController.js';
+import { isPlayablePokemon, stripBattleFields } from '../cardUtils.js';
 
 let skillsDB = {};
 fetch('skill.json').then(r => r.json()).then(d => skillsDB = d).catch(() => console.log("skill.json introuvable"));
@@ -62,7 +63,8 @@ const WEATHER_MOVES_DICT = {
 };
 
 const EXTENDED_STAT_NAMES = { ...STAT_NAMES.fr, accuracy: "Précision", evasion: "Esquive" };
-let activeFighter = null;
+let activeFighter = null;   // COPIE de combat (jamais stockée dans la collection)
+let sourceCard = null;      // carte réelle de la collection
 let currentEnemy = null;
 let currentZone = null;
 let isAnimating = false;
@@ -75,8 +77,36 @@ let p2State = { hazards: { stealthRock: false, spikes: 0, toxicSpikes: 0, sticky
 
 const STATUS_COLORS = { "BRN": "#e67e22", "PSN": "#9b59b6", "TOX": "#8e44ad", "PAR": "#f1c40f", "FRZ": "#3498db", "SLP": "#2c3e50" };
 
+const ZERO_EVS = { hp: 0, atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0 };
+
+// Crée l'entité de combat à partir de la carte : tout l'état temporaire vit ici, pas dans la carte
+function createBattleFighter(card) {
+    const f = stripBattleFields({ ...card });
+    f.evs = { ...ZERO_EVS, ...(card.evs || {}) };
+    f.moves = card.moves ? JSON.parse(JSON.stringify(card.moves)) : [];
+    return f;
+}
+
+// Recopie UNIQUEMENT la progression (niveau, XP, EVs, moves) dans la carte de la collection.
+// On recherche la carte "vivante" par sa date : elle a pu être remplacée par une resynchronisation.
+function syncFighterToCard() {
+    if (!sourceCard) return;
+    const live = (state.currentUserData.collection || []).find(c => c.date === sourceCard.date) || sourceCard;
+    live.level = activeFighter.level || 1;
+    if (activeFighter.xp !== undefined) live.xp = activeFighter.xp;
+    live.evs = { ...ZERO_EVS, ...(activeFighter.evs || {}) };
+    live.moves = JSON.parse(JSON.stringify(activeFighter.moves || []));
+    sourceCard = live;
+}
+
 export async function startBattle(zone, fighter, onEnd) {
-    activeFighter = fighter;
+    if (!isPlayablePokemon(fighter)) {
+        alert(state.currentLang === 'en' ? "This card cannot fight." : "Cette carte ne peut pas combattre.");
+        if (onEnd) onEnd();
+        return;
+    }
+    sourceCard = fighter;
+    activeFighter = createBattleFighter(fighter);
     currentZone = zone;
     onBattleEndCallback = onEnd;
     isAnimating = false;
@@ -142,7 +172,9 @@ export async function startBattle(zone, fighter, onEnd) {
 
     if (!activeFighter.moves || activeFighter.moves.length === 0) {
         activeFighter.moves = await getMovesForLevel(activeFighter.pokedexNumber, activeFighter.level || 1);
-        db.collection('users').doc(state.currentUser).update({ collection: state.currentUserData.collection });
+        syncFighterToCard();
+        db.collection('users').doc(state.currentUser).update({ collection: state.currentUserData.collection })
+            .catch(e => console.error(e));
     }
     activeFighter.battleMoves = JSON.parse(JSON.stringify(activeFighter.moves));
     
@@ -194,7 +226,7 @@ export function fleeBattle(forced = false) {
         }
         logMessage(state.currentLang === 'en' ? "You fled... 🏃" : "Vous prenez la fuite... 🏃");
     }
-    updateQuestProgress('play_battle', 1);
+    // NB : fuir ne compte PAS pour la quête "combats" (sinon exploit : entrer puis fuir en boucle)
     toggleMoves(true);
     setTimeout(() => { if(onBattleEndCallback) onBattleEndCallback(); }, forced ? 1000 : 500);
 }
@@ -1440,6 +1472,8 @@ async function winBattle(isCapture = false) {
     updateBattleUI();
     renderMovesUI(); 
     
+    syncFighterToCard(); // progression -> carte réelle (et seulement elle)
+
     try { 
         await db.collection('users').doc(state.currentUser).update({ 
             collection: state.currentUserData.collection,
@@ -1448,7 +1482,10 @@ async function winBattle(isCapture = false) {
             pokePts: state.currentUserData.pokePts,
             shards: state.currentUserData.shards 
         }); 
-    } catch(e) {}
+    } catch(e) {
+        console.error("Erreur de sauvegarde de fin de combat :", e);
+        logMessage(`<span style="color:#e74c3c">⚠️ La sauvegarde a échoué : votre progression de ce combat peut être perdue.</span>`);
+    }
     updateQuestProgress('play_battle', 1);
     setTimeout(() => { if(onBattleEndCallback) onBattleEndCallback(); }, 500);
 }

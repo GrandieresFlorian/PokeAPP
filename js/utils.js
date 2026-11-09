@@ -243,8 +243,9 @@ export const TOUS_LES_DRESSEURS = [
 // Fonction utilitaire pour tirer un dresseur au hasard
 // Fonction de tirage des dresseurs basée sur les probabilités globales
 export function getRandomTrainer() {
-    const list = state.dresseursData;
-    if (!list || list.length === 0) return null;
+    // On ignore les classes sans variante (données incomplètes)
+    const list = (state.dresseursData || []).filter(c => c && Array.isArray(c.variants) && c.variants.length > 0);
+    if (list.length === 0) return null;
     
     // 1. On tire d'abord une rareté selon les pourcentages globaux du jeu (C, U, R, E, L, M)[cite: 26]
     const rarityCible = tirerRarete();

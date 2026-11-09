@@ -35,3 +35,23 @@ export function addToCollection(collection, card) {
     if (!existing) collection.push(card);
     else mergeCardInto(existing, card);
 }
+
+// Une carte "jouable" = un vrai Pokémon (ni baie, ni Dresseur, ni carte corrompue)
+export function isPlayablePokemon(c) {
+    return !!c && !c.isTrainer && !c.isBaie && Number(c.pokedexNumber) > 0;
+}
+
+// Champs temporaires de combat : ne doivent JAMAIS être stockés dans la collection
+export const BATTLE_ONLY_FIELDS = [
+    'battleStats', 'modifiers', 'status', 'statusTurns', 'confusion', 'toxCount', 'rolloutCount',
+    'turnsActive', 'isProtected', 'protectCount', 'isSeeded', 'flinched', 'chargingMove',
+    'invulnerable', 'trapped', 'bound', 'transformedImage', 'types', 'battleMoves', 'taunted',
+    'disabledMove', 'destinyBond', 'perishCount', 'lastUsedMove', 'original', 'maxHp', 'currentHp', 'stats'
+];
+export function hasBattleFields(c) {
+    return !!c && BATTLE_ONLY_FIELDS.some(f => f in c);
+}
+export function stripBattleFields(c) {
+    BATTLE_ONLY_FIELDS.forEach(f => { delete c[f]; });
+    return c;
+}

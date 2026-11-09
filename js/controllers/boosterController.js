@@ -3,6 +3,43 @@ import { state, CONSTS } from '../state.js';
 import { allerASection } from './navController.js';
 import { tirerRarete, formatMegaName, sauvegarderCarte, getCardImageUrl, getPokemonDetails, generateTypeBadgesHTML, BAIES_BOOSTERS, sauvegarderBaie, getRandomTrainer, sauvegarderDresseur } from '../utils.js';
 import { updateQuestProgress } from './questController.js';
+// Tirage des 5 cartes d'un booster Pokémon. Borné : plus de boucle infinie si une rareté est vide.
+function tirerCartesBooster() {
+    const valides = state.pokemonDataList
+        .map((pokemon, index) => ({ donnees: pokemon, vraiNumero: index + 1 }))
+        .filter(p => p.donnees && CONSTS.poidsRarete[p.donnees.rarity] !== undefined);
+    if (valides.length === 0) throw new Error("Aucun Pokémon valide dans data.json");
+
+    const cartes = [];
+    for (let i = 0; i < 5; i++) {
+        let pool = [];
+        for (let essai = 0; essai < 20 && pool.length === 0; essai++) {
+            const rareteCible = tirerRarete();
+            pool = valides.filter(p => p.donnees.rarity === rareteCible);
+        }
+        if (pool.length === 0) pool = valides; // secours : n'importe quel Pokémon valide
+        const choisi = pool[Math.floor(Math.random() * pool.length)];
+        cartes.push({ isBaie: false, data: choisi.donnees, pokedexNumber: Number(choisi.vraiNumero) });
+    }
+    cartes.sort((a, b) => CONSTS.poidsRarete[a.data.rarity] - CONSTS.poidsRarete[b.data.rarity]);
+
+    if (Math.random() * 100 <= 5) {
+        cartes.push({ isBaie: true, data: BAIES_BOOSTERS[Math.floor(Math.random() * BAIES_BOOSTERS.length)] });
+    }
+    return cartes;
+}
+
+// Tirage des cartes Dresseur : renvoie null si les données ne sont pas prêtes
+function tirerCartesDresseur(n) {
+    const cartes = [];
+    for (let i = 0; i < n; i++) {
+        const t = getRandomTrainer();
+        if (!t) return null;
+        cartes.push(t);
+    }
+    return cartes.sort((a, b) => (CONSTS.poidsRarete[a.rarity] || 0) - (CONSTS.poidsRarete[b.rarity] || 0));
+}
+
 export function updateBoosterLogic() {
     if (!state.currentUser) {
         clearInterval(state.boosterTimerInterval);
@@ -353,6 +390,13 @@ function ouvrirBooster(isSpecial = false) {
     }
 
     if (state.isOpening) return; 
+    // On tire les cartes AVANT de consommer le booster : si ça échoue, rien n'est perdu
+    let cartesPretes;
+    try { cartesPretes = tirerCartesBooster(); }
+    catch (e) {
+        console.error(e);
+        return alert(state.currentLang==='en' ? "Pack data is not ready, try again." : "Les données ne sont pas prêtes, réessayez.");
+    }
     state.isOpening = true;
     state.currentPullIsSpecial = isSpecial;
 
@@ -398,39 +442,7 @@ function ouvrirBooster(isSpecial = false) {
         }
         state.cartesRetournees = 0; 
         
-        let cartesTirees = [];
-        const pokemonListAvecIndex = state.pokemonDataList.map((pokemon, index) => { return { donnees: pokemon, vraiNumero: index + 1 }; });
-        
-        for(let i = 0; i < 5; i++) {
-            const rareteCible = tirerRarete();
-            // On s'assure que p.donnees existe avant de lire la rareté
-            const pokemonsPossibles = pokemonListAvecIndex.filter(p => p.donnees && p.donnees.rarity === rareteCible);
-            
-            if (pokemonsPossibles.length === 0) { i--; continue; }
-
-            const randomPossibiliteIndex = Math.floor(Math.random() * pokemonsPossibles.length);
-            const carteChoisie = pokemonsPossibles[randomPossibiliteIndex];
-
-            // --- LA SÉCURITÉ ANTI-BULBIZARRE ---
-            if (!carteChoisie || !carteChoisie.donnees || !carteChoisie.vraiNumero) {
-                console.error("⚠️ Faille d'ouverture évitée, génération annulée pour cette carte.");
-                i--; // On relance le tirage pour ne pas avoir de trou
-                continue;
-            }
-
-            cartesTirees.push({ 
-                isBaie: false, 
-                data: carteChoisie.donnees, 
-                pokedexNumber: Number(carteChoisie.vraiNumero) // Forcer en vrai nombre
-            });
-        }
-        
-        cartesTirees.sort((a, b) => CONSTS.poidsRarete[a.data.rarity] - CONSTS.poidsRarete[b.data.rarity]);
-        
-        if (Math.random() * 100 <= 5) {
-            const randomBaie = BAIES_BOOSTERS[Math.floor(Math.random() * BAIES_BOOSTERS.length)];
-            cartesTirees.push({ isBaie: true, data: randomBaie });
-        }
+        const cartesTirees = cartesPretes;
         
         state.currentPulls = cartesTirees;
         state.currentPullIndex = 0;
@@ -462,6 +474,10 @@ export function ouvrirBoosterDresseur() {
     }
 
     if (state.isOpening) return; 
+    const cartesDresseur = tirerCartesDresseur(3);
+    if (!cartesDresseur) {
+        return alert(state.currentLang==='en' ? "Trainer data is not loaded yet, try again in a moment." : "Les données des dresseurs ne sont pas encore chargées, réessayez dans un instant.");
+    }
     state.isOpening = true;
     
     // 2. Décrémenter le stock
@@ -500,8 +516,7 @@ export function ouvrirBoosterDresseur() {
         state.cartesRetournees = 0; 
         
         // Tirage de 3 cartes Dresseur
-        state.currentPulls = [getRandomTrainer(), getRandomTrainer(), getRandomTrainer()];
-        state.currentPulls.sort((a, b) => CONSTS.poidsRarete[a.rarity] - CONSTS.poidsRarete[b.rarity]);
+        state.currentPulls = cartesDresseur;
         state.currentPullIndex = 0;
         
         autoOpenBtn.classList.remove('hidden');
