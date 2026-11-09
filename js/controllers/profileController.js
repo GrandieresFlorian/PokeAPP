@@ -2,6 +2,7 @@ import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
 import { getCardImageUrl, formatMegaName, generateTypeBadgesHTML } from '../utils.js';
 import { allerASection } from './navController.js';
+import { isBerryCard } from '../cardUtils.js';
 
 let vitrineSelection = [];
 
@@ -78,7 +79,7 @@ function openEditMode() {
     document.getElementById('edit-pseudo').value = state.currentUserData.displayName || state.currentUser;
     document.getElementById('edit-avatar').value = state.currentUserData.avatar || "";
     document.getElementById('edit-desc').value = state.currentUserData.description || "";
-    vitrineSelection = [...(state.currentUserData.vitrine || [])];
+    vitrineSelection = (state.currentUserData.vitrine || []).map(c => isBerryCard(c) ? { ...c, isBaie: true } : c);
     renderEditVitrine();
 }
 
@@ -121,7 +122,7 @@ function renderEditVitrine() {
         return div;
     };
     
-    const allUniqueCards = getUniqueCards([...(state.currentUserData.collection || []), ...(state.currentUserData.berries || [])]);
+    const allUniqueCards = getUniqueCards([...(state.currentUserData.collection || []), ...(state.currentUserData.berries || []).map(b => ({ ...b, isBaie: true }))]);
     allUniqueCards.forEach(carte => {
         const getKey = c => c.isBaie ? `baie_${c.id || c.data.id}` : `${c.pokedexNumber}_${c.shiny}_${c.mega}_${c.megaForm}`;
         const isSelected = vitrineSelection.some(c => getKey(c) === getKey(carte));
@@ -165,7 +166,7 @@ async function saveProfile() {
 function creerHtmlCarte(carte) {
     if(!carte) return "";
     
-    if (carte.isBaie) {
+    if (isBerryCard(carte)) {
         let nomAffiche = state.currentLang === 'en' ? carte.data.en : carte.data.fr;
         let enName = carte.data.en.toLowerCase().replace(/\s+/g, '-');
         let imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${enName}.png`;

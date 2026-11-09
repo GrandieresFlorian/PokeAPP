@@ -2,6 +2,25 @@ import { db } from '../firebase-config.js';
 import { state } from '../state.js';
 import { TOUTES_LES_BAIES, MUTATION_RECIPES } from '../utils.js';
 import { updateQuestProgress } from './questController.js';
+import { escapeHtml } from '../htmlUtils.js';
+
+// Baies qu'on ne peut pas planter (obtenues uniquement par mutation) : sinon, duplication à la récolte
+const ADVANCED_BERRIES = ['grena', 'alga', 'qualot', 'lonme', 'resin'];
+
+// Ne garde que des emplacements 0..80 et des baies plantables connues (presets importés = données non fiables)
+function sanitizeLayout(layout) {
+    const clean = {};
+    if (!layout || typeof layout !== 'object') return clean;
+    const valid = new Set(TOUTES_LES_BAIES.map(b => b.id));
+    Object.entries(layout).forEach(([key, berryId]) => {
+        const idx = Number(key);
+        if (Number.isInteger(idx) && idx >= 0 && idx < 81
+            && typeof berryId === 'string' && valid.has(berryId) && !ADVANCED_BERRIES.includes(berryId)) {
+            clean[idx] = berryId;
+        }
+    });
+    return clean;
+}
 
 let selectedPlot = null;
 let mutationTick = 0; 
@@ -159,7 +178,7 @@ function savePreset(presetId) {
     if (!preset) return;
 
     // Liste des ID de baies avancées qu'on ne peut pas planter
-    const advancedBerries = ['grena', 'alga', 'qualot', 'lonme', 'resin'];
+    const advancedBerries = ADVANCED_BERRIES;
 
     const layout = {};
     garden.forEach((plot, index) => {
@@ -185,6 +204,7 @@ function loadPreset(presetId) {
         }));
     }
     const preset = state.currentUserData.gardenPresets.find(p => p.id === presetId);
+    if (preset) preset.layout = sanitizeLayout(preset.layout); // protège aussi les presets déjà enregistrés
     if (!preset || Object.keys(preset.layout).length === 0) {
         return alert("Ce preset est vide ! Configurez des baies dans votre jardin avant de sauvegarder.");
     }
@@ -267,7 +287,7 @@ function renderPresetsUI() {
         html += `
             <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 8px; border: 1px solid #444; gap: 10px; flex-wrap: wrap;">
                 <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 200px;">
-                    <input type="text" class="preset-name-input" data-preset-id="${preset.id}" value="${preset.name}" maxlength="20" style="background: #222; border: 1px solid #555; color: white; padding: 5px 10px; border-radius: 5px; font-weight: bold; width: 140px;">
+                    <input type="text" class="preset-name-input" data-preset-id="${preset.id}" value="${escapeHtml(preset.name)}" maxlength="20" style="background: #222; border: 1px solid #555; color: white; padding: 5px 10px; border-radius: 5px; font-weight: bold; width: 140px;">
                     <span style="font-size: 0.85rem; color: #aaa;">(${countBerries} baies)</span>
                 </div>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
@@ -960,10 +980,13 @@ function importPreset(presetId) {
                 const presetIndex = state.currentUserData.gardenPresets.findIndex(p => p.id === presetId);
                 if (presetIndex > -1) {
                     // On remplace le layout et le nom, mais on GARDE l'ID de l'emplacement actuel (1 à 5)
-                    state.currentUserData.gardenPresets[presetIndex].layout = importedPreset.layout;
+                    const cleanLayout = sanitizeLayout(importedPreset.layout);
+                    const ignored = Object.keys(importedPreset.layout).length - Object.keys(cleanLayout).length;
+                    state.currentUserData.gardenPresets[presetIndex].layout = cleanLayout;
                     if (importedPreset.name) {
-                        state.currentUserData.gardenPresets[presetIndex].name = importedPreset.name;
+                        state.currentUserData.gardenPresets[presetIndex].name = String(importedPreset.name).trim().slice(0, 20);
                     }
+                    if (ignored > 0) alert(`${ignored} emplacement(s) ignoré(s) : baie inconnue, baie avancée non plantable ou case invalide.`);
                     
                     saveGardenData();
                     renderPresetsUI();

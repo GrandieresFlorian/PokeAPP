@@ -55,3 +55,8 @@ export function stripBattleFields(c) {
     BATTLE_ONLY_FIELDS.forEach(f => { delete c[f]; });
     return c;
 }
+
+// Une baie stockée dans `berries` n'a pas toujours le drapeau isBaie : on la reconnaît à l'absence de pokedexNumber
+export function isBerryCard(c) {
+    return !!c && !c.isTrainer && (c.isBaie === true || (c.pokedexNumber === undefined && !!(c.id || (c.data && c.data.id))));
+}

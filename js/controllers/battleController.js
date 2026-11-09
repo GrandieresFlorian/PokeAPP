@@ -11,7 +11,7 @@ import {
     TAUNT_MOVES, REST_MOVES, PAIN_SPLIT_MOVES, PERISH_SONG_MOVES, DESTINY_BOND_MOVES,
     COUNTER_MOVES, MIRROR_COAT_MOVES, BIDE_MOVES, ENCORE_MOVES, DISABLE_MOVES, WISH_MOVES
 } from '../data/campagneData.js';
-import { getEffectiveStat, checkMoveHit, calculateDamage } from '../battleEngine.js';
+import { getEffectiveStat, checkMoveHit, calculateDamage, calcStats } from '../battleEngine.js';
 
 let skillsDB = {};
 fetch('skill.json').then(r => r.json()).then(d => skillsDB = d).catch(() => console.log("skill.json introuvable"));
@@ -366,15 +366,10 @@ async function formatTeam(rawTeam) {
         let safePkmn = { ...pkmn, pokedexNumber: safeId };
         
         const d = await getPokemonDetails(safePkmn);
-        let maxHp = Math.floor(((2 * d.baseStats.hp) * (safePkmn.level || 1)) / 100) + (safePkmn.level || 1) + 10;
-        let baseStatsObj = { 
-            atk: Math.floor(((2 * d.baseStats.atk) * (safePkmn.level||1)) / 100) + 5,
-            def: Math.floor(((2 * d.baseStats.def) * (safePkmn.level||1)) / 100) + 5,
-            spatk: Math.floor(((2 * d.baseStats.spatk) * (safePkmn.level||1)) / 100) + 5,
-            spdef: Math.floor(((2 * d.baseStats.spdef) * (safePkmn.level||1)) / 100) + 5,
-            speed: Math.floor(((2 * d.baseStats.speed) * (safePkmn.level||1)) / 100) + 5,
-            types: d.types
-        };
+        const cs = calcStats(d.baseStats, safePkmn.level || 1,
+            { hp: 0, atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0, ...(safePkmn.evs || {}) });
+        let maxHp = cs.maxHp;
+        let baseStatsObj = { atk: cs.atk, def: cs.def, spatk: cs.spatk, spdef: cs.spdef, speed: cs.speed, types: d.types };
         
         let initialMoves = (safePkmn.moves && safePkmn.moves.length > 0) 
             ? safePkmn.moves 

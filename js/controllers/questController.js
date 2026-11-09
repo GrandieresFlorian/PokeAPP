@@ -1,6 +1,7 @@
 import { db } from '../firebase-config.js';
 import { state } from '../state.js';
 import { updateSpecialBoosterUI } from './boosterController.js';
+import { escapeHtml } from '../htmlUtils.js';
 
 // ==========================================
 // BASES DE DONNÉES DES QUÊTES
@@ -38,7 +39,7 @@ async function afficherClassement() {
     const totalContainer = document.getElementById('leaderboard-total');
     if (!uniqueContainer || !totalContainer) return;
 
-    const BANNED_NAMES = ["test", "hacker-copie" ,"OriKage"];
+    const BANNED_NAMES = ["test", "hacker-copie", "orikage"]; // comparés en minuscules
     try {
         // On récupère tous les utilisateurs
         const snapshot = await db.collection('users').get();
@@ -55,9 +56,9 @@ async function afficherClassement() {
                 const totalCount = data.collection.reduce((sum, card) => sum + (Number(card.quantity) || 1), 0);
                 
                 // On récupère le pseudo (ou le nom d'utilisateur, ou l'ID par défaut)
-                const pseudo = data.pseudo || data.username || doc.id.substring(0, 8);
+                const pseudo = String(data.displayName || data.pseudo || data.username || doc.id);
 
-                if (BANNED_NAMES.includes(pseudo.toLowerCase())) {
+                if (BANNED_NAMES.includes(pseudo.toLowerCase()) || BANNED_NAMES.includes(doc.id.toLowerCase())) {
                     return; // Si banni, on passe au joueur suivant sans l'ajouter
                 }
                 
@@ -73,7 +74,7 @@ async function afficherClassement() {
                 let medal = i === 0 ? '🥇' : (i === 1 ? '🥈' : (i === 2 ? '🥉' : `<span style="display:inline-block; width:20px; text-align:center; color:#aaa;">${i+1}.</span>`));
                 return `
                     <li style="display:flex; justify-content:space-between; padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                        <span style="font-weight: ${i < 3 ? 'bold' : 'normal'};">${medal} ${u.pseudo}</span>
+                        <span style="font-weight: ${i < 3 ? 'bold' : 'normal'};">${medal} ${escapeHtml(u.pseudo)}</span>
                         <span class="${colorClass} font-bold">${u[key]}</span>
                     </li>
                 `;
@@ -99,7 +100,8 @@ async function afficherClassement() {
 // UTILITAIRES DE TEMPS
 // ==========================================
 function getTodayString() {
-    return new Date().toISOString().split('T')[0];
+    const d = new Date(); // date LOCALE : le reset se fait à minuit chez le joueur, pas à minuit UTC
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 function getWeekString() {
@@ -115,25 +117,22 @@ function getWeekString() {
 // ==========================================
 // INITIALISATION ET GÉNÉRATION
 // ==========================================
-export function initQuests() {
-    if (!state.currentUser) return;
+// Régénère les quêtes si le jour ou la semaine a changé. Renvoie true si quelque chose a changé.
+function ensureQuestsUpToDate() {
+    if (!state.currentUser || !state.currentUserData) return false;
 
-    let userData = state.currentUserData;
+    const userData = state.currentUserData;
     const today = getTodayString();
     const currentWeek = getWeekString();
-    
     let needsUpdate = false;
 
-    // 1. Check Quêtes Journalières
     if (!userData.questsDate || userData.questsDate !== today || !userData.dailyQuests) {
         userData.dailyQuests = genererQuetes(POOL_QUOTIDIENNES, 3);
         userData.questsDate = today;
         needsUpdate = true;
     }
-
-    // 2. Check Quêtes Hebdomadaires
     if (!userData.questsWeek || userData.questsWeek !== currentWeek || !userData.weeklyQuests) {
-        userData.weeklyQuests = genererQuetes(POOL_HEBDOMADAIRES, 2); // 2 quêtes hebdo
+        userData.weeklyQuests = genererQuetes(POOL_HEBDOMADAIRES, 2);
         userData.questsWeek = currentWeek;
         needsUpdate = true;
     }
@@ -144,24 +143,42 @@ export function initQuests() {
             questsWeek: userData.questsWeek,
             dailyQuests: userData.dailyQuests,
             weeklyQuests: userData.weeklyQuests
-        }).then(() => {
-            afficherQuetes();
-            updateQuestBadge(); // <--- AJOUT
-        });
-    } else {
-        afficherQuetes();
-        updateQuestBadge(); // <--- AJOUT
+        }).catch(e => console.error('Sauvegarde des quêtes échouée :', e));
     }
+    return needsUpdate;
+}
+
+// Vérifie chaque minute : si la page reste ouverte après minuit, les quêtes sont renouvelées
+let questClock = null;
+function startQuestClock() {
+    if (questClock) return;
+    questClock = setInterval(() => {
+        if (ensureQuestsUpToDate()) { afficherQuetes(); updateQuestBadge(); }
+    }, 60 * 1000);
+}
+
+export function initQuests() {
+    if (!state.currentUser) return;
+    startQuestClock();
+    ensureQuestsUpToDate();
+    afficherQuetes();
+    updateQuestBadge();
     afficherClassement();
 }
 
 function genererQuetes(pool, count) {
-    let shuffled = [...pool].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, count).map(q => ({
-        ...q,
-        progress: 0,
-        claimed: false
-    }));
+    const shuffled = [...pool].sort(() => 0.5 - Math.random());
+    const chosen = [];
+    const usedTypes = new Set();
+
+    // 1er passage : jamais deux quêtes du même type (ex: "10 boosters" + "25 boosters")
+    shuffled.forEach(q => {
+        if (chosen.length < count && !usedTypes.has(q.type)) { chosen.push(q); usedTypes.add(q.type); }
+    });
+    // Secours si le pool n'a pas assez de types différents
+    shuffled.forEach(q => { if (chosen.length < count && !chosen.includes(q)) chosen.push(q); });
+
+    return chosen.map(q => ({ ...q, progress: 0, claimed: false }));
 }
 
 // ==========================================
@@ -249,7 +266,9 @@ function genererHtmlListeQuetes(liste, listType) {
 // PROGRESSION ET VALIDATION
 // ==========================================
 export function updateQuestProgress(actionType, amount = 1) {
-    if (!state.currentUser || (!state.currentUserData.dailyQuests && !state.currentUserData.weeklyQuests)) return;
+    if (!state.currentUser) return;
+    ensureQuestsUpToDate(); // si minuit est passé, on compte sur les NOUVELLES quêtes
+    if (!state.currentUserData.dailyQuests && !state.currentUserData.weeklyQuests) return;
 
     let updated = false;
 
@@ -272,7 +291,7 @@ export function updateQuestProgress(actionType, amount = 1) {
         db.collection('users').doc(state.currentUser).update({
             dailyQuests: state.currentUserData.dailyQuests,
             weeklyQuests: state.currentUserData.weeklyQuests
-        });
+        }).catch(e => console.error(e));
         afficherQuetes(); // Mettre à jour l'UI
         updateQuestBadge(); // <--- AJOUT (Allume le point rouge en direct si une quête est terminée)
     }

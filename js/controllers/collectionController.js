@@ -1,6 +1,7 @@
 import { state, CONSTS } from '../state.js';
 import { getPokemonDetails, formatMegaName, getCardImageUrl, generateTypeBadgesHTML, TOUTES_LES_BAIES, BAIES_BOOSTERS, MUTATION_RECIPES } from '../utils.js';
 import { updateQuestProgress } from './questController.js';
+import { calcStats } from '../battleEngine.js';
 const PRIX_VENTE = {
     "C": 1, "U": 2, "R": 4, "E": 7, "L": 13, "M": 20, "MG": 20
 };
@@ -140,28 +141,26 @@ export async function openCardDetails(carte) {
         };
     }
 
-    // Calcul des Stats au niveau actuel
-    let lvl = carte.level || 1;
-    let maxHp = Math.floor(((2 * details.baseStats.hp) * lvl) / 100) + lvl + 10;
-    let atk = Math.floor(((2 * details.baseStats.baseStats?.atk || details.baseStats.atk) * lvl) / 100) + 5;
-    let def = Math.floor(((2 * details.baseStats.def) * lvl) / 100) + 5;
-    let spatk = Math.floor(((2 * details.baseStats.spatk) * lvl) / 100) + 5;
-    let spdef = Math.floor(((2 * details.baseStats.spdef) * lvl) / 100) + 5;
-    let speed = Math.floor(((2 * details.baseStats.speed) * lvl) / 100) + 5;
-
-    document.getElementById('details-stats-grid').innerHTML = `
-        <div>❤️ HP/PV : <b style="color:#2ecc71">${maxHp}</b></div>
-        <div>💨 ${isEn ? "Speed" : "Vitesse"} : <b style="color:#f39c12">${speed}</b></div>
-        <div>⚔️ ${isEn ? "Attack" : "Attaque"} : <b>${atk}</b></div>
-        <div>🛡️ ${isEn ? "Defense" : "Défense"} : <b>${def}</b></div>
-        <div>🔥 ${isEn ? "Sp. Atk" : "Atk Spé"} : <b>${spatk}</b></div>
-        <div>✨ ${isEn ? "Sp. Def" : "Déf Spé"} : <b>${spdef}</b></div>
+    // Stats : même formule que les combats (EVs inclus), recalculée quand les EVs changent
+    const renderStatsGrid = () => {
+        const st = calcStats(details.baseStats, carte.level || 1,
+            { hp: 0, atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0, ...(carte.evs || {}) });
+        document.getElementById('details-stats-grid').innerHTML = `
+        <div>❤️ HP/PV : <b style="color:#2ecc71">${st.maxHp}</b></div>
+        <div>💨 ${isEn ? "Speed" : "Vitesse"} : <b style="color:#f39c12">${st.speed}</b></div>
+        <div>⚔️ ${isEn ? "Attack" : "Attaque"} : <b>${st.atk}</b></div>
+        <div>🛡️ ${isEn ? "Defense" : "Défense"} : <b>${st.def}</b></div>
+        <div>🔥 ${isEn ? "Sp. Atk" : "Atk Spé"} : <b>${st.spatk}</b></div>
+        <div>✨ ${isEn ? "Sp. Def" : "Déf Spé"} : <b>${st.spdef}</b></div>
     `;
+    };
+    renderStatsGrid();
 
     // --- GESTION DES EVS ET DE LA BAIE ALGA (-) ---
     if (!carte.evs) carte.evs = { hp: 0, atk: 0, def: 0, spatk: 0, spdef: 0, speed: 0 };
 
     const renderEvsGrid = () => {
+        renderStatsGrid();
         const evs = carte.evs;
         const statsList = [
             { key: 'hp', label: 'HP/PV' },
@@ -393,6 +392,8 @@ export function upgradeCard(cardDate) {
     });
 }
 
+let collectionRenderToken = 0; // invalide les rendus par morceaux déjà lancés
+
 export function afficherCollection() {
     const collectionContainer = document.getElementById('collection-container');
     const collectionCount = document.getElementById('collection-count');
@@ -405,6 +406,7 @@ export function afficherCollection() {
     const searchVal = searchInput ? searchInput.value.toLowerCase() : "";
 
     if (!collectionContainer || !collectionCount) return;
+    const myRenderToken = ++collectionRenderToken; // tout rendu précédent encore en cours s'arrêtera
 
     if (state.collectionMode === 'baies') { afficherBaies(collectionContainer, collectionCount, filterOwned ? filterOwned.checked : false); return; }
     if (state.collectionMode === 'dresseurs') { afficherDresseurs(collectionContainer, collectionCount, filterOwnedVal); return; }
@@ -537,6 +539,7 @@ export function afficherCollection() {
     const chunkSize = 50; // Afficher 50 cartes à la fois pour ne pas faire lagger le PC/Tel
 
     function renderChunk() {
+        if (myRenderToken !== collectionRenderToken) return; // un rendu plus récent a pris la place
         htmlContent = ""; // On vide le tampon HTML pour ce paquet
         const end = Math.min(currentIndex + chunkSize, itemsToRender.length);
         

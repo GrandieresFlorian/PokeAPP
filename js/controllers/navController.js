@@ -1,8 +1,21 @@
 import { state, CONSTS } from '../state.js';
 export function initNav() {
     const navLinks = document.querySelectorAll('.nav-links li');
+    // Sections réservées aux joueurs connectés.
+    // true  = on affiche l'alerte ici ; false = le contrôleur de la section affiche déjà la sienne.
+    const LOGIN_REQUIRED = {
+        'section-amis': false, 'section-campagne': false, 'section-jardin': false, 'section-profil': false,
+        'section-combats': true, 'section-quetes': true, 'section-boutique': true, 'section-sac': true, 'section-recherche': true
+    };
     navLinks.forEach(link => { 
-        link.addEventListener('click', () => allerASection(link.getAttribute('data-target'))); 
+        link.addEventListener('click', () => {
+            const target = link.getAttribute('data-target');
+            if (target in LOGIN_REQUIRED && !state.currentUser) {
+                if (LOGIN_REQUIRED[target]) alert(state.currentLang === 'en' ? "Please log in first!" : "Connectez-vous d'abord !");
+                return; // on ne change PAS de section
+            }
+            allerASection(target);
+        }); 
     });
 
     const langToggle = document.getElementById('lang-toggle');
@@ -47,6 +60,8 @@ export function applyTranslation() {
 }
 
 export function allerASection(targetId) {
+    const target = document.getElementById(targetId);
+    if (!target) { console.warn(`Section introuvable : ${targetId}`); return; }
     const navLinks = document.querySelectorAll('.nav-links li');
     const sections = document.querySelectorAll('.view-section');
     navLinks.forEach(l => l.classList.remove('active'));
@@ -54,7 +69,7 @@ export function allerASection(targetId) {
     if(link) link.classList.add('active');
     
     sections.forEach(sec => sec.classList.add('hidden')); 
-    document.getElementById(targetId).classList.remove('hidden');
+    target.classList.remove('hidden');
 }
 
 export function updateAuthUI() {
