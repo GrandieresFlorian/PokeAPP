@@ -1,5 +1,6 @@
 import { getEffectiveness } from './utils.js';
-import { ABILITIES_DB, HIGH_CRIT_MOVES, FIXED_DAMAGE_MOVES, WEIGHT_MOVES, GYRO_BALL_MOVES, ELECTRO_BALL_MOVES, ROLLOUT_MOVES, SURE_HIT_MOVES } from './data/campagneData.js';
+import { getAbility, HIGH_CRIT_MOVES, FIXED_DAMAGE_MOVES, WEIGHT_MOVES, GYRO_BALL_MOVES, ELECTRO_BALL_MOVES, ROLLOUT_MOVES, SURE_HIT_MOVES } from './data/campagneData.js';
+import { getSkillData } from './skillData.js';
 
 // ==========================================
 // MOTEUR DE CALCUL UNIVERSEL DES COMBATS
@@ -33,8 +34,8 @@ export function getEffectiveStat(entity, statName, currentWeather = 'none') {
     if (statName === 'speed' && entity.status === 'PAR') finalStat = Math.floor(finalStat / 2);
     
     // Talents influençant la vitesse sous un climat
-    if (statName === 'speed' && entity.talent && ABILITIES_DB[entity.talent.en]) {
-        let ab = ABILITIES_DB[entity.talent.en];
+    if (statName === 'speed' && getAbility(entity.talent)) {
+        let ab = getAbility(entity.talent);
         if (ab.type === "weather_speed" && ab.weather === currentWeather) {
             finalStat *= 2; 
         }
@@ -51,8 +52,9 @@ export function checkMoveHit(move, atkModifiers, defModifiers) {
     }
 
     // 2. Calcul classique
-    let accuracy = move.accuracy;
-    if (!accuracy || accuracy === 100 && move.damageClass === "status") return true; 
+    // moves.json ne contient pas la précision : on la lit dans skill.json (null = ne rate jamais)
+    let accuracy = Number(move.accuracy ?? getSkillData(move.nameEn).accuracy);
+    if (!accuracy || (accuracy === 100 && move.damageClass === "status")) return true;
     
     let stage = (atkModifiers.accuracy || 0) - (defModifiers.evasion || 0);
     stage = Math.max(-6, Math.min(6, stage));
@@ -122,8 +124,8 @@ export function calculateDamage(atkEntity, defEntity, move, currentWeather = 'no
     if (atkEntity.status === 'BRN' && move.damageClass === 'physical') A = Math.floor(A / 2);
 
     // Boosts de Talents sur la stat d'attaque
-    if (atkEntity.talent && ABILITIES_DB[atkEntity.talent.en]) {
-        let ab = ABILITIES_DB[atkEntity.talent.en];
+    if (getAbility(atkEntity.talent)) {
+        let ab = getAbility(atkEntity.talent);
         if (ab.type === "low_hp_boost" && ab.element === move.type && (atkEntity.currentHp / atkEntity.maxHp) <= 0.33) {
             A = Math.floor(A * 1.5);
         }

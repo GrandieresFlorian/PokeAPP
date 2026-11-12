@@ -1,10 +1,10 @@
 import { db } from '../firebase-config.js';
 import { state, CONSTS } from '../state.js';
 import { allerASection } from './navController.js';
-import { tirerRarete, formatMegaName, sauvegarderCarte, getCardImageUrl, getPokemonDetails, generateTypeBadgesHTML, BAIES_BOOSTERS, sauvegarderBaie, getRandomTrainer, sauvegarderDresseur } from '../utils.js';
+import { tirerRarete, formatMegaName, sauvegarderCarte, getCardImageUrl, getPokemonDetails, generateTypeBadgesHTML, BAIES_BOOSTERS, sauvegarderBaie, getRandomTrainer, sauvegarderDresseur, ajouterCarteLocale, ajouterBaieLocale, ajouterDresseurLocal } from '../utils.js';
 import { updateQuestProgress } from './questController.js';
 // Tirage des 5 cartes d'un booster Pokémon. Borné : plus de boucle infinie si une rareté est vide.
-function tirerCartesBooster() {
+function tirerCartesBooster(isSpecial = false) {
     const valides = state.pokemonDataList
         .map((pokemon, index) => ({ donnees: pokemon, vraiNumero: index + 1 }))
         .filter(p => p.donnees && CONSTS.poidsRarete[p.donnees.rarity] !== undefined);
@@ -19,7 +19,16 @@ function tirerCartesBooster() {
         }
         if (pool.length === 0) pool = valides; // secours : n'importe quel Pokémon valide
         const choisi = pool[Math.floor(Math.random() * pool.length)];
-        cartes.push({ isBaie: false, data: choisi.donnees, pokedexNumber: Number(choisi.vraiNumero) });
+        const numero = Number(choisi.vraiNumero);
+        let isMega = false, megaForm = null;
+        if (CONSTS.megaIds[numero] && Math.random() * 100 <= state.probabilities.mega) {
+            isMega = true;
+            const possibles = CONSTS.megaIds[numero];
+            megaForm = possibles[Math.floor(Math.random() * possibles.length)];
+        }
+        const seuilShiny = isSpecial ? state.probabilities.shiny * 3 : state.probabilities.shiny;
+        const isShiny = Math.random() * 100 <= seuilShiny;
+        cartes.push({ isBaie: false, data: choisi.donnees, pokedexNumber: numero, isMega, megaForm, isShiny });
     }
     cartes.sort((a, b) => CONSTS.poidsRarete[a.data.rarity] - CONSTS.poidsRarete[b.data.rarity]);
 
@@ -38,6 +47,34 @@ function tirerCartesDresseur(n) {
         cartes.push(t);
     }
     return cartes.sort((a, b) => (CONSTS.poidsRarete[a.rarity] || 0) - (CONSTS.poidsRarete[b.rarity] || 0));
+}
+
+// Enregistre TOUT le contenu du booster d'un coup, dès l'ouverture (avant l'animation) :
+// fermer la page avant d'avoir retourné les cartes ne fait donc plus rien perdre.
+// Une seule écriture Firestore regroupe le compteur de boosters et les cartes.
+function commitPull(pulls, counters, kind) {
+    const user = state.currentUserData;
+    if (!Array.isArray(user.collection)) user.collection = [];
+    if (!Array.isArray(user.berries)) user.berries = [];
+    let touchedBerries = false;
+
+    // Pour chaque carte : est-ce un doublon ? (calculé AVANT l'ajout, en tenant compte des cartes déjà tirées)
+    state.currentPullDupes = pulls.map(pull => {
+        if (kind === 'trainer') return ajouterDresseurLocal(pull);
+        if (pull.isBaie) { touchedBerries = true; return ajouterBaieLocale(pull.data); }
+        return ajouterCarteLocale(pull.data, pull.pokedexNumber, pull.isShiny, pull.isMega, pull.megaForm);
+    });
+
+    const payload = { collection: user.collection };
+    Object.entries(counters).forEach(([k, v]) => { if (v !== undefined) payload[k] = v; }); // Firestore refuse undefined
+    if (touchedBerries) payload.berries = user.berries;
+
+    return db.collection('users').doc(state.currentUser).update(payload).catch(err => {
+        console.error('Sauvegarde du booster échouée :', err);
+        alert(state.currentLang === 'en'
+            ? "⚠️ Saving failed. Your cards are kept for now: keep this page open and do not reload."
+            : "⚠️ La sauvegarde a échoué. Vos cartes sont conservées pour l'instant : gardez cette page ouverte et ne rechargez pas.");
+    });
 }
 
 export function updateBoosterLogic() {
@@ -258,18 +295,12 @@ export function initBooster() {
 function creerCarte(pokemonData, numeroPokedex, index) {
     let nomEn = pokemonData.en; let nomFr = pokemonData.fr; let pokemonRarity = pokemonData.rarity;
     
-    let isMega = false; let selectedMegaForm = null;
-    const chanceMega = Math.random() * 100;
-    
-    if (CONSTS.megaIds[numeroPokedex] && chanceMega <= state.probabilities.mega) {
-        isMega = true; pokemonRarity = "MG";
-        const possibles = CONSTS.megaIds[numeroPokedex];
-        selectedMegaForm = possibles[Math.floor(Math.random() * possibles.length)];
-    }
-
-    const chanceShiny = Math.random() * 100;
-    const shinyThreshold = state.currentPullIsSpecial ? (state.probabilities.shiny * 3) : state.probabilities.shiny;
-    const isShiny = chanceShiny <= shinyThreshold;
+    // Tirage (méga / chromatique) déjà fait ET sauvegardé à l'ouverture : ici on ne fait que l'AFFICHER
+    const pull = state.currentPulls[index] || {};
+    const isMega = !!pull.isMega;
+    const selectedMegaForm = pull.megaForm || null;
+    const isShiny = !!pull.isShiny;
+    if (isMega) pokemonRarity = "MG";
 
     let nomAffiche = state.currentLang === 'en' ? nomEn : nomFr;
     if (isMega) nomAffiche = formatMegaName(nomAffiche, selectedMegaForm);
@@ -316,12 +347,7 @@ function creerCarte(pokemonData, numeroPokedex, index) {
     nouvelleCarte.addEventListener('click', () => {
         if (!nouvelleCarte.classList.contains('flipped')) {
             
-            const estDoublon = state.currentUserData.collection.some(c => 
-                c.pokedexNumber === numeroPokedex && 
-                c.shiny === isShiny && 
-                c.mega === isMega && 
-                c.megaForm === selectedMegaForm
-            );
+            const estDoublon = !!state.currentPullDupes[index]; // calculé à l'ouverture
             
             const badge = document.createElement('div');
             badge.className = `badge-status ${estDoublon ? 'badge-doublon' : 'badge-nouveau'}`;
@@ -336,7 +362,6 @@ function creerCarte(pokemonData, numeroPokedex, index) {
             if (pokemonRarity === "E") nouvelleCarte.classList.add('anim-epic');
             else if (pokemonRarity === "L") nouvelleCarte.classList.add('anim-legendary');
             else if (pokemonRarity === "M" || pokemonRarity === "MG") nouvelleCarte.classList.add('anim-mythic');
-            sauvegarderCarte(pokemonData, numeroPokedex, isShiny, isMega, selectedMegaForm);
             
             if (state.currentPullIndex < state.currentPulls.length - 1) {
                 state.currentPullIndex++;
@@ -392,7 +417,7 @@ function ouvrirBooster(isSpecial = false) {
     if (state.isOpening) return; 
     // On tire les cartes AVANT de consommer le booster : si ça échoue, rien n'est perdu
     let cartesPretes;
-    try { cartesPretes = tirerCartesBooster(); }
+    try { cartesPretes = tirerCartesBooster(isSpecial); }
     catch (e) {
         console.error(e);
         return alert(state.currentLang==='en' ? "Pack data is not ready, try again." : "Les données ne sont pas prêtes, réessayez.");
@@ -400,21 +425,19 @@ function ouvrirBooster(isSpecial = false) {
     state.isOpening = true;
     state.currentPullIsSpecial = isSpecial;
 
+    const counters = {};
     if (isSpecial) {
         state.currentUserData.specialBoostersLeft--;
-        db.collection('users').doc(state.currentUser).update({
-            specialBoostersLeft: state.currentUserData.specialBoostersLeft
-        });
+        counters.specialBoostersLeft = state.currentUserData.specialBoostersLeft;
     } else {
         state.currentUserData.boostersLeft--;
         if (state.currentUserData.boostersLeft === CONSTS.MAX_BOOSTERS - 1) {
             state.currentUserData.lastBoosterTime = Date.now();
         }
-        db.collection('users').doc(state.currentUser).update({
-            boostersLeft: state.currentUserData.boostersLeft,
-            lastBoosterTime: state.currentUserData.lastBoosterTime
-        });
+        counters.boostersLeft = state.currentUserData.boostersLeft;
+        counters.lastBoosterTime = state.currentUserData.lastBoosterTime;
     }
+    commitPull(cartesPretes, counters, 'pokemon'); // cartes + compteur sauvegardés MAINTENANT, en une écriture
     if (!isSpecial) updateQuestProgress('open_boosters', 1);
     
     updateBoosterLogic();
@@ -490,11 +513,11 @@ export function ouvrirBoosterDresseur() {
         state.currentUserData.lastTrainerBoosterTime = Date.now();
     }
 
-    // Mise à jour de Firebase
-    db.collection('users').doc(state.currentUser).update({
+    // Cartes + compteur sauvegardés MAINTENANT, en une seule écriture
+    commitPull(cartesDresseur, {
         trainerBoostersLeft: state.currentUserData.trainerBoostersLeft,
         lastTrainerBoosterTime: state.currentUserData.lastTrainerBoosterTime
-    });
+    }, 'trainer');
 
     updateBoosterLogic();
     
@@ -551,8 +574,7 @@ export function creerCarteBaie(baieData, index) {
 
     nouvelleCarte.addEventListener('click', () => {
         if (!nouvelleCarte.classList.contains('flipped')) {
-            const mesBaies = state.currentUserData.berries || [];
-            const estDoublon = mesBaies.some(b => b.id === baieData.id);
+            const estDoublon = !!state.currentPullDupes[index]; // calculé à l'ouverture
 
             const badge = document.createElement('div');
             badge.className = `badge-status ${estDoublon ? 'badge-doublon' : 'badge-nouveau'}`;
@@ -562,7 +584,6 @@ export function creerCarteBaie(baieData, index) {
 
             nouvelleCarte.classList.add('flipped'); 
             state.cartesRetournees++; 
-            sauvegarderBaie(baieData);
             
             if (state.currentPullIndex < state.currentPulls.length - 1) {
                 state.currentPullIndex++;
@@ -612,10 +633,8 @@ export function creerCarteDresseur(trainerData, index) {
     nouvelleCarte.addEventListener('click', () => {
         if (!nouvelleCarte.classList.contains('flipped')) {
             
-            // 1. On vérifie SI c'est un doublon AVANT de sauvegarder
-            if (!state.currentUserData.collection) state.currentUserData.collection = [];
-            let existing = state.currentUserData.collection.find(c => c.isTrainer && c.variantId === trainerData.variantId);
-            const estDoublon = !!existing;
+            // 1. Doublon ? (calculé à l'ouverture du booster, où la carte est déjà sauvegardée)
+            const estDoublon = !!state.currentPullDupes[index];
 
             // 2. On affiche le badge
             const badge = document.createElement('div');
@@ -631,8 +650,6 @@ export function creerCarteDresseur(trainerData, index) {
             else if (trainerData.rarity === "L") nouvelleCarte.classList.add('anim-legendary');
             else if (trainerData.rarity === "M") nouvelleCarte.classList.add('anim-mythic');
             
-            // --- MODIFICATION ICI : On utilise la fonction de sauvegarde dédiée au moment du clic ---
-            sauvegarderDresseur(trainerData);
             
             if (state.currentPullIndex < state.currentPulls.length - 1) {
                 state.currentPullIndex++;

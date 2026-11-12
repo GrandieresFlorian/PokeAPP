@@ -187,7 +187,7 @@ export const SEED_MOVES = ["leech-seed"];
 
 // Dictionnaire des talents (à exporter en bas du fichier)
 export const ABILITIES_DB = {
-    // Boosts quand PV < 30%
+    // Boosts quand PV <= 1/3
     "overgrow": { type: "low_hp_boost", element: "grass" }, // Engrais
     "blaze": { type: "low_hp_boost", element: "fire" }, // Brasier
     "torrent": { type: "low_hp_boost", element: "water" }, // Torrent
@@ -210,5 +210,16 @@ export const ABILITIES_DB = {
     // Effets au contact (Quand on se fait taper)
     "static": { type: "on_hit_status", statusObj: {status: "PAR", chance: 30}, msg: "Statik paralyse l'attaquant !" },
     "flame-body": { type: "on_hit_status", statusObj: {status: "BRN", chance: 30}, msg: "Corps Ardent brûle l'attaquant !" },
-    "rough-skin": { type: "on_hit_damage", percent: 8, msg: "Peau Dure blesse l'attaquant !" }
+    "rough-skin": { type: "on_hit_damage", percent: 12.5, msg: "Peau Dure blesse l'attaquant !" }
 };
+// Les talents des Pokémon sont stockés avec leur nom affiché ("Solar Power"), alors que ABILITIES_DB utilise
+// des identifiants ("solar-power") : sans cette conversion, AUCUN talent n'était reconnu en combat.
+export function abilitySlug(name) {
+    return String(name || '').toLowerCase().replace(/['’]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+export function getAbility(talent) {
+    if (!talent) return null;
+    const name = typeof talent === 'string' ? talent : talent.en;
+    return ABILITIES_DB[abilitySlug(name)] || null;
+}

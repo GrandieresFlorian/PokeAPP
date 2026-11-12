@@ -125,7 +125,7 @@ function renderFriendsUI() {
                 </div>
                 <div style="display:flex; gap:8px; margin-left: 10px;">
                     <button class="btn-small-action btn-trade" style="background-color: #9b59b6;" title="Proposer un échange">🔄</button>
-                    <button class="btn-small-action btn-combat" style="background-color: #e74c3c;" title="Défier (3 max/j)">⚔️</button>
+                    <button class="btn-small-action btn-combat" style="background-color: #e74c3c;" title="Défier en combat">⚔️</button>
                 </div>`;
                 
                 li.querySelector('.friend-profile-link').addEventListener('click', () => {

@@ -7,14 +7,13 @@ import {
     USELESS_MOVES, PRIORITY_MOVES, HEAL_MOVES, DRAIN_MOVES, RECOIL_MOVES, MULTI_HIT_2_5, MULTI_HIT_2, 
     FLINCH_MOVES, SECONDARY_EFFECTS, ROLLOUT_MOVES, STATUS_MOVES, STAT_NAMES, 
     OHKO_MOVES, KAMIKAZE_MOVES, FORCE_FLEE_MOVES, STAT_CLEAR_MOVES, FIXED_DAMAGE_MOVES,
-    STATUS_CONDITIONS, SECONDARY_STATUS, ABILITIES_DB, POWDER_MOVES,
+    STATUS_CONDITIONS, SECONDARY_STATUS, getAbility, POWDER_MOVES,
     TAUNT_MOVES, REST_MOVES, PAIN_SPLIT_MOVES, PERISH_SONG_MOVES, DESTINY_BOND_MOVES,
     COUNTER_MOVES, MIRROR_COAT_MOVES, BIDE_MOVES, ENCORE_MOVES, DISABLE_MOVES, WISH_MOVES
 } from '../data/campagneData.js';
 import { getEffectiveStat, checkMoveHit, calculateDamage, calcStats } from '../battleEngine.js';
 
-let skillsDB = {};
-fetch('skill.json').then(r => r.json()).then(d => skillsDB = d).catch(() => console.log("skill.json introuvable"));
+import { getSkillData } from '../skillData.js';
 
 // --- NOUVELLES MÉCANIQUES ---
 const PROTECT_MOVES_LIST = ["protect", "detect"];
@@ -225,7 +224,7 @@ function renderSynchronousUI(data) {
                 
                 // Fonction utilitaire pour générer le Tooltip en PvP
                 const getTooltipHTML = (moveNameEn, moveNameFr, powerDisplay) => {
-                    let sData = skillsDB[moveNameEn] || {};
+                    let sData = getSkillData(moveNameEn);
                     let accStr = sData.accuracy ? sData.accuracy + "%" : "100%";
                     let descStr = sData.desc || "Description inconnue.";
                     return `
@@ -347,6 +346,14 @@ async function createBattleRoomInner(req, team1, team2) {
         status: 'playing', mode: req.type, winner: null,
         turn: 0, turnStartedAt: Date.now()
     }));
+
+    // Talents d'entrée des deux Pokémon de tête (le plus rapide d'abord)
+    const lead1 = battleData.team1[0], lead2 = battleData.team2[0];
+    const entryLogs = [];
+    const order = getEffectiveStat(lead1, 'speed') >= getEffectiveStat(lead2, 'speed')
+        ? [[lead1, lead2], [lead2, lead1]] : [[lead2, lead1], [lead1, lead2]];
+    order.forEach(([entity, opponent]) => triggerEntryAbilitySync(entity, opponent, battleData, entryLogs));
+    battleData.log.push(...entryLogs);
 
     // Sauvegarde de l'objet nettoyé
     await battleRef.set(battleData);
@@ -742,6 +749,7 @@ export function surrenderBattle() {
         db.collection('active_battles').doc(currentBattleId).update({
             status: 'finished',
             winner: myRole === 'p1' ? 'p2' : 'p1', 
+            endReason: 'surrender',
             log: firebase.firestore.FieldValue.arrayUnion(`<b style="color:#e74c3c;">Un joueur a annulé le combat !</b>`)
         }).catch(err => console.error("Erreur annulation:", err));
     }
@@ -795,7 +803,7 @@ function applyStatusSync(target, statusObj, targetName, logs) {
     } else {
         if (!target.status) {
             target.status = statusObj.status; target.toxCount = 0;
-            if (statusObj.status === 'SLP') target.statusTurns = Math.floor(Math.random() * 3) + 1;
+            if (statusObj.status === 'SLP') target.statusTurns = Math.floor(Math.random() * 3) + 2; // 1 à 3 tours de sommeil
             let msgs = { "BRN":"est brûlé !", "PSN":"est empoisonné !", "TOX":"est gravement empoisonné !", "PAR":"est paralysé !", "FRZ":"est gelé !", "SLP":"s'endort !" };
             logs.push(`<span style="color:${STATUS_COLORS[statusObj.status]}">${targetName} ${msgs[statusObj.status]}</span>`);
         }
@@ -848,9 +856,6 @@ function applyEndTurnStatusSync(entity, opponent, logs) {
         }
     }
 
-    // RÉINITIALISATION LIEN DU DESTIN
-    entity.destinyBond = false;
-
     if (entity.status === 'BRN') {
         entity.currentHp -= Math.max(1, Math.floor(entity.maxHp / 16)); logs.push(`<span style="color:#e67e22">${name} souffre de sa brûlure !</span>`);
     } else if (entity.status === 'PSN') {
@@ -902,8 +907,8 @@ function revertTransformation(pkmn) {
 }
 
 function triggerEntryAbilitySync(entity, opponent, data, logs) {
-    if (entity.talent && ABILITIES_DB[entity.talent.en]) {
-        let ab = ABILITIES_DB[entity.talent.en];
+    if (getAbility(entity.talent)) {
+        let ab = getAbility(entity.talent);
         if (ab.type === "on_entry_weather") {
             data.weather = ab.weather; data.weatherTurns = 5;
             logs.push(`<span style="color:#f39c12"><b>${ab.msg}</b></span>`);
@@ -1121,7 +1126,8 @@ async function resolveSynchronousTurn(data, battleRef) {
             wish1: data.wish1 || null, wish2: data.wish2 || null,
             log: data.log.concat(turnLogs),
             status: status, winner: winner,
-            turn: expectedTurn + 1, turnStartedAt: Date.now()
+            turn: expectedTurn + 1, turnStartedAt: Date.now(),
+            endReason: status === 'finished' ? 'ko' : null
         });
     });
 }
@@ -1131,6 +1137,7 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
         logs.push(`<span style="color:#f39c12">${atk.data.fr} a la trouille et ne peut pas attaquer !</span>`);
         return;
     }
+    atk.destinyBond = false; // le Lien du Destin dure jusqu'à la prochaine attaque de son utilisateur
 
     let aName = atk.data.fr; let defName = def.data.fr;
     let move = rawMove;
@@ -1300,7 +1307,7 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
     if (REST_MOVES.includes(move.nameEn)) {
         atk.currentHp = atk.maxHp; 
         atk.status = 'SLP';
-        atk.statusTurns = 2;
+        atk.statusTurns = 3; // Repos : 2 tours de sommeil
         logs.push(`<span style="color:#2ecc71">${aName} s'endort pour restaurer ses PV !</span>`);
         return;
     }
@@ -1392,18 +1399,13 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
     }
 
     let hitCount = 1;
-    if (MULTI_HIT_2_5.includes(move.nameEn)) hitCount = (Math.random() < 0.35) ? 2 : (Math.random() < 0.7 ? 3 : (Math.random() < 0.85 ? 4 : 5));
+    if (MULTI_HIT_2_5.includes(move.nameEn)) { const r = Math.random(); hitCount = r < 0.35 ? 2 : (r < 0.70 ? 3 : (r < 0.85 ? 4 : 5)); }
     else if (MULTI_HIT_2.includes(move.nameEn)) hitCount = 2;
 
     let totalDmg = 0;
     for(let i=0; i<hitCount; i++) {
         if(def.currentHp <= 0) break;
 
-        if (def.currentHp <= 0 && def.destinyBond) {
-            atk.currentHp = 0;
-            logs.push(`<span style="color:#8e44ad">${defName} emporte ${aName} avec lui à cause du Lien du Destin !</span>`);
-        }
-        
         let dmgInfo = calculateDamage(atk, def, move, battleData.weather);
         let dmg = dmgInfo.damage;
 
@@ -1424,8 +1426,14 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
 
     if (hitCount > 1 && totalDmg > 0) logs.push(`Touché ${hitCount} fois !`);
 
-    if (totalDmg > 0 && def.talent && ABILITIES_DB[def.talent.en] && move.damageClass === "physical") {
-        let abDef = ABILITIES_DB[def.talent.en];
+    // Lien du Destin : si la cible K.O. l'avait activé, l'attaquant tombe avec elle
+    if (totalDmg > 0 && def.currentHp <= 0 && def.destinyBond && atk.currentHp > 0) {
+        atk.currentHp = 0;
+        logs.push(`<span style="color:#8e44ad">${defName} emporte ${aName} avec lui à cause du Lien du Destin !</span>`);
+    }
+
+    if (totalDmg > 0 && getAbility(def.talent) && move.damageClass === "physical") {
+        let abDef = getAbility(def.talent);
         if (abDef.type === "on_hit_status" && Math.random() * 100 <= abDef.statusObj.chance) {
             applyStatusSync(atk, abDef.statusObj, atk.data.fr, logs);
             logs.push(`<span style="color:#8e44ad">${abDef.msg}</span>`);
@@ -1477,6 +1485,7 @@ function evalMove(atk, def, rawMove, logs, battleData, isP1) {
 }
 
 async function endRealTimeBattle(data) {
+    const battleId = currentBattleId; // identifiant du combat qui se termine (sert à ne récompenser qu'une fois)
     if (unsubscribeBattle) { unsubscribeBattle(); unsubscribeBattle = null; }
     clearWatchdog();
     
@@ -1491,10 +1500,15 @@ async function endRealTimeBattle(data) {
     }
 
     if (isWin && data.mode === 'ranked') {
-        logMessage(`<span style="color:#f1c40f">🎁 Vous remportez un Booster Spécial (Shiny x3) !</span>`);
-        await db.collection('users').doc(state.currentUser).update({
-            specialBoostersLeft: firebase.firestore.FieldValue.increment(1)
-        });
+        const oppForReward = myRole === 'p1' ? data.p2 : data.p1;
+        try {
+            const res = await claimRankedReward(battleId, oppForReward, data.endReason);
+            if (res.granted) logMessage(`<span style="color:#f1c40f">🎁 Vous remportez un Booster Spécial (Shiny x3) !</span>`);
+            else if (res.reason !== 'already') logMessage(`<span style="color:#aaa">${RANKED_NO_REWARD_TEXT[res.reason] || "Pas de récompense pour ce combat."}</span>`);
+        } catch (e) {
+            console.error('Récompense Classé :', e);
+            logMessage(`<span style="color:#e74c3c">⚠️ Impossible d'attribuer la récompense (erreur réseau).</span>`);
+        }
     }
 
     let oppId = myRole === 'p1' ? data.p2 : data.p1;
@@ -1589,7 +1603,7 @@ function leaveBattleLocally() {
     currentBattleId = null; myRole = null;
 }
 
-async function finishBattleGuarded(battleId, turn, winner, message, predicate) {
+async function finishBattleGuarded(battleId, turn, winner, message, predicate, reason = 'timeout') {
     const ref = db.collection('active_battles').doc(battleId);
     await db.runTransaction(async tx => {
         const snap = await tx.get(ref);
@@ -1597,7 +1611,7 @@ async function finishBattleGuarded(battleId, turn, winner, message, predicate) {
         const cur = snap.data();
         if (cur.status !== 'playing' || (cur.turn || 0) !== turn || !predicate(cur)) return;
         tx.update(ref, {
-            status: 'finished', winner: winner,
+            status: 'finished', winner: winner, endReason: reason,
             log: firebase.firestore.FieldValue.arrayUnion(message)
         });
     });
@@ -1632,7 +1646,7 @@ function armWatchdog(data) {
                     await new Promise(r => setTimeout(r, STALL_MS - TAKEOVER_MS));
                 }
                 await finishBattleGuarded(battleId, turn, 'draw',
-                    `<b style="color:#f1c40f;">Le combat est bloqué : match nul.</b>`, stuck);
+                    `<b style="color:#f1c40f;">Le combat est bloqué : match nul.</b>`, stuck, 'stalled');
             } catch (e) { console.error(e); }
         }, role === 'p2' ? TAKEOVER_MS : STALL_MS);
     } else if (myAct && !oppAct) {
@@ -1641,8 +1655,59 @@ function armWatchdog(data) {
             try {
                 await finishBattleGuarded(battleId, turn, role,
                     `<b style="color:#e74c3c;">L'adversaire est inactif : forfait !</b>`,
-                    c => role === 'p1' ? (c.action1 && !c.action2) : (c.action2 && !c.action1));
+                    c => role === 'p1' ? (c.action1 && !c.action2) : (c.action2 && !c.action1), 'timeout');
             } catch (e) { console.error(e); }
         }, IDLE_MS);
     }
+}
+
+
+// ==========================================
+// RÉCOMPENSE DU COMBAT CLASSÉ
+// ==========================================
+const RANKED_DAILY_CAP = 3;         // récompenses max par jour
+const RANKED_PER_OPPONENT_CAP = 1;  // récompenses max par adversaire et par jour
+
+const RANKED_NO_REWARD_TEXT = {
+    'not-ko': "Pas de récompense : le combat s'est terminé par un abandon ou une inactivité, pas par un K.O.",
+    'daily-cap': `Limite atteinte : ${RANKED_DAILY_CAP} récompenses Classé par jour.`,
+    'opponent-cap': "Vous avez déjà reçu une récompense contre cet adversaire aujourd'hui."
+};
+
+function localDayKey() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+// Transaction : l'identifiant du combat est mémorisé (rejouer la page ne redonne pas la récompense)
+// et les plafonds journaliers sont vérifiés sur la donnée la plus récente.
+async function claimRankedReward(battleId, oppId, endReason) {
+    if (endReason !== 'ko') return { granted: false, reason: 'not-ko' }; // abandon / inactivité = pas de récompense
+    const userRef = db.collection('users').doc(state.currentUser);
+
+    return db.runTransaction(async tx => {
+        const snap = await tx.get(userRef);
+        const u = snap.data();
+
+        const rewarded = Array.isArray(u.rewardedBattles) ? u.rewardedBattles : [];
+        if (battleId && rewarded.includes(battleId)) return { granted: false, reason: 'already' };
+
+        const today = localDayKey();
+        const info = (u.rankedRewards && u.rankedRewards.date === today)
+            ? u.rankedRewards
+            : { date: today, count: 0, opponents: {} };
+        const vsOpp = (info.opponents && info.opponents[oppId]) || 0;
+
+        // Combat refusé pour plafond : on le marque quand même comme traité (sinon rejouable le lendemain)
+        const markProcessed = () => tx.update(userRef, { rewardedBattles: [...rewarded, battleId].filter(Boolean).slice(-30) });
+        if (info.count >= RANKED_DAILY_CAP) { markProcessed(); return { granted: false, reason: 'daily-cap' }; }
+        if (vsOpp >= RANKED_PER_OPPONENT_CAP) { markProcessed(); return { granted: false, reason: 'opponent-cap' }; }
+
+        tx.update(userRef, {
+            specialBoostersLeft: (Number(u.specialBoostersLeft) || 0) + 1,
+            rankedRewards: { date: today, count: info.count + 1, opponents: { ...(info.opponents || {}), [oppId]: vsOpp + 1 } },
+            rewardedBattles: [...rewarded, battleId].filter(Boolean).slice(-30)
+        });
+        return { granted: true };
+    });
 }

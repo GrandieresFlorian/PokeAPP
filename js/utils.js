@@ -365,3 +365,45 @@ export function sauvegarderDresseur(trainerData) {
         }).catch(err => console.error(err));
     });
 }
+
+// ==========================================
+// AJOUTS LOCAUX (sans écriture Firestore)
+// Le booster regroupe ensuite TOUT dans une seule écriture. Chaque fonction renvoie true si c'était un doublon.
+// ==========================================
+export function ajouterCarteLocale(pokemonData, numeroPokedex, isShiny, isMega, megaForm) {
+    if (!Array.isArray(state.currentUserData.collection)) state.currentUserData.collection = [];
+    const existing = state.currentUserData.collection.find(c =>
+        c.pokedexNumber === numeroPokedex && c.shiny === isShiny && c.mega === isMega && (c.megaForm || null) === (megaForm || null)
+    );
+    if (existing) {
+        existing.quantity = (existing.quantity || 1) + 1;
+        return true;
+    }
+    state.currentUserData.collection.push({
+        data: pokemonData, pokedexNumber: numeroPokedex, shiny: isShiny, mega: isMega, megaForm: megaForm || null,
+        date: Date.now() + Math.random(), level: 1, maxLevel: 20, quantity: 1
+    });
+    return false;
+}
+
+export function ajouterBaieLocale(baieData) {
+    if (!Array.isArray(state.currentUserData.berries)) state.currentUserData.berries = [];
+    const existing = state.currentUserData.berries.find(b => b.id === baieData.id);
+    if (existing) {
+        existing.quantity = (existing.quantity || 1) + 1;
+        return true;
+    }
+    state.currentUserData.berries.push({ data: baieData, id: baieData.id, date: Date.now() + Math.random(), quantity: 1 });
+    return false;
+}
+
+export function ajouterDresseurLocal(trainerData) {
+    if (!Array.isArray(state.currentUserData.collection)) state.currentUserData.collection = [];
+    const existing = state.currentUserData.collection.find(c => c.isTrainer && c.variantId === trainerData.variantId);
+    if (existing) {
+        existing.quantity = (existing.quantity || 1) + 1;
+        return true;
+    }
+    state.currentUserData.collection.push({ ...trainerData, isTrainer: true, quantity: 1, date: Date.now() + Math.random() });
+    return false;
+}

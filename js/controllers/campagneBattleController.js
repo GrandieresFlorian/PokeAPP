@@ -6,7 +6,7 @@ import {
     USELESS_MOVES, PRIORITY_MOVES, HEAL_MOVES, DRAIN_MOVES, RECOIL_MOVES, MULTI_HIT_2_5, MULTI_HIT_2, 
     FLINCH_MOVES, SECONDARY_EFFECTS, ROLLOUT_MOVES, STATUS_MOVES, STAT_NAMES, 
     OHKO_MOVES, KAMIKAZE_MOVES, FORCE_FLEE_MOVES, STAT_CLEAR_MOVES, FIXED_DAMAGE_MOVES,
-    STATUS_CONDITIONS, SECONDARY_STATUS, ABILITIES_DB, POWDER_MOVES,
+    STATUS_CONDITIONS, SECONDARY_STATUS, getAbility, POWDER_MOVES,
     TAUNT_MOVES, REST_MOVES, PAIN_SPLIT_MOVES, PERISH_SONG_MOVES, DESTINY_BOND_MOVES,
     COUNTER_MOVES, MIRROR_COAT_MOVES, BIDE_MOVES, ENCORE_MOVES, DISABLE_MOVES, WISH_MOVES
 } from '../data/campagneData.js';
@@ -14,8 +14,7 @@ import { calcStats, getEffectiveStat, checkMoveHit, calculateDamage } from '../b
 import { updateQuestProgress } from './questController.js';
 import { isPlayablePokemon, stripBattleFields } from '../cardUtils.js';
 
-let skillsDB = {};
-fetch('skill.json').then(r => r.json()).then(d => skillsDB = d).catch(() => console.log("skill.json introuvable"));
+import { getSkillData } from '../skillData.js';
 
 // --- NOUVELLES MÉCANIQUES ---
 export const ITEMS_DB = {
@@ -187,6 +186,24 @@ export async function startBattle(zone, fighter, onEnd) {
 
     applyHazards(activeFighter, p1State);
     applyHazards(currentEnemy, p2State);
+
+    // Talents d'entrée (Intimidation, Crachin...) : le plus rapide d'abord
+    const playerFirst = getEffectiveStat(activeFighter, 'speed', globalState.weather) >= getEffectiveStat(currentEnemy, 'speed', globalState.weather);
+    if (playerFirst) { triggerEntryAbility(activeFighter, currentEnemy); triggerEntryAbility(currentEnemy, activeFighter); }
+    else { triggerEntryAbility(currentEnemy, activeFighter); triggerEntryAbility(activeFighter, currentEnemy); }
+    updateBattleUI();
+}
+
+function triggerEntryAbility(entity, opponent) {
+    const ab = getAbility(entity.talent);
+    if (!ab) return;
+    if (ab.type === "on_entry_weather") {
+        globalState.weather = ab.weather; globalState.weatherTurns = 5;
+        logMessage(`<span style="color:#f39c12"><b>${ab.msg}</b></span>`);
+    } else if (ab.type === "on_entry_stat") {
+        opponent.modifiers[ab.stat] = Math.max(-6, (opponent.modifiers[ab.stat] || 0) + ab.stage);
+        logMessage(`<span style="color:#e74c3c">${ab.msg}</span>`);
+    }
 }
 
 function applyHazards(entity, teamState) {
@@ -248,7 +265,7 @@ function renderMovesUI() {
 
     // Fonction utilitaire pour générer le Tooltip
     const getTooltipHTML = (moveNameEn, moveNameFr, powerDisplay) => {
-        let sData = skillsDB[moveNameEn] || {};
+        let sData = getSkillData(moveNameEn);
         let accStr = sData.accuracy ? sData.accuracy + "%" : "100%"; // Tirets ou 100% si immanquable
         let descStr = sData.desc || "Description inconnue.";
         return `
@@ -468,7 +485,7 @@ function applyStatus(target, statusObj, targetName) {
     } else {
         if (!target.status) {
             target.status = statusObj.status; target.toxCount = 0;
-            if (statusObj.status === 'SLP') target.statusTurns = Math.floor(Math.random() * 3) + 1;
+            if (statusObj.status === 'SLP') target.statusTurns = Math.floor(Math.random() * 3) + 2; // 1 à 3 tours de sommeil
             let msgs = { "BRN": "est brûlé !", "PSN": "est empoisonné !", "TOX": "est gravement empoisonné !", "PAR": "est paralysé !", "FRZ": "est gelé !", "SLP": "s'endort !" };
             logMessage(`<span style="color:${STATUS_COLORS[statusObj.status]}">${targetName} ${msgs[statusObj.status]}</span>`);
         }
@@ -565,9 +582,6 @@ async function applyEndTurnEffects(entity, opponent, isPlayer) {
         }
     }
 
-    // RÉINITIALISATION LIEN DU DESTIN
-    entity.destinyBond = false;
-
     if (entity.status === 'BRN') {
         entity.battleStats.hp -= Math.max(1, Math.floor(entity.battleStats.maxHp / 16));
         logMessage(`<span style="color:#e67e22">${name} souffre de sa brûlure !</span>`);
@@ -596,6 +610,8 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
         logMessage(`<span style="color:#f39c12">La peur l'empêche d'attaquer !</span>`);
         await new Promise(r => setTimeout(r, 800)); return { forceFlee: false };
     }
+
+    attacker.destinyBond = false; // le Lien du Destin dure jusqu'à la prochaine attaque de son utilisateur
 
     let aName = isPlayer ? attacker.data.fr : attacker.nameFr;
     let defName = isPlayer ? defender.nameFr : defender.data.fr;
@@ -878,7 +894,7 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
     if (REST_MOVES.includes(move.nameEn)) {
         attacker.battleStats.hp = attacker.battleStats.maxHp; 
         attacker.status = 'SLP';
-        attacker.statusTurns = 2;
+        attacker.statusTurns = 3; // Repos : 2 tours de sommeil
         logMessage(`<span style="color:#2ecc71">${aName} s'endort pour restaurer ses PV !</span>`);
         updateBattleUI(); await new Promise(r => setTimeout(r, 600)); return { forceFlee: false };
     }
@@ -923,7 +939,7 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
     }
 
     let hitCount = 1;
-    if (MULTI_HIT_2_5.includes(move.nameEn)) hitCount = (Math.random() < 0.35) ? 2 : (Math.random() < 0.7 ? 3 : (Math.random() < 0.85 ? 4 : 5));
+    if (MULTI_HIT_2_5.includes(move.nameEn)) { const r = Math.random(); hitCount = r < 0.35 ? 2 : (r < 0.70 ? 3 : (r < 0.85 ? 4 : 5)); }
     else if (MULTI_HIT_2.includes(move.nameEn)) hitCount = 2;
 
     let totalDamage = 0;
@@ -933,18 +949,13 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
         playAnimation(isPlayer ? 'player-sprite' : 'enemy-sprite', 'anim-attack');
         await new Promise(r => setTimeout(r, 400)); 
 
-        if (defender.battleStats.hp <= 0 && defender.destinyBond) {
-            attacker.battleStats.hp = 0;
-            logMessage(`<span style="color:#8e44ad">${defName} emporte ${aName} avec lui à cause du Lien du Destin !</span>`);
-        }
-
         let dmgInfo = calculateDamage(attacker, defender, move, globalState.weather);
         let damage = dmgInfo.damage;
         let isCrit = dmgInfo.isCrit;
         let mult = dmgInfo.mult;
 
         if (isPlayer) {
-            let koTier = getKOMastery(defender.data.id);
+            let koTier = getKOMastery(defender.id || defender.pokedexNumber);
             
             // Bonus de Critique (Paliers 7 et 10)
             let critBonus = (koTier >= 10) ? 0.10 : (koTier >= 7 ? 0.05 : 0);
@@ -959,7 +970,7 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
             
             damage = Math.floor(damage * dmgMult);
         } else {
-            let catchTier = getCatchMastery(attacker.data.id);
+            let catchTier = getCatchMastery(attacker.id || attacker.pokedexNumber);
             
             // Réduction des Dégâts subis (Paliers 2, 4, 6, 8, 10)
             let defMult = 1;
@@ -998,8 +1009,15 @@ async function executeMove(attacker, defender, rawMove, isPlayer) {
 
     if (hitCount > 1 && totalDamage > 0) logMessage(`Touché ${hitCount} fois !`);
 
-    if (totalDamage > 0 && defender.talent && ABILITIES_DB[defender.talent.en] && move.damageClass === "physical") {
-        let abDef = ABILITIES_DB[defender.talent.en];
+    // Lien du Destin : si la cible K.O. l'avait activé, l'attaquant tombe avec elle
+    if (totalDamage > 0 && defender.battleStats.hp <= 0 && defender.destinyBond && attacker.battleStats.hp > 0) {
+        attacker.battleStats.hp = 0;
+        logMessage(`<span style="color:#8e44ad">${defName} emporte ${aName} avec lui à cause du Lien du Destin !</span>`);
+        updateBattleUI();
+    }
+
+    if (totalDamage > 0 && getAbility(defender.talent) && move.damageClass === "physical") {
+        let abDef = getAbility(defender.talent);
         if (abDef.type === "on_hit_status" && Math.random() * 100 <= abDef.statusObj.chance) {
             applyStatus(attacker, abDef.statusObj, aName);
             logMessage(`<span style="color:#8e44ad">${abDef.msg}</span>`);
@@ -1099,7 +1117,22 @@ export function openBag() {
     emptyMsg.style.display = hasItems ? "none" : "block";
     modal.classList.remove('hidden');
 }
-export async function processTurn(playerMove) {
+// Une exception pendant un tour laissait isAnimating = true et les boutons désactivés pour toujours
+async function safeRun(inner, ...args) {
+    try { await inner(...args); }
+    catch (err) {
+        console.error('Erreur pendant le combat :', err);
+        logMessage(`<span style="color:#e74c3c">⚠️ Une erreur est survenue pendant ce tour.</span>`);
+        isAnimating = false;
+        if (currentEnemy && activeFighter && currentEnemy.battleStats.hp > 0 && activeFighter.battleStats.hp > 0) toggleMoves(false);
+        try { updateBattleUI(); } catch (e) { /* ignore */ }
+    }
+}
+
+export function processTurn(playerMove) { return safeRun(processTurnInner, playerMove); }
+export function attemptCapture(ballId = "pokeball") { return safeRun(attemptCaptureInner, ballId); }
+
+async function processTurnInner(playerMove) {
     if (isAnimating || !currentEnemy || currentEnemy.battleStats.hp <= 0 || activeFighter.battleStats.hp <= 0) return;
     isAnimating = true;
     toggleMoves(true);
@@ -1396,7 +1429,7 @@ async function winBattle(isCapture = false) {
     
     logMessage(`<span style="color:#bdc3c7; font-size:0.9rem;">${msg}</span>`);
 
-    if (currentZone && currentZone.name === "Grotte Sombre" && (currentEnemy.data.id === 95 || currentEnemy.nameEn.toLowerCase() === "onix")) {
+    if (currentZone && currentZone.name === "Grotte Sombre" && (currentEnemy.id === 95 || currentEnemy.nameEn.toLowerCase() === "onix")) {
         if (!state.currentUserData.berries) state.currentUserData.berries = [];
         let repoiEntry = state.currentUserData.berries.find(b => b.id === 'repoi');
         
@@ -1514,7 +1547,7 @@ export function getCatchMastery(pokemonId) {
 }
 
 // Modifie la signature pour accepter l'ID de la balle
-export async function attemptCapture(ballId = "pokeball") {
+async function attemptCaptureInner(ballId = "pokeball") {
     if (isAnimating || !currentEnemy || currentEnemy.battleStats.hp <= 0 || activeFighter.battleStats.hp <= 0) return;
     
     let ballDef = ITEMS_DB[ballId];
